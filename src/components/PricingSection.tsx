@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Check, HelpCircle } from 'lucide-react';
+
 const PricingSection: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(true);
   const tiers = [{
@@ -16,7 +17,7 @@ const PricingSection: React.FC = () => {
     monthlyPrice: 997,
     annualPrice: 797,
     features: ["Everything in Starter", "Call handling (up to 500/mo)", "Calendar integration", "SMS notifications & reminders", "Customer information collection", "Lead qualification & routing", "Custom voice & personality", "Priority support"],
-    cta: "Start 14-Day Trial",
+    cta: "Get Started",
     popular: true
   }, {
     name: "Enterprise",
@@ -27,6 +28,7 @@ const PricingSection: React.FC = () => {
     cta: "Contact Sales",
     popular: false
   }];
+
   return <section id="pricing" className="section-padding bg-gradient-to-b from-background to-voiceai-primary/5">
       <div className="container mx-auto">
         <div className="text-center mb-16">
@@ -137,4 +139,5 @@ const PricingSection: React.FC = () => {
       </div>
     </section>;
 };
+
 export default PricingSection;
