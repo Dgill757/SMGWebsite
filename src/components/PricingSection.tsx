@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Check, HelpCircle } from 'lucide-react';
 
@@ -14,7 +15,7 @@ const PricingSection: React.FC = () => {
   }, {
     name: "Professional",
     description: "Ideal for growing businesses with higher call volume and advanced needs",
-    monthlyPrice: 997,
+    monthlyPrice: 997, // Updated from 797 to 997
     annualPrice: 797,
     features: ["Everything in Starter", "Call handling (up to 500/mo)", "Calendar integration", "SMS notifications & reminders", "Customer information collection", "Lead qualification & routing", "Custom voice & personality", "Priority support"],
     cta: "Get Started",
