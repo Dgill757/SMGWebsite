@@ -55,7 +55,7 @@ const BenefitsSection: React.FC = () => {
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-16">
           <h2 className="heading-lg">
-            Stop Losing <span className="text-gradient">$10s of Thousands</span> in Missed Opportunities
+            Stop Losing <span className="text-gradient">Thousands of Dollar$</span> in Missed Opportunities
           </h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             If your business misses 2-5 calls a day, that's 60-150 potential customers lost monthly. At $5,000-$10,000 per customer, you're leaving massive revenue on the table.

@@ -1,68 +1,33 @@
-
 import React, { useState } from 'react';
 import { Check, HelpCircle } from 'lucide-react';
-
 const PricingSection: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(true);
-  
-  const tiers = [
-    {
-      name: "Starter",
-      description: "Perfect for small businesses handling up to 100 calls per month",
-      monthlyPrice: 249,
-      annualPrice: 199,
-      features: [
-        "Smart voice AI assistant",
-        "Website widget integration",
-        "Call handling (up to 100/mo)",
-        "Basic appointment scheduling",
-        "Email notifications",
-        "Standard business hours support"
-      ],
-      cta: "Get Started",
-      popular: false
-    },
-    {
-      name: "Professional",
-      description: "Ideal for growing businesses with higher call volume and advanced needs",
-      monthlyPrice: 499,
-      annualPrice: 399,
-      features: [
-        "Everything in Starter",
-        "Call handling (up to 500/mo)",
-        "Calendar integration",
-        "SMS notifications & reminders",
-        "Customer information collection",
-        "Lead qualification & routing",
-        "Custom voice & personality",
-        "Priority support"
-      ],
-      cta: "Start 14-Day Trial",
-      popular: true
-    },
-    {
-      name: "Enterprise",
-      description: "Customized solution for high-volume businesses with complex requirements",
-      monthlyPrice: 0,
-      annualPrice: 0,
-      features: [
-        "Everything in Professional",
-        "Unlimited call handling",
-        "CRM integration",
-        "Payment processing",
-        "Multi-location support",
-        "Advanced analytics & reporting",
-        "Custom workflows & scripts",
-        "Dedicated account manager",
-        "99.9% uptime SLA"
-      ],
-      cta: "Contact Sales",
-      popular: false
-    }
-  ];
-
-  return (
-    <section id="pricing" className="section-padding bg-gradient-to-b from-background to-voiceai-primary/5">
+  const tiers = [{
+    name: "Starter",
+    description: "Perfect for small businesses handling up to 100 calls per month",
+    monthlyPrice: 249,
+    annualPrice: 199,
+    features: ["Smart voice AI assistant", "Website widget integration", "Call handling (up to 100/mo)", "Basic appointment scheduling", "Email notifications", "Standard business hours support"],
+    cta: "Get Started",
+    popular: false
+  }, {
+    name: "Professional",
+    description: "Ideal for growing businesses with higher call volume and advanced needs",
+    monthlyPrice: 499,
+    annualPrice: 399,
+    features: ["Everything in Starter", "Call handling (up to 500/mo)", "Calendar integration", "SMS notifications & reminders", "Customer information collection", "Lead qualification & routing", "Custom voice & personality", "Priority support"],
+    cta: "Start 14-Day Trial",
+    popular: true
+  }, {
+    name: "Enterprise",
+    description: "Customized solution for high-volume businesses with complex requirements",
+    monthlyPrice: 0,
+    annualPrice: 0,
+    features: ["Everything in Professional", "Unlimited call handling", "CRM integration", "Payment processing", "Multi-location support", "Advanced analytics & reporting", "Custom workflows & scripts", "Dedicated account manager", "99.9% uptime SLA"],
+    cta: "Contact Sales",
+    popular: false
+  }];
+  return <section id="pricing" className="section-padding bg-gradient-to-b from-background to-voiceai-primary/5">
       <div className="container mx-auto">
         <div className="text-center mb-16">
           <h2 className="heading-lg">Simple, <span className="text-gradient">Transparent</span> Pricing</h2>
@@ -75,17 +40,8 @@ const PricingSection: React.FC = () => {
             <span className={`text-sm font-medium ${!isAnnual ? 'text-voiceai-primary' : 'text-muted-foreground'}`}>
               Monthly
             </span>
-            <button 
-              onClick={() => setIsAnnual(!isAnnual)} 
-              className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${
-                isAnnual ? 'bg-voiceai-primary' : 'bg-muted'
-              }`}
-            >
-              <span
-                className={`${
-                  isAnnual ? 'translate-x-6' : 'translate-x-1'
-                } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
-              />
+            <button onClick={() => setIsAnnual(!isAnnual)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${isAnnual ? 'bg-voiceai-primary' : 'bg-muted'}`}>
+              <span className={`${isAnnual ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
             </button>
             <div className="flex items-center space-x-1">
               <span className={`text-sm font-medium ${isAnnual ? 'text-voiceai-primary' : 'text-muted-foreground'}`}>
@@ -99,67 +55,40 @@ const PricingSection: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {tiers.map((tier) => (
-            <div 
-              key={tier.name}
-              className={`relative rounded-2xl overflow-hidden transition-all ${
-                tier.popular 
-                  ? 'shadow-xl shadow-voiceai-primary/20 scale-105 border-2 border-voiceai-primary bg-white dark:bg-voiceai-dark/60' 
-                  : 'shadow-lg border border-border bg-white/80 dark:bg-voiceai-dark/40 hover:shadow-xl hover:-translate-y-1'
-              }`}
-            >
-              {tier.popular && (
-                <div className="absolute top-0 right-0 bg-voiceai-primary text-white px-4 py-1 text-xs font-medium">
+          {tiers.map(tier => <div key={tier.name} className={`relative rounded-2xl overflow-hidden transition-all ${tier.popular ? 'shadow-xl shadow-voiceai-primary/20 scale-105 border-2 border-voiceai-primary bg-white dark:bg-voiceai-dark/60' : 'shadow-lg border border-border bg-white/80 dark:bg-voiceai-dark/40 hover:shadow-xl hover:-translate-y-1'}`}>
+              {tier.popular && <div className="absolute top-0 right-0 bg-voiceai-primary text-white px-4 py-1 text-xs font-medium">
                   Most Popular
-                </div>
-              )}
+                </div>}
               
               <div className="p-6">
                 <h3 className="text-2xl font-bold mb-2">{tier.name}</h3>
                 <p className="text-muted-foreground mb-6 h-12">{tier.description}</p>
                 
                 <div className="mb-6">
-                  {tier.name === "Enterprise" ? (
-                    <div className="text-4xl font-bold">Custom</div>
-                  ) : (
-                    <>
+                  {tier.name === "Enterprise" ? <div className="text-4xl font-bold">Custom</div> : <>
                       <div className="text-4xl font-bold">
                         ${isAnnual ? tier.annualPrice : tier.monthlyPrice}
                         <span className="text-lg font-normal text-muted-foreground">/mo</span>
                       </div>
-                      {isAnnual && (
-                        <p className="text-sm text-muted-foreground mt-1">Billed annually (${tier.annualPrice * 12}/year)</p>
-                      )}
-                    </>
-                  )}
+                      {isAnnual && <p className="text-sm text-muted-foreground mt-1">Billed annually (${tier.annualPrice * 12}/year)</p>}
+                    </>}
                 </div>
                 
-                <button 
-                  className={`w-full py-3 px-4 rounded-lg font-medium mb-8 ${
-                    tier.popular 
-                      ? 'bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white' 
-                      : tier.name === "Enterprise" 
-                        ? 'bg-white text-voiceai-primary border border-voiceai-primary/20' 
-                        : 'bg-voiceai-primary/10 text-voiceai-primary'
-                  }`}
-                >
+                <button className={`w-full py-3 px-4 rounded-lg font-medium mb-8 ${tier.popular ? 'bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white' : tier.name === "Enterprise" ? 'bg-white text-voiceai-primary border border-voiceai-primary/20' : 'bg-voiceai-primary/10 text-voiceai-primary'}`}>
                   {tier.cta}
                 </button>
                 
                 <div className="space-y-4">
                   <p className="text-sm font-medium">Includes:</p>
                   <ul className="space-y-3">
-                    {tier.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2 text-sm">
+                    {tier.features.map(feature => <li key={feature} className="flex items-start gap-2 text-sm">
                         <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
                         <span>{feature}</span>
-                      </li>
-                    ))}
+                      </li>)}
                   </ul>
                 </div>
               </div>
-            </div>
-          ))}
+            </div>)}
         </div>
         
         {/* FAQ */}
@@ -206,8 +135,6 @@ const PricingSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+    </section>;
 };
-
 export default PricingSection;
