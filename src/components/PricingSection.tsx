@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Check, HelpCircle } from 'lucide-react';
-
 const PricingSection: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(true);
   const tiers = [{
@@ -28,7 +27,6 @@ const PricingSection: React.FC = () => {
     cta: "Contact Sales",
     popular: false
   }];
-
   return <section id="pricing" className="section-padding bg-gradient-to-b from-background to-voiceai-primary/5">
       <div className="container mx-auto">
         <div className="text-center mb-16">
@@ -103,7 +101,7 @@ const PricingSection: React.FC = () => {
                 <HelpCircle className="h-5 w-5 text-voiceai-primary" />
                 Is there a setup fee?
               </h4>
-              <p className="text-muted-foreground">No, there are no setup fees. You only pay the monthly or annual subscription fee for your chosen plan.</p>
+              <p className="text-muted-foreground">Yes, there’s a one-time setup fee to get your Voice AI configured to your business. After that, you only pay a monthly or annual subscription based on the plan you choose.</p>
             </div>
             
             <div className="bg-white dark:bg-voiceai-dark/40 rounded-lg p-6 shadow-md">
@@ -111,7 +109,7 @@ const PricingSection: React.FC = () => {
                 <HelpCircle className="h-5 w-5 text-voiceai-primary" />
                 What happens if I exceed my monthly call limit?
               </h4>
-              <p className="text-muted-foreground">If you exceed your plan's call limit, additional calls will be billed at $2 per call. We'll notify you when you reach 80% of your limit so you can upgrade if needed.</p>
+              <p className="text-muted-foreground">There’s no cap on the number of calls you can make. You’re only billed for usage at $0.18 per minute, so you scale up without restrictions as your business grows.</p>
             </div>
             
             <div className="bg-white dark:bg-voiceai-dark/40 rounded-lg p-6 shadow-md">
@@ -127,7 +125,9 @@ const PricingSection: React.FC = () => {
                 <HelpCircle className="h-5 w-5 text-voiceai-primary" />
                 Can I cancel anytime?
               </h4>
-              <p className="text-muted-foreground">Yes, you can cancel your subscription at any time. For monthly plans, you'll have access until the end of your billing cycle. For annual plans, you can continue using the service until the end of your annual term.</p>
+              <p className="text-muted-foreground">Monthly plans: You can cancel anytime and keep access until your billing cycle ends.  
+
+Annual plans: You’ll keep full access through the end of the year you’ve prepaid.</p>
             </div>
             
             <div className="text-center mt-8">
@@ -139,5 +139,4 @@ const PricingSection: React.FC = () => {
       </div>
     </section>;
 };
-
 export default PricingSection;
