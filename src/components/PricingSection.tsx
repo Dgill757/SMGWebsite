@@ -6,7 +6,7 @@ const PricingSection: React.FC = () => {
     name: "Starter",
     description: "Perfect for small businesses handling up to 100 calls per month",
     monthlyPrice: 497,
-    annualPrice: 397,
+    annualPrice: 497,
     features: ["Smart voice AI assistant", "Website widget integration", "Call handling (up to 100/mo)", "Basic appointment scheduling", "Email notifications", "Standard business hours support"],
     cta: "Get Started",
     popular: false
