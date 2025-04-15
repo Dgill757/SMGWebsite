@@ -5,16 +5,16 @@ const PricingSection: React.FC = () => {
   const tiers = [{
     name: "Starter",
     description: "Perfect for small businesses handling up to 100 calls per month",
-    monthlyPrice: 249,
-    annualPrice: 199,
+    monthlyPrice: 497,
+    annualPrice: 397,
     features: ["Smart voice AI assistant", "Website widget integration", "Call handling (up to 100/mo)", "Basic appointment scheduling", "Email notifications", "Standard business hours support"],
     cta: "Get Started",
     popular: false
   }, {
     name: "Professional",
     description: "Ideal for growing businesses with higher call volume and advanced needs",
-    monthlyPrice: 499,
-    annualPrice: 399,
+    monthlyPrice: 997,
+    annualPrice: 797,
     features: ["Everything in Starter", "Call handling (up to 500/mo)", "Calendar integration", "SMS notifications & reminders", "Customer information collection", "Lead qualification & routing", "Custom voice & personality", "Priority support"],
     cta: "Start 14-Day Trial",
     popular: true
