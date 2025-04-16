@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Check, HelpCircle, Flame, Calendar, Building } from 'lucide-react';
+import { Check, Flame, Calendar, Building } from 'lucide-react';
 
 const PricingSection: React.FC = () => {
   const [isAnnual, setIsAnnual] = useState(true);
@@ -153,50 +153,9 @@ const PricingSection: React.FC = () => {
           )}
         </div>
         
-        {/* FAQ */}
-        <div className="mt-20 max-w-3xl mx-auto">
-          <h3 className="text-2xl font-bold text-center mb-8">Frequently Asked Questions</h3>
-          
-          <div className="space-y-6">
-            <div className="bg-white dark:bg-voiceai-dark/40 rounded-lg p-6 shadow-md">
-              <h4 className="flex items-center gap-2 text-lg font-medium mb-2">
-                <HelpCircle className="h-5 w-5 text-voiceai-primary" />
-                Is there a setup fee?
-              </h4>
-              <p className="text-muted-foreground">Yes, there's a one-time setup fee to get your Voice AI configured to your business. After that, you only pay a monthly or annual subscription based on the plan you choose.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-voiceai-dark/40 rounded-lg p-6 shadow-md">
-              <h4 className="flex items-center gap-2 text-lg font-medium mb-2">
-                <HelpCircle className="h-5 w-5 text-voiceai-primary" />
-                What happens if I exceed my monthly call limit?
-              </h4>
-              <p className="text-muted-foreground">There's no cap on the number of calls you can make. You're only billed for usage at $0.18 per minute, so you scale up without restrictions as your business grows.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-voiceai-dark/40 rounded-lg p-6 shadow-md">
-              <h4 className="flex items-center gap-2 text-lg font-medium mb-2">
-                <HelpCircle className="h-5 w-5 text-voiceai-primary" />
-                How long does it take to set up?
-              </h4>
-              <p className="text-muted-foreground">Most businesses are up and running within 24 hours. The basic setup takes just minutes, and we provide guidance for customizing your AI assistant to match your business needs.</p>
-            </div>
-            
-            <div className="bg-white dark:bg-voiceai-dark/40 rounded-lg p-6 shadow-md">
-              <h4 className="flex items-center gap-2 text-lg font-medium mb-2">
-                <HelpCircle className="h-5 w-5 text-voiceai-primary" />
-                Can I cancel anytime?
-              </h4>
-              <p className="text-muted-foreground">Monthly plans: You can cancel anytime and keep access until your billing cycle ends.  
-
-Annual plans: You'll keep full access through the end of the year you've prepaid.</p>
-            </div>
-            
-            <div className="text-center mt-8">
-              <p className="text-muted-foreground mb-4">Still have questions? We're here to help!</p>
-              <a href="#contact" className="btn-primary inline-block">Contact Us</a>
-            </div>
-          </div>
+        <div className="text-center mt-16">
+          <p className="text-muted-foreground mb-4">Still have questions? We're here to help!</p>
+          <a href="#contact" className="btn-primary inline-block">Contact Us</a>
         </div>
       </div>
     </section>;

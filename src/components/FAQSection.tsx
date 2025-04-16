@@ -6,6 +6,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { HelpCircle } from 'lucide-react';
 
 const FAQSection: React.FC = () => {
   const faqs = [
@@ -35,11 +36,19 @@ const FAQSection: React.FC = () => {
     },
     {
       question: "How quickly can I get set up?",
-      answer: "Basic setup takes just minutes, and most businesses are fully operational within 24 hours. Our team provides hands-on support to ensure your Voice AI is properly configured and ready to handle calls effectively."
+      answer: "Depending on how many clients we are onboarding at the time, full setup and training can take up to 2 weeks. That said, your AI will be up and running quickly, and our team will continue refining it over the first 30 days—training it to sound just like your best employee. By the end of that process, it'll be handling calls, booking jobs, and responding exactly how you want—24/7."
     },
     {
       question: "What kind of businesses benefit most from Voice AI?",
       answer: "Service-based businesses with high call volumes see the greatest benefit, including home services (plumbing, HVAC, roofing), healthcare practices, legal firms, real estate, automotive services, and professional services. If you rely on phone calls for leads and appointments, Voice AI can transform your business."
+    },
+    {
+      question: "Is there a setup fee?",
+      answer: "Yes, there's a one-time setup fee to get your Voice AI configured to your business. After that, you only pay a monthly or annual subscription based on the plan you choose."
+    },
+    {
+      question: "Can I cancel anytime?",
+      answer: "Monthly plans: You can cancel anytime and keep access until your billing cycle ends. Annual plans: You'll keep full access through the end of the year you've prepaid."
     }
   ];
 
