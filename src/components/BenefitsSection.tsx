@@ -1,6 +1,12 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Clock, DollarSign, Brain, PhoneCall, Calendar, UserCheck, BarChart, BotIcon, Zap } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import ROICalculator from './ROICalculator';
+
 const BenefitsSection: React.FC = () => {
+  const [isROIDialogOpen, setIsROIDialogOpen] = useState(false);
+  
   const benefits = [{
     icon: <Clock className="h-6 w-6" />,
     title: "24/7 Availability",
@@ -47,6 +53,7 @@ const BenefitsSection: React.FC = () => {
     description: "Be up and running in minutes, not weeks. No complicated setup or integration required.",
     color: "from-yellow-500 to-amber-400"
   }];
+  
   return <section id="features" className="section-padding relative">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
@@ -86,12 +93,26 @@ const BenefitsSection: React.FC = () => {
               <div className="text-3xl font-bold text-gradient mb-2">$120,000+</div>
               <p className="text-sm text-muted-foreground">Average annual revenue increase</p>
             </div>
-            <a href="#contact" className="btn-primary">
+            <button 
+              onClick={() => setIsROIDialogOpen(true)}
+              className="btn-primary"
+            >
               Get Your Custom ROI Analysis
-            </a>
+            </button>
           </div>
         </div>
       </div>
+      
+      {/* ROI Calculator Dialog */}
+      <Dialog open={isROIDialogOpen} onOpenChange={setIsROIDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold mb-4">Missed Call ROI Calculator</DialogTitle>
+          </DialogHeader>
+          <ROICalculator />
+        </DialogContent>
+      </Dialog>
     </section>;
 };
+
 export default BenefitsSection;
