@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 
@@ -19,6 +18,14 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  const scrollToPricing = (event: React.MouseEvent) => {
+    event.preventDefault();
+    const pricingSection = document.getElementById('pricing');
+    if (pricingSection) {
+      pricingSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'py-4 bg-background/80 backdrop-blur-md shadow-sm' : 'py-6'}`}>
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
@@ -38,7 +45,7 @@ const Navbar: React.FC = () => {
           <a href="#how-it-works" className="text-foreground/80 hover:text-voiceai-primary transition-colors">How It Works</a>
           <a href="#use-cases" className="text-foreground/80 hover:text-voiceai-primary transition-colors">Use Cases</a>
           <a href="#pricing" className="text-foreground/80 hover:text-voiceai-primary transition-colors">Pricing</a>
-          <a href="#contact" className="btn-primary">Get Started</a>
+          <a href="#contact" className="btn-primary" onClick={scrollToPricing}>Get Started</a>
         </div>
         
         <button className="md:hidden" onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
@@ -52,7 +59,10 @@ const Navbar: React.FC = () => {
           <a href="#how-it-works" className="block py-2 text-foreground/80 hover:text-voiceai-primary" onClick={() => setIsMobileMenuOpen(false)}>How It Works</a>
           <a href="#use-cases" className="block py-2 text-foreground/80 hover:text-voiceai-primary" onClick={() => setIsMobileMenuOpen(false)}>Use Cases</a>
           <a href="#pricing" className="block py-2 text-foreground/80 hover:text-voiceai-primary" onClick={() => setIsMobileMenuOpen(false)}>Pricing</a>
-          <a href="#contact" className="block py-2 btn-primary text-center" onClick={() => setIsMobileMenuOpen(false)}>Get Started</a>
+          <a href="#contact" className="block py-2 btn-primary text-center" onClick={(e) => {
+            scrollToPricing(e);
+            setIsMobileMenuOpen(false);
+          }}>Get Started</a>
         </div>
       )}
     </nav>
