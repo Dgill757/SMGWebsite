@@ -10,6 +10,16 @@ const HeroSection: React.FC = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const scrollToWidget = (event: React.MouseEvent) => {
+    event.preventDefault();
+    const widgetElement = document.getElementById('web-widget');
+    if (widgetElement) {
+      widgetElement.scrollIntoView({ behavior: 'smooth' });
+    }
+    // Also toggle the play state to show the animation
+    setIsPlaying(!isPlaying);
+  };
+
   return (
     <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20">
       {/* Background Elements */}
@@ -41,7 +51,7 @@ const HeroSection: React.FC = () => {
                 </svg>
               </a>
               <button 
-                onClick={togglePlay}
+                onClick={scrollToWidget}
                 className="btn-secondary flex items-center justify-center gap-2"
               >
                 {isPlaying ? (
