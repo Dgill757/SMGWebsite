@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -15,36 +16,31 @@ const queryClient = new QueryClient();
 
 const App = () => {
   useEffect(() => {
-    // Remove any existing widget script
-    const existingScript = document.querySelector('script[src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"]');
-    if (existingScript) {
-      document.head.removeChild(existingScript);
+    // Check if script already exists to avoid duplicate additions
+    const existingScript = document.getElementById('summit-voice-widget-script');
+    
+    if (!existingScript) {
+      const script = document.createElement('script');
+      script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
+      script.async = true;
+      script.id = 'summit-voice-widget-script';
+      
+      script.onload = () => {
+        if (window.hasOwnProperty('SummitVoiceWidget')) {
+          // @ts-ignore - The widget might not be typed
+          if (typeof window.SummitVoiceWidget?.init === 'function') {
+            // @ts-ignore
+            window.SummitVoiceWidget.init();
+            console.log('Summit Voice Widget initialized');
+          }
+        }
+      };
+      
+      document.head.appendChild(script);
     }
 
-    // Add the widget script
-    const script = document.createElement('script');
-    script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
-    script.async = true;
-    script.id = 'summit-voice-widget-script';
-    
-    script.onload = () => {
-      if (window.hasOwnProperty('SummitVoiceWidget')) {
-        // @ts-ignore - The widget might not be typed
-        if (typeof window.SummitVoiceWidget?.init === 'function') {
-          // @ts-ignore
-          window.SummitVoiceWidget.init();
-          console.log('Summit Voice Widget initialized');
-        }
-      }
-    };
-    
-    document.head.appendChild(script);
-
-    return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
-    };
+    // No cleanup function that tries to remove the script
+    // This avoids the "Node.removeChild" error
   }, []);
 
   return (
