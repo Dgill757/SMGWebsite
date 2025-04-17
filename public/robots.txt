@@ -2,7 +2,7 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://www.summitmktggroup.com/sitemap.xml
+Sitemap: https://summitaivoice.com/sitemap.xml
 
 # Allow Googlebot
 User-agent: Googlebot
@@ -32,7 +32,10 @@ Allow: /contact
 Allow: /demo
 Allow: /about
 Allow: /testimonials
+Allow: /terms-of-service
+Allow: /privacy-policy
+Allow: /cookie-policy
+Allow: /gdpr-compliance
 
 # Clean parameters
 Clean-param: utm_source&utm_medium&utm_campaign&utm_content&fbclid
-

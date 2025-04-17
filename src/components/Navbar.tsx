@@ -19,21 +19,25 @@ const Navbar: React.FC = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToPricing = (event: React.MouseEvent) => {
-    event.preventDefault();
-    const pricingSection = document.getElementById('pricing');
-    if (pricingSection) {
-      pricingSection.scrollIntoView({ behavior: 'smooth' });
+  const scrollToSection = (sectionId: string, event?: React.MouseEvent) => {
+    if (event) {
+      event.preventDefault();
     }
-    setIsMobileMenuOpen(false);
-  };
-
-  const handleMobileMenuClick = (sectionId: string) => {
+    
+    // First check if we're on the home page
+    const isHomePage = window.location.pathname === '/';
+    
+    if (!isHomePage) {
+      // If not on home page, navigate to home page first and then scroll
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
+    
     const section = document.getElementById(sectionId);
     if (section) {
       section.scrollIntoView({ behavior: 'smooth' });
+      setIsMobileMenuOpen(false);
     }
-    setIsMobileMenuOpen(false);
   };
 
   return (
@@ -41,21 +45,19 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
         <a href="/" className="flex items-center space-x-2">
           <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-white">
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
-              <line x1="12" y1="19" x2="12" y2="22"></line>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 22L12 2M12 2L2 12M12 2L22 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </div>
           <span className="font-bold text-xl text-gradient">SummitVoiceAI</span>
         </a>
         
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#features" className="text-foreground/80 hover:text-voiceai-primary transition-colors">Features</a>
-          <a href="#how-it-works" className="text-foreground/80 hover:text-voiceai-primary transition-colors">How It Works</a>
-          <a href="#use-cases" className="text-foreground/80 hover:text-voiceai-primary transition-colors">Use Cases</a>
-          <a href="#pricing" className="text-foreground/80 hover:text-voiceai-primary transition-colors">Pricing</a>
-          <a href="#contact" className="btn-primary" onClick={scrollToPricing}>Get Started</a>
+          <a href="#features" onClick={(e) => scrollToSection('features', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Features</a>
+          <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">How It Works</a>
+          <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Use Cases</a>
+          <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Pricing</a>
+          <a href="#contact" onClick={(e) => scrollToSection('contact', e)} className="btn-primary">Get Started</a>
         </div>
         
         <button 
@@ -72,35 +74,35 @@ const Navbar: React.FC = () => {
           <a 
             href="#features" 
             className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
-            onClick={() => handleMobileMenuClick('features')}
+            onClick={(e) => scrollToSection('features', e)}
           >
             Features
           </a>
           <a 
             href="#how-it-works" 
             className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
-            onClick={() => handleMobileMenuClick('how-it-works')}
+            onClick={(e) => scrollToSection('how-it-works', e)}
           >
             How It Works
           </a>
           <a 
             href="#use-cases" 
             className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
-            onClick={() => handleMobileMenuClick('use-cases')}
+            onClick={(e) => scrollToSection('use-cases', e)}
           >
             Use Cases
           </a>
           <a 
             href="#pricing" 
             className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
-            onClick={() => handleMobileMenuClick('pricing')}
+            onClick={(e) => scrollToSection('pricing', e)}
           >
             Pricing
           </a>
           <a 
             href="#contact" 
             className="block py-2 btn-primary text-center" 
-            onClick={scrollToPricing}
+            onClick={(e) => scrollToSection('contact', e)}
           >
             Get Started
           </a>
