@@ -9,7 +9,6 @@ import TestimonialsSection from '@/components/TestimonialsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
-import WebWidget from '@/components/WebWidget';
 import { useLocation } from 'react-router-dom';
 
 const Index = () => {
@@ -38,7 +37,6 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
-        <WebWidget />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
