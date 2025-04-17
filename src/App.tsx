@@ -12,7 +12,6 @@ import CookiePolicy from "./pages/CookiePolicy";
 import GDPRCompliance from "./pages/GDPRCompliance";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import WebWidget from "./components/WebWidget";
 
 const queryClient = new QueryClient();
 
@@ -35,7 +34,6 @@ const App = () => {
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Footer />
-            <WebWidget />
           </div>
         </BrowserRouter>
       </TooltipProvider>

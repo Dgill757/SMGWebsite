@@ -20,6 +20,13 @@ const Index = () => {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Transform your service business with Summit Voice AI\'s cutting-edge AI solutions. Featuring AI receptionists, automated scheduling, and seamless CRM integration.');
     }
+
+    // Load widget script
+    const script = document.createElement('script');
+    script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
+    script.async = true;
+    document.body.appendChild(script);
+    
     window.scrollTo(0, 0);
     if (location.hash) {
       setTimeout(() => {
@@ -31,6 +38,13 @@ const Index = () => {
         }
       }, 500);
     }
+    
+    return () => {
+      // Clean up the script when the component unmounts
+      if (script && script.parentNode) {
+        document.body.removeChild(script);
+      }
+    };
   }, [location.pathname, location.hash]);
 
   return (
@@ -43,6 +57,11 @@ const Index = () => {
         <TestimonialsSection />
         <PricingSection />
         <FAQSection />
+        
+        {/* Widget placeholder - positioned fixed at bottom right */}
+        <div className="fixed bottom-4 right-4 z-50">
+          <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+        </div>
       </main>
     </div>
   );
