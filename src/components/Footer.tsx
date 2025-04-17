@@ -4,6 +4,10 @@ import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone } from 'lucide-reac
 import { Link } from 'react-router-dom';
 
 const Footer: React.FC = () => {
+  const handlePolicyClick = () => {
+    window.scrollTo(0, 0);
+  };
+
   return (
     <footer id="contact" className="bg-voiceai-dark text-white">
       <div className="container mx-auto py-16 px-4 md:px-6">
@@ -118,10 +122,34 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
           <p>&copy; {new Date().getFullYear()} SummitVoiceAI. All Rights Reserved.</p>
           <div className="mt-4 text-xs space-x-4">
-            <Link to="/terms-of-service" className="text-gray-500 hover:text-white transition-colors">Terms of Service</Link>
-            <Link to="/privacy-policy" className="text-gray-500 hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/cookie-policy" className="text-gray-500 hover:text-white transition-colors">Cookie Policy</Link>
-            <Link to="/gdpr-compliance" className="text-gray-500 hover:text-white transition-colors">GDPR Compliance</Link>
+            <Link 
+              to="/terms-of-service" 
+              className="text-gray-500 hover:text-white transition-colors"
+              onClick={handlePolicyClick}
+            >
+              Terms of Service
+            </Link>
+            <Link 
+              to="/privacy-policy" 
+              className="text-gray-500 hover:text-white transition-colors"
+              onClick={handlePolicyClick}
+            >
+              Privacy Policy
+            </Link>
+            <Link 
+              to="/cookie-policy" 
+              className="text-gray-500 hover:text-white transition-colors"
+              onClick={handlePolicyClick}
+            >
+              Cookie Policy
+            </Link>
+            <Link 
+              to="/gdpr-compliance" 
+              className="text-gray-500 hover:text-white transition-colors"
+              onClick={handlePolicyClick}
+            >
+              GDPR Compliance
+            </Link>
           </div>
         </div>
       </div>

@@ -21,6 +21,9 @@ const Index = () => {
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Transform your service business with Summit Voice AI\'s cutting-edge AI solutions. Featuring AI receptionists, automated scheduling, and seamless CRM integration.');
     }
+
+    // Scroll to top on mount
+    window.scrollTo(0, 0);
   }, []);
 
   return (
