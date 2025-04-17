@@ -7,10 +7,12 @@ Sitemap: https://www.summitmktggroup.com/sitemap.xml
 # Allow Googlebot
 User-agent: Googlebot
 Allow: /
+Crawl-delay: 1
 
 # Allow Bingbot
 User-agent: Bingbot
 Allow: /
+Crawl-delay: 1
 
 # Allow social media bots
 User-agent: Twitterbot
@@ -18,3 +20,19 @@ Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
+
+# Allow Google Business Bot
+User-agent: Google-Business-Bot
+Allow: /
+
+# Priority pages
+Allow: /features
+Allow: /pricing
+Allow: /contact
+Allow: /demo
+Allow: /about
+Allow: /testimonials
+
+# Clean parameters
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&fbclid
+
