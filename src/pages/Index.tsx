@@ -38,6 +38,11 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
+        
+        {/* Voice AI Widget Script */}
+        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+        
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
