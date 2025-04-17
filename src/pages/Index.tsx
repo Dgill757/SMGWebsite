@@ -14,20 +14,16 @@ import { useLocation } from 'react-router-dom';
 const Index = () => {
   const location = useLocation();
 
-  // Set page title and meta description for this specific page
   useEffect(() => {
     document.title = "Summit Voice AI - #1 Voice AI Solution for Service Businesses";
     
-    // Update meta description
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Transform your service business with Summit Voice AI\'s cutting-edge AI solutions. Featuring AI receptionists, automated scheduling, and seamless CRM integration.');
     }
 
-    // Scroll to top on mount or when pathname changes
     window.scrollTo(0, 0);
     
-    // If there's a hash in the URL, scroll to the section after a short delay
     if (location.hash) {
       setTimeout(() => {
         const element = document.getElementById(location.hash.slice(1));
@@ -36,6 +32,17 @@ const Index = () => {
         }
       }, 500);
     }
+
+    const script = document.createElement('script');
+    script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
+    script.async = true;
+    document.head.appendChild(script);
+
+    return () => {
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
+    };
   }, [location.pathname, location.hash]);
 
   return (
