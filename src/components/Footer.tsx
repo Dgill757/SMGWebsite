@@ -24,16 +24,16 @@ const Footer: React.FC = () => {
               Giving websites a voice and a brain. The future of customer interactions is here.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://www.facebook.com/daniel.gill.iii" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://x.com/SMG_Biz_Growth" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://www.instagram.com/summit_marketing_group_/" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                 <Instagram size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <a href="https://www.linkedin.com/company/summitmarketing-business-growth" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
                 <Linkedin size={20} />
               </a>
             </div>
@@ -85,14 +85,23 @@ const Footer: React.FC = () => {
             <div className="space-y-4">
               <div className="flex items-center space-x-3">
                 <Mail className="text-voiceai-primary" size={18} />
-                <a href="mailto:contact@voiceai.com" className="text-gray-400 hover:text-white transition-colors">
-                  contact@voiceai.com
+                <a href="mailto:dan@summitmktggroup.com" className="text-gray-400 hover:text-white transition-colors">
+                  dan@summitmktggroup.com
                 </a>
               </div>
               <div className="flex items-center space-x-3">
                 <Phone className="text-voiceai-primary" size={18} />
-                <a href="tel:+18001234567" className="text-gray-400 hover:text-white transition-colors">
-                  +1 (800) 123-4567
+                <a href="tel:+12404740668" className="text-gray-400 hover:text-white transition-colors">
+                  +1 (240) 474-0668
+                </a>
+              </div>
+              <div className="flex items-center space-x-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-voiceai-primary">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                </svg>
+                <a href="https://www.summitmktggroup.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
+                  www.summitmktggroup.com
                 </a>
               </div>
               
@@ -120,7 +129,7 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; {new Date().getFullYear()} VoiceAI. All rights reserved.</p>
+          <p>&copy; 2025 SummitVoiceAI. All Rights Reserved.</p>
         </div>
       </div>
     </footer>
