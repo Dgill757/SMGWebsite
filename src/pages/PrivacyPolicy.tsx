@@ -6,83 +6,81 @@ const PrivacyPolicy: React.FC = () => {
   return (
     <PolicyLayout title="Privacy Policy">
       <p className="text-lg text-muted-foreground mb-6">
-        Last updated: April 17, 2025
+        Effective Date: June 23, 2024
       </p>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">1. Introduction</h2>
-      <p>
-        At VoiceAI, we respect your privacy and are committed to protecting your personal data. This Privacy Policy explains how we collect, use, 
-        disclose, and safeguard your information when you use our website and services.
+      <p className="mb-6">
+        Summit AI, a division of Summit Marketing Group
       </p>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">2. Information We Collect</h2>
-      <p>
-        We may collect personal information that you voluntarily provide when using our services, including but not limited to:
+      <p className="mb-6">
+        At Summit AI, your privacy matters. This policy outlines what data we collect, how we use it, and how we protect your information as you use our AI-powered services—including smart websites, voice assistants, and automation systems.
       </p>
-      <ul className="list-disc pl-6 mb-4">
-        <li>Contact information (name, email address, phone number)</li>
-        <li>Business information</li>
-        <li>Payment information</li>
-        <li>Voice recordings and transcripts from calls handled by our AI</li>
-        <li>Information about how you use our services</li>
-      </ul>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">3. How We Use Your Information</h2>
-      <p>
-        We use the information we collect to:
+      <h2 className="text-2xl font-semibold mt-8 mb-4">1. Information We Collect</h2>
+      <p className="mb-4">
+        We collect and process only what is necessary to deliver our services effectively:
       </p>
       <ul className="list-disc pl-6 mb-4">
-        <li>Provide, maintain, and improve our services</li>
-        <li>Process transactions and send related information</li>
-        <li>Send you technical notices, updates, and support messages</li>
-        <li>Respond to your comments and questions</li>
-        <li>Train and improve our AI systems</li>
-        <li>Monitor and analyze usage patterns</li>
+        <li>Contact Info: Names, phone numbers, emails.</li>
+        <li>Service Interactions: Booking data, chat logs, form submissions, call metadata (but not recordings unless authorized).</li>
+        <li>Business Preferences: CRM settings, automation flows, AI assistant configurations.</li>
+        <li>Website Usage: Analytics and usage patterns (non-identifiable) for optimization.</li>
       </ul>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">4. Data Storage and Security</h2>
-      <p>
-        We implement appropriate technical and organizational measures to protect your personal data against unauthorized or unlawful processing, 
-        accidental loss, destruction, or damage. However, no method of transmission over the Internet or electronic storage is 100% secure.
-      </p>
-      
-      <h2 className="text-2xl font-semibold mt-8 mb-4">5. Data Sharing and Disclosure</h2>
-      <p>
-        We may share your information with:
+      <h2 className="text-2xl font-semibold mt-8 mb-4">2. How We Use Your Information</h2>
+      <p className="mb-4">
+        We use this data to:
       </p>
       <ul className="list-disc pl-6 mb-4">
-        <li>Service providers who perform services on our behalf</li>
-        <li>Business partners with your consent</li>
-        <li>Legal authorities when required by law</li>
+        <li>Set up and operate your AI assistant, smart website, and automations.</li>
+        <li>Send confirmations, reminders, or updates based on your usage.</li>
+        <li>Improve service performance and personalization.</li>
+        <li>Provide customer support and onboarding assistance.</li>
+        <li>Fulfill legal obligations and security protections.</li>
       </ul>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">6. Your Data Protection Rights</h2>
-      <p>
-        Depending on your location, you may have certain rights regarding your personal data, including:
+      <h2 className="text-2xl font-semibold mt-8 mb-4">3. Data Storage & Protection</h2>
+      <p className="mb-4">
+        All data is encrypted in transit and at rest using modern security protocols.
+      </p>
+      <p className="mb-4">
+        Access is limited to trained team members and governed by strict confidentiality.
+      </p>
+      <p className="mb-6">
+        Data is retained only as long as required to provide services or comply with law.
+      </p>
+      
+      <h2 className="text-2xl font-semibold mt-8 mb-4">4. Third-Party Technology Use</h2>
+      <p className="mb-6">
+        We may utilize third-party AI models strictly for processing tasks initiated by you (e.g., voice transcriptions or chatbot logic). These services do not retain or reuse your data beyond each request. We do not sell, rent, or share your information with any third parties for advertising or marketing.
+      </p>
+      
+      <h2 className="text-2xl font-semibold mt-8 mb-4">5. Your Rights</h2>
+      <p className="mb-4">
+        You are in control of your data. You may:
       </p>
       <ul className="list-disc pl-6 mb-4">
-        <li>Right to access your personal data</li>
-        <li>Right to correct inaccurate data</li>
-        <li>Right to delete your data</li>
-        <li>Right to restrict processing</li>
-        <li>Right to data portability</li>
-        <li>Right to object to processing</li>
+        <li>Request access to your stored information.</li>
+        <li>Correct or delete inaccurate information.</li>
+        <li>Withdraw consent at any time (for marketing or data handling).</li>
+        <li>Request complete deletion of your stored data if no longer using our services.</li>
       </ul>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">7. Children's Privacy</h2>
-      <p>
-        Our services are not intended for individuals under the age of 16, and we do not knowingly collect personal information from children.
+      <h2 className="text-2xl font-semibold mt-8 mb-4">6. Updates to This Policy</h2>
+      <p className="mb-6">
+        We may occasionally update this Privacy Policy to reflect changes in our operations or legal requirements. When we do, we'll post the updates on our website and notify you directly when necessary.
       </p>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">8. Changes to This Policy</h2>
-      <p>
-        We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and 
-        updating the "Last updated" date.
+      <h2 className="text-2xl font-semibold mt-8 mb-4">7. Contact Us</h2>
+      <p className="mb-4">
+        Have questions or need to make a request?
       </p>
-      
-      <h2 className="text-2xl font-semibold mt-8 mb-4">9. Contact Us</h2>
-      <p>
-        If you have questions or concerns about this Privacy Policy, please contact us at privacy@voiceai.com.
+      <p className="mb-4">
+        Email: <a href="mailto:dan@summitmktggroup.com" className="text-voiceai-primary hover:underline">dan@summitmktggroup.com</a>
+      </p>
+      <p className="mb-6">
+        Website: <a href="https://www.summitmktggroup.com" className="text-voiceai-primary hover:underline">www.summitmktggroup.com</a>
       </p>
     </PolicyLayout>
   );
