@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -8,9 +9,12 @@ import TestimonialsSection from '@/components/TestimonialsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
+import WebWidget from '@/components/WebWidget';
 import { useLocation } from 'react-router-dom';
+
 const Index = () => {
   const location = useLocation();
+  
   useEffect(() => {
     document.title = "Summit Voice AI - #1 Voice AI Solution for Service Businesses";
     const metaDescription = document.querySelector('meta[name="description"]');
@@ -29,18 +33,12 @@ const Index = () => {
       }, 500);
     }
   }, [location.pathname, location.hash]);
-  return <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+
+  return (
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
-        
-        {/* Voice AI Widget - direct embed as requested */}
-        <div className="<script src=\"https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js\"></script>\n\n<div data-widget-key=\"8ba094ef-bcf2-4aec-bcef-ee65c95b0492\"></div>">
-          <div className="container mx-auto">
-            <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-            <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
-          </div>
-        </div>
-        
+        <WebWidget />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
@@ -48,6 +46,8 @@ const Index = () => {
         <PricingSection />
         <FAQSection />
       </main>
-    </div>;
+    </div>
+  );
 };
+
 export default Index;
