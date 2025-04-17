@@ -18,10 +18,10 @@ const Footer: React.FC = () => {
                   <line x1="12" y1="19" x2="12" y2="22"></line>
                 </svg>
               </div>
-              <span className="font-bold text-xl text-gradient">VoiceAI</span>
+              <span className="font-bold text-xl text-gradient">SummitVoiceAI</span>
             </div>
             <p className="text-gray-400">
-              Giving websites a voice and a brain. The future of customer interactions is here.
+              Summit Voice AI - The #1 AI voice solution for service businesses. Never miss a call, automate scheduling, and increase your revenue.
             </p>
             <div className="flex space-x-4">
               <a href="https://www.facebook.com/daniel.gill.iii" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
@@ -52,30 +52,17 @@ const Footer: React.FC = () => {
             </ul>
           </div>
           
-          {/* Legal */}
+          {/* Industries We Serve */}
           <div>
-            <h3 className="font-bold text-lg mb-4">Legal</h3>
+            <h3 className="font-bold text-lg mb-4">Industries We Serve</h3>
             <ul className="space-y-2">
-              <li>
-                <Link to="/terms-of-service" className="text-gray-400 hover:text-white transition-colors">
-                  Terms of Service
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacy-policy" className="text-gray-400 hover:text-white transition-colors">
-                  Privacy Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/cookie-policy" className="text-gray-400 hover:text-white transition-colors">
-                  Cookie Policy
-                </Link>
-              </li>
-              <li>
-                <Link to="/gdpr-compliance" className="text-gray-400 hover:text-white transition-colors">
-                  GDPR Compliance
-                </Link>
-              </li>
+              <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Home Services (HVAC, Plumbing)</a></li>
+              <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Real Estate Agencies</a></li>
+              <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Law Firms</a></li>
+              <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Accounting & CPA Firms</a></li>
+              <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Healthcare Practices</a></li>
+              <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Automotive Services</a></li>
+              <li><a href="#use-cases" className="text-gray-400 hover:text-white transition-colors">Landscaping Companies</a></li>
             </ul>
           </div>
           
@@ -129,7 +116,13 @@ const Footer: React.FC = () => {
         </div>
         
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
-          <p>&copy; 2025 SummitVoiceAI. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} SummitVoiceAI. All Rights Reserved.</p>
+          <div className="mt-4 text-xs space-x-4">
+            <Link to="/terms-of-service" className="text-gray-500 hover:text-white transition-colors">Terms of Service</Link>
+            <Link to="/privacy-policy" className="text-gray-500 hover:text-white transition-colors">Privacy Policy</Link>
+            <Link to="/cookie-policy" className="text-gray-500 hover:text-white transition-colors">Cookie Policy</Link>
+            <Link to="/gdpr-compliance" className="text-gray-500 hover:text-white transition-colors">GDPR Compliance</Link>
+          </div>
         </div>
       </div>
     </footer>

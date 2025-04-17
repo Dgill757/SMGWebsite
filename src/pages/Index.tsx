@@ -12,17 +12,30 @@ import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 
 const Index = () => {
+  // Set page title and meta description for this specific page
+  React.useEffect(() => {
+    document.title = "Summit Voice AI - #1 Voice AI Solution for Service Businesses";
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', 'Transform your service business with Summit Voice AI\'s cutting-edge AI solutions. Featuring AI receptionists, automated scheduling, and seamless CRM integration.');
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Navbar />
-      <HeroSection />
-      <WebWidget />
-      <BenefitsSection />
-      <HowItWorks />
-      <UseCases />
-      <TestimonialsSection />
-      <PricingSection />
-      <FAQSection />
+      <main>
+        <HeroSection />
+        <WebWidget />
+        <BenefitsSection />
+        <HowItWorks />
+        <UseCases />
+        <TestimonialsSection />
+        <PricingSection />
+        <FAQSection />
+      </main>
       <Footer />
     </div>
   );
