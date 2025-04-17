@@ -5,10 +5,8 @@ const WebWidget: React.FC = () => {
   return (
     <section id="web-widget" className="py-8 md:py-12 flex justify-center items-center w-full bg-white/50 backdrop-blur-sm">
       <div className="max-w-xl w-full flex justify-center">
-        <div 
-          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-          className="w-full max-w-md mx-auto min-h-[300px] flex items-center justify-center"
-        />
+        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
       </div>
     </section>
   );
