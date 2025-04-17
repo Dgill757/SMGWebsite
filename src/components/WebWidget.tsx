@@ -1,6 +1,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { toast } from "@/components/ui/sonner";
+import { toast } from "sonner";
 
 const WebWidget: React.FC = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
