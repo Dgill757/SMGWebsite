@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -7,7 +6,6 @@ const Footer: React.FC = () => {
   const navigate = useNavigate();
 
   const handlePolicyClick = (path: string) => {
-    // Navigate to the policy page and scroll to top
     navigate(path);
     window.scrollTo(0, 0);
   };
@@ -16,12 +14,13 @@ const Footer: React.FC = () => {
     <footer id="contact" className="bg-voiceai-dark text-white">
       <div className="container mx-auto py-16 px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
-          {/* Company Info */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-                  <path d="M12 22L12 2M12 2L2 12M12 2L22 12" stroke="white" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round"/>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                  <line x1="12" x2="12" y1="19" y2="22"/>
                 </svg>
               </div>
               <span className="font-bold text-xl text-gradient">SummitVoiceAI</span>
@@ -45,7 +44,6 @@ const Footer: React.FC = () => {
             </div>
           </div>
           
-          {/* Quick Links */}
           <div>
             <h3 className="font-bold text-lg mb-4">Quick Links</h3>
             <ul className="space-y-2">
@@ -58,7 +56,6 @@ const Footer: React.FC = () => {
             </ul>
           </div>
           
-          {/* Industries We Serve */}
           <div>
             <h3 className="font-bold text-lg mb-4">Industries We Serve</h3>
             <ul className="space-y-2">
@@ -72,7 +69,6 @@ const Footer: React.FC = () => {
             </ul>
           </div>
           
-          {/* Contact */}
           <div id="contact">
             <h3 className="font-bold text-lg mb-4">Contact Us</h3>
             <div className="space-y-4">
@@ -98,7 +94,6 @@ const Footer: React.FC = () => {
                 </a>
               </div>
               
-              {/* Contact Form */}
               <form className="mt-4 space-y-3">
                 <input
                   type="email"
