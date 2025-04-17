@@ -10,7 +10,6 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import CookiePolicy from "./pages/CookiePolicy";
 import GDPRCompliance from "./pages/GDPRCompliance";
-import WebWidget from "./components/WebWidget";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
@@ -34,7 +33,6 @@ const App = () => {
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
-            <WebWidget />
             <Footer />
           </div>
         </BrowserRouter>
