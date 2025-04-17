@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import TermsOfService from "./pages/TermsOfService";
@@ -15,33 +14,7 @@ import GDPRCompliance from "./pages/GDPRCompliance";
 const queryClient = new QueryClient();
 
 const App = () => {
-  useEffect(() => {
-    // Check if script already exists to avoid duplicate additions
-    const existingScript = document.getElementById('summit-voice-widget-script');
-    
-    if (!existingScript) {
-      const script = document.createElement('script');
-      script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
-      script.async = true;
-      script.id = 'summit-voice-widget-script';
-      
-      script.onload = () => {
-        if (window.hasOwnProperty('SummitVoiceWidget')) {
-          // @ts-ignore - The widget might not be typed
-          if (typeof window.SummitVoiceWidget?.init === 'function') {
-            // @ts-ignore
-            window.SummitVoiceWidget.init();
-            console.log('Summit Voice Widget initialized');
-          }
-        }
-      };
-      
-      document.head.appendChild(script);
-    }
-
-    // No cleanup function that tries to remove the script
-    // This avoids the "Node.removeChild" error
-  }, []);
+  // Removed the script loading logic from here since it's now handled in WebWidget component
 
   return (
     <QueryClientProvider client={queryClient}>
