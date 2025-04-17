@@ -1,7 +1,7 @@
+
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import WebWidget from '@/components/WebWidget';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
@@ -36,10 +36,8 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <Navbar />
       <main>
         <HeroSection />
-        <WebWidget />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
@@ -47,7 +45,6 @@ const Index = () => {
         <PricingSection />
         <FAQSection />
       </main>
-      <Footer />
     </div>
   );
 };
