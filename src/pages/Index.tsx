@@ -32,19 +32,6 @@ const Index = () => {
         }
       }, 500);
     }
-
-    // Load the voice AI widget script
-    const script = document.createElement('script');
-    script.src = "https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js";
-    script.async = true;
-    document.body.appendChild(script);
-
-    // Clean up the script when the component unmounts
-    return () => {
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
-    };
   }, [location.pathname, location.hash]);
 
   return (
@@ -52,9 +39,10 @@ const Index = () => {
       <main>
         <HeroSection />
         
-        {/* Voice AI Widget container */}
+        {/* Voice AI Widget - direct embed as requested */}
         <div className="py-8">
           <div className="container mx-auto">
+            <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
             <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
           </div>
         </div>
