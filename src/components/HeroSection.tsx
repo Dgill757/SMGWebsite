@@ -14,10 +14,16 @@ const HeroSection: React.FC = () => {
     event.preventDefault();
     const widgetElement = document.getElementById('web-widget');
     if (widgetElement) {
-      widgetElement.scrollIntoView({ behavior: 'smooth' });
+      widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      
+      // Toggle animation state
+      setIsPlaying(true);
+      
+      // After some time, reset the animation state
+      setTimeout(() => {
+        setIsPlaying(false);
+      }, 5000);
     }
-    // Also toggle the play state to show the animation
-    setIsPlaying(!isPlaying);
   };
 
   return (
