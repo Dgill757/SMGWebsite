@@ -1,12 +1,15 @@
+
 import React, { useState } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
 import FeatureItem from './hero/FeatureItem';
 import WebsiteMockup from './hero/WebsiteMockup';
 import HeroActions from './hero/HeroActions';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const HeroSection: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
+  const isMobile = useIsMobile();
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -53,7 +56,7 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <section style={{ textAlign: 'center', padding: '150px 0' }}>
+      <section id="web-widget" style={{ textAlign: 'center', padding: isMobile ? '80px 0' : '150px 0', position: 'relative', zIndex: 50 }}>
         <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
         <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
       </section>
