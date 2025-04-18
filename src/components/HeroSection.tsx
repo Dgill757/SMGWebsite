@@ -26,7 +26,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 pb-[100px]">
+    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 pb-[50px]">
       {/* Background Elements */}
       <div className="absolute inset-0 neural-bg opacity-40 z-0"></div>
       <div className="absolute -top-40 -right-40 w-80 h-80 bg-voiceai-primary/20 rounded-full filter blur-3xl"></div>
@@ -193,7 +193,7 @@ const HeroSection: React.FC = () => {
       {/* Custom Code Embed Block */}
       <section className="relative z-10 text-center">
         <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" style={{display: 'inline-block', margin: '0 auto 50px auto'}} />
       </section>
     </div>
   );

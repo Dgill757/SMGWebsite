@@ -53,7 +53,7 @@ const BenefitsSection: React.FC = () => {
     color: "from-yellow-500 to-amber-400"
   }];
   
-  return <section id="features" className="section-padding relative">
+  return <section id="features" className="pt-0 pb-20 px-4 md:px-8 lg:px-16 relative">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
       
