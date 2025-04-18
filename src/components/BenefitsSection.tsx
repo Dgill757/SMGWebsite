@@ -59,11 +59,6 @@ const BenefitsSection: React.FC = () => {
       
       {/* Content */}
       <div className="container mx-auto relative z-10">
-        <section style={{textAlign: 'center', padding: '150px 0'}}>
-          <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-          <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
-        </section>
-
         <div className="text-center mb-16">
           <h2 className="heading-lg">
             Stop Losing <span className="text-gradient">Thousands of Dollar$</span> in Missed Opportunities
