@@ -62,8 +62,8 @@ const HeroSection: React.FC = () => {
       </div>
 
       <section id="web-widget" className="py-20 md:py-32 text-center relative z-50">
-        <div className="widget-container mx-auto" style={{ width: '250px', height: '250px' }}>
-          <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+        <div className="widget-container mx-auto" style={{ width: '350px', height: '350px', maxWidth: '100%' }}>
+          {/* Using the original widget embed approach */}
           <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
         </div>
       </section>
