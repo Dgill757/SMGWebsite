@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
@@ -16,7 +17,7 @@ const HeroSection: React.FC = () => {
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
-    const widgetElement = document.getElementById('web-widget');
+    const widgetElement = document.querySelector('[data-widget-key]');
     if (widgetElement) {
       widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setIsPlaying(true);
@@ -27,7 +28,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20">
+    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 pb-[50px]">
       <BackgroundElements />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -53,17 +54,16 @@ const HeroSection: React.FC = () => {
               <FeatureItem Icon={Calendar} text="Auto Scheduling" colorClass="bg-voiceai-secondary/10" />
               <FeatureItem Icon={CreditCard} text="Billing & Invoicing" colorClass="bg-voiceai-accent/10" />
             </div>
+
+            <div className="text-center">
+              <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+              <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" style={{ display: 'inline-block', margin: '0 auto 50px auto' }} />
+            </div>
           </div>
           
           <WebsiteMockup />
         </div>
       </div>
-
-      <section id="web-widget" className="py-20 md:py-32 text-center">
-        <div className="widget-container mx-auto" style={{ width: '350px', height: '350px', maxWidth: '100%' }}>
-          <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
-        </div>
-      </section>
     </div>
   );
 };
