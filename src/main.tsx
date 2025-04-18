@@ -10,7 +10,7 @@ const loadWidgetScript = () => {
     const script = document.createElement('script');
     script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
     script.async = true;
-    document.head.appendChild(script);
+    document.body.appendChild(script);
   }
 };
 
