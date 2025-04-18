@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Clock, DollarSign, Brain, PhoneCall, Calendar, UserCheck, BarChart, BotIcon, Zap } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -57,12 +56,6 @@ const BenefitsSection: React.FC = () => {
   return <section id="features" className="section-padding relative">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
-      
-      {/* Custom Code Embed Block */}
-      <section style={{ textAlign: 'center', padding: '100px 0' }}>
-        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
-      </section>
       
       {/* Content */}
       <div className="container mx-auto relative z-10">
