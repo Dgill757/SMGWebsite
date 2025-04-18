@@ -102,16 +102,34 @@
     </script>
 
     <style>
-      /* Voice AI widget hover effect */
+      /* Clean, smooth shimmer + glow for Voice AI widget */
       [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] {
-        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        will-change: transform, box-shadow;
         cursor: pointer;
       }
       [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]:hover {
-        transform: scale(1.15) rotate(-2deg);
-        box-shadow: 
-          0 12px 40px rgba(0, 123, 255, 0.4),
-          0 4px 15px rgba(0, 0, 0, 0.1);
+        transform: scale(1.12);
+        box-shadow:
+          0 0 20px rgba(0,123,255,0.4),
+          0 0 40px rgba(0,123,255,0.25),
+          0 0 60px rgba(0,123,255,0.15);
+      }
+
+      @keyframes widget-shimmer {
+        0%,100% {
+          box-shadow:
+            0 0 10px rgba(0,123,255,0.2),
+            0 0 20px rgba(0,123,255,0.1);
+        }
+        50% {
+          box-shadow:
+            0 0 20px rgba(0,123,255,0.4),
+            0 0 40px rgba(0,123,255,0.2);
+        }
+      }
+      [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] {
+        animation: widget-shimmer 4s ease-in-out infinite;
       }
     </style>
   </head>
