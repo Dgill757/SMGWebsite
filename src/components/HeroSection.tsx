@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import VoiceWaveAnimation from './VoiceWaveAnimation';
 import { Play, PhoneCall, Calendar, CreditCard } from 'lucide-react';
@@ -27,7 +26,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20">
+    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 pb-[100px]">
       {/* Background Elements */}
       <div className="absolute inset-0 neural-bg opacity-40 z-0"></div>
       <div className="absolute -top-40 -right-40 w-80 h-80 bg-voiceai-primary/20 rounded-full filter blur-3xl"></div>
