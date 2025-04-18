@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
     <!-- Google Tag Manager -->
     <script>
       (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
@@ -130,6 +129,12 @@
         animation: widget-shimmer 4s ease-in-out infinite;
       }
     </style>
+    <script>
+      // Automatically hide Lovable badge
+      if (window.location.search.indexOf('forceHideBadge=true') === -1) {
+        window.history.replaceState({}, document.title, window.location.pathname + '?forceHideBadge=true' + window.location.hash);
+      }
+    </script>
   </head>
 
   <body>
