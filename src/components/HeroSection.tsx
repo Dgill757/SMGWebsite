@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
@@ -22,7 +21,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 pb-[50px] hero-section">
+    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 hero-section" style={{ position: 'relative', paddingBottom: '150px' }}>
       <BackgroundElements />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -54,32 +53,23 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <style>
-        {`
-          .hero-section { position: relative; }
-          .hero-section [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] {
-            position: absolute;
-            bottom: -110px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 220px;
-            height: 220px;
-            background: transparent !important;
-            padding: 0 !important;
-            border: none !important;
-            box-shadow: 0 0 20px rgba(0,123,255,0.3);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            cursor: pointer;
-          }
-          .hero-section [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]:hover {
-            transform: translateX(-50%) scale(1.1);
-            box-shadow: 0 0 30px rgba(0,123,255,0.5);
-          }
-        `}
-      </style>
-
       <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-      <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+      <div 
+        data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+        style={{
+          position: 'absolute',
+          bottom: '-110px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          width: '220px',
+          height: '220px',
+          background: 'transparent',
+          padding: '0',
+          border: 'none',
+          cursor: 'pointer',
+          transition: 'transform .3s ease, box-shadow .3s ease'
+        }}
+      ></div>
     </div>
   );
 };
