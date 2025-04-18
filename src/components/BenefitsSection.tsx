@@ -60,8 +60,10 @@ const BenefitsSection: React.FC = () => {
       {/* Custom Code Embed Block */}
       <div dangerouslySetInnerHTML={{
         __html: `
-          <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-          <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+          <section style="text-align:center; padding:200px 0;">
+            <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+            <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+          </section>
         `
       }} />
       
