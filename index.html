@@ -102,31 +102,29 @@
     </script>
 
     <style>
-      /* Clean, smooth shimmer + glow for Voice AI widget */
+      /* Strip any parent background/padding so only the circle shows */
       [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] {
+        background: transparent !important;
+        padding: 0 !important;
+        margin: 0 auto !important;
+        border: none !important;
+        width: 220px;
+        height: 220px;
         transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        will-change: transform, box-shadow;
+        transform-origin: center;
         cursor: pointer;
       }
+      /* Smooth hover glow */
       [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]:hover {
-        transform: scale(1.12);
-        box-shadow:
-          0 0 20px rgba(0,123,255,0.4),
-          0 0 40px rgba(0,123,255,0.25),
-          0 0 60px rgba(0,123,255,0.15);
+        transform: scale(1.15);
+        box-shadow: 
+          0 0 20px rgba(0, 123, 255, 0.5),
+          0 0 40px rgba(0, 123, 255, 0.3);
       }
-
+      /* Subtle pulsing shimmer */
       @keyframes widget-shimmer {
-        0%,100% {
-          box-shadow:
-            0 0 10px rgba(0,123,255,0.2),
-            0 0 20px rgba(0,123,255,0.1);
-        }
-        50% {
-          box-shadow:
-            0 0 20px rgba(0,123,255,0.4),
-            0 0 40px rgba(0,123,255,0.2);
-        }
+        0%,100% { box-shadow: 0 0 15px rgba(0,123,255,0.2); }
+        50%    { box-shadow: 0 0 25px rgba(0,123,255,0.4); }
       }
       [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] {
         animation: widget-shimmer 4s ease-in-out infinite;
