@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
@@ -11,7 +10,6 @@ const HeroSection: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const isMobile = useIsMobile();
 
-  // Force scroll to top when component mounts
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -61,9 +59,8 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <section id="web-widget" className="py-20 md:py-32 text-center relative z-50">
+      <section id="web-widget" className="py-20 md:py-32 text-center">
         <div className="widget-container mx-auto" style={{ width: '350px', height: '350px', maxWidth: '100%' }}>
-          {/* Using the original widget embed approach */}
           <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
         </div>
       </section>
