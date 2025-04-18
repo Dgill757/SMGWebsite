@@ -54,11 +54,12 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <div 
-        data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" 
-        className="fixed bottom-4 right-4 z-50"
-        style={{zIndex: 9999}}
-      ></div>
+      <section style={{textAlign: 'center', padding: '100px 0 50px'}}>
+        <div 
+          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" 
+          style={{width: '220px', height: '220px', margin: '0 auto'}}
+        ></div>
+      </section>
     </div>
   );
 };
