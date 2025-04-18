@@ -21,7 +21,7 @@ const HeroSection: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 hero-section" style={{ position: 'relative', paddingBottom: '150px' }}>
+    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20">
       <BackgroundElements />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
@@ -53,23 +53,10 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-      <div 
-        data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-        style={{
-          position: 'absolute',
-          bottom: '-110px',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          width: '220px',
-          height: '220px',
-          background: 'transparent',
-          padding: '0',
-          border: 'none',
-          cursor: 'pointer',
-          transition: 'transform .3s ease, box-shadow .3s ease'
-        }}
-      ></div>
+      <section style={{ textAlign: 'center', padding: '150px 0' }}>
+        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+      </section>
     </div>
   );
 };
