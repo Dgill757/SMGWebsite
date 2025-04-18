@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
 import FeatureItem from './hero/FeatureItem';
@@ -10,6 +10,11 @@ import { useIsMobile } from '@/hooks/use-mobile';
 const HeroSection: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
   const isMobile = useIsMobile();
+
+  // Force scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -56,9 +61,11 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <section id="web-widget" style={{ textAlign: 'center', padding: isMobile ? '80px 0' : '150px 0', position: 'relative', zIndex: 50 }}>
-        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+      <section id="web-widget" className="py-20 md:py-32 text-center relative z-50">
+        <div className="widget-container mx-auto" style={{ width: '250px', height: '250px' }}>
+          <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+          <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+        </div>
       </section>
     </div>
   );
