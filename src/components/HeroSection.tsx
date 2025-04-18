@@ -54,12 +54,20 @@ const HeroSection: React.FC = () => {
         </div>
       </div>
 
-      <section style={{textAlign: 'center', padding: '100px 0 50px'}}>
-        <div 
-          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" 
-          style={{width: '220px', height: '220px', margin: '0 auto'}}
-        ></div>
-      </section>
+      <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+      <div 
+        data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+        style={{
+          width: '220px',
+          height: '220px',
+          margin: '100px auto 50px auto',
+          padding: 0,
+          background: 'transparent',
+          border: 'none',
+          transition: 'transform 0.3s ease, box-shadow 0.3s ease',
+          cursor: 'pointer'
+        }}
+      ></div>
     </div>
   );
 };
