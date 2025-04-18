@@ -59,6 +59,12 @@ const BenefitsSection: React.FC = () => {
       
       {/* Content */}
       <div className="container mx-auto relative z-10">
+        {/* Custom Code Embed */}
+        <div className="mb-16 text-center">
+          <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+          <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
+        </div>
+
         <div className="text-center mb-16">
           <h2 className="heading-lg">
             Stop Losing <span className="text-gradient">Thousands of Dollar$</span> in Missed Opportunities
