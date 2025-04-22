@@ -11,25 +11,25 @@ import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 
-const WebWidgetBlock = () => (
+// Remove previous WebWidgetBlock
+
+const CustomWidgetEmbed = () => (
   <div
-    className="flex justify-center items-center"
-    style={{ marginTop: 100, marginBottom: 100 }}
+    style={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 100,
+      marginBottom: 100,
+    }}
   >
     <div
-      data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-      style={{
-        width: 220,
-        height: 220,
-        minWidth: 220,
-        minHeight: 220,
-        maxWidth: 220,
-        maxHeight: 220,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
+      style={{ textAlign: 'center' }}
+      dangerouslySetInnerHTML={{
+        __html: `<script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+<div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>`,
       }}
-    ></div>
+    />
   </div>
 );
 
@@ -63,7 +63,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
-        <WebWidgetBlock />
+        <CustomWidgetEmbed />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
@@ -76,3 +76,4 @@ const Index = () => {
 };
 
 export default Index;
+
