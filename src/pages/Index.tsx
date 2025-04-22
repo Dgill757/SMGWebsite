@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -41,14 +40,6 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
-        <WebWidget
-          widgetKey="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-          size={220}
-          marginTop={100}
-          marginBottom={100}
-          align="center"
-          welcomeText="Welcome to SummitVoiceAI"  // Updated welcome text
-        />
         <HeroSection />
         <BenefitsSection />
         <HowItWorks />

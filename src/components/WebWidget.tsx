@@ -7,7 +7,6 @@ interface WebWidgetProps {
   marginTop?: number;
   marginBottom?: number;
   align?: "center" | "left" | "right";
-  welcomeText?: string;  // Add a new optional prop for welcome text
 }
 
 const WebWidget: React.FC<WebWidgetProps> = ({
@@ -16,7 +15,6 @@ const WebWidget: React.FC<WebWidgetProps> = ({
   marginTop = 100,
   marginBottom = 100,
   align = "center",
-  welcomeText = "Welcome to Our Service How can we help you today?",  // Default text with fallback
 }) => {
   const widgetRef = useRef<HTMLDivElement>(null);
 
@@ -47,7 +45,6 @@ const WebWidget: React.FC<WebWidgetProps> = ({
       <div
         ref={widgetRef}
         data-widget-key={widgetKey}
-        data-welcome-text={welcomeText}  // Add welcome text as a data attribute
         style={{
           width: size,
           height: size,
