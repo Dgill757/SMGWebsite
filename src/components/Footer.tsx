@@ -1,23 +1,30 @@
+
 import React, { useState } from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
+
 const Footer: React.FC = () => {
   const navigate = useNavigate();
-  const {
-    toast
-  } = useToast();
+  const { toast } = useToast();
+
+  // New fields for Name and Phone
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const webhookUrl = '';
+  // User's Zapier webhook URL
+  const webhookUrl = 'https://hooks.zapier.com/hooks/catch/15206693/2xqzmmq/';
+
   const handlePolicyClick = (path: string) => {
     navigate(path);
     window.scrollTo(0, 0);
   };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !message) {
+    if (!name || !email || !phone || !message) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
@@ -35,14 +42,16 @@ const Footer: React.FC = () => {
     }
     setIsLoading(true);
     try {
-      const response = await fetch(webhookUrl, {
+      await fetch(webhookUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
         },
         mode: "no-cors",
         body: JSON.stringify({
+          name,
           email,
+          phone,
           message,
           timestamp: new Date().toISOString(),
           source: window.location.origin
@@ -52,7 +61,9 @@ const Footer: React.FC = () => {
         title: "Message Sent",
         description: "Thank you for your message. We'll get back to you soon!"
       });
+      setName('');
       setEmail('');
+      setPhone('');
       setMessage('');
     } catch (error) {
       console.error("Error sending message:", error);
@@ -65,6 +76,7 @@ const Footer: React.FC = () => {
       setIsLoading(false);
     }
   };
+
   return <footer id="contact" className="bg-voiceai-dark text-white">
       <div className="container mx-auto py-16 px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
@@ -145,11 +157,48 @@ const Footer: React.FC = () => {
                 </svg>
                 <a href="https://summitaivoice.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">summitmktggroup.com</a>
               </div>
-              
+
               <form onSubmit={handleSubmit} className="mt-4 space-y-3">
-                <input type="email" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary" disabled={isLoading} />
-                <textarea placeholder="Your message" value={message} onChange={e => setMessage(e.target.value)} rows={3} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary" disabled={isLoading}></textarea>
-                <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">
+                <input
+                  type="text"
+                  placeholder="Your name"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
+                  disabled={isLoading}
+                  autoComplete="name"
+                />
+                <input
+                  type="email"
+                  placeholder="Your email address"
+                  value={email}
+                  onChange={e => setEmail(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
+                  disabled={isLoading}
+                  autoComplete="email"
+                />
+                <input
+                  type="tel"
+                  placeholder="Your phone number"
+                  value={phone}
+                  onChange={e => setPhone(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
+                  disabled={isLoading}
+                  autoComplete="tel"
+                />
+                <textarea
+                  placeholder="Your message"
+                  value={message}
+                  onChange={e => setMessage(e.target.value)}
+                  rows={3}
+                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
+                  disabled={isLoading}
+                ></textarea>
+                <button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+                >
                   {isLoading ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
@@ -177,4 +226,5 @@ const Footer: React.FC = () => {
       </div>
     </footer>;
 };
+
 export default Footer;
