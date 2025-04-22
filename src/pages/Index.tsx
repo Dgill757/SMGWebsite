@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import BenefitsSection from '@/components/BenefitsSection';
@@ -10,9 +10,11 @@ import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
+import CalendarDialog from "@/components/CalendarDialog";
 
 const Index = () => {
   const location = useLocation();
+  const [calendarOpen, setCalendarOpen] = useState(false);
   
   useEffect(() => {
     document.title = "Summit Voice AI - #1 Voice AI Solution for Service Businesses";
@@ -37,13 +39,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
-        <HeroSection />
+        {/* Pass calendar modal controls to Hero and Pricing */}
+        <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
         <TestimonialsSection />
-        <PricingSection />
+        <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
         <FAQSection />
+        <CalendarDialog open={calendarOpen} setOpen={setCalendarOpen} />
       </main>
     </div>
   );

@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
@@ -5,7 +6,12 @@ import FeatureItem from './hero/FeatureItem';
 import WebsiteMockup from './hero/WebsiteMockup';
 import HeroActions from './hero/HeroActions';
 
-const HeroSection: React.FC = () => {
+interface HeroSectionProps {
+  calendarOpen: boolean;
+  setCalendarOpen: (open: boolean) => void;
+}
+
+const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen }) => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const scrollToWidget = (event: React.MouseEvent) => {
@@ -40,7 +46,12 @@ const HeroSection: React.FC = () => {
               </p>
             </div>
             
-            <HeroActions isPlaying={isPlaying} onScrollToWidget={scrollToWidget} />
+            <HeroActions
+              isPlaying={isPlaying}
+              onScrollToWidget={scrollToWidget}
+              calendarOpen={calendarOpen}
+              setCalendarOpen={setCalendarOpen}
+            />
             
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10">
               <FeatureItem Icon={PhoneCall} text="Never Miss a Call" colorClass="bg-voiceai-primary/10" />
@@ -66,3 +77,4 @@ const HeroSection: React.FC = () => {
 };
 
 export default HeroSection;
+

@@ -1,9 +1,13 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Check, Flame, Calendar, Building } from 'lucide-react';
 
-const PricingSection: React.FC = () => {
-  const [isAnnual, setIsAnnual] = useState(true);
+interface PricingSectionProps {
+  onOpenCalendar: () => void;
+}
+
+const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
+  const [isAnnual, setIsAnnual] = React.useState(true);
   
   const tiers = [{
     name: "Starter",
@@ -126,7 +130,11 @@ const PricingSection: React.FC = () => {
                   )}
                 </div>
                 
-                <button className={`w-full py-3 px-4 rounded-lg font-medium mb-8 ${tier.popular ? 'bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white' : tier.name === "Enterprise" ? 'bg-white text-voiceai-primary border border-voiceai-primary/20' : 'bg-voiceai-primary/10 text-voiceai-primary'}`}>
+                <button
+                  className={`w-full py-3 px-4 rounded-lg font-medium mb-8 ${tier.popular ? 'bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white' : tier.name === "Enterprise" ? 'bg-white text-voiceai-primary border border-voiceai-primary/20' : 'bg-voiceai-primary/10 text-voiceai-primary'}`}
+                  onClick={onOpenCalendar}
+                  type="button"
+                >
                   {tier.cta}
                 </button>
                 
