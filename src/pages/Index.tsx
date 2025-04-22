@@ -11,9 +11,9 @@ import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 
-// Remove previous WebWidgetBlock
+// Remove all previous Web Widget or Custom Code widget blocks
 
-const CustomWidgetEmbed = () => (
+const CustomHTMLWidget = () => (
   <div
     style={{
       display: 'flex',
@@ -21,6 +21,7 @@ const CustomWidgetEmbed = () => (
       alignItems: 'center',
       marginTop: 100,
       marginBottom: 100,
+      width: '100%'
     }}
   >
     <div
@@ -63,7 +64,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
-        <CustomWidgetEmbed />
+        <CustomHTMLWidget />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
