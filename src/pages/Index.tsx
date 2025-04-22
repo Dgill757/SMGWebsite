@@ -10,8 +10,7 @@ import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
-
-// Removed CustomHTMLWidget and all React-injected widget blocks
+import WebWidget from '@/components/WebWidget';
 
 const Index = () => {
   const location = useLocation();
@@ -43,7 +42,13 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
-        {/* Widget now statically embedded in index.html */}
+        <WebWidget
+          widgetKey="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+          size={220}
+          marginTop={100}
+          marginBottom={100}
+          align="center"
+        />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
