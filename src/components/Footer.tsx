@@ -14,8 +14,8 @@ const Footer: React.FC = () => {
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // User's Zapier webhook URL
-  const webhookUrl = 'https://hooks.zapier.com/hooks/catch/15206693/2xqzmmq/';
+  // Update webhook to Make.com integration
+  const webhookUrl = 'https://hook.us1.make.com/z4gfd71t668ji99fhqbiwazr82986xb7';
 
   const handlePolicyClick = (path: string) => {
     navigate(path);
@@ -35,7 +35,7 @@ const Footer: React.FC = () => {
     if (!webhookUrl) {
       toast({
         title: "Configuration Required",
-        description: "Please set up your Zapier webhook URL first",
+        description: "Please set up your Make.com webhook URL first",
         variant: "destructive"
       });
       return;
@@ -228,3 +228,4 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
+
