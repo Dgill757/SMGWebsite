@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -10,6 +9,29 @@ import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
+
+const WebWidgetBlock = () => (
+  <div
+    className="flex justify-center items-center"
+    style={{ marginTop: 150, marginBottom: 150 }}
+  >
+    {/* Lovable "Web Widget" Block — Insert this natively in the builder as instructed, code placeholder below */}
+    <div
+      data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+      style={{
+        width: 220,
+        height: 220,
+        minWidth: 220,
+        minHeight: 220,
+        maxWidth: 220,
+        maxHeight: 220,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    ></div>
+  </div>
+);
 
 const Index = () => {
   const location = useLocation();
@@ -41,6 +63,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
+        <WebWidgetBlock />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
