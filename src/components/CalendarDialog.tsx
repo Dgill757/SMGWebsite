@@ -33,7 +33,7 @@ const CalendarDialog: React.FC<CalendarDialogProps> = ({ open, setOpen, trigger 
             style={{ width: "100%", border: "none", overflow: "hidden" }}
             scrolling="no"
             id="8QRwv6sOWLlYQYaPKPUv_1745349963878"
-            height={520}
+            height={700}
             title="Schedule a Call"
           ></iframe>
           <script src="https://link.dlgsolution.com/js/form_embed.js" type="text/javascript"></script>
@@ -53,4 +53,3 @@ const CalendarDialog: React.FC<CalendarDialogProps> = ({ open, setOpen, trigger 
 );
 
 export default CalendarDialog;
-
