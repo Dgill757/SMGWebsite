@@ -3,7 +3,10 @@ import { Clock, DollarSign, Brain, PhoneCall, Calendar, UserCheck, BarChart, Bot
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ROICalculator from './ROICalculator';
 
-const benefits = [{
+const BenefitsSection: React.FC = () => {
+  const [isROIDialogOpen, setIsROIDialogOpen] = useState(false);
+  
+  const benefits = [{
     icon: <Clock className="h-6 w-6" />,
     title: "24/7 Availability",
     description: "Never miss a call again. Our AI assistant works around the clock, capturing leads while you sleep.",
@@ -49,32 +52,13 @@ const benefits = [{
     description: "Be up and running in minutes, not weeks. No complicated setup or integration required.",
     color: "from-yellow-500 to-amber-400"
   }];
-
-const BenefitsSection: React.FC = () => {
-  const [isROIDialogOpen, setIsROIDialogOpen] = useState(false);
-
-  return (
-    <section id="features" className="pt-0 pb-20 px-4 md:px-8 lg:px-16 relative">
+  
+  return <section id="features" className="pt-0 pb-20 px-4 md:px-8 lg:px-16 relative">
       {/* Background gradient */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
       
       {/* Content */}
       <div className="container mx-auto relative z-10">
-        {/* ↓↓↓ New widget wrapper ↓↓↓ */}
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '60px',
-            marginBottom: '60px',
-          }}
-        >
-          <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-          <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>
-        </div>
-        {/* ↑↑↑ End widget wrapper ↑↑↑ */}
-
         <div className="text-center mb-16">
           <h2 className="heading-lg">
             Stop Losing <span className="text-gradient">Thousands of Dollar$</span> in Missed Opportunities
@@ -117,8 +101,17 @@ const BenefitsSection: React.FC = () => {
           </div>
         </div>
       </div>
-    </section>
-  );
+      
+      {/* ROI Calculator Dialog */}
+      <Dialog open={isROIDialogOpen} onOpenChange={setIsROIDialogOpen}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-2xl font-bold mb-4">Missed Call ROI Calculator</DialogTitle>
+          </DialogHeader>
+          <ROICalculator />
+        </DialogContent>
+      </Dialog>
+    </section>;
 };
 
 export default BenefitsSection;

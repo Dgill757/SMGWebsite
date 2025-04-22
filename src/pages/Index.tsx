@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -9,22 +10,18 @@ import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
-import WebWidget from '@/components/WebWidget';
 
 const Index = () => {
   const location = useLocation();
   
   useEffect(() => {
-    // Force scroll to top on component mount
-    window.scrollTo(0, 0);
-    
     document.title = "Summit Voice AI - #1 Voice AI Solution for Service Businesses";
     const metaDescription = document.querySelector('meta[name="description"]');
     if (metaDescription) {
       metaDescription.setAttribute('content', 'Transform your service business with Summit Voice AI\'s cutting-edge AI solutions. Featuring AI receptionists, automated scheduling, and seamless CRM integration.');
     }
     
-    // Handle hash links after ensuring we're at the top
+    window.scrollTo(0, 0);
     if (location.hash) {
       setTimeout(() => {
         const element = document.getElementById(location.hash.slice(1));

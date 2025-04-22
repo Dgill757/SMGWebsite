@@ -1,33 +1,30 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
 import FeatureItem from './hero/FeatureItem';
 import WebsiteMockup from './hero/WebsiteMockup';
 import HeroActions from './hero/HeroActions';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 const HeroSection: React.FC = () => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-
-    // Removed custom widget script loader
-  }, []);
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
-    // Removed JS for scrolling to widget (handled by default block positioning now)
-    setIsPlaying(true);
-    setTimeout(() => {
-      setIsPlaying(false);
-    }, 5000);
+    const widgetElement = document.getElementById('web-widget');
+    if (widgetElement) {
+      widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setIsPlaying(true);
+      setTimeout(() => {
+        setIsPlaying(false);
+      }, 5000);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-20 pb-[50px]">
       <BackgroundElements />
+      
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-10">
           <div className="w-full lg:w-1/2 space-y-8">
@@ -43,17 +40,25 @@ const HeroSection: React.FC = () => {
                 Stop losing leads to unanswered calls and static forms. Our Voice AI handles calls, qualifies leads, books appointments, and follows up—all while you sleep.
               </p>
             </div>
+            
             <HeroActions isPlaying={isPlaying} onScrollToWidget={scrollToWidget} />
+            
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-10">
               <FeatureItem Icon={PhoneCall} text="Never Miss a Call" colorClass="bg-voiceai-primary/10" />
               <FeatureItem Icon={Calendar} text="Auto Scheduling" colorClass="bg-voiceai-secondary/10" />
               <FeatureItem Icon={CreditCard} text="Billing & Invoicing" colorClass="bg-voiceai-accent/10" />
             </div>
           </div>
+          
           <WebsiteMockup />
         </div>
       </div>
-      {/* Removed custom "Voice AI Widget" embed here */}
+
+      {/* Custom Code Embed Block */}
+      <section className="relative z-10 text-center">
+        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" style={{display: 'inline-block', margin: '0 auto 50px auto'}} />
+      </section>
     </div>
   );
 };
