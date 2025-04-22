@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -13,9 +14,8 @@ import { useLocation } from 'react-router-dom';
 const WebWidgetBlock = () => (
   <div
     className="flex justify-center items-center"
-    style={{ marginTop: 150, marginBottom: 150 }}
+    style={{ marginTop: 100, marginBottom: 100 }}
   >
-    {/* Lovable "Web Widget" Block — Insert this natively in the builder as instructed, code placeholder below */}
     <div
       data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
       style={{
