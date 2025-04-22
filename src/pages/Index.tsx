@@ -11,28 +11,7 @@ import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 
-// Remove all previous Web Widget or Custom Code widget blocks
-
-const CustomHTMLWidget = () => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      marginTop: 100,
-      marginBottom: 100,
-      width: '100%'
-    }}
-  >
-    <div
-      style={{ textAlign: 'center' }}
-      dangerouslySetInnerHTML={{
-        __html: `<script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-<div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>`,
-      }}
-    />
-  </div>
-);
+// Removed CustomHTMLWidget and all React-injected widget blocks
 
 const Index = () => {
   const location = useLocation();
@@ -64,7 +43,7 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
-        <CustomHTMLWidget />
+        {/* Widget now statically embedded in index.html */}
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
@@ -77,4 +56,3 @@ const Index = () => {
 };
 
 export default Index;
-
