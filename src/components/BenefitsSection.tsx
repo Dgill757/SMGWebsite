@@ -111,6 +111,30 @@ const BenefitsSection: React.FC = () => {
           <ROICalculator />
         </DialogContent>
       </Dialog>
+      
+      {/* Responsive Widget Embed */}
+      <div className="widget-container flex justify-center my-16 sm:my-24">
+        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
+        <div
+          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+          style={{ width: '220px', height: '220px' }}
+        />
+      </div>
+      {/* Responsive widget sizing override */}
+      <style>
+        {`
+          .widget-container > [data-widget-key] {
+            width: 220px;
+            height: 220px;
+          }
+          @media (max-width: 640px) {
+            .widget-container > [data-widget-key] {
+              width: 160px !important;
+              height: 160px !important;
+            }
+          }
+        `}
+      </style>
     </section>;
 };
 
