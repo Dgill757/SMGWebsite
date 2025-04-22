@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
@@ -57,7 +56,10 @@ const HeroSection: React.FC = () => {
       {/* Custom Code Embed Block */}
       <section className="relative z-10 text-center">
         <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-        <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" style={{display: 'inline-block', margin: '0 auto 50px auto'}} />
+        <div 
+          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" 
+          style={{width: '220px', height: '220px', display: 'inline-block', margin: '0 auto 50px auto'}}
+        ></div>
       </section>
     </div>
   );
