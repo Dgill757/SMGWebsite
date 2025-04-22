@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
@@ -42,13 +41,6 @@ const Index = () => {
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <main>
         <HeroSection />
-        <WebWidget
-          widgetKey="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-          size={220}
-          marginTop={100}
-          marginBottom={100}
-          align="center"
-        />
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
