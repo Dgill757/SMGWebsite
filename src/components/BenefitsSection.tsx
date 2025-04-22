@@ -1,10 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Clock, DollarSign, Brain, PhoneCall, Calendar, UserCheck, BarChart, BotIcon, Zap } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ROICalculator from './ROICalculator';
 
 const BenefitsSection: React.FC = () => {
   const [isROIDialogOpen, setIsROIDialogOpen] = useState(false);
+
+  useEffect(() => {
+    if (!document.getElementById('thinkrr-widget-script')) {
+      const script = document.createElement('script');
+      script.id = 'thinkrr-widget-script';
+      script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
+      script.async = true;
+      document.body.appendChild(script);
+    }
+  }, []);
   
   const benefits = [{
     icon: <Clock className="h-6 w-6" />,
@@ -53,11 +63,10 @@ const BenefitsSection: React.FC = () => {
     color: "from-yellow-500 to-amber-400"
   }];
   
-  return <section id="features" className="pt-0 pb-20 px-4 md:px-8 lg:px-16 relative">
-      {/* Background gradient */}
+  return (
+    <section id="features" className="pt-0 pb-20 px-4 md:px-8 lg:px-16 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
       
-      {/* Content */}
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-16">
           <h2 className="heading-lg">
@@ -69,17 +78,18 @@ const BenefitsSection: React.FC = () => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {benefits.map((benefit, index) => <div key={index} className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg card-hover border border-border relative overflow-hidden">
+          {benefits.map((benefit, index) => (
+            <div key={index} className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg card-hover border border-border relative overflow-hidden">
               <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gradient-to-br ${benefit.color} opacity-10`}></div>
               <div className={`inline-flex items-center justify-center p-3 rounded-lg bg-gradient-to-br ${benefit.color} text-white mb-4`}>
                 {benefit.icon}
               </div>
               <h3 className="text-xl font-bold mb-2">{benefit.title}</h3>
               <p className="text-muted-foreground">{benefit.description}</p>
-            </div>)}
+            </div>
+          ))}
         </div>
         
-        {/* ROI Calculator Teaser */}
         <div className="mt-16 p-8 rounded-2xl bg-gradient-to-r from-voiceai-primary/10 to-voiceai-secondary/10 border border-voiceai-primary/20">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div>
@@ -102,7 +112,6 @@ const BenefitsSection: React.FC = () => {
         </div>
       </div>
       
-      {/* ROI Calculator Dialog */}
       <Dialog open={isROIDialogOpen} onOpenChange={setIsROIDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
@@ -112,15 +121,13 @@ const BenefitsSection: React.FC = () => {
         </DialogContent>
       </Dialog>
       
-      {/* Responsive Widget Embed */}
       <div className="widget-container flex justify-center my-16 sm:my-24">
-        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
         <div
           data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-          style={{ width: '220px', height: '220px' }}
+          style={{ width: 220, height: 220 }}
         />
       </div>
-      {/* Responsive widget sizing override */}
+      
       <style>
         {`
           .widget-container > [data-widget-key] {
@@ -135,7 +142,8 @@ const BenefitsSection: React.FC = () => {
           }
         `}
       </style>
-    </section>;
+    </section>
+  );
 };
 
 export default BenefitsSection;
