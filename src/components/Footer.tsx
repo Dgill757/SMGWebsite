@@ -2,63 +2,56 @@ import React, { useState } from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useToast } from "@/hooks/use-toast";
-
 const Footer: React.FC = () => {
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const webhookUrl = '';
-
   const handlePolicyClick = (path: string) => {
     navigate(path);
     window.scrollTo(0, 0);
   };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
     if (!email || !message) {
       toast({
         title: "Error",
         description: "Please fill in all fields",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     if (!webhookUrl) {
       toast({
         title: "Configuration Required",
         description: "Please set up your Zapier webhook URL first",
-        variant: "destructive",
+        variant: "destructive"
       });
       return;
     }
-
     setIsLoading(true);
-
     try {
       const response = await fetch(webhookUrl, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         mode: "no-cors",
         body: JSON.stringify({
           email,
           message,
           timestamp: new Date().toISOString(),
-          source: window.location.origin,
-        }),
+          source: window.location.origin
+        })
       });
-
       toast({
         title: "Message Sent",
-        description: "Thank you for your message. We'll get back to you soon!",
+        description: "Thank you for your message. We'll get back to you soon!"
       });
-
       setEmail('');
       setMessage('');
     } catch (error) {
@@ -66,24 +59,22 @@ const Footer: React.FC = () => {
       toast({
         title: "Error",
         description: "Failed to send message. Please try again later.",
-        variant: "destructive",
+        variant: "destructive"
       });
     } finally {
       setIsLoading(false);
     }
   };
-
-  return (
-    <footer id="contact" className="bg-voiceai-dark text-white">
+  return <footer id="contact" className="bg-voiceai-dark text-white">
       <div className="container mx-auto py-16 px-4 md:px-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                  <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                  <line x1="12" x2="12" y1="19" y2="22"/>
+                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z" />
+                  <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                  <line x1="12" x2="12" y1="19" y2="22" />
                 </svg>
               </div>
               <span className="font-bold text-xl text-gradient">SummitVoiceAI</span>
@@ -152,33 +143,13 @@ const Footer: React.FC = () => {
                   <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
                   <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                 </svg>
-                <a href="https://summitaivoice.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">
-                  summitaivoice.com
-                </a>
+                <a href="https://summitaivoice.com" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-white transition-colors">summitmktggroup.com</a>
               </div>
               
               <form onSubmit={handleSubmit} className="mt-4 space-y-3">
-                <input
-                  type="email"
-                  placeholder="Your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
-                  disabled={isLoading}
-                />
-                <textarea
-                  placeholder="Your message"
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={3}
-                  className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
-                  disabled={isLoading}
-                ></textarea>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
-                >
+                <input type="email" placeholder="Your email address" value={email} onChange={e => setEmail(e.target.value)} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary" disabled={isLoading} />
+                <textarea placeholder="Your message" value={message} onChange={e => setMessage(e.target.value)} rows={3} className="w-full px-4 py-2 rounded-lg bg-gray-800 border border-gray-700 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-voiceai-primary" disabled={isLoading}></textarea>
+                <button type="submit" disabled={isLoading} className="w-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white font-medium py-2 px-4 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50">
                   {isLoading ? 'Sending...' : 'Send Message'}
                 </button>
               </form>
@@ -189,35 +160,21 @@ const Footer: React.FC = () => {
         <div className="border-t border-gray-800 mt-12 pt-8 text-center text-gray-400 text-sm">
           <p>&copy; {new Date().getFullYear()} SummitVoiceAI. All Rights Reserved.</p>
           <div className="mt-4 text-xs space-x-4">
-            <button 
-              className="text-gray-500 hover:text-white transition-colors"
-              onClick={() => handlePolicyClick('/terms-of-service')}
-            >
+            <button className="text-gray-500 hover:text-white transition-colors" onClick={() => handlePolicyClick('/terms-of-service')}>
               Terms of Service
             </button>
-            <button 
-              className="text-gray-500 hover:text-white transition-colors"
-              onClick={() => handlePolicyClick('/privacy-policy')}
-            >
+            <button className="text-gray-500 hover:text-white transition-colors" onClick={() => handlePolicyClick('/privacy-policy')}>
               Privacy Policy
             </button>
-            <button 
-              className="text-gray-500 hover:text-white transition-colors"
-              onClick={() => handlePolicyClick('/cookie-policy')}
-            >
+            <button className="text-gray-500 hover:text-white transition-colors" onClick={() => handlePolicyClick('/cookie-policy')}>
               Cookie Policy
             </button>
-            <button 
-              className="text-gray-500 hover:text-white transition-colors"
-              onClick={() => handlePolicyClick('/gdpr-compliance')}
-            >
+            <button className="text-gray-500 hover:text-white transition-colors" onClick={() => handlePolicyClick('/gdpr-compliance')}>
               GDPR Compliance
             </button>
           </div>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
-
 export default Footer;
