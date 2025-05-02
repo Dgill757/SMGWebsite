@@ -1,20 +1,11 @@
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import { Clock, DollarSign, Brain, PhoneCall, Calendar, UserCheck, BarChart, BotIcon, Zap } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import ROICalculator from './ROICalculator';
 
 const BenefitsSection: React.FC = () => {
   const [isROIDialogOpen, setIsROIDialogOpen] = useState(false);
-
-  useEffect(() => {
-    if (!document.getElementById('thinkrr-widget-script')) {
-      const script = document.createElement('script');
-      script.id = 'thinkrr-widget-script';
-      script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
   
   const benefits = [{
     icon: <Clock className="h-6 w-6" />,
@@ -120,28 +111,6 @@ const BenefitsSection: React.FC = () => {
           <ROICalculator />
         </DialogContent>
       </Dialog>
-      
-      <div className="widget-container flex justify-center my-16 sm:my-24">
-        <div
-          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-          style={{ width: 220, height: 220 }}
-        />
-      </div>
-      
-      <style>
-        {`
-          .widget-container > [data-widget-key] {
-            width: 220px;
-            height: 220px;
-          }
-          @media (max-width: 640px) {
-            .widget-container > [data-widget-key] {
-              width: 160px !important;
-              height: 160px !important;
-            }
-          }
-        `}
-      </style>
     </section>
   );
 };

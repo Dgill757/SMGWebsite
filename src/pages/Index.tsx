@@ -41,6 +41,16 @@ const Index = () => {
       <main>
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
+        
+        {/* — Thinkrr Web-Widget — */}
+        <div className="flex justify-center my-12 md:my-24">
+          <div
+            data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+            style={{ width: 220, height: 220 }}
+          ></div>
+        </div>
+        {/* — end widget — */}
+        
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
