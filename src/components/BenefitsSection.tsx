@@ -63,7 +63,6 @@ const BenefitsSection: React.FC = () => {
         <div
           data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
           style={{ width: 220, height: 220 }}
-          id="web-widget"
         ></div>
       </div>
       

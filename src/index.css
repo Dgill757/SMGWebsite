@@ -134,6 +134,10 @@
 }
 
 /* Responsive styling for the widget */
+.widget-container > [data-widget-key] {
+  display: block !important;
+  margin: 0 auto;
+}
 @media (max-width: 640px) {
   .widget-container > [data-widget-key] {
     width: 160px !important;
