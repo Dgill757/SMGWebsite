@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -133,14 +132,23 @@
   }
 }
 
-/* Responsive styling for the widget */
-.widget-container > [data-widget-key] {
-  display: block !important;
-  margin: 0 auto;
+/* Always fixed bottom-right on mobile */
+#thinkrr-root {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  width: 160px;
+  height: 160px;
+  z-index: 10000;
 }
-@media (max-width: 640px) {
-  .widget-container > [data-widget-key] {
-    width: 160px !important;
-    height: 160px !important;
+
+/* On desktop (≥640px), center under the hero and enlarge */
+@media (min-width: 640px) {
+  #thinkrr-root {
+    position: static;
+    display: block;
+    margin: 40px auto;
+    width: 220px;
+    height: 220px;
   }
 }
