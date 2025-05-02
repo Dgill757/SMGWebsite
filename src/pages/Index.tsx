@@ -42,8 +42,25 @@ const Index = () => {
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         
-        {/* Thinkrr Web-Widget */}
-        <div className="widget-container flex justify-center my-12 md:my-16">
+        {/* Thinkrr Web Widget */}
+        <div className="sm:hidden fixed bottom-4 right-4 z-50">
+          <script
+            id="thinkrr-widget-script"
+            src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"
+            async
+          ></script>
+          <div
+            data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+            style={{ width: 160, height: 160 }}
+          />
+        </div>
+
+        <div className="hidden sm:flex justify-center my-16">
+          <script
+            id="thinkrr-widget-script-desktop"
+            src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"
+            async
+          ></script>
           <div
             data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
             style={{ width: 220, height: 220 }}
