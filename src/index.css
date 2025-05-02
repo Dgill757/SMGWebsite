@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -132,17 +133,17 @@
   }
 }
 
-/* Always fixed bottom-right on mobile */
+/* Mobile: fixed bottom-right with safe-area support */
 #thinkrr-root {
   position: fixed;
-  bottom: 16px;
-  right: 16px;
+  bottom: env(safe-area-inset-bottom, 16px);
+  right: env(safe-area-inset-right, 16px);
   width: 160px;
   height: 160px;
   z-index: 10000;
 }
 
-/* On desktop (≥640px), center under the hero and enlarge */
+/* Desktop (≥640px): static, centered under hero */
 @media (min-width: 640px) {
   #thinkrr-root {
     position: static;
