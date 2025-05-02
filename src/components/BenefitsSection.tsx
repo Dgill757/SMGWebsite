@@ -58,6 +58,15 @@ const BenefitsSection: React.FC = () => {
     <section id="features" className="pt-0 pb-20 px-4 md:px-8 lg:px-16 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
       
+      {/* Widget container above the heading */}
+      <div className="widget-container flex justify-center my-12 md:my-24 relative z-10">
+        <div
+          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+          style={{ width: 220, height: 220 }}
+          id="web-widget"
+        ></div>
+      </div>
+      
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-16">
           <h2 className="heading-lg">

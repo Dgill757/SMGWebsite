@@ -132,3 +132,11 @@
     @apply bg-white text-voiceai-primary border border-voiceai-primary/20 font-medium py-3 px-6 rounded-lg transition-all hover:shadow-lg hover:bg-voiceai-primary/5;
   }
 }
+
+/* Responsive styling for the widget */
+@media (max-width: 640px) {
+  .widget-container > [data-widget-key] {
+    width: 160px !important;
+    height: 160px !important;
+  }
+}

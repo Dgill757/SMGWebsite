@@ -16,7 +16,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
-    const widgetElement = document.getElementById('web-widget');
+    const widgetElement = document.querySelector('.widget-container');
     if (widgetElement) {
       widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setIsPlaying(true);
@@ -63,18 +63,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           <WebsiteMockup />
         </div>
       </div>
-
-      {/* Custom Code Embed Block */}
-      <section className="relative z-10 text-center">
-        <script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>
-        <div 
-          data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" 
-          style={{width: '220px', height: '220px', display: 'inline-block', margin: '0 auto 50px auto'}}
-        ></div>
-      </section>
     </div>
   );
 };
 
 export default HeroSection;
-
