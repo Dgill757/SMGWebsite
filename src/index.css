@@ -156,3 +156,11 @@
     height: 160px !important;
   }
 }
+
+/* Mobile responsive styling for Thinkrr widget iframe */
+@media (max-width: 640px) {
+  iframe[src="/thinkrr-widget.html"] {
+    width: 160px !important;
+    height: 160px !important;
+  }
+}

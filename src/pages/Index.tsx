@@ -44,7 +44,7 @@ const Index = () => {
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         
-        {/* Thinkrr Widget - Positioned between Hero and Benefits */}
+        {/* Thinkrr Voice Widget */}
         <ThinkrrWidget />
         
         <BenefitsSection />
