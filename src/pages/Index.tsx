@@ -12,6 +12,7 @@ import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
 import { useState } from 'react';
+import ThinkrrWidget from '@/components/ThinkrrWidget';
 
 const Index = () => {
   const location = useLocation();
@@ -43,13 +44,8 @@ const Index = () => {
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         
-        {/* Thinkrr Voice Widget */}
-        <div className="widget-container flex justify-center my-12 md:my-16">
-          <div
-            data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
-            style={{ width: 220, height: 220 }}
-          />
-        </div>
+        {/* Thinkrr Widget - Positioned between Hero and Benefits */}
+        <ThinkrrWidget />
         
         <BenefitsSection />
         <HowItWorks />
