@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -132,35 +133,4 @@
   }
 }
 
-/* Thinkrr Widget Styles */
-.thinkrr-widget-container {
-  min-height: 220px;
-  position: relative;
-  z-index: 50;
-  pointer-events: auto;
-}
-
-.thinkrr-widget-container > div {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-@media (max-width: 640px) {
-  .thinkrr-widget-container {
-    min-height: 160px;
-  }
-
-  .thinkrr-widget-container > div[data-widget-key] {
-    width: 160px !important;
-    height: 160px !important;
-  }
-}
-
-/* Mobile responsive styling for Thinkrr widget iframe */
-@media (max-width: 640px) {
-  iframe[src="/thinkrr-widget.html"] {
-    width: 160px !important;
-    height: 160px !important;
-  }
-}
+/* All Thinkrr widget styles have been removed */

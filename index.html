@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -96,6 +97,49 @@
 
   <body>
     <div id="root"></div>
+    
+    <!-- BEGIN THINKRR WIDGET - DO NOT MODIFY -->
+    <div id="thinkrr-fixed-widget" 
+         style="position: fixed; bottom: 20px; right: 20px; width: 160px; height: 160px; z-index: 9999; display: block; visibility: visible; pointer-events: auto;">
+      <div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492" style="width: 100%; height: 100%;"></div>
+    </div>
+
+    <script>
+      // Ensure widget loads after page is fully loaded
+      window.addEventListener('load', function() {
+        // Create and append the script
+        var script = document.createElement('script');
+        script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
+        script.async = true;
+        document.body.appendChild(script);
+        
+        // For debugging
+        script.onload = function() {
+          console.log('Thinkrr widget script loaded successfully!');
+        };
+        script.onerror = function() {
+          console.error('Failed to load Thinkrr widget script!');
+        };
+
+        // Make widget responsive
+        function adjustWidgetSize() {
+          var widget = document.getElementById('thinkrr-fixed-widget');
+          if (window.innerWidth > 768) {
+            widget.style.width = '220px';
+            widget.style.height = '220px';
+          } else {
+            widget.style.width = '160px';
+            widget.style.height = '160px';
+          }
+        }
+        
+        // Adjust size on load and resize
+        adjustWidgetSize();
+        window.addEventListener('resize', adjustWidgetSize);
+      });
+    </script>
+    <!-- END THINKRR WIDGET -->
+    
     <!-- IMPORTANT: DO NOT REMOVE THIS SCRIPT TAG OR THIS VERY COMMENT! -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script type="module" src="/src/main.tsx"></script>
