@@ -1,5 +1,5 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import BenefitsSection from '@/components/BenefitsSection';
@@ -11,7 +11,6 @@ import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
-import { useState } from 'react';
 
 const Index = () => {
   const location = useLocation();
@@ -42,6 +41,21 @@ const Index = () => {
       <main>
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
+        
+        {/* Thinkrr web widget */}
+        <div dangerouslySetInnerHTML={{ __html: `
+          <!-- Thinkrr web widget -->
+          <script
+            id="thinkrr-web-widget"
+            src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"
+            async
+            crossorigin
+          ></script>
+          <div
+            data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+            id="thinkrr-widget-placeholder"
+          ></div>
+        `}} />
         
         <BenefitsSection />
         <HowItWorks />
