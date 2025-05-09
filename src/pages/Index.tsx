@@ -5,6 +5,7 @@ import HeroSection from '@/components/HeroSection';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
+import DemoSection from '@/components/DemoSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
@@ -60,6 +61,7 @@ const Index = () => {
         <BenefitsSection />
         <HowItWorks />
         <UseCases />
+        <DemoSection />
         <TestimonialsSection />
         <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
         <FAQSection />
