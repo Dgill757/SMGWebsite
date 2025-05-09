@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -132,23 +133,4 @@
   }
 }
 
-/* MOBILE: fixed bottom-right bubble */
-#thinkrr-widget-placeholder {
-  position: fixed;
-  bottom: env(safe-area-inset-bottom, 16px);
-  right:  env(safe-area-inset-right, 16px);
-  width:  160px;
-  height: 160px;
-  z-index: 10000;
-}
-
-/* DESKTOP (≥640px): static centered under hero */
-@media (min-width: 640px) {
-  #thinkrr-widget-placeholder {
-    position: static;
-    display: block;
-    margin: 40px auto;
-    width:  220px;
-    height: 220px;
-  }
-}
+/* Removing all previous widget styling */
