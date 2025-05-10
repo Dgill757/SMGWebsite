@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -133,4 +132,14 @@
   }
 }
 
-/* No widget styling needed - handled by ThinkrrWidget component */
+/* Thinkrr Widget responsive styling */
+[data-widget-key] {
+  width: 220px;
+  height: 220px;
+}
+@media (max-width: 640px) {
+  [data-widget-key] {
+    width: 160px !important;
+    height: 160px !important;
+  }
+}

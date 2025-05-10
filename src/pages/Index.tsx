@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
+import ThinkrrWidget from '@/components/ThinkrrWidget';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
@@ -12,7 +13,6 @@ import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
-import ThinkrrWidget from '@/components/ThinkrrWidget';
 
 const Index = () => {
   const location = useLocation();
