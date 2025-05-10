@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import ThinkrrWidget from '@/components/ThinkrrWidget';
+import Widget from '@/components/Widget';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
@@ -45,7 +45,7 @@ const Index = () => {
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         
         {/* Our new widget component */}
-        <ThinkrrWidget />
+        <Widget />
         
         <BenefitsSection />
         <HowItWorks />

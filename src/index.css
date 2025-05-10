@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -129,17 +130,5 @@
   
   .btn-secondary {
     @apply bg-white text-voiceai-primary border border-voiceai-primary/20 font-medium py-3 px-6 rounded-lg transition-all hover:shadow-lg hover:bg-voiceai-primary/5;
-  }
-}
-
-/* Thinkrr Widget responsive styling */
-[data-widget-key] {
-  width: 220px;
-  height: 220px;
-}
-@media (max-width: 640px) {
-  [data-widget-key] {
-    width: 160px !important;
-    height: 160px !important;
   }
 }
