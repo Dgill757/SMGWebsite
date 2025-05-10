@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
-import Widget from '@/components/Widget';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
@@ -13,6 +12,7 @@ import FAQSection from '@/components/FAQSection';
 import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
+import Widget from '@/components/Widget';
 
 const Index = () => {
   const location = useLocation();
@@ -44,7 +44,7 @@ const Index = () => {
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         
-        {/* Our new widget component */}
+        {/* Our new widget placeholder */}
         <Widget />
         
         <BenefitsSection />
