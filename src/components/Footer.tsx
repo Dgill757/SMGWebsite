@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -117,6 +116,7 @@ const Footer: React.FC = () => {
               <li><a href="/#features" className="text-gray-400 hover:text-white transition-colors">Features</a></li>
               <li><a href="/#how-it-works" className="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
               <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Use Cases</a></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Industries We Service</Link></li>
               <li><a href="/#pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
               <li><a href="/#faq" className="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
             </ul>
@@ -125,13 +125,13 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Industries We Serve</h3>
             <ul className="space-y-2">
-              <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Home Services (HVAC, Plumbing)</a></li>
-              <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Real Estate Agencies</a></li>
-              <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Law Firms</a></li>
-              <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Accounting & CPA Firms</a></li>
-              <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Healthcare Practices</a></li>
-              <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Automotive Services</a></li>
-              <li><a href="/#use-cases" className="text-gray-400 hover:text-white transition-colors">Landscaping Companies</a></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Home Services (HVAC, Plumbing)</Link></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Real Estate Agencies</Link></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Law Firms</Link></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Accounting & CPA Firms</Link></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Healthcare Practices</Link></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Automotive Services</Link></li>
+              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Landscaping Companies</Link></li>
             </ul>
           </div>
           
@@ -228,4 +228,3 @@ const Footer: React.FC = () => {
 };
 
 export default Footer;
-

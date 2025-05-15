@@ -1,5 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -57,6 +59,7 @@ const Navbar: React.FC = () => {
           <a href="#features" onClick={(e) => scrollToSection('features', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Features</a>
           <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">How It Works</a>
           <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Use Cases</a>
+          <Link to="/industries" className="text-foreground/80 hover:text-voiceai-primary transition-colors">Industries We Service</Link>
           <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Pricing</a>
           <a href="#contact" onClick={(e) => scrollToSection('contact', e)} className="btn-primary">Get Started</a>
         </div>
@@ -93,6 +96,13 @@ const Navbar: React.FC = () => {
           >
             Use Cases
           </a>
+          <Link 
+            to="/industries" 
+            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary"
+            onClick={() => setIsMobileMenuOpen(false)}
+          >
+            Industries We Service
+          </Link>
           <a 
             href="#pricing" 
             className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
