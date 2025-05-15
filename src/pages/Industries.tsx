@@ -3,6 +3,7 @@ import React from 'react';
 import { motion } from "framer-motion";
 import { Helmet } from 'react-helmet-async';
 import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, ChevronRight } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 const Industries = () => {
   const industries = [
@@ -10,49 +11,49 @@ const Industries = () => {
       icon: <Wrench className="w-6 h-6" />,
       title: "AI Voice Assistant for Home Services",
       description: "Our AI receptionist for home services (plumbing, HVAC, roofing, remodeling) captures every call, qualifies leads, and books jobs 24/7—never miss another opportunity.",
-      link: "/use-cases/home-services"
+      link: "/industries/home-services"
     },
     {
       icon: <Home className="w-6 h-6" />,
       title: "AI Voice Assistant for Real Estate Agents",
       description: "Voice AI for real estate lead capture handles potential buyer and seller inquiries 24/7, qualifying leads and scheduling showings even when you're with clients.",
-      link: "/use-cases/real-estate"
+      link: "/industries/real-estate"
     },
     {
       icon: <Building2 className="w-6 h-6" />,
       title: "AI Voice Assistant for Healthcare Practices",
       description: "No more IVR—24/7 human-like patient support answers questions, schedules appointments, and handles routine inquiries without frustrating phone trees.",
-      link: "/use-cases/healthcare"
+      link: "/industries/healthcare"
     },
     {
       icon: <Scale className="w-6 h-6" />,
       title: "AI Voice Assistant for Legal & Law Firms",
       description: "Voice AI receptionist for law firms ensures intake calls are handled perfectly, screening potential clients and scheduling consultations while you focus on billable hours.",
-      link: "/use-cases/legal"
+      link: "/industries/legal"
     },
     {
       icon: <Car className="w-6 h-6" />,
       title: "AI Voice Assistant for Automotive",
       description: "Voice AI call assistant for repair shops & dealerships makes appointment scheduling seamless, handles common questions, and ensures no service opportunity is missed.",
-      link: "/use-cases/automotive"
+      link: "/industries/automotive"
     },
     {
       icon: <Calculator className="w-6 h-6" />,
       title: "AI Voice Assistant for Professional Services",
       description: "CPAs and consultants leverage our voice AI to manage client inquiries during tax season and beyond, ensuring every potential engagement is properly handled.",
-      link: "/use-cases/professional-services"
+      link: "/industries/professional-services"
     },
     {
       icon: <Scissors className="w-6 h-6" />,
       title: "AI Voice Assistant for Landscaping & Outdoor Services",
       description: "Capture seasonal business opportunities even when you're on job sites with our dedicated voice AI for landscaping and outdoor service providers.",
-      link: "/use-cases/landscaping"
+      link: "/industries/landscaping"
     },
     {
       icon: <Headphones className="w-6 h-6" />,
       title: "AI Voice Assistant for Customer Service & Call Centers",
       description: "Augment your call center operations with AI voice assistants that handle routine inquiries, reducing wait times and allowing your agents to focus on complex issues.",
-      link: "/use-cases/customer-service"
+      link: "/industries/customer-service"
     }
   ];
 
@@ -93,9 +94,9 @@ const Industries = () => {
                   <p className="text-muted-foreground mb-4">
                     {industry.description}
                   </p>
-                  <a href={industry.link} className="text-voiceai-primary font-semibold flex items-center">
+                  <Link to={industry.link} className="text-voiceai-primary font-semibold flex items-center">
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
-                  </a>
+                  </Link>
                 </motion.div>
               ))}
             </div>
