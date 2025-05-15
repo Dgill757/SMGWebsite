@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -11,6 +12,20 @@ import UseCaseExamplesSection from '@/components/industry/UseCaseExamplesSection
 import IndustryTestimonial from '@/components/industry/IndustryTestimonial';
 import IndustryFAQSection from '@/components/industry/IndustryFAQSection';
 import CtaSection from '@/components/industry/CtaSection';
+
+// Define the interface for use case steps
+interface UseCaseStep {
+  type: "human" | "ai";
+  text: string;
+}
+
+// Define the interface for use cases
+interface UseCase {
+  title: string;
+  description: string;
+  steps: UseCaseStep[];
+  outcome: string;
+}
 
 // Industry data
 const industriesData = {
@@ -401,11 +416,5 @@ const IndustryPage = () => {
     </>
   );
 };
-
-// Missing components just for TypeScript
-const DollarSign = ({ className }: { className?: string }) => <span className={className}>$</span>;
-const Users = ({ className }: { className?: string }) => <span className={className}>👥</span>;
-const BarChart = ({ className }: { className?: string }) => <span className={className}>📊</span>;
-const Clock = ({ className }: { className?: string }) => <span className={className}>⏰</span>;
 
 export default IndustryPage;
