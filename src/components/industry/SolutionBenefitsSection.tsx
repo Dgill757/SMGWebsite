@@ -12,22 +12,17 @@ interface Comparison {
 interface SolutionBenefitsSectionProps {
   benefits: string[];
   comparisons: Comparison[];
-  industryName?: string;
 }
 
-const SolutionBenefitsSection = ({ benefits, comparisons, industryName = "" }: SolutionBenefitsSectionProps) => {
-  const titleText = industryName 
-    ? `The SummitVoiceAI Solution for ${industryName}`
-    : "The SummitVoiceAI Solution";
-
+const SolutionBenefitsSection = ({ benefits, comparisons }: SolutionBenefitsSectionProps) => {
   return (
-    <section className="py-20" id="solution-benefits">
+    <section className="py-20">
       <div className="container mx-auto px-4">
-        <h2 className="heading-md text-center mb-4" data-seo-heading="solution">
+        <h2 className="heading-md text-center mb-4">
           The <span className="text-gradient">SummitVoiceAI</span> Solution
         </h2>
         <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-          Transform your business with AI voice technology designed specifically for {industryName || 'your industry'}
+          Transform your business with AI voice technology designed specifically for your industry
         </p>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
@@ -37,7 +32,7 @@ const SolutionBenefitsSection = ({ benefits, comparisons, industryName = "" }: S
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-start">
                   <div className="mr-4 mt-1 text-voiceai-primary">
-                    <CheckCircle className="h-5 w-5" aria-hidden="true" />
+                    <CheckCircle className="h-5 w-5" />
                   </div>
                   <p>{benefit}</p>
                 </li>
@@ -48,12 +43,12 @@ const SolutionBenefitsSection = ({ benefits, comparisons, industryName = "" }: S
           <div>
             <h3 className="text-xl font-semibold mb-6">Feature Comparison</h3>
             <div className="overflow-x-auto">
-              <table className="w-full border-collapse" aria-label="Feature Comparison Table">
+              <table className="w-full border-collapse">
                 <thead>
                   <tr>
-                    <th className="text-left pb-2 border-b" scope="col">Feature</th>
-                    <th className="px-4 pb-2 border-b text-center" scope="col">Traditional Approach</th>
-                    <th className="px-4 pb-2 border-b text-center" scope="col">SummitVoiceAI</th>
+                    <th className="text-left pb-2 border-b">Feature</th>
+                    <th className="px-4 pb-2 border-b text-center">Traditional Approach</th>
+                    <th className="px-4 pb-2 border-b text-center">SummitVoiceAI</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -62,23 +57,13 @@ const SolutionBenefitsSection = ({ benefits, comparisons, industryName = "" }: S
                       <td className="py-3">{item.feature}</td>
                       <td className="px-4 py-3 text-center">
                         {item.traditional ? 
-                          <span aria-label="Yes">
-                            <CheckCircle className="h-5 w-5 inline text-green-500" aria-hidden="true" />
-                          </span> : 
-                          <span aria-label="No">
-                            <XCircle className="h-5 w-5 inline text-red-500" aria-hidden="true" />
-                          </span>
-                        }
+                          <CheckCircle className="h-5 w-5 inline text-green-500" /> : 
+                          <XCircle className="h-5 w-5 inline text-red-500" />}
                       </td>
                       <td className="px-4 py-3 text-center">
                         {item.voiceAI ? 
-                          <span aria-label="Yes">
-                            <CheckCircle className="h-5 w-5 inline text-voiceai-primary" aria-hidden="true" />
-                          </span> : 
-                          <span aria-label="No">
-                            <XCircle className="h-5 w-5 inline text-muted-foreground" aria-hidden="true" />
-                          </span>
-                        }
+                          <CheckCircle className="h-5 w-5 inline text-voiceai-primary" /> : 
+                          <XCircle className="h-5 w-5 inline text-muted-foreground" />}
                       </td>
                     </tr>
                   ))}

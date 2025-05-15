@@ -66,55 +66,59 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg flex flex-col">
+          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg">3-Year Projection</h3>
             </div>
-            <div className="space-y-6 flex-grow">
-              <ComparisonBar 
-                label="Human Staff" 
-                value={parseInt(costs.threeYear.human.replace(/[^0-9]/g, ''))} 
-                color="bg-gray-500" 
-                textColor="text-gray-700"
-              />
-              <ComparisonBar 
-                label="SummitVoiceAI" 
-                value={parseInt(costs.threeYear.ai.replace(/[^0-9]/g, ''))} 
-                color="bg-voiceai-primary" 
-                textColor="text-voiceai-primary"
-              />
-            </div>
-            <div className="mt-auto pt-4 text-center">
-              <p className="font-semibold">Estimated 3-Year Savings:</p>
-              <p className="text-2xl font-bold text-voiceai-primary">
-                ${calculateSavings(costs.threeYear.human, costs.threeYear.ai)}
-              </p>
+            <div className="flex flex-col h-full justify-between">
+              <div className="space-y-6">
+                <ComparisonBar 
+                  label="Human Staff" 
+                  value={parseInt(costs.threeYear.human.replace(/[^0-9]/g, ''))} 
+                  color="bg-gray-500" 
+                  textColor="text-gray-700"
+                />
+                <ComparisonBar 
+                  label="SummitVoiceAI" 
+                  value={parseInt(costs.threeYear.ai.replace(/[^0-9]/g, ''))} 
+                  color="bg-voiceai-primary" 
+                  textColor="text-voiceai-primary"
+                />
+              </div>
+              <div className="mt-6 text-center">
+                <p className="font-semibold">Estimated 3-Year Savings:</p>
+                <p className="text-2xl font-bold text-voiceai-primary">
+                  ${calculateSavings(costs.threeYear.human, costs.threeYear.ai)}
+                </p>
+              </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg flex flex-col">
+          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg">5-Year Projection</h3>
             </div>
-            <div className="space-y-6 flex-grow">
-              <ComparisonBar 
-                label="Human Staff" 
-                value={parseInt(costs.fiveYear.human.replace(/[^0-9]/g, ''))} 
-                color="bg-gray-500" 
-                textColor="text-gray-700"
-              />
-              <ComparisonBar 
-                label="SummitVoiceAI" 
-                value={parseInt(costs.fiveYear.ai.replace(/[^0-9]/g, ''))} 
-                color="bg-voiceai-primary" 
-                textColor="text-voiceai-primary"
-              />
-            </div>
-            <div className="mt-auto pt-4 text-center">
-              <p className="font-semibold">Estimated 5-Year Savings:</p>
-              <p className="text-2xl font-bold text-voiceai-primary">
-                ${calculateSavings(costs.fiveYear.human, costs.fiveYear.ai)}
-              </p>
+            <div className="flex flex-col h-full justify-between">
+              <div className="space-y-6">
+                <ComparisonBar 
+                  label="Human Staff" 
+                  value={parseInt(costs.fiveYear.human.replace(/[^0-9]/g, ''))} 
+                  color="bg-gray-500" 
+                  textColor="text-gray-700"
+                />
+                <ComparisonBar 
+                  label="SummitVoiceAI" 
+                  value={parseInt(costs.fiveYear.ai.replace(/[^0-9]/g, ''))} 
+                  color="bg-voiceai-primary" 
+                  textColor="text-voiceai-primary"
+                />
+              </div>
+              <div className="mt-6 text-center">
+                <p className="font-semibold">Estimated 5-Year Savings:</p>
+                <p className="text-2xl font-bold text-voiceai-primary">
+                  ${calculateSavings(costs.fiveYear.human, costs.fiveYear.ai)}
+                </p>
+              </div>
             </div>
           </div>
         </div>

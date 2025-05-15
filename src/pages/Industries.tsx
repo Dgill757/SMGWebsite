@@ -1,9 +1,9 @@
 
 import React from 'react';
 import { motion } from "framer-motion";
+import { Helmet } from 'react-helmet-async';
 import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { SEO, generateOrganizationSchema, generateBreadcrumbSchema } from '@/lib/seo';
 
 const Industries = () => {
   const industries = [
@@ -57,65 +57,12 @@ const Industries = () => {
     }
   ];
 
-  // Define SEO properties
-  const seoTitle = "Industry-Specific Voice AI Solutions | SummitVoiceAI";
-  const seoDescription = "From Home Services to Healthcare and Law Firms, SummitVoiceAI's AI receptionist captures calls 24/7, qualifies leads, and books appointments for every industry—get ahead of competitors with cutting-edge Voice AI.";
-  const keywords = [
-    "voice AI solutions",
-    "AI receptionist",
-    "industry voice assistant",
-    "business call automation",
-    "24/7 call handling",
-    "lead qualification AI",
-    "appointment booking AI",
-    "healthcare AI assistant",
-    "legal receptionist AI",
-    "real estate AI assistant",
-    "automotive service AI",
-    "professional services AI"
-  ];
-  
-  // Define breadcrumb schema
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://summitaivoice.com' },
-    { name: 'Industries', url: 'https://summitaivoice.com/industries' }
-  ]);
-
-  // Combined schema markup
-  const schemaMarkup = [
-    generateOrganizationSchema(),
-    breadcrumbSchema,
-    {
-      "@context": "https://schema.org",
-      "@type": "WebPage",
-      "name": seoTitle,
-      "description": seoDescription,
-      "url": "https://summitaivoice.com/industries",
-      "mainEntity": {
-        "@type": "ItemList",
-        "itemListElement": industries.map((industry, index) => ({
-          "@type": "ListItem",
-          "position": index + 1,
-          "item": {
-            "@type": "Service",
-            "name": industry.title,
-            "description": industry.description,
-            "url": `https://summitaivoice.com${industry.link}`
-          }
-        }))
-      }
-    }
-  ];
-
   return (
     <>
-      <SEO 
-        title={seoTitle}
-        description={seoDescription}
-        keywords={keywords}
-        canonical="https://summitaivoice.com/industries"
-        schemaMarkup={schemaMarkup}
-      />
+      <Helmet>
+        <title>Industries We Service | AI Voice Assistant for Every Business | SummitVoiceAI</title>
+        <meta name="description" content="From Home Services to Healthcare and Law Firms, SummitVoiceAI's AI receptionist captures calls 24/7, qualifies leads, and books appointments for every industry—get ahead of competitors with cutting-edge Voice AI." />
+      </Helmet>
 
       <div className="pt-28 pb-20 bg-background">
         <div className="container mx-auto px-4">

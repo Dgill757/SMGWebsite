@@ -1,6 +1,4 @@
 
-# Summit Voice AI - robots.txt
-
 User-agent: *
 Allow: /
 
@@ -27,30 +25,13 @@ Allow: /
 User-agent: Google-Business-Bot
 Allow: /
 
-# Google Mobile Crawler
-User-agent: AdsBot-Google-Mobile
-Allow: /
-
-# Google Image Crawler
-User-agent: Googlebot-Image
-Allow: /
-
-# Priority pages - explicitly allowed
+# Priority pages
 Allow: /features
 Allow: /pricing
 Allow: /contact
 Allow: /demo
 Allow: /about
 Allow: /testimonials
-Allow: /industries
-Allow: /industries/home-services
-Allow: /industries/real-estate
-Allow: /industries/healthcare
-Allow: /industries/legal
-Allow: /industries/automotive
-Allow: /industries/professional-services
-Allow: /industries/landscaping
-Allow: /industries/customer-service
 Allow: /terms-of-service
 Allow: /privacy-policy
 Allow: /cookie-policy
@@ -58,10 +39,3 @@ Allow: /gdpr-compliance
 
 # Clean parameters
 Clean-param: utm_source&utm_medium&utm_campaign&utm_content&fbclid
-
-# Disallow 404 page
-Disallow: /404
-
-# Disallow query parameters for certain paths to avoid duplicate content
-Disallow: /*?*
-Allow: /?ref=*
