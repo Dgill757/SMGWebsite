@@ -1,8 +1,7 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
-import { Building2, Home, Scale, Car, Calculator, Scissors, Headphones, Wrench, ChevronDown, ArrowRight } from 'lucide-react';
+import { Building2, Home, Scale, Car, Calculator, Scissors, Headphones, Wrench, ChevronDown, ArrowRight, DollarSign, Users, Clock, BarChart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 import ProblemStatementSection from '@/components/industry/ProblemStatementSection';
@@ -115,35 +114,35 @@ const industriesData = {
         description: "A patient calls after business hours wanting to schedule an appointment for ongoing back pain that has recently worsened.",
         steps: [
           {
-            type: "human",
+            type: "human" as const,
             text: "Hi, I need to make an appointment. My back pain is getting worse and I haven't been seen in about 6 months."
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "I'm sorry to hear about your back pain. I'd be happy to help you schedule an appointment. May I have your name and date of birth to locate your record?"
           },
           {
-            type: "human",
+            type: "human" as const,
             text: "My name is Michael Johnson, born September 15, 1978."
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "Thank you, Mr. Johnson. I've found your record. For back pain that's worsening, would you prefer to see Dr. Garcia who you saw previously, or the first available provider?"
           },
           {
-            type: "human",
+            type: "human" as const,
             text: "I'd like to see Dr. Garcia if possible."
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "Dr. Garcia has availability tomorrow at 2:15 PM or Friday at 9:30 AM. Which would work better for you?"
           },
           {
-            type: "human",
+            type: "human" as const,
             text: "Tomorrow at 2:15 would be perfect."
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "Great! I've scheduled you for tomorrow at 2:15 PM with Dr. Garcia for back pain evaluation. Please arrive 15 minutes early to complete any necessary paperwork. You'll receive a confirmation text message shortly. Is there anything else you need help with tonight?"
           }
         ],
@@ -154,35 +153,35 @@ const industriesData = {
         description: "A parent calls about their child's high fever and rash, requiring assessment of urgency and appropriate guidance.",
         steps: [
           {
-            type: "human",
+            type: "human" as const,
             text: "My 5-year-old daughter has a fever of 103° and developed a rash. I'm not sure if I should bring her in or go to the ER."
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "I understand your concern. I need to ask a few questions to help determine the best course of action. Does your daughter have difficulty breathing or seem unusually lethargic?"
           },
           {
-            type: "human",
+            type: "human" as const,
             text: "She's tired but breathing normally. The rash is red spots that started on her face and are now on her chest."
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "Thank you for that information. One more question - when you press on the spots, do they temporarily fade or turn white?"
           },
           {
-            type: "human",
+            type: "human" as const,
             text: "No, they stay red even when I press on them."
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "Based on your description, this situation needs prompt medical attention. I recommend taking your daughter to the emergency room right away. A rash that doesn't blanch when pressed could indicate a more serious condition that requires immediate evaluation."
           },
           {
-            type: "human",
+            type: "human" as const,
             text: "Ok, I'll take her to the ER now. Thank you!"
           },
           {
-            type: "ai",
+            type: "ai" as const,
             text: "You're welcome. I'll make a note in your daughter's record about this call and your plan to seek emergency care. The on-call physician will be notified. Please call back if you need any further assistance."
           }
         ],
@@ -407,5 +406,6 @@ const IndustryPage = () => {
 const DollarSign = ({ className }: { className?: string }) => <span className={className}>$</span>;
 const Users = ({ className }: { className?: string }) => <span className={className}>👥</span>;
 const BarChart = ({ className }: { className?: string }) => <span className={className}>📊</span>;
+const Clock = ({ className }: { className?: string }) => <span className={className}>⏰</span>;
 
 export default IndustryPage;
