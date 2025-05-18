@@ -1,11 +1,18 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from "framer-motion";
 import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, ChevronRight } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { SEO } from '@/lib/seo';
 
 const Industries = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Ensure page always scrolls to top when industries page loads
+    window.scrollTo(0, 0);
+  }, []);
+
   const industries = [
     {
       icon: <Wrench className="w-6 h-6" />,
@@ -57,6 +64,12 @@ const Industries = () => {
     }
   ];
 
+  const handleIndustryClick = (link: string, event: React.MouseEvent) => {
+    event.preventDefault();
+    navigate(link);
+    // Scroll to top will happen on the industry page thanks to the useEffect there
+  };
+
   return (
     <>
       <SEO
@@ -86,6 +99,7 @@ const Industries = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg hover:shadow-xl transition cursor-pointer"
+                  onClick={(e) => handleIndustryClick(industry.link, e)}
                 >
                   <div className="inline-flex items-center mb-4 text-voiceai-primary">
                     {industry.icon}
@@ -96,13 +110,14 @@ const Industries = () => {
                   <p className="text-muted-foreground mb-4">
                     {industry.description}
                   </p>
-                  <Link 
-                    to={industry.link} 
+                  <a 
+                    href={industry.link}
+                    onClick={(e) => handleIndustryClick(industry.link, e)}
                     className="text-voiceai-primary font-semibold flex items-center"
                     aria-label={`Learn more about ${industry.title}`}
                   >
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
-                  </Link>
+                  </a>
                 </motion.div>
               ))}
             </div>

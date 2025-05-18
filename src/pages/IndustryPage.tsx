@@ -1,7 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
-import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { DollarSign, Users, Clock, BarChart } from 'lucide-react';
 import CalendarDialog from '@/components/CalendarDialog';
@@ -22,6 +21,7 @@ const IndustryPage = () => {
   const industryData = INDUSTRY_DATA.find(industry => industry.slug === industrySlug);
   
   useEffect(() => {
+    // Ensure page always scrolls to top when industry page loads
     window.scrollTo(0, 0);
   }, [industrySlug]);
   
@@ -112,7 +112,17 @@ const IndustryPage = () => {
                 >
                   Schedule Demo
                 </button>
-                <a href="#roi-calculator" className="btn-outline">
+                <a 
+                  href="#roi-calculator" 
+                  className="btn-outline"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('roi-calculator');
+                    if (element) {
+                      element.scrollIntoView({ behavior: 'smooth' });
+                    }
+                  }}
+                >
                   Calculate ROI
                 </a>
               </div>

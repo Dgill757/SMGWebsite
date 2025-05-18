@@ -49,7 +49,7 @@ const generateBreadcrumbSchema = (industry?: string) => {
     items.push({
       "@type": "ListItem",
       "position": 3,
-      "name": `${industry}`,
+      "name": industry,
       "item": `https://summitaivoice.com/industries/${industry.toLowerCase().replace(/\s+/g, '-')}`
     });
   }

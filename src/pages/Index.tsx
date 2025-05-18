@@ -1,5 +1,6 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import HeroSection from '@/components/HeroSection';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
@@ -8,7 +9,6 @@ import DemoSection from '@/components/DemoSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
-import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
 import Widget from '@/components/Widget';
 import { SEO } from '@/lib/seo';
@@ -16,9 +16,12 @@ import { SEO } from '@/lib/seo';
 const Index = () => {
   const location = useLocation();
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const widgetRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
     window.scrollTo(0, 0);
+    
+    // Check for hash or state from navigation
     if (location.hash) {
       setTimeout(() => {
         const element = document.getElementById(location.hash.slice(1));
@@ -26,10 +29,24 @@ const Index = () => {
           element.scrollIntoView({
             behavior: 'smooth'
           });
+        } else if (location.hash === '#widget' && widgetRef.current) {
+          widgetRef.current.scrollIntoView({
+            behavior: 'smooth'
+          });
+        }
+      }, 500);
+    } else if (location.state && location.state.scrollTo) {
+      // Handle state-based scroll targets (from navigation)
+      setTimeout(() => {
+        const element = document.getElementById(location.state.scrollTo);
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth'
+          });
         }
       }, 500);
     }
-  }, [location.pathname, location.hash]);
+  }, [location.pathname, location.hash, location.state]);
 
   // Home page schema for service business
   const homePageSchema = {
@@ -63,15 +80,31 @@ const Index = () => {
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         
-        {/* Our widget placeholder */}
-        <Widget />
+        {/* Our widget placeholder with ref for scrolling */}
+        <div id="widget" ref={widgetRef}>
+          <Widget />
+        </div>
         
-        <BenefitsSection />
-        <HowItWorks />
-        <UseCases />
+        <div id="features">
+          <BenefitsSection />
+        </div>
+        
+        <div id="how-it-works">
+          <HowItWorks />
+        </div>
+        
+        <div id="use-cases">
+          <UseCases />
+        </div>
+        
         <DemoSection />
+        
         <TestimonialsSection />
-        <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
+        
+        <div id="pricing">
+          <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
+        </div>
+        
         <FAQSection />
         <CalendarDialog open={calendarOpen} setOpen={setCalendarOpen} />
       </main>
