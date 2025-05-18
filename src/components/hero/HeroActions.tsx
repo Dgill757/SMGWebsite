@@ -1,8 +1,8 @@
 
-import React from 'react';
-import { Play } from 'lucide-react';
-import VoiceWaveAnimation from '../VoiceWaveAnimation';
-import CalendarDialog from '../CalendarDialog';
+import { useState } from 'react';
+import { Play, Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import CalendlyModal from '../CalendlyModal';
 
 interface HeroActionsProps {
   isPlaying: boolean;
@@ -11,48 +11,47 @@ interface HeroActionsProps {
   setCalendarOpen: (open: boolean) => void;
 }
 
-const HeroActions = ({ isPlaying, onScrollToWidget, calendarOpen, setCalendarOpen }: HeroActionsProps) => {
-  const scrollToPricing = (event: React.MouseEvent) => {
-    event.preventDefault();
-    const pricingSection = document.getElementById('pricing');
-    if (pricingSection) {
-      pricingSection.scrollIntoView({ behavior: 'smooth' });
-    }
+const HeroActions: React.FC<HeroActionsProps> = ({ 
+  isPlaying, 
+  onScrollToWidget, 
+  calendarOpen, 
+  setCalendarOpen 
+}) => {
+  const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
+
+  const openCalendly = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsCalendlyOpen(true);
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-4">
-      {/* "Get Started" scrolls to pricing */}
-      <button
-        onClick={scrollToPricing}
-        className="btn-primary flex items-center justify-center gap-2"
-        type="button"
-      >
-        <span>Get Started Today</span>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-          <path d="M4 12L12 4M12 4H6M12 4V10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-      </button>
+    <>
+      <CalendlyModal 
+        isOpen={isCalendlyOpen} 
+        onClose={() => setIsCalendlyOpen(false)} 
+      />
 
-      {/* Hear It In Action button */}
-      <button 
-        onClick={onScrollToWidget}
-        className="btn-secondary flex items-center justify-center gap-2"
-        type="button"
-      >
-        {isPlaying ? (
-          <>
-            <span>Listening...</span>
-            <VoiceWaveAnimation isAnimating={true} className="h-6" />
-          </>
-        ) : (
-          <>
-            <Play size={18} />
-            <span>Hear It In Action</span>
-          </>
-        )}
-      </button>
-    </div>
+      <div className="flex flex-col sm:flex-row gap-4">
+        <Button 
+          onClick={openCalendly}
+          className="btn-primary gap-2 text-center"
+        >
+          <Calendar size={18} /> 
+          Request Demo
+        </Button>
+        
+        <Button
+          onClick={onScrollToWidget}
+          variant="outline"
+          className="gap-2 border-primary text-primary hover:bg-primary/10"
+        >
+          <div className={`rounded-full bg-voiceai-primary flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''}`}>
+            <Play fill="white" size={18} className="ml-0.5" />
+          </div>
+          Hear It In Action
+        </Button>
+      </div>
+    </>
   );
 };
 
