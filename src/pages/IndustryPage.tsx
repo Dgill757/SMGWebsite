@@ -1,8 +1,7 @@
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { DollarSign, Users, Clock, BarChart } from 'lucide-react';
+import { DollarSign, Users, Clock, BarChart, Building2, Wrench } from 'lucide-react';
 import CalendarDialog from '@/components/CalendarDialog';
 import ProblemStatementSection from '@/components/industry/ProblemStatementSection';
 import SolutionBenefitsSection from '@/components/industry/SolutionBenefitsSection';
@@ -11,7 +10,7 @@ import UseCaseExamplesSection from '@/components/industry/UseCaseExamplesSection
 import IndustryTestimonial from '@/components/industry/IndustryTestimonial';
 import IndustryFAQSection from '@/components/industry/IndustryFAQSection';
 import CtaSection from '@/components/industry/CtaSection';
-import { SEO, generateServiceSchema, generateFaqSchema } from '@/lib/seo';
+import { SEO, generateServiceSchema, generateFaqSchema } from '@/lib/seo-fixed';
 
 const IndustryPage = () => {
   const { industrySlug } = useParams<{ industrySlug: string }>();
