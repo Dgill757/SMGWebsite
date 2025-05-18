@@ -1,11 +1,16 @@
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from "framer-motion";
-import { Helmet } from 'react-helmet-async';
 import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { SEO, getOrganizationSchema } from '@/lib/seo';
 
 const Industries = () => {
+  useEffect(() => {
+    // Ensure the page always scrolls to the top when loaded
+    window.scrollTo(0, 0);
+  }, []);
+
   const industries = [
     {
       icon: <Wrench className="w-6 h-6" />,
@@ -57,20 +62,49 @@ const Industries = () => {
     }
   ];
 
+  // Generate industry-specific schema for SEO
+  const industriesSchema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    "itemListElement": industries.map((industry, index) => ({
+      "@type": "ListItem",
+      "position": index + 1,
+      "item": {
+        "@type": "Service",
+        "name": industry.title,
+        "description": industry.description,
+        "url": `https://summitaivoice.com${industry.link}`
+      }
+    }))
+  };
+
   return (
     <>
-      <Helmet>
-        <title>Industries We Service | AI Voice Assistant for Every Business | SummitVoiceAI</title>
-        <meta name="description" content="From Home Services to Healthcare and Law Firms, SummitVoiceAI's AI receptionist captures calls 24/7, qualifies leads, and books appointments for every industry—get ahead of competitors with cutting-edge Voice AI." />
-      </Helmet>
+      <SEO
+        title="Industries We Service | AI Voice Assistant Solutions by Industry | SummitVoiceAI"
+        description="From Home Services to Healthcare and Law Firms, SummitVoiceAI's AI receptionist captures calls 24/7, qualifies leads, and books appointments for every industry—get ahead of competitors with our voice AI technology."
+        keywords={[
+          "industry-specific AI voice assistant",
+          "voice AI for home services",
+          "healthcare AI receptionist",
+          "legal voice assistant",
+          "real estate AI voice assistant",
+          "automotive AI receptionist",
+          "voice AI for professional services",
+          "landscaping business AI assistant",
+          "industry voice solutions"
+        ]}
+        canonical="/industries"
+        schema={[getOrganizationSchema(), industriesSchema]}
+      />
 
       <div className="pt-28 pb-20 bg-background">
         <div className="container mx-auto px-4">
           <h1 className="heading-lg text-center mb-4">
-            Industries We Service
+            Industries We Service with Voice AI Solutions
           </h1>
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
-            Don't be the last in your industry to adopt AI—your competitors will all be on it in 5 years. Get ahead today.
+            Don't be the last in your industry to adopt AI—your competitors will all be on it in 5 years. Get ahead today with SummitVoiceAI.
           </p>
         </div>
 
@@ -94,7 +128,7 @@ const Industries = () => {
                   <p className="text-muted-foreground mb-4">
                     {industry.description}
                   </p>
-                  <Link to={industry.link} className="text-voiceai-primary font-semibold flex items-center">
+                  <Link to={industry.link} className="text-voiceai-primary font-semibold flex items-center" onClick={() => window.scrollTo(0, 0)}>
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
                 </motion.div>

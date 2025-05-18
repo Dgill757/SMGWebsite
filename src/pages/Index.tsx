@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
@@ -9,22 +8,16 @@ import DemoSection from '@/components/DemoSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
-import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
 import Widget from '@/components/Widget';
+import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 
 const Index = () => {
   const location = useLocation();
   const [calendarOpen, setCalendarOpen] = useState(false);
   
   useEffect(() => {
-    document.title = "Summit Voice AI - #1 Voice AI Solution for Service Businesses";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Transform your service business with Summit Voice AI\'s cutting-edge AI solutions. Featuring AI receptionists, automated scheduling, and seamless CRM integration.');
-    }
-    
     window.scrollTo(0, 0);
     if (location.hash) {
       setTimeout(() => {
@@ -38,25 +31,65 @@ const Index = () => {
     }
   }, [location.pathname, location.hash]);
 
+  // FAQ data for schema
+  const faqs = [
+    {
+      question: "What is SummitVoiceAI?",
+      answer: "SummitVoiceAI is an advanced AI voice assistant solution specifically designed for service businesses that helps capture every call, qualify leads, and book appointments 24/7 without human intervention."
+    },
+    {
+      question: "How much can my business save with SummitVoiceAI?",
+      answer: "Most businesses save 60-80% compared to traditional receptionist costs. Our clients typically see ROI within the first month and savings of $30,000-$50,000 annually."
+    },
+    {
+      question: "Does SummitVoiceAI integrate with my existing systems?",
+      answer: "Yes, SummitVoiceAI seamlessly integrates with most popular CRM systems, scheduling software, and business management tools including Salesforce, Google Calendar, Microsoft Outlook, and industry-specific platforms."
+    },
+    {
+      question: "How accurate is the voice recognition?",
+      answer: "Our AI voice technology achieves over 95% accuracy in understanding caller requests, questions, and information across various accents and background noise conditions."
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <main>
-        {/* Pass calendar modal controls to Hero and Pricing */}
-        <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
-        
-        {/* Our new widget placeholder */}
-        <Widget />
-        
-        <BenefitsSection />
-        <HowItWorks />
-        <UseCases />
-        <DemoSection />
-        <TestimonialsSection />
-        <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
-        <FAQSection />
-        <CalendarDialog open={calendarOpen} setOpen={setCalendarOpen} />
-      </main>
-    </div>
+    <>
+      <SEO 
+        title="SummitVoiceAI - #1 AI Voice Assistant for Service Businesses | Never Miss a Call"
+        description="Transform your service business with SummitVoiceAI's cutting-edge AI voice assistant. Capture every call, qualify leads, and book appointments 24/7—increase revenue by 40% with our AI receptionist technology."
+        keywords={[
+          "AI voice assistant", 
+          "virtual receptionist", 
+          "voice AI for business",
+          "AI call answering",
+          "automated scheduling",
+          "24/7 call handling",
+          "lead qualification AI",
+          "phone automation",
+          "business voice assistant",
+          "AI receptionist"
+        ]}
+        schema={[getOrganizationSchema(), getFAQSchema(faqs)]}
+      />
+      
+      <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+        <main>
+          {/* Pass calendar modal controls to Hero and Pricing */}
+          <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
+          
+          {/* Our new widget placeholder */}
+          <Widget />
+          
+          <BenefitsSection />
+          <HowItWorks />
+          <UseCases />
+          <DemoSection />
+          <TestimonialsSection />
+          <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
+          <FAQSection />
+          <CalendarDialog open={calendarOpen} setOpen={setCalendarOpen} />
+        </main>
+      </div>
+    </>
   );
 };
 

@@ -1,11 +1,13 @@
 
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 const Navbar: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -26,11 +28,11 @@ const Navbar: React.FC = () => {
     }
     
     // First check if we're on the home page
-    const isHomePage = window.location.pathname === '/';
+    const isHomePage = location.pathname === '/';
     
     if (!isHomePage) {
       // If not on home page, navigate to home page first and then scroll
-      window.location.href = `/#${sectionId}`;
+      navigate(`/#${sectionId}`);
       return;
     }
     
@@ -44,7 +46,7 @@ const Navbar: React.FC = () => {
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'py-4 bg-background/80 backdrop-blur-md shadow-sm' : 'py-6'}`}>
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
-        <a href="/" className="flex items-center space-x-2">
+        <Link to="/" className="flex items-center space-x-2" onClick={() => window.scrollTo(0, 0)}>
           <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
@@ -53,15 +55,15 @@ const Navbar: React.FC = () => {
             </svg>
           </div>
           <span className="font-bold text-xl text-gradient">SummitVoiceAI</span>
-        </a>
+        </Link>
         
         <div className="hidden md:flex items-center space-x-8">
           <a href="#features" onClick={(e) => scrollToSection('features', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Features</a>
           <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">How It Works</a>
           <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Use Cases</a>
-          <Link to="/industries" className="text-foreground/80 hover:text-voiceai-primary transition-colors">Industries We Service</Link>
+          <Link to="/industries" className="text-foreground/80 hover:text-voiceai-primary transition-colors" onClick={() => window.scrollTo(0, 0)}>Industries We Service</Link>
           <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Pricing</a>
-          <a href="#contact" onClick={(e) => scrollToSection('contact', e)} className="btn-primary">Get Started</a>
+          <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="btn-primary">Get Started</a>
         </div>
         
         <button 
@@ -99,7 +101,10 @@ const Navbar: React.FC = () => {
           <Link 
             to="/industries" 
             className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary"
-            onClick={() => setIsMobileMenuOpen(false)}
+            onClick={() => {
+              setIsMobileMenuOpen(false);
+              window.scrollTo(0, 0);
+            }}
           >
             Industries We Service
           </Link>
@@ -111,9 +116,9 @@ const Navbar: React.FC = () => {
             Pricing
           </a>
           <a 
-            href="#contact" 
+            href="#pricing" 
             className="block py-2 btn-primary text-center" 
-            onClick={(e) => scrollToSection('contact', e)}
+            onClick={(e) => scrollToSection('pricing', e)}
           >
             Get Started
           </a>
