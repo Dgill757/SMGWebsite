@@ -11,7 +11,7 @@ import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import CalendarDialog from "@/components/CalendarDialog";
 import Widget from '@/components/Widget';
-import { SEO, generateServiceSchema } from '@/lib/seo';
+import { SEO, generateServiceSchema } from '@/lib/seo-fixed';
 
 const Index = () => {
   const location = useLocation();
