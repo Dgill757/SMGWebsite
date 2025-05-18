@@ -11,7 +11,7 @@ import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import CalendarDialog from "@/components/CalendarDialog";
 import Widget from '@/components/Widget';
-import { SEO } from '@/lib/seo';
+import { SEO, generateServiceSchema } from '@/lib/seo';
 
 const Index = () => {
   const location = useLocation();
@@ -19,6 +19,7 @@ const Index = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
+    // Always scroll to top when component mounts
     window.scrollTo(0, 0);
     
     // Check for hash or state from navigation
@@ -41,6 +42,10 @@ const Index = () => {
         const element = document.getElementById(location.state.scrollTo);
         if (element) {
           element.scrollIntoView({
+            behavior: 'smooth'
+          });
+        } else if (location.state.scrollTo === 'widget' && widgetRef.current) {
+          widgetRef.current.scrollIntoView({
             behavior: 'smooth'
           });
         }

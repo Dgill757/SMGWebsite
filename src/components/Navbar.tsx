@@ -54,17 +54,21 @@ const Navbar: React.FC = () => {
     setIsMobileMenuOpen(false);
   };
 
+  // Handle logo click - always navigate to home and scroll to top
+  const handleLogoClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate('/');
+    window.scrollTo(0, 0);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'py-4 bg-background/80 backdrop-blur-md shadow-sm' : 'py-6'}`}>
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
         <a 
           href="/" 
           className="flex items-center space-x-2"
-          onClick={(e) => {
-            e.preventDefault();
-            navigate('/');
-            window.scrollTo(0, 0);
-          }}
+          onClick={handleLogoClick}
         >
           <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
