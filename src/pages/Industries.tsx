@@ -1,18 +1,11 @@
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import { motion } from "framer-motion";
+import { Helmet } from 'react-helmet-async';
 import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, ChevronRight } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
-import { SEO } from '@/lib/seo';
+import { Link } from 'react-router-dom';
 
 const Industries = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    // Ensure page always scrolls to top when industries page loads
-    window.scrollTo(0, 0);
-  }, []);
-
   const industries = [
     {
       icon: <Wrench className="w-6 h-6" />,
@@ -64,20 +57,12 @@ const Industries = () => {
     }
   ];
 
-  const handleIndustryClick = (link: string, event: React.MouseEvent) => {
-    event.preventDefault();
-    navigate(link);
-    // Scroll to top will happen on the industry page thanks to the useEffect there
-  };
-
   return (
     <>
-      <SEO
-        title="Industries We Service | AI Voice Assistant for Every Business | SummitVoiceAI"
-        description="From Home Services to Healthcare and Law Firms, our AI receptionist captures calls 24/7, qualifies leads, and books appointments for every industry. Try our demo today!"
-        keywords="voice ai for service industries, hvac voice assistant, real estate ai, healthcare voice assistant, legal receptionist ai"
-        canonical="https://summitaivoice.com/industries"
-      />
+      <Helmet>
+        <title>Industries We Service | AI Voice Assistant for Every Business | SummitVoiceAI</title>
+        <meta name="description" content="From Home Services to Healthcare and Law Firms, SummitVoiceAI's AI receptionist captures calls 24/7, qualifies leads, and books appointments for every industry—get ahead of competitors with cutting-edge Voice AI." />
+      </Helmet>
 
       <div className="pt-28 pb-20 bg-background">
         <div className="container mx-auto px-4">
@@ -99,7 +84,6 @@ const Industries = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg hover:shadow-xl transition cursor-pointer"
-                  onClick={(e) => handleIndustryClick(industry.link, e)}
                 >
                   <div className="inline-flex items-center mb-4 text-voiceai-primary">
                     {industry.icon}
@@ -110,14 +94,9 @@ const Industries = () => {
                   <p className="text-muted-foreground mb-4">
                     {industry.description}
                   </p>
-                  <a 
-                    href={industry.link}
-                    onClick={(e) => handleIndustryClick(industry.link, e)}
-                    className="text-voiceai-primary font-semibold flex items-center"
-                    aria-label={`Learn more about ${industry.title}`}
-                  >
+                  <Link to={industry.link} className="text-voiceai-primary font-semibold flex items-center">
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
-                  </a>
+                  </Link>
                 </motion.div>
               ))}
             </div>

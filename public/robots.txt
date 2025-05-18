@@ -1,62 +1,41 @@
 
-# Main configuration
 User-agent: *
 Allow: /
-Crawl-delay: 2
 
 Sitemap: https://summitaivoice.com/sitemap.xml
 
-# Search Engine Bots
+# Allow Googlebot
 User-agent: Googlebot
 Allow: /
 Crawl-delay: 1
 
+# Allow Bingbot
 User-agent: Bingbot
 Allow: /
 Crawl-delay: 1
 
-User-agent: Slurp
-Allow: /
-Crawl-delay: 1
-
-User-agent: DuckDuckBot
-Allow: /
-Crawl-delay: 1
-
-# Social Media Bots
+# Allow social media bots
 User-agent: Twitterbot
 Allow: /
 
 User-agent: facebookexternalhit
 Allow: /
 
-User-agent: LinkedInBot
-Allow: /
-
-# Google Business Bot
+# Allow Google Business Bot
 User-agent: Google-Business-Bot
 Allow: /
 
-# Priority pages - These pages are more important
+# Priority pages
 Allow: /features
 Allow: /pricing
 Allow: /contact
 Allow: /demo
 Allow: /about
 Allow: /testimonials
-Allow: /industries
-Allow: /industries/home-services
-Allow: /industries/real-estate
-Allow: /industries/healthcare
-Allow: /industries/legal
-Allow: /industries/automotive
-Allow: /industries/professional-services
-Allow: /industries/landscaping
-Allow: /industries/customer-service
 Allow: /terms-of-service
 Allow: /privacy-policy
 Allow: /cookie-policy
 Allow: /gdpr-compliance
 
-# Clean parameters - Remove tracking parameters
-Clean-param: utm_source&utm_medium&utm_campaign&utm_content&fbclid&gclid&msclkid
+# Clean parameters
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&fbclid

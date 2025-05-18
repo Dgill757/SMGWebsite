@@ -85,7 +85,7 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
                   textColor="text-voiceai-primary"
                 />
               </div>
-              <div className="mt-6 pt-4 text-center">
+              <div className="mt-6 text-center">
                 <p className="font-semibold">Estimated 3-Year Savings:</p>
                 <p className="text-2xl font-bold text-voiceai-primary">
                   ${calculateSavings(costs.threeYear.human, costs.threeYear.ai)}
@@ -113,7 +113,7 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
                   textColor="text-voiceai-primary"
                 />
               </div>
-              <div className="mt-6 pt-4 text-center">
+              <div className="mt-6 text-center">
                 <p className="font-semibold">Estimated 5-Year Savings:</p>
                 <p className="text-2xl font-bold text-voiceai-primary">
                   ${calculateSavings(costs.fiveYear.human, costs.fiveYear.ai)}
