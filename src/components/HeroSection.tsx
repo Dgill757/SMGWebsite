@@ -16,13 +16,34 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
+    
+    // First try to find the widget container
     const widgetElement = document.querySelector('.widget-container');
-    if (widgetElement) {
-      widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    // If widget container not found, look for the "Stop Losing..." section
+    // This is a backup in case the widget-container class isn't available
+    const opportunitiesSection = document.querySelector('h2:contains("Stop Losing")') || 
+                                document.querySelector('h2:contains("Thousands of Dollar")');
+    
+    // Determine which element to scroll to
+    const targetElement = widgetElement || opportunitiesSection;
+    
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setIsPlaying(true);
       setTimeout(() => {
         setIsPlaying(false);
       }, 5000);
+    } else {
+      // If neither element is found, scroll to the DemoSection as fallback
+      const demoSection = document.getElementById('demo');
+      if (demoSection) {
+        demoSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        setIsPlaying(true);
+        setTimeout(() => {
+          setIsPlaying(false);
+        }, 5000);
+      }
     }
   };
 
