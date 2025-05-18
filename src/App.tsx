@@ -15,6 +15,7 @@ import GDPRCompliance from "./pages/GDPRCompliance";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 
+// Create a new query client instance
 const queryClient = new QueryClient();
 
 const App = () => {

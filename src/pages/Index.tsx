@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState } from 'react';
-import Navbar from '@/components/Navbar';
 import HeroSection from '@/components/HeroSection';
 import BenefitsSection from '@/components/BenefitsSection';
 import HowItWorks from '@/components/HowItWorks';
@@ -9,22 +8,16 @@ import DemoSection from '@/components/DemoSection';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
-import Footer from '@/components/Footer';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
 import Widget from '@/components/Widget';
+import { SEO } from '@/lib/seo';
 
 const Index = () => {
   const location = useLocation();
   const [calendarOpen, setCalendarOpen] = useState(false);
   
   useEffect(() => {
-    document.title = "Summit Voice AI - #1 Voice AI Solution for Service Businesses";
-    const metaDescription = document.querySelector('meta[name="description"]');
-    if (metaDescription) {
-      metaDescription.setAttribute('content', 'Transform your service business with Summit Voice AI\'s cutting-edge AI solutions. Featuring AI receptionists, automated scheduling, and seamless CRM integration.');
-    }
-    
     window.scrollTo(0, 0);
     if (location.hash) {
       setTimeout(() => {
@@ -38,13 +31,39 @@ const Index = () => {
     }
   }, [location.pathname, location.hash]);
 
+  // Home page schema for service business
+  const homePageSchema = {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "Summit Voice AI",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "199.00",
+      "priceCurrency": "USD"
+    },
+    "aggregateRating": {
+      "@type": "AggregateRating",
+      "ratingValue": "4.8",
+      "ratingCount": "254"
+    },
+    "description": "AI-powered voice assistant for service businesses. Handles calls, schedules appointments, and follows up with customers automatically."
+  };
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <SEO
+        title="Summit Voice AI - #1 Voice AI Solution for Service Businesses"
+        description="Transform your service business with AI-powered voice assistants. Our AI receptionist handles calls, schedules appointments, and qualifies leads 24/7. Try Summit Voice AI today."
+        keywords="voice ai for business, ai receptionist, virtual receptionist, business automation, smart scheduling, CRM integration, service business automation"
+        schema={homePageSchema}
+      />
       <main>
         {/* Pass calendar modal controls to Hero and Pricing */}
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         
-        {/* Our new widget placeholder */}
+        {/* Our widget placeholder */}
         <Widget />
         
         <BenefitsSection />
