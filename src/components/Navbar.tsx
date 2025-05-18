@@ -58,11 +58,11 @@ const Navbar: React.FC = () => {
         </Link>
         
         <div className="hidden md:flex items-center space-x-8">
-          <a href="#features" onClick={(e) => scrollToSection('features', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Features</a>
-          <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">How It Works</a>
-          <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Use Cases</a>
-          <Link to="/industries" className="text-foreground/80 hover:text-voiceai-primary transition-colors" onClick={() => window.scrollTo(0, 0)}>Industries We Service</Link>
-          <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors">Pricing</a>
+          <a href="#features" onClick={(e) => scrollToSection('features', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors text-base">Features</a>
+          <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors text-base">How It Works</a>
+          <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors text-base">Use Cases</a>
+          <Link to="/industries" className="text-foreground/80 hover:text-voiceai-primary transition-colors text-base" onClick={() => window.scrollTo(0, 0)}>Industries We Service</Link>
+          <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors text-base">Pricing</a>
           <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="btn-primary">Get Started</a>
         </div>
         
@@ -79,28 +79,28 @@ const Navbar: React.FC = () => {
         <div className="md:hidden absolute top-full left-0 w-full bg-background shadow-md py-4 px-4 space-y-4 border-t">
           <a 
             href="#features" 
-            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
+            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary text-base" 
             onClick={(e) => scrollToSection('features', e)}
           >
             Features
           </a>
           <a 
             href="#how-it-works" 
-            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
+            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary text-base" 
             onClick={(e) => scrollToSection('how-it-works', e)}
           >
             How It Works
           </a>
           <a 
             href="#use-cases" 
-            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
+            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary text-base" 
             onClick={(e) => scrollToSection('use-cases', e)}
           >
             Use Cases
           </a>
           <Link 
             to="/industries" 
-            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary"
+            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary text-base"
             onClick={() => {
               setIsMobileMenuOpen(false);
               window.scrollTo(0, 0);
@@ -110,7 +110,7 @@ const Navbar: React.FC = () => {
           </Link>
           <a 
             href="#pricing" 
-            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary" 
+            className="block py-2 text-foreground/80 hover:text-voiceai-primary active:text-voiceai-primary text-base" 
             onClick={(e) => scrollToSection('pricing', e)}
           >
             Pricing
