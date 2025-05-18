@@ -8,7 +8,7 @@ interface SEOProps {
   canonical?: string;
   image?: string;
   type?: string;
-  schema?: any;
+  schema?: any | any[]; // Allow single schema object or array of schema objects
   keywords?: string;
   industry?: string;
 }
@@ -155,7 +155,13 @@ const SEO = ({
   
   // Add custom schema if provided
   if (schema) {
-    schemas.push(schema);
+    if (Array.isArray(schema)) {
+      // If schema is an array, add each item
+      schema.forEach(schemaItem => schemas.push(schemaItem));
+    } else {
+      // If schema is a single object, add it
+      schemas.push(schema);
+    }
   }
 
   return (

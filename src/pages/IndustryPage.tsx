@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -39,8 +40,9 @@ const IndustryPage = () => {
   // Generate FAQ schema if FAQs exist
   const faqSchema = industryData.faqs ? generateFaqSchema(industryData.faqs) : null;
 
-  // Combine schemas if both exist
-  const schemas = [serviceSchema];
+  // Add both schemas to an array for SEO component
+  const schemas = [];
+  schemas.push(serviceSchema);
   if (faqSchema) schemas.push(faqSchema);
 
   return (
