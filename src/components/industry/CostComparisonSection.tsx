@@ -36,7 +36,8 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg">
+          {/* First card - 1-Year Costs */}
+          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg pb-8">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg">1-Year Costs</h3>
             </div>
@@ -66,7 +67,8 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
             </div>
           </div>
 
-          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg">
+          {/* Second card - 3-Year Projection */}
+          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg pb-8">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg">3-Year Projection</h3>
             </div>
@@ -87,14 +89,15 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
               </div>
               <div className="mt-6 pb-2 text-center">
                 <p className="font-semibold">Estimated 3-Year Savings:</p>
-                <p className="text-2xl font-bold text-voiceai-primary">
+                <p className="text-2xl font-bold text-voiceai-primary mt-4">
                   ${calculateSavings(costs.threeYear.human, costs.threeYear.ai)}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg">
+          {/* Third card - 5-Year Projection */}
+          <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg pb-8">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg">5-Year Projection</h3>
             </div>
@@ -115,7 +118,7 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
               </div>
               <div className="mt-6 pb-2 text-center">
                 <p className="font-semibold">Estimated 5-Year Savings:</p>
-                <p className="text-2xl font-bold text-voiceai-primary">
+                <p className="text-2xl font-bold text-voiceai-primary mt-4">
                   ${calculateSavings(costs.fiveYear.human, costs.fiveYear.ai)}
                 </p>
               </div>
@@ -164,3 +167,4 @@ const calculateSavings = (human: string, ai: string) => {
 };
 
 export default CostComparisonSection;
+
