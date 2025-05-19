@@ -1,6 +1,13 @@
 
 import React, { useEffect, useRef } from 'react';
 
+// Add declaration for the ThinkrrWidget property on the window object
+declare global {
+  interface Window {
+    ThinkrrWidget?: any; // Using any type since we don't know the exact structure
+  }
+}
+
 const Widget: React.FC = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
   
