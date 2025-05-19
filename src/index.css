@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -144,6 +145,36 @@
     margin-top: 2px;
     display: block;
   }
+  
+  /* Reduced spacing in hero section for mobile */
+  .min-h-screen {
+    min-height: 90vh;  /* Slightly reduce full height on mobile */
+  }
+  
+  /* Ensure widget is visible on all devices */
+  .widget-container {
+    display: block !important;
+    visibility: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    opacity: 1 !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+    position: relative;
+    z-index: 10;
+  }
+}
+
+/* Widget container styling for all devices */
+.widget-container {
+  display: block;
+  visibility: visible;
+  width: 100%;
+  margin: 20px auto 40px;
+  text-align: center;
+  position: relative;
+  z-index: 10;
 }
 
 /* Removing all previous widget styling */
+
