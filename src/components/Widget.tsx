@@ -1,5 +1,5 @@
 
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 // Add declaration for the ThinkrrWidget property on the window object
 declare global {
@@ -10,11 +10,14 @@ declare global {
 
 const Widget: React.FC = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
   
   useEffect(() => {
-    // First approach: Check if widget script exists, if not add it
-    const scriptExists = document.querySelector('script#thinkrr-widget-script');
-    if (!scriptExists) {
+    // Approach 1: Use the script from index.html if it exists
+    let scriptLoaded = document.querySelector('script#thinkrr-widget-script');
+    
+    // If no script exists, create and add it
+    if (!scriptLoaded) {
       const script = document.createElement('script');
       script.id = 'thinkrr-widget-script';
       script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
@@ -26,31 +29,48 @@ const Widget: React.FC = () => {
       
       script.onload = () => {
         console.log('Thinkrr widget script loaded successfully');
+        setIsLoaded(true);
       };
       
       document.body.appendChild(script);
+    } else {
+      // Script already exists in the document
+      setIsLoaded(true);
     }
     
-    // This effect ensures the widget is properly initialized
-    // after the component mounts and the script has loaded
+    // More aggressive approach to ensure widget is initialized and visible
     const checkWidgetInterval = setInterval(() => {
-      // Check if the widget's script has loaded and initialized
-      if (widgetRef.current && window.ThinkrrWidget) {
-        console.log('Thinkrr widget initialized successfully');
-        clearInterval(checkWidgetInterval);
-      } else {
-        console.log('Waiting for Thinkrr widget to initialize...');
-        // Attempt to force widget visibility
-        if (widgetRef.current) {
-          widgetRef.current.style.display = 'block';
-          widgetRef.current.style.visibility = 'visible';
+      if (widgetRef.current) {
+        // Apply styles directly to ensure visibility
+        widgetRef.current.style.display = 'block';
+        widgetRef.current.style.visibility = 'visible';
+        widgetRef.current.style.opacity = '1';
+        
+        // Check if the widget's global object has been initialized
+        if (window.ThinkrrWidget) {
+          console.log('Thinkrr widget initialized successfully');
+          clearInterval(checkWidgetInterval);
+        } else {
+          console.log('Waiting for Thinkrr widget to initialize...');
         }
       }
     }, 1000);
     
+    // Force mobile viewport to recognize content
+    if ('visualViewport' in window) {
+      window.visualViewport?.addEventListener('resize', () => {
+        if (widgetRef.current) {
+          widgetRef.current.style.display = 'block';
+        }
+      });
+    }
+    
     // Cleanup on unmount
     return () => {
       clearInterval(checkWidgetInterval);
+      if ('visualViewport' in window) {
+        window.visualViewport?.removeEventListener('resize', () => {});
+      }
     };
   }, []);
   
@@ -59,10 +79,11 @@ const Widget: React.FC = () => {
       <div
         ref={widgetRef}
         data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
+        className="thinkrr-widget-element"
         style={{
           width: '220px',
           height: '220px',
-          margin: '20px auto',
+          margin: '10px auto',
           position: 'relative',
           zIndex: 999,
           display: 'block',
@@ -70,6 +91,9 @@ const Widget: React.FC = () => {
           opacity: 1,
         }}
       />
+      {!isLoaded && (
+        <div className="widget-loading">Loading voice AI widget...</div>
+      )}
     </div>
   );
 };

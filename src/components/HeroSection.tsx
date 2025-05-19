@@ -17,8 +17,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
     
-    // Target the widget container directly with a more specific selector
-    const widgetElement = document.querySelector('.widget-container');
+    // Try multiple selectors to ensure we find the widget
+    const widgetElement = 
+      document.querySelector('.widget-container') || 
+      document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]')?.parentElement;
     
     if (widgetElement) {
       // Use a shorter animation and center alignment for better visibility
@@ -30,13 +32,25 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         setIsPlaying(false);
       }, 3000);
       
-      // Force widget visibility after scrolling
+      // Force widget visibility after scrolling with multiple attempts
       const widgetDiv = document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]');
       if (widgetDiv && widgetDiv instanceof HTMLElement) {
+        // Apply styles immediately
+        widgetDiv.style.display = 'block';
+        widgetDiv.style.visibility = 'visible';
+        widgetDiv.style.opacity = '1';
+        
+        // And also after a delay to ensure they take effect
         setTimeout(() => {
           widgetDiv.style.display = 'block';
           widgetDiv.style.visibility = 'visible';
           widgetDiv.style.opacity = '1';
+          
+          // Add a class that might help with specificity
+          widgetDiv.classList.add('force-visible');
+          
+          // Try to trigger a reflow
+          void widgetDiv.offsetHeight;
         }, 500);
       }
     } else {
