@@ -148,7 +148,7 @@
   
   /* Reduced spacing in hero section for mobile */
   .min-h-screen {
-    min-height: 90vh;  /* Slightly reduce full height on mobile */
+    min-height: 85vh;  /* Further reduce full height on mobile */
   }
   
   /* Ensure widget is visible on all devices */
@@ -162,6 +162,7 @@
     padding: 0 !important;
     position: relative !important;
     z-index: 9999 !important;
+    overflow: visible !important;
   }
 }
 
@@ -188,7 +189,8 @@
     min-height: 220px !important;
   }
   
-  .widget-container > div {
+  .widget-container > div,
+  .widget-container > iframe {
     transform: scale(1) !important;
     margin: 0 auto !important;
     display: block !important;
@@ -197,13 +199,13 @@
   }
   
   .min-h-screen {
-    padding-bottom: 15px !important; /* Reduce bottom padding on hero section */
+    padding-bottom: 10px !important; /* Further reduce bottom padding on hero section */
   }
   
   /* Reduce spacing around heading */
   .heading-xl {
-    margin-top: 10px !important;
-    margin-bottom: 10px !important;
+    margin-top: 8px !important;
+    margin-bottom: 8px !important;
   }
   
   /* Force visibility of iframe if used */
@@ -211,6 +213,7 @@
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    margin: 0 auto !important;
   }
 }
 

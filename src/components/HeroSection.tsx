@@ -18,6 +18,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
   // Check if widget is visible
   useEffect(() => {
     const checkWidgetVisibility = () => {
+      // Try multiple selectors to ensure we find the widget
       const widgetElement = 
         document.querySelector('.widget-container') || 
         document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]')?.parentElement;
@@ -35,13 +36,23 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
     
     checkWidgetVisibility();
     // Check periodically
-    const interval = setInterval(checkWidgetVisibility, 3000);
+    const interval = setInterval(checkWidgetVisibility, 2000);
     
     return () => clearInterval(interval);
   }, []);
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
+    
+    // First check for iframe fallback
+    const iframeElement = document.querySelector('.widget-container iframe');
+    
+    if (iframeElement) {
+      iframeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      setIsPlaying(true);
+      setTimeout(() => setIsPlaying(false), 3000);
+      return;
+    }
     
     // Try multiple selectors to ensure we find the widget
     const widgetElement = 
@@ -90,10 +101,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
       setTimeout(enforceWidgetVisibility, 2000);
     } else {
       // If widget container not found, look for fallback sections
-      const opportunitiesSection = document.querySelector('[id="features"]');
+      const featuresSection = document.querySelector('[id="features"]');
       
-      if (opportunitiesSection) {
-        opportunitiesSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      if (featuresSection) {
+        featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
         setIsPlaying(true);
         setTimeout(() => {
           setIsPlaying(false);
@@ -105,21 +116,21 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-6 pb-[30px]">
+    <div className="min-h-screen flex flex-col justify-center relative overflow-hidden pt-6 pb-[20px] md:pb-[30px]">
       <BackgroundElements />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
-          <div className="w-full lg:w-1/2 space-y-6 lg:space-y-8">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-4 lg:gap-10">
+          <div className="w-full lg:w-1/2 space-y-4 lg:space-y-8">
             <div>
-              <div className="inline-flex items-center gap-2 bg-voiceai-primary/10 text-voiceai-primary px-4 py-2 rounded-full mb-4 lg:mb-6">
+              <div className="inline-flex items-center gap-2 bg-voiceai-primary/10 text-voiceai-primary px-4 py-2 rounded-full mb-3 lg:mb-6">
                 <span className="animate-pulse rounded-full w-2 h-2 bg-voiceai-primary"></span>
                 <span className="text-sm font-medium">The Future of Websites Is Here</span>
               </div>
               <h1 className="heading-xl">
                 Give Your Website a <span className="text-gradient">Voice</span> & <span className="text-gradient">Brain</span>
               </h1>
-              <p className="mt-4 lg:mt-6 text-lg text-muted-foreground">
+              <p className="mt-3 lg:mt-6 text-lg text-muted-foreground">
                 Stop losing leads to unanswered calls and static forms. Our Voice AI handles calls, qualifies leads, books appointments, and follows up—all while you sleep.
               </p>
             </div>
@@ -131,7 +142,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               setCalendarOpen={setCalendarOpen}
             />
             
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-6 lg:mt-10">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4 lg:mt-8">
               <FeatureItem Icon={PhoneCall} text="Never Miss a Call" colorClass="bg-voiceai-primary/10" />
               <FeatureItem Icon={Calendar} text="Auto Scheduling" colorClass="bg-voiceai-secondary/10" />
               <FeatureItem Icon={CreditCard} text="Billing & Invoicing" colorClass="bg-voiceai-accent/10" />

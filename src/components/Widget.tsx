@@ -11,16 +11,17 @@ declare global {
 const Widget: React.FC = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [useFallback, setUseFallback] = useState(false);
   const [attempts, setAttempts] = useState(0);
   
+  // Function to detect mobile viewport
+  const isMobileDevice = () => {
+    return (window.innerWidth <= 768) || 
+           (navigator.userAgent.match(/Android/i)) || 
+           (navigator.userAgent.match(/iPhone|iPad|iPod/i));
+  };
+  
   useEffect(() => {
-    // Function to detect mobile viewport
-    const isMobileDevice = () => {
-      return (window.innerWidth <= 768) || 
-            (navigator.userAgent.match(/Android/i)) || 
-            (navigator.userAgent.match(/iPhone|iPad|iPod/i));
-    };
-    
     // Function to create and inject the widget
     const createVoiceWidget = () => {
       console.log("Creating voice widget, mobile device: " + isMobileDevice());
@@ -38,6 +39,10 @@ const Widget: React.FC = () => {
         script.onerror = () => {
           console.error('Failed to load Thinkrr widget script');
           setAttempts(prev => prev + 1);
+          // Switch to fallback after multiple failures
+          if (attempts >= 2) {
+            setUseFallback(true);
+          }
         };
         
         script.onload = () => {
@@ -66,8 +71,9 @@ const Widget: React.FC = () => {
     
     // Persistent checking to ensure widget loads and stays visible
     const checkWidgetInterval = setInterval(() => {
-      if (attempts >= 10) {
-        console.log("Max widget creation attempts reached");
+      if (attempts >= 5) {
+        console.log("Max widget creation attempts reached, switching to fallback");
+        setUseFallback(true);
         clearInterval(checkWidgetInterval);
         return;
       }
@@ -130,6 +136,46 @@ const Widget: React.FC = () => {
     };
   }, [attempts]);
   
+  // If we need to use the iframe fallback
+  if (useFallback) {
+    return (
+      <div className="widget-container">
+        <iframe 
+          title="Voice AI Widget Iframe"
+          style={{
+            width: '220px', 
+            height: '220px', 
+            border: 'none', 
+            overflow: 'visible',
+            display: 'block',
+            margin: '0 auto'
+          }}
+          srcDoc={`
+            <!DOCTYPE html>
+            <html>
+            <head>
+              <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
+              <style>
+                body { margin:0; padding:0; overflow:visible; }
+                [data-widget-key] { 
+                  display:block !important; 
+                  visibility:visible !important; 
+                  opacity:1 !important;
+                  margin:10px auto;
+                }
+              </style>
+            </head>
+            <body>
+              <div data-widget-key='8ba094ef-bcf2-4aec-bcef-ee65c95b0492'></div>
+              <script src='https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js'></script>
+            </body>
+            </html>
+          `}
+        />
+      </div>
+    );
+  }
+  
   return (
     <div className="widget-container">
       <div
@@ -150,37 +196,6 @@ const Widget: React.FC = () => {
       />
       {!isLoaded && (
         <div className="widget-loading">Loading voice AI widget...</div>
-      )}
-      
-      {/* Fallback iframe approach if all else fails */}
-      {attempts > 5 && (
-        <div style={{width:'100%', maxWidth:'220px', height:'220px', margin:'10px auto'}}>
-          <iframe 
-            title="Voice AI Widget Iframe"
-            style={{width:'100%', height:'220px', border:'none', overflow:'visible'}}
-            srcDoc={`
-              <!DOCTYPE html>
-              <html>
-              <head>
-                <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
-                <style>
-                  body { margin:0; padding:0; overflow:visible; }
-                  [data-widget-key] { 
-                    display:block !important; 
-                    visibility:visible !important; 
-                    opacity:1 !important;
-                    margin:10px auto;
-                  }
-                </style>
-              </head>
-              <body>
-                <div data-widget-key='8ba094ef-bcf2-4aec-bcef-ee65c95b0492'></div>
-                <script src='https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js'></script>
-              </body>
-              </html>
-            `}
-          />
-        </div>
       )}
     </div>
   );
