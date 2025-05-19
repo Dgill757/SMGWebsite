@@ -13,7 +13,6 @@ const Widget: React.FC = () => (
       zIndex: 1000,
       touchAction: 'none',           // disable swipe/drag
       userSelect: 'none',            // disable text/image selection
-      WebkitUserDrag: 'none' as any, // disable image dragging in Safari
     }}
   >
     <div

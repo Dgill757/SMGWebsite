@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -213,6 +214,12 @@
   touch-action: none !important;
   user-select: none !important;
   -webkit-user-drag: none !important;
+}
+
+/* Prevent any element in the widget from being draggable */
+#voice-widget-container,
+#voice-widget-container * {
+  -webkit-user-drag: none;
 }
 
 /* Disable any auto-generated animation overlay/ring elements */
