@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -203,13 +202,33 @@
   }
 }
 
-/* New styles for Thinkrr widget element to ensure visibility */
-.thinkrr-widget-element {
+/* Force widget visible, static, perfectly sized */
+#voice-widget-container,
+#voice-widget-container [data-widget-key] {
   display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
-  margin: 0 auto !important;
+  width: 220px !important;
+  height: 220px !important;
+  overflow: visible !important;
+  position: relative !important;
+  touch-action: none !important;
+  user-select: none !important;
+  -webkit-user-drag: none !important;
+}
+
+/* Disable any auto-generated animation overlay/ring elements */
+.thinkrr-ring-animation,
+.thinkrr-overlay,
+.voice-widget-mask {
+  display: none !important;
+  opacity: 0 !important;
+}
+
+/* If the widget injects an <img> or internal <canvas>, keep it contained */
+#voice-widget-container img,
+#voice-widget-container canvas {
+  object-fit: contain !important;
+  width: 100% !important;
+  height: 100% !important;
 }
 
 /* Widget loading indicator */

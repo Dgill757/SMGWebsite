@@ -73,10 +73,10 @@ const Index = () => {
       
       <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
         <main>
-          {/* Pass calendar modal controls to Hero and Pricing */}
+          {/* Pass calendar modal controls to Hero */}
           <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
           
-          {/* Our new widget placeholder */}
+          {/* Single widget instance */}
           <Widget />
           
           <BenefitsSection />
