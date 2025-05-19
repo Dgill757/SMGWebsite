@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
 import FeatureItem from './hero/FeatureItem';
@@ -13,105 +13,22 @@ interface HeroSectionProps {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen }) => {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [widgetVisible, setWidgetVisible] = useState(false);
-
-  // Check if widget is visible
-  useEffect(() => {
-    const checkWidgetVisibility = () => {
-      // Try multiple selectors to ensure we find the widget
-      const widgetElement = 
-        document.querySelector('.widget-container') || 
-        document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]')?.parentElement;
-      
-      if (widgetElement) {
-        const rect = widgetElement.getBoundingClientRect();
-        // Check if the element is actually rendered with height
-        if (rect.height > 0) {
-          setWidgetVisible(true);
-        } else {
-          setWidgetVisible(false);
-        }
-      }
-    };
-    
-    checkWidgetVisibility();
-    // Check periodically
-    const interval = setInterval(checkWidgetVisibility, 2000);
-    
-    return () => clearInterval(interval);
-  }, []);
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
     
-    // First check for iframe fallback
-    const iframeElement = document.querySelector('.widget-container iframe');
-    
-    if (iframeElement) {
-      iframeElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      setIsPlaying(true);
-      setTimeout(() => setIsPlaying(false), 3000);
-      return;
-    }
-    
-    // Try multiple selectors to ensure we find the widget
-    const widgetElement = 
-      document.querySelector('.widget-container') || 
-      document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]')?.parentElement;
+    // Find the widget container
+    const widgetElement = document.querySelector('.widget-container');
     
     if (widgetElement) {
-      // First make sure the element is visible before scrolling
-      if (widgetElement instanceof HTMLElement) {
-        widgetElement.style.display = 'block';
-        widgetElement.style.visibility = 'visible';
-        widgetElement.style.opacity = '1';
-      }
-      
-      // Use a shorter animation and center alignment for better visibility
+      // Scroll to widget
       widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setIsPlaying(true);
       
-      // Make sure the animation doesn't play too long
+      // Reset playing state after animation
       setTimeout(() => {
         setIsPlaying(false);
       }, 3000);
-      
-      // Force widget visibility after scrolling with multiple attempts
-      const enforceWidgetVisibility = () => {
-        const widgetDiv = document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]');
-        if (widgetDiv && widgetDiv instanceof HTMLElement) {
-          // Apply styles immediately
-          widgetDiv.style.display = 'block';
-          widgetDiv.style.visibility = 'visible';
-          widgetDiv.style.opacity = '1';
-          widgetDiv.style.zIndex = '9999';
-          
-          // Add a class that might help with specificity
-          widgetDiv.classList.add('force-visible');
-          
-          // Try to trigger a reflow
-          void widgetDiv.offsetHeight;
-        }
-      };
-      
-      // Apply multiple times with delays
-      enforceWidgetVisibility();
-      setTimeout(enforceWidgetVisibility, 500);
-      setTimeout(enforceWidgetVisibility, 1000);
-      setTimeout(enforceWidgetVisibility, 2000);
-    } else {
-      // If widget container not found, look for fallback sections
-      const featuresSection = document.querySelector('[id="features"]');
-      
-      if (featuresSection) {
-        featuresSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setIsPlaying(true);
-        setTimeout(() => {
-          setIsPlaying(false);
-        }, 3000);
-      } else {
-        console.error('Failed to find widget or fallback section');
-      }
     }
   };
 
