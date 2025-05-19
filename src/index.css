@@ -133,4 +133,19 @@
   }
 }
 
+/* Mobile optimizations for navbar */
+@media (max-width: 640px) {
+  .navbar-logo {
+    font-size: 1rem;
+    max-width: 120px;
+  }
+  
+  .navbar-tagline {
+    font-size: 0.7rem;
+    margin-top: 2px;
+    display: block;
+  }
+}
+
 /* Removing all previous widget styling */
+

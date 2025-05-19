@@ -46,16 +46,19 @@ const Navbar: React.FC = () => {
   return (
     <nav className={`fixed w-full z-50 transition-all duration-300 ${isScrolled ? 'py-4 bg-background/80 backdrop-blur-md shadow-sm' : 'py-6'}`}>
       <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
-        <Link to="/" className="flex items-center space-x-2" onClick={() => window.scrollTo(0, 0)}>
-          <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-              <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-              <line x1="12" x2="12" y1="19" y2="22"/>
-            </svg>
-          </div>
-          <span className="font-bold text-xl text-gradient">SummitVoiceAI</span>
-        </Link>
+        <div className="flex flex-col sm:flex-row items-start sm:items-center">
+          <Link to="/" className="flex items-center space-x-2" onClick={() => window.scrollTo(0, 0)}>
+            <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" x2="12" y1="19" y2="22"/>
+              </svg>
+            </div>
+            <span className="font-bold text-xl text-gradient navbar-logo">SummitVoiceAI</span>
+          </Link>
+          <span className="text-sm text-foreground/70 mt-1 sm:mt-0 sm:ml-4 navbar-tagline">The Future of Websites Is Here</span>
+        </div>
         
         <div className="hidden md:flex items-center space-x-8">
           <a href="#features" onClick={(e) => scrollToSection('features', e)} className="text-foreground/80 hover:text-voiceai-primary transition-colors text-base">Features</a>
