@@ -17,15 +17,28 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
     
-    // Target the widget container directly
+    // Target the widget container directly with a more specific selector
     const widgetElement = document.querySelector('.widget-container');
     
     if (widgetElement) {
+      // Use a shorter animation and center alignment for better visibility
       widgetElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
       setIsPlaying(true);
+      
+      // Make sure the animation doesn't play too long
       setTimeout(() => {
         setIsPlaying(false);
-      }, 5000);
+      }, 3000);
+      
+      // Force widget visibility after scrolling
+      const widgetDiv = document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]');
+      if (widgetDiv && widgetDiv instanceof HTMLElement) {
+        setTimeout(() => {
+          widgetDiv.style.display = 'block';
+          widgetDiv.style.visibility = 'visible';
+          widgetDiv.style.opacity = '1';
+        }, 500);
+      }
     } else {
       // If widget container not found, look for fallback sections
       const opportunitiesSection = document.querySelector('[id="features"]');
@@ -35,7 +48,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         setIsPlaying(true);
         setTimeout(() => {
           setIsPlaying(false);
-        }, 5000);
+        }, 3000);
       }
     }
   };

@@ -12,6 +12,25 @@ const Widget: React.FC = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
   
   useEffect(() => {
+    // First approach: Check if widget script exists, if not add it
+    const scriptExists = document.querySelector('script#thinkrr-widget-script');
+    if (!scriptExists) {
+      const script = document.createElement('script');
+      script.id = 'thinkrr-widget-script';
+      script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
+      script.async = true;
+      
+      script.onerror = () => {
+        console.error('Failed to load Thinkrr widget script');
+      };
+      
+      script.onload = () => {
+        console.log('Thinkrr widget script loaded successfully');
+      };
+      
+      document.body.appendChild(script);
+    }
+    
     // This effect ensures the widget is properly initialized
     // after the component mounts and the script has loaded
     const checkWidgetInterval = setInterval(() => {
@@ -19,6 +38,13 @@ const Widget: React.FC = () => {
       if (widgetRef.current && window.ThinkrrWidget) {
         console.log('Thinkrr widget initialized successfully');
         clearInterval(checkWidgetInterval);
+      } else {
+        console.log('Waiting for Thinkrr widget to initialize...');
+        // Attempt to force widget visibility
+        if (widgetRef.current) {
+          widgetRef.current.style.display = 'block';
+          widgetRef.current.style.visibility = 'visible';
+        }
       }
     }, 1000);
     
@@ -36,10 +62,12 @@ const Widget: React.FC = () => {
         style={{
           width: '220px',
           height: '220px',
-          margin: '30px auto',       // reduced top/bottom margin
-          position: 'relative',      // ensure proper stacking
-          zIndex: 10,                // ensure visibility
-          display: 'block',          // force display
+          margin: '20px auto',
+          position: 'relative',
+          zIndex: 999,
+          display: 'block',
+          visibility: 'visible',
+          opacity: 1,
         }}
       />
     </div>

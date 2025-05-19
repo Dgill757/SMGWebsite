@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -167,14 +166,38 @@
 
 /* Widget container styling for all devices */
 .widget-container {
-  display: block;
-  visibility: visible;
-  width: 100%;
-  margin: 20px auto 40px;
-  text-align: center;
+  display: block !important;
+  visibility: visible !important;
+  width: 100% !important;
+  height: auto !important;
+  opacity: 1 !important;
+  margin: 10px auto 30px !important;
+  padding: 0 !important;
   position: relative;
   z-index: 10;
+  text-align: center;
 }
 
-/* Removing all previous widget styling */
-
+/* Additional mobile-specific widget styling */
+@media (max-width: 768px) {
+  .widget-container {
+    margin: 5px auto 20px !important;
+  }
+  
+  .widget-container > div {
+    transform: scale(0.9) !important;
+    margin: 0 auto !important;
+    display: block !important;
+    visibility: visible !important;
+  }
+  
+  .min-h-screen {
+    padding-bottom: 15px !important; /* Reduce bottom padding on hero section */
+  }
+  
+  /* Reduce spacing around heading */
+  .heading-xl {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+  }
+}
