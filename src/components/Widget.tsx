@@ -11,73 +11,40 @@ declare global {
 const Widget: React.FC = () => {
   const widgetRef = useRef<HTMLDivElement>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [attempts, setAttempts] = useState(0);
   
   useEffect(() => {
-    // Function to detect mobile viewport
-    const isMobileDevice = () => {
-      return (window.innerWidth <= 768) || 
-            (navigator.userAgent.match(/Android/i)) || 
-            (navigator.userAgent.match(/iPhone|iPad|iPod/i));
-    };
+    // Approach 1: Use the script from index.html if it exists
+    let scriptLoaded = document.querySelector('script#thinkrr-widget-script');
     
-    // Function to create and inject the widget
-    const createVoiceWidget = () => {
-      console.log("Creating voice widget, mobile device: " + isMobileDevice());
+    // If no script exists, create and add it
+    if (!scriptLoaded) {
+      const script = document.createElement('script');
+      script.id = 'thinkrr-widget-script';
+      script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
+      script.async = true;
       
-      // First approach: Use existing script if available
-      let scriptLoaded = document.querySelector('script#thinkrr-widget-script');
+      script.onerror = () => {
+        console.error('Failed to load Thinkrr widget script');
+      };
       
-      // If no script exists, create and add it
-      if (!scriptLoaded) {
-        const script = document.createElement('script');
-        script.id = 'thinkrr-widget-script';
-        script.src = 'https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js';
-        script.async = true;
-        
-        script.onerror = () => {
-          console.error('Failed to load Thinkrr widget script');
-          setAttempts(prev => prev + 1);
-        };
-        
-        script.onload = () => {
-          console.log('Thinkrr widget script loaded successfully');
-          setIsLoaded(true);
-        };
-        
-        document.head.appendChild(script);
-      } else {
-        // Script already exists in the document
+      script.onload = () => {
+        console.log('Thinkrr widget script loaded successfully');
         setIsLoaded(true);
-      }
+      };
       
-      // Force the widget element to be visible
-      if (widgetRef.current) {
-        widgetRef.current.style.display = 'block';
-        widgetRef.current.style.visibility = 'visible';
-        widgetRef.current.style.opacity = '1';
-        widgetRef.current.style.position = 'relative';
-        widgetRef.current.style.zIndex = '9999';
-      }
-    };
+      document.body.appendChild(script);
+    } else {
+      // Script already exists in the document
+      setIsLoaded(true);
+    }
     
-    // Initial creation
-    createVoiceWidget();
-    
-    // Persistent checking to ensure widget loads and stays visible
+    // More aggressive approach to ensure widget is initialized and visible
     const checkWidgetInterval = setInterval(() => {
-      if (attempts >= 10) {
-        console.log("Max widget creation attempts reached");
-        clearInterval(checkWidgetInterval);
-        return;
-      }
-      
       if (widgetRef.current) {
         // Apply styles directly to ensure visibility
         widgetRef.current.style.display = 'block';
         widgetRef.current.style.visibility = 'visible';
         widgetRef.current.style.opacity = '1';
-        widgetRef.current.style.zIndex = '9999';
         
         // Check if the widget's global object has been initialized
         if (window.ThinkrrWidget) {
@@ -85,50 +52,27 @@ const Widget: React.FC = () => {
           clearInterval(checkWidgetInterval);
         } else {
           console.log('Waiting for Thinkrr widget to initialize...');
-          // If on mobile, try more aggressively
-          if (isMobileDevice()) {
-            setAttempts(prev => prev + 1);
-            createVoiceWidget();
-          }
         }
       }
-    }, 2000);
+    }, 1000);
     
     // Force mobile viewport to recognize content
     if ('visualViewport' in window) {
-      const handleViewportChange = () => {
+      window.visualViewport?.addEventListener('resize', () => {
         if (widgetRef.current) {
           widgetRef.current.style.display = 'block';
-          widgetRef.current.style.visibility = 'visible';
-          widgetRef.current.style.opacity = '1';
         }
-      };
-      
-      window.visualViewport?.addEventListener('resize', handleViewportChange);
-      window.visualViewport?.addEventListener('scroll', handleViewportChange);
-      
-      // Extra attempts specifically for mobile
-      if (isMobileDevice()) {
-        console.log("Mobile device detected, forcing widget creation");
-        setTimeout(createVoiceWidget, 3000);
-        setTimeout(createVoiceWidget, 6000);
-      }
-      
-      // Cleanup on unmount
-      return () => {
-        clearInterval(checkWidgetInterval);
-        if ('visualViewport' in window) {
-          window.visualViewport?.removeEventListener('resize', handleViewportChange);
-          window.visualViewport?.removeEventListener('scroll', handleViewportChange);
-        }
-      };
+      });
     }
     
     // Cleanup on unmount
     return () => {
       clearInterval(checkWidgetInterval);
+      if ('visualViewport' in window) {
+        window.visualViewport?.removeEventListener('resize', () => {});
+      }
     };
-  }, [attempts]);
+  }, []);
   
   return (
     <div className="widget-container">
@@ -137,12 +81,11 @@ const Widget: React.FC = () => {
         data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"
         className="thinkrr-widget-element"
         style={{
-          width: '100%',
-          maxWidth: '220px',
+          width: '220px',
           height: '220px',
           margin: '10px auto',
           position: 'relative',
-          zIndex: 9999,
+          zIndex: 999,
           display: 'block',
           visibility: 'visible',
           opacity: 1,
@@ -150,37 +93,6 @@ const Widget: React.FC = () => {
       />
       {!isLoaded && (
         <div className="widget-loading">Loading voice AI widget...</div>
-      )}
-      
-      {/* Fallback iframe approach if all else fails */}
-      {attempts > 5 && (
-        <div style={{width:'100%', maxWidth:'220px', height:'220px', margin:'10px auto'}}>
-          <iframe 
-            title="Voice AI Widget Iframe"
-            style={{width:'100%', height:'220px', border:'none', overflow:'visible'}}
-            srcDoc={`
-              <!DOCTYPE html>
-              <html>
-              <head>
-                <meta name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1'>
-                <style>
-                  body { margin:0; padding:0; overflow:visible; }
-                  [data-widget-key] { 
-                    display:block !important; 
-                    visibility:visible !important; 
-                    opacity:1 !important;
-                    margin:10px auto;
-                  }
-                </style>
-              </head>
-              <body>
-                <div data-widget-key='8ba094ef-bcf2-4aec-bcef-ee65c95b0492'></div>
-                <script src='https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js'></script>
-              </body>
-              </html>
-            `}
-          />
-        </div>
       )}
     </div>
   );

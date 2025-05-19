@@ -160,8 +160,8 @@
     opacity: 1 !important;
     margin: 0 auto !important;
     padding: 0 !important;
-    position: relative !important;
-    z-index: 9999 !important;
+    position: relative;
+    z-index: 10;
   }
 }
 
@@ -174,26 +174,22 @@
   opacity: 1 !important;
   margin: 10px auto 30px !important;
   padding: 0 !important;
-  position: relative !important;
-  z-index: 9999 !important;
-  text-align: center !important;
-  overflow: visible !important;
+  position: relative;
+  z-index: 10;
+  text-align: center;
 }
 
 /* Additional mobile-specific widget styling */
-@media only screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .widget-container {
     margin: 5px auto 20px !important;
-    transform: scale(1) !important;
-    min-height: 220px !important;
   }
   
   .widget-container > div {
-    transform: scale(1) !important;
+    transform: scale(0.9) !important;
     margin: 0 auto !important;
     display: block !important;
     visibility: visible !important;
-    opacity: 1 !important;
   }
   
   .min-h-screen {
@@ -205,13 +201,6 @@
     margin-top: 10px !important;
     margin-bottom: 10px !important;
   }
-  
-  /* Force visibility of iframe if used */
-  iframe {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-  }
 }
 
 /* New styles for Thinkrr widget element to ensure visibility */
@@ -221,9 +210,6 @@
   opacity: 1 !important;
   pointer-events: auto !important;
   margin: 0 auto !important;
-  min-height: 220px !important;
-  position: relative !important;
-  z-index: 9999 !important;
 }
 
 /* Widget loading indicator */
@@ -232,14 +218,4 @@
   font-size: 14px;
   padding: 10px;
   color: var(--primary);
-  display: block !important;
-}
-
-/* Force widget visibility on ANY device */
-[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"],
-[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] * {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  pointer-events: auto !important;
 }
