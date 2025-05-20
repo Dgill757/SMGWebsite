@@ -29,6 +29,16 @@ const Index = () => {
         }
       }, 500);
     }
+
+    // Force widget visibility after initial load
+    setTimeout(() => {
+      const widgetDiv = document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]');
+      if (widgetDiv && widgetDiv instanceof HTMLElement) {
+        widgetDiv.style.display = 'block';
+        widgetDiv.style.visibility = 'visible';
+        widgetDiv.style.opacity = '1';
+      }
+    }, 1000);
   }, [location.pathname, location.hash]);
 
   // FAQ data for schema
@@ -76,7 +86,7 @@ const Index = () => {
           {/* Pass calendar modal controls to Hero */}
           <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
           
-          {/* Single widget instance */}
+          {/* Widget component placed immediately after HeroSection */}
           <Widget />
           
           <BenefitsSection />

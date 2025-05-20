@@ -205,8 +205,11 @@
 
 /* Force widget visible, static, perfectly sized */
 #voice-widget-container,
-#voice-widget-container [data-widget-key] {
+#voice-widget-container [data-widget-key],
+[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] {
   display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
   width: 220px !important;
   height: 220px !important;
   overflow: visible !important;
@@ -214,12 +217,21 @@
   touch-action: none !important;
   user-select: none !important;
   -webkit-user-drag: none !important;
+  pointer-events: auto !important;
+  z-index: 1000 !important;
 }
 
 /* Prevent any element in the widget from being draggable */
 #voice-widget-container,
-#voice-widget-container * {
-  -webkit-user-drag: none;
+#voice-widget-container *,
+[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"],
+[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] * {
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
+  touch-action: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-tap-highlight-color: transparent !important;
+  pointer-events: auto !important;
 }
 
 /* Disable any auto-generated animation overlay/ring elements */
@@ -232,10 +244,14 @@
 
 /* If the widget injects an <img> or internal <canvas>, keep it contained */
 #voice-widget-container img,
-#voice-widget-container canvas {
+#voice-widget-container canvas,
+[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] img,
+[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] canvas {
   object-fit: contain !important;
   width: 100% !important;
   height: 100% !important;
+  -webkit-user-drag: none !important;
+  user-drag: none !important;
 }
 
 /* Widget loading indicator */

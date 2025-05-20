@@ -4,11 +4,12 @@ import React from 'react';
 const Widget: React.FC = () => (
   <div
     id="voice-widget-container"
+    className="widget-container"
     draggable={false}
     style={{
       width: '220px',
       height: '220px',
-      margin: '60px auto',
+      margin: '30px auto',
       position: 'relative',
       zIndex: 1000,
       touchAction: 'none',           // disable swipe/drag
