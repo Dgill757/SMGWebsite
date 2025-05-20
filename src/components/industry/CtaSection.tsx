@@ -5,9 +5,17 @@ import CalendlyModal from '../CalendlyModal';
 
 interface CtaSectionProps {
   setCalendarOpen: (open: boolean) => void;
+  heading?: string;
+  subheading?: string;
+  buttonText?: string;
 }
 
-const CtaSection = ({ setCalendarOpen }: CtaSectionProps) => {
+const CtaSection = ({ 
+  setCalendarOpen, 
+  heading = "Ready to Transform Your Business?", 
+  subheading = "Take the first step toward never missing another opportunity. Schedule your free consultation or request a personalized demo today.",
+  buttonText
+}: CtaSectionProps) => {
   const [isCalendlyOpen, setIsCalendlyOpen] = useState(false);
 
   const openCalendly = (e: React.MouseEvent) => {
@@ -26,10 +34,10 @@ const CtaSection = ({ setCalendarOpen }: CtaSectionProps) => {
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="heading-md mb-6">
-              Ready to Transform Your Business?
+              {heading}
             </h2>
             <p className="text-lg text-muted-foreground mb-10 max-w-2xl mx-auto">
-              Take the first step toward never missing another opportunity. Schedule your free consultation or request a personalized demo today.
+              {subheading}
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -54,7 +62,7 @@ const CtaSection = ({ setCalendarOpen }: CtaSectionProps) => {
                 <h3 className="font-semibold text-lg mb-2">Request Demo</h3>
                 <p className="text-sm text-muted-foreground mb-6">See our AI in action with a personalized demo</p>
                 <button onClick={openCalendly} className="mt-auto btn-primary w-full text-center">
-                  Get Demo
+                  {buttonText || "Get Demo"}
                 </button>
               </div>
               
