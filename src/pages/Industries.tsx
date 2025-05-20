@@ -5,6 +5,18 @@ import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, 
 import { Link } from 'react-router-dom';
 import { SEO, getOrganizationSchema } from '@/lib/seo';
 
+// Import a stat highlight for each industry
+import { 
+  homeServicesStats, 
+  realEstateStats, 
+  healthcareStats, 
+  legalStats,
+  automotiveStats, 
+  professionalServicesStats, 
+  landscapingStats, 
+  customerServiceStats 
+} from '@/data/industryStats';
+
 const Industries = () => {
   useEffect(() => {
     // Ensure the page always scrolls to the top when loaded
@@ -16,49 +28,82 @@ const Industries = () => {
       icon: <Wrench className="w-6 h-6" />,
       title: "AI Voice Assistant for Home Services",
       description: "Our AI receptionist for home services (plumbing, HVAC, roofing, remodeling) captures every call, qualifies leads, and books jobs 24/7—never miss another opportunity.",
-      link: "/industries/home-services"
+      link: "/industries/home-services",
+      // Add a key stat from the stats data
+      keyStat: {
+        value: homeServicesStats.stats[0].value,
+        text: homeServicesStats.stats[0].blurb
+      }
     },
     {
       icon: <Home className="w-6 h-6" />,
       title: "AI Voice Assistant for Real Estate Agents",
       description: "Voice AI for real estate lead capture handles potential buyer and seller inquiries 24/7, qualifying leads and scheduling showings even when you're with clients.",
-      link: "/industries/real-estate"
+      link: "/industries/real-estate",
+      keyStat: {
+        value: realEstateStats.stats[0].value,
+        text: realEstateStats.stats[0].blurb
+      }
     },
     {
       icon: <Building2 className="w-6 h-6" />,
       title: "AI Voice Assistant for Healthcare Practices",
       description: "No more IVR—24/7 human-like patient support answers questions, schedules appointments, and handles routine inquiries without frustrating phone trees.",
-      link: "/industries/healthcare"
+      link: "/industries/healthcare",
+      keyStat: {
+        value: healthcareStats.stats[2].value,
+        text: healthcareStats.stats[2].blurb
+      }
     },
     {
       icon: <Scale className="w-6 h-6" />,
       title: "AI Voice Assistant for Legal & Law Firms",
       description: "Voice AI receptionist for law firms ensures intake calls are handled perfectly, screening potential clients and scheduling consultations while you focus on billable hours.",
-      link: "/industries/legal"
+      link: "/industries/legal",
+      keyStat: {
+        value: legalStats.stats[2].value,
+        text: legalStats.stats[2].blurb
+      }
     },
     {
       icon: <Car className="w-6 h-6" />,
       title: "AI Voice Assistant for Automotive",
       description: "Voice AI call assistant for repair shops & dealerships makes appointment scheduling seamless, handles common questions, and ensures no service opportunity is missed.",
-      link: "/industries/automotive"
+      link: "/industries/automotive",
+      keyStat: {
+        value: automotiveStats.stats[1].value,
+        text: automotiveStats.stats[1].blurb
+      }
     },
     {
       icon: <Calculator className="w-6 h-6" />,
       title: "AI Voice Assistant for Professional Services",
       description: "CPAs and consultants leverage our voice AI to manage client inquiries during tax season and beyond, ensuring every potential engagement is properly handled.",
-      link: "/industries/professional-services"
+      link: "/industries/professional-services",
+      keyStat: {
+        value: professionalServicesStats.stats[0].value,
+        text: professionalServicesStats.stats[0].blurb
+      }
     },
     {
       icon: <Scissors className="w-6 h-6" />,
       title: "AI Voice Assistant for Landscaping & Outdoor Services",
       description: "Capture seasonal business opportunities even when you're on job sites with our dedicated voice AI for landscaping and outdoor service providers.",
-      link: "/industries/landscaping"
+      link: "/industries/landscaping",
+      keyStat: {
+        value: landscapingStats.stats[2].value,
+        text: landscapingStats.stats[2].blurb
+      }
     },
     {
       icon: <Headphones className="w-6 h-6" />,
       title: "AI Voice Assistant for Customer Service & Call Centers",
       description: "Augment your call center operations with AI voice assistants that handle routine inquiries, reducing wait times and allowing your agents to focus on complex issues.",
-      link: "/industries/customer-service"
+      link: "/industries/customer-service",
+      keyStat: {
+        value: customerServiceStats.stats[0].value,
+        text: customerServiceStats.stats[0].blurb
+      }
     }
   ];
 
@@ -128,6 +173,13 @@ const Industries = () => {
                   <p className="text-muted-foreground mb-4">
                     {industry.description}
                   </p>
+                  
+                  {/* Highlight stat for each industry */}
+                  <div className="bg-voiceai-primary/10 p-3 rounded-lg mb-4">
+                    <p className="font-bold text-lg text-voiceai-primary">{industry.keyStat.value}</p>
+                    <p className="text-sm">{industry.keyStat.text}</p>
+                  </div>
+                  
                   <Link to={industry.link} className="text-voiceai-primary font-semibold flex items-center" onClick={() => window.scrollTo(0, 0)}>
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
