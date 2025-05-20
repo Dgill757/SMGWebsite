@@ -4,14 +4,14 @@ import { Calendar, PhoneCall, Calculator } from 'lucide-react';
 import CalendlyModal from '../CalendlyModal';
 
 interface CtaSectionProps {
-  setCalendarOpen: (open: boolean) => void;
+  setCalendarOpen?: (open: boolean) => void;
   heading?: string;
   subheading?: string;
   buttonText?: string;
 }
 
 const CtaSection = ({ 
-  setCalendarOpen, 
+  setCalendarOpen = () => {}, 
   heading = "Ready to Transform Your Business?", 
   subheading = "Take the first step toward never missing another opportunity. Schedule your free consultation or request a personalized demo today.",
   buttonText
