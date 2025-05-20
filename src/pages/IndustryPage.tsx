@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -12,6 +11,8 @@ import UseCaseExamplesSection from '@/components/industry/UseCaseExamplesSection
 import IndustryTestimonial from '@/components/industry/IndustryTestimonial';
 import IndustryFAQSection from '@/components/industry/IndustryFAQSection';
 import CtaSection from '@/components/industry/CtaSection';
+import IndustryStatsSection from '@/components/industry/IndustryStatsSection';
+import { getIndustryStats, getIndustryName } from '@/data/industryStats';
 
 // Define the interface for use case steps
 interface UseCaseStep {
@@ -1790,6 +1791,10 @@ const IndustryPage = () => {
   
   const industry = industriesData[industrySlug as keyof typeof industriesData];
   
+  // Get industry-specific stats data
+  const statsData = getIndustryStats(industrySlug);
+  const industryName = getIndustryName(industrySlug);
+  
   const scrollToCalculator = () => {
     const calculatorElement = document.getElementById('roi-calculator');
     if (calculatorElement) {
@@ -1897,6 +1902,15 @@ const IndustryPage = () => {
         </div>
       </section>
       
+      {/* Add the new Industry Stats section right after the hero section */}
+      {statsData && (
+        <IndustryStatsSection 
+          stats={statsData.stats} 
+          industryName={industryName} 
+          keywords={statsData.keywords} 
+        />
+      )}
+      
       {/* Main Content */}
       <div id="problems-section">
         <ProblemStatementSection 
@@ -1923,7 +1937,11 @@ const IndustryPage = () => {
         industryName={industrySlug!.charAt(0).toUpperCase() + industrySlug!.slice(1)} 
       />
       
-      <CtaSection setCalendarOpen={setCalendarOpen} />
+      <CtaSection 
+        heading="Ready to transform your customer experience?" 
+        subheading={`Boost your ${industryName} business with our AI Voice Assistant.`}
+        buttonText="Book a Demo"
+      />
       
       {/* Fix this later - we need a CalendarDialog component that accepts a boolean state */}
       {/*<CalendarDialog open={calendarOpen} setOpen={setCalendarOpen} />*/}

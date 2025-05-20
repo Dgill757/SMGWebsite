@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SEO, getOrganizationSchema } from '@/lib/seo';
+import { getIndustryName } from '@/data/industryStats';
 
 const Industries = () => {
   useEffect(() => {
