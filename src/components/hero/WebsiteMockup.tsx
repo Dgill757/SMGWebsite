@@ -27,7 +27,7 @@ const WebsiteMockup = () => {
             {/* Website content */}
             <div className="flex-1 flex flex-col items-center justify-center p-6 relative bg-gradient-to-br from-black/90 to-gray-900/90">
               <div className="w-full max-w-md mx-auto text-center space-y-6">
-                <h3 className="text-2xl font-bold text-gradient">Welcome to Our Service</h3>
+                <h3 className="text-2xl font-bold text-white">Welcome to Our Service</h3>
                 <p className="text-sm text-white/70">How can we help you today?</p>
                 
                 {/* Mock chat interface */}
@@ -35,7 +35,7 @@ const WebsiteMockup = () => {
                   <div className="glassmorphism p-3 rounded-lg text-xs text-white/80 max-w-xs">
                     Hi! I'm interested in your services...
                   </div>
-                  <div className="glassmorphism p-3 rounded-lg text-xs text-gradient max-w-xs ml-auto">
+                  <div className="glassmorphism p-3 rounded-lg text-xs text-white max-w-xs ml-auto">
                     I'd be happy to help! Let me connect you with an expert right away.
                   </div>
                 </div>
@@ -57,9 +57,9 @@ const WebsiteMockup = () => {
                   </button>
                   
                   {/* Tooltip */}
-                  <div className="absolute -top-20 right-0 w-52 p-3 rounded-xl glassmorphism text-sm text-white/90 shadow-lg opacity-90">
-                    <p className="text-gradient font-semibold">✨ AI Voice Assistant Active</p>
-                    <p className="text-xs mt-1">Click to speak with our AI</p>
+                  <div className="absolute -top-20 right-0 w-52 p-3 rounded-xl glassmorphism text-sm text-white shadow-lg opacity-90 border border-white/20">
+                    <p className="text-voiceai-primary font-semibold">✨ AI Voice Assistant Active</p>
+                    <p className="text-xs mt-1 text-white/90">Welcome to our service. How can we help you today? Click to speak with our AI assistant.</p>
                   </div>
                   
                   {/* Active indicator */}

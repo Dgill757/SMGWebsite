@@ -13,22 +13,22 @@ const HowItWorks: React.FC = () => {
       title: 'Handles Calls',
       description: "When a visitor calls your business or clicks the voice widget, our AI assistant answers immediately and engages in natural conversation.",
       visual: (
-        <div className="bg-white/95 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-white/30">
+        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-voiceai-primary/20 flex items-center justify-center flex-shrink-0">
               <PhoneCall className="h-5 w-5 text-voiceai-primary" />
             </div>
             <div className="space-y-2">
-              <div className="bg-voiceai-primary/20 rounded-lg p-3 text-sm border border-voiceai-primary/30">
-                <p className="font-medium mb-1 text-foreground">AI Assistant</p>
-                <p className="text-foreground/90">Hello! Thank you for calling Ascend Roofing. I'm your AI assistant. How may I help you today?</p>
+              <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
+                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                <p className="text-gray-800 dark:text-foreground/90">Hello! Thank you for calling Ascend Roofing. I'm your AI assistant. How may I help you today?</p>
               </div>
-              <div className="bg-white/80 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-white/40">
-                <p className="font-medium mb-1 text-foreground">Customer</p>
-                <p className="text-foreground/90">Hi, I'm calling about getting a quote for a roof repair.</p>
+              <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
+                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">Customer</p>
+                <p className="text-gray-800 dark:text-foreground/90">Hi, I'm calling about getting a quote for a roof repair.</p>
               </div>
               <div className="flex items-center">
-                <p className="text-sm text-foreground/70 mr-2">AI thinking...</p>
+                <p className="text-sm text-gray-800 dark:text-foreground/70 mr-2">AI thinking...</p>
                 <VoiceWaveAnimation isAnimating={activeStep === 0} className="h-4" />
               </div>
             </div>
@@ -42,23 +42,23 @@ const HowItWorks: React.FC = () => {
       title: 'Qualifies Leads',
       description: "Our AI asks the right questions to determine if the caller is a good fit for your services, saving you time and resources.",
       visual: (
-        <div className="bg-white/95 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-white/30">
+        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-voiceai-secondary/20 flex items-center justify-center flex-shrink-0">
               <Users className="h-5 w-5 text-voiceai-secondary" />
             </div>
             <div className="space-y-2">
-              <div className="bg-voiceai-primary/20 rounded-lg p-3 text-sm border border-voiceai-primary/30">
-                <p className="font-medium mb-1 text-foreground">AI Assistant</p>
-                <p className="text-foreground/90">I'd be happy to help with that! Could you tell me a bit more about your roof issue? When did you first notice it, and what's the approximate size of your home?</p>
+              <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
+                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                <p className="text-gray-800 dark:text-foreground/90">I'd be happy to help with that! Could you tell me a bit more about your roof issue? When did you first notice it, and what's the approximate size of your home?</p>
               </div>
-              <div className="bg-white/80 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-white/40">
-                <p className="font-medium mb-1 text-foreground">Customer</p>
-                <p className="text-foreground/90">We noticed a leak last week after the storm. Our house is about 2,500 square feet with a shingle roof that's about 15 years old.</p>
+              <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
+                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">Customer</p>
+                <p className="text-gray-800 dark:text-foreground/90">We noticed a leak last week after the storm. Our house is about 2,500 square feet with a shingle roof that's about 15 years old.</p>
               </div>
-              <div className="bg-voiceai-primary/20 rounded-lg p-3 text-sm border border-voiceai-primary/30">
-                <p className="font-medium mb-1 text-foreground">AI Assistant</p>
-                <p className="text-foreground/90">Thank you for that information. Based on what you've shared, it sounds like you might need more than a simple repair. Would you be open to discussing replacement options as well?</p>
+              <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
+                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                <p className="text-gray-800 dark:text-foreground/90">Thank you for that information. Based on what you've shared, it sounds like you might need more than a simple repair. Would you be open to discussing replacement options as well?</p>
               </div>
             </div>
           </div>
@@ -71,20 +71,20 @@ const HowItWorks: React.FC = () => {
       title: 'Books Appointments',
       description: "Once qualified, the AI assistant schedules appointments directly into your calendar based on your real-time availability.",
       visual: (
-        <div className="bg-white/95 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-white/30">
+        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
           <div className="space-y-4">
             <div className="flex items-start gap-4">
               <div className="w-10 h-10 rounded-full bg-voiceai-accent/20 flex items-center justify-center flex-shrink-0">
                 <Calendar className="h-5 w-5 text-voiceai-accent" />
               </div>
               <div>
-                <div className="bg-voiceai-primary/20 rounded-lg p-3 text-sm mb-2 border border-voiceai-primary/30">
-                  <p className="font-medium mb-1 text-foreground">AI Assistant</p>
-                  <p className="text-foreground/90">Great! I can schedule a free inspection with one of our specialists. We have availability this Thursday at 10 AM or Friday at 2 PM. Which works better for you?</p>
+                <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm mb-2 border border-voiceai-primary/40">
+                  <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                  <p className="text-gray-800 dark:text-foreground/90">Great! I can schedule a free inspection with one of our specialists. We have availability this Thursday at 10 AM or Friday at 2 PM. Which works better for you?</p>
                 </div>
-                <div className="bg-white/80 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-white/40">
-                  <p className="font-medium mb-1 text-foreground">Customer</p>
-                  <p className="text-foreground/90">Thursday at 10 AM works for me.</p>
+                <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
+                  <p className="font-medium mb-1 text-gray-900 dark:text-foreground">Customer</p>
+                  <p className="text-gray-800 dark:text-foreground/90">Thursday at 10 AM works for me.</p>
                 </div>
               </div>
             </div>
@@ -115,7 +115,7 @@ const HowItWorks: React.FC = () => {
       title: 'Handles Follow-up',
       description: "The AI sends confirmation emails, text reminders, and follows up after appointments to keep your pipeline flowing.",
       visual: (
-        <div className="bg-white/95 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-white/30">
+        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
           <div className="space-y-4">
             <div className="flex items-center gap-3 border-b border-white/20 pb-3">
               <Mail className="h-5 w-5 text-voiceai-primary" />
@@ -161,7 +161,7 @@ const HowItWorks: React.FC = () => {
       title: 'Handles Payments',
       description: "When it's time to collect payment, our AI can send invoices, process payments, and update your financial records.",
       visual: (
-        <div className="bg-white/95 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-white/30">
+        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
           <div className="space-y-4">
             <div className="flex items-center justify-between bg-voiceai-primary/10 p-3 rounded-lg border border-voiceai-primary/20">
               <div className="flex items-center">

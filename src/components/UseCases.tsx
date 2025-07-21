@@ -206,12 +206,12 @@ const UseCases: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   {/* Industry Description */}
                   <div className="lg:col-span-1">
-                   <div className="bg-white/98 dark:bg-voiceai-dark/98 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-white/20">
+                   <div className="bg-gradient-to-br from-voiceai-primary/20 to-voiceai-secondary/15 rounded-xl p-6 shadow-lg border border-voiceai-primary/20 backdrop-blur-sm">
                      <div className="inline-flex items-center justify-center p-3 rounded-lg bg-voiceai-primary/20 text-voiceai-primary mb-4">
                        {industry.icon}
                      </div>
-                     <h3 className="text-xl font-bold mb-3 text-gray-900 dark:text-foreground">{industry.name}</h3>
-                     <p className="text-gray-700 dark:text-foreground/80 mb-6">{industry.description}</p>
+                     <h3 className="text-xl font-bold mb-3 text-white">{industry.name}</h3>
+                     <p className="text-white/90 mb-6">{industry.description}</p>
                        
                        <div className="mt-auto">
                          <a href="#pricing" className="btn-primary w-full text-center">Get Started</a>
@@ -220,8 +220,8 @@ const UseCases: React.FC = () => {
                   </div>
                   
                    <div className="lg:col-span-1">
-                     <div className="bg-white/98 dark:bg-voiceai-dark/98 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-white/20 h-full">
-                       <h4 className="font-bold mb-4 text-gray-900 dark:text-foreground">Key Benefits</h4>
+                     <div className="bg-gradient-to-br from-voiceai-secondary/20 to-voiceai-accent/15 rounded-xl p-6 shadow-lg border border-voiceai-secondary/20 backdrop-blur-sm h-full">
+                       <h4 className="font-bold mb-4 text-white">Key Benefits</h4>
                        <div className="space-y-4">
                          {industry.benefits.map((benefit, index) => (
                            <div key={index} className="flex gap-3">
@@ -229,8 +229,8 @@ const UseCases: React.FC = () => {
                                {benefit.icon}
                              </div>
                              <div>
-                               <p className="font-medium text-gray-900 dark:text-foreground">{benefit.title}</p>
-                               <p className="text-sm text-gray-600 dark:text-foreground/70">{benefit.description}</p>
+                               <p className="font-medium text-white">{benefit.title}</p>
+                               <p className="text-sm text-white/80">{benefit.description}</p>
                              </div>
                            </div>
                          ))}
