@@ -176,7 +176,7 @@ const UseCases: React.FC = () => {
     <section id="use-cases" className="section-padding">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="heading-lg">Perfect for <span className="text-gradient">Any Service Business</span></h2>
+          <h2 className="heading-lg">Perfect for <span className="text-voiceai-primary font-bold">Any Service Business</span></h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             See how businesses across different industries are using Voice AI to transform their operations and boost revenue.
           </p>

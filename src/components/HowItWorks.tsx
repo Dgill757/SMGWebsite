@@ -217,7 +217,7 @@ const HowItWorks: React.FC = () => {
       
       <div className="container mx-auto relative z-10">
         <div className="text-center mb-16">
-          <h2 className="heading-lg">How Your <span className="text-gradient">Smart Website</span> Works</h2>
+          <h2 className="heading-lg">How Your <span className="text-voiceai-primary font-bold">Smart Website</span> Works</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             From answering calls to processing payments, our Voice AI handles the entire customer journey so you can focus on delivering exceptional service.
           </p>

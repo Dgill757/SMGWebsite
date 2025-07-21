@@ -56,7 +56,7 @@ const FAQSection: React.FC = () => {
     <section id="faq" className="section-padding bg-muted">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="heading-lg">Frequently <span className="text-gradient">Asked Questions</span></h2>
+          <h2 className="heading-lg">Frequently <span className="text-voiceai-primary font-bold">Asked Questions</span></h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             Everything you need to know about our Voice AI solution
           </p>
