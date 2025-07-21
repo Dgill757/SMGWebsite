@@ -31,22 +31,21 @@ const HeroActions: React.FC<HeroActionsProps> = ({
         onClose={() => setIsCalendlyOpen(false)} 
       />
 
-      <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex flex-col sm:flex-row gap-6 mt-8">
         <Button 
           onClick={openCalendly}
-          className="btn-primary gap-2 text-center"
+          className="btn-primary gap-3 text-lg py-6 px-8 text-center shadow-2xl shadow-voiceai-primary/40"
         >
-          <Calendar size={18} /> 
+          <Calendar size={22} /> 
           Request Demo
         </Button>
         
         <Button
           onClick={onScrollToWidget}
-          variant="outline"
-          className="gap-2 border-primary text-primary hover:bg-primary/10"
+          className="btn-secondary gap-3 text-lg py-6 px-8 group"
         >
-          <div className={`rounded-full bg-voiceai-primary flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''}`}>
-            <Play fill="white" size={18} className="ml-0.5" />
+          <div className={`rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 flex items-center justify-center ${isPlaying ? 'animate-pulse' : ''} group-hover:scale-110 transition-transform duration-300 shadow-lg shadow-voiceai-primary/50`}>
+            <Play fill="white" size={20} className="ml-0.5 text-white" />
           </div>
           Hear It In Action
         </Button>
