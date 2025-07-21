@@ -206,12 +206,12 @@ const UseCases: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   {/* Industry Description */}
                   <div className="lg:col-span-1">
-                    <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg border border-border h-full">
-                      <div className="inline-flex items-center justify-center p-3 rounded-lg bg-voiceai-primary/10 text-voiceai-primary mb-4">
-                        {industry.icon}
-                      </div>
-                      <h3 className="text-xl font-bold mb-3">{industry.name}</h3>
-                      <p className="text-muted-foreground mb-6">{industry.description}</p>
+                  <div className="bg-white/90 dark:bg-voiceai-dark/90 rounded-xl p-6 shadow-lg border border-white/20">
+                    <div className="inline-flex items-center justify-center p-3 rounded-lg bg-voiceai-primary/20 text-voiceai-primary mb-4">
+                      {industry.icon}
+                    </div>
+                    <h3 className="text-xl font-bold mb-3 text-foreground">{industry.name}</h3>
+                    <p className="text-foreground/80 mb-6">{industry.description}</p>
                       
                       <div className="mt-auto">
                         <a href="#pricing" className="btn-primary w-full text-center">Get Started</a>
@@ -219,19 +219,18 @@ const UseCases: React.FC = () => {
                     </div>
                   </div>
                   
-                  {/* Benefits */}
                   <div className="lg:col-span-1">
-                    <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg border border-border h-full">
-                      <h4 className="font-bold mb-4">Key Benefits</h4>
+                    <div className="bg-white/90 dark:bg-voiceai-dark/90 rounded-xl p-6 shadow-lg border border-white/20 h-full">
+                      <h4 className="font-bold mb-4 text-foreground">Key Benefits</h4>
                       <div className="space-y-4">
                         {industry.benefits.map((benefit, index) => (
                           <div key={index} className="flex gap-3">
-                            <div className="w-8 h-8 rounded-full bg-voiceai-primary/10 flex items-center justify-center flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-voiceai-primary/20 flex items-center justify-center flex-shrink-0">
                               {benefit.icon}
                             </div>
                             <div>
-                              <p className="font-medium">{benefit.title}</p>
-                              <p className="text-sm text-muted-foreground">{benefit.description}</p>
+                              <p className="font-medium text-foreground">{benefit.title}</p>
+                              <p className="text-sm text-foreground/70">{benefit.description}</p>
                             </div>
                           </div>
                         ))}

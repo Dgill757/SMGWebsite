@@ -67,12 +67,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
           <div className="w-full lg:w-1/2 space-y-4 lg:space-y-6">
             <div>
-              <div className="inline-flex items-center gap-3 glassmorphism text-gradient px-6 py-3 rounded-full mb-6 lg:mb-8 shadow-lg shadow-voiceai-primary/30">
-                <span className="animate-pulse rounded-full w-3 h-3 bg-gradient-to-r from-voiceai-primary to-voiceai-secondary shadow-lg shadow-voiceai-primary/50"></span>
-                <span className="text-sm font-semibold tracking-wide">The Future of Websites Is Here</span>
-              </div>
+                <div className="inline-flex items-center gap-3 glassmorphism px-6 py-3 rounded-full mb-6 lg:mb-8 shadow-lg shadow-voiceai-primary/30 border border-white/20">
+                  <span className="animate-pulse rounded-full w-3 h-3 bg-gradient-to-r from-voiceai-primary to-voiceai-secondary shadow-lg shadow-voiceai-primary/50"></span>
+                  <span className="text-sm font-semibold tracking-wide text-foreground">The Future of Websites Is Here</span>
+                </div>
               <h1 className="heading-xl mb-6">
-                Give Your Website a <span className="text-gradient">Voice</span> & <span className="text-gradient">Brain</span>
+                Give Your Website a <span className="text-voiceai-primary font-bold">Voice</span> & <span className="text-voiceai-secondary font-bold">Brain</span>
               </h1>
               <p className="mt-3 lg:mt-4 text-xl text-foreground/80 leading-relaxed font-medium">
                 Stop losing leads to unanswered calls and static forms. Our Voice AI handles calls, qualifies leads, books appointments, and follows up—all while you sleep.
