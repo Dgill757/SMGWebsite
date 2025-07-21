@@ -64,26 +64,26 @@ const TestimonialsSection: React.FC = () => {
           <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10">
             <button 
               onClick={prevTestimonial}
-              className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-gray-50"
+              className="w-10 h-10 rounded-full glassmorphism shadow-lg flex items-center justify-center hover:bg-white/20 border border-white/20"
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-5 w-5 text-foreground" />
             </button>
           </div>
           
           <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10">
             <button 
               onClick={nextTestimonial}
-              className="w-10 h-10 rounded-full bg-white shadow-lg flex items-center justify-center hover:bg-gray-50"
+              className="w-10 h-10 rounded-full glassmorphism shadow-lg flex items-center justify-center hover:bg-white/20 border border-white/20"
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-5 w-5 text-foreground" />
             </button>
           </div>
           
           {/* Testimonial Content */}
-          <div className="bg-white dark:bg-voiceai-dark/40 rounded-2xl shadow-xl overflow-hidden">
+          <div className="glassmorphism rounded-2xl shadow-xl overflow-hidden border border-white/10">
             <div className="grid grid-cols-1 lg:grid-cols-2">
               {/* Image and Info */}
-              <div className="relative h-full min-h-[300px] lg:min-h-[500px] bg-gradient-to-br from-voiceai-primary to-voiceai-secondary">
+              <div className="relative h-full min-h-[300px] lg:min-h-[500px] bg-gradient-to-br from-primary to-secondary">
                 <div className="absolute inset-0 opacity-20">
                   <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
                     <defs>
@@ -123,18 +123,18 @@ const TestimonialsSection: React.FC = () => {
                     <path d="M12.24 28.32C11.68 28.32 11.12 28.56 10.72 28.96C10.32 29.36 10.08 29.92 10.08 30.48C10.08 31.04 10.32 31.6 10.72 32C11.12 32.4 11.68 32.64 12.24 32.64H35.28C36.4 32.64 37.52 32.16 38.32 31.36C39.12 30.56 39.6 29.44 39.6 28.32V14.64C39.6 14.08 39.36 13.52 38.96 13.12C38.56 12.72 38 12.48 37.44 12.48H34.56C34 12.48 33.44 12.72 33.04 13.12C32.64 13.52 32.4 14.08 32.4 14.64C32.4 15.2 32.64 15.76 33.04 16.16C33.44 16.56 34 16.8 34.56 16.8H35.28V28.32H12.24Z" fill="currentColor" />
                   </svg>
                   
-                  <p className="text-lg lg:text-xl leading-relaxed mb-8">
+                  <p className="text-lg lg:text-xl leading-relaxed mb-8 text-foreground/90">
                     {testimonials[activeIndex].quote}
                   </p>
                 </div>
                 
                 <div>
-                  <h4 className="text-sm uppercase text-muted-foreground mb-4 font-medium">Results Achieved</h4>
+                  <h4 className="text-sm uppercase text-foreground/70 mb-4 font-medium">Results Achieved</h4>
                   <div className="grid grid-cols-3 gap-4">
                     {testimonials[activeIndex].metrics.map((metric, index) => (
-                      <div key={index} className="text-center p-3 bg-muted rounded-lg">
-                        <p className="text-xl lg:text-2xl font-bold text-voiceai-primary">{metric.value}</p>
-                        <p className="text-xs text-muted-foreground">{metric.label}</p>
+                      <div key={index} className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
+                        <p className="text-xl lg:text-2xl font-bold text-primary">{metric.value}</p>
+                        <p className="text-xs text-foreground/70">{metric.label}</p>
                       </div>
                     ))}
                   </div>
@@ -149,7 +149,7 @@ const TestimonialsSection: React.FC = () => {
               <button
                 key={index}
                 className={`w-3 h-3 rounded-full transition-all ${
-                  index === activeIndex ? 'bg-voiceai-primary w-6' : 'bg-voiceai-primary/30'
+                  index === activeIndex ? 'bg-primary w-6' : 'bg-primary/30'
                 }`}
                 onClick={() => setActiveIndex(index)}
               />

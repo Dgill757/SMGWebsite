@@ -81,17 +81,17 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
           
           {/* Billing Toggle */}
           <div className="mt-8 flex items-center justify-center space-x-4">
-            <span className={`text-sm font-medium ${!isAnnual ? 'text-voiceai-primary' : 'text-muted-foreground'}`}>
+            <span className={`text-sm font-medium ${!isAnnual ? 'text-primary' : 'text-foreground/70'}`}>
               Monthly
             </span>
-            <button onClick={() => setIsAnnual(!isAnnual)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-white ${isAnnual ? 'bg-voiceai-primary' : 'bg-muted'}`}>
+            <button onClick={() => setIsAnnual(!isAnnual)} className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-background ${isAnnual ? 'bg-primary' : 'bg-muted'}`}>
               <span className={`${isAnnual ? 'translate-x-6' : 'translate-x-1'} inline-block h-4 w-4 transform rounded-full bg-white transition-transform`} />
             </button>
             <div className="flex items-center space-x-1">
-              <span className={`text-sm font-medium ${isAnnual ? 'text-voiceai-primary' : 'text-muted-foreground'}`}>
+              <span className={`text-sm font-medium ${isAnnual ? 'text-primary' : 'text-foreground/70'}`}>
                 Annual
               </span>
-              <span className="bg-green-100 text-green-700 text-xs px-2 py-1 rounded-full">
+              <span className="bg-green-500/20 text-green-300 text-xs px-2 py-1 rounded-full border border-green-500/30">
                 Save 20%
               </span>
             </div>
@@ -99,30 +99,30 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-          {tiers.map(tier => <div key={tier.name} className={`relative rounded-2xl overflow-hidden transition-all ${tier.popular ? 'shadow-xl shadow-voiceai-primary/20 scale-105 border-2 border-voiceai-primary bg-white dark:bg-voiceai-dark/60' : 'shadow-lg border border-border bg-white/80 dark:bg-voiceai-dark/40 hover:shadow-xl hover:-translate-y-1'}`}>
-              {tier.popular && <div className="absolute top-0 right-0 bg-voiceai-primary text-white px-4 py-1 text-xs font-medium">
+          {tiers.map(tier => <div key={tier.name} className={`relative rounded-2xl overflow-hidden transition-all ${tier.popular ? 'shadow-xl shadow-primary/20 scale-105 border-2 border-primary glassmorphism' : 'shadow-lg border border-white/10 glassmorphism hover:shadow-xl hover:-translate-y-1'}`}>
+              {tier.popular && <div className="absolute top-0 right-0 bg-primary text-primary-foreground px-4 py-1 text-xs font-medium">
                   Most Popular
                 </div>}
               
               <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                  {tier.name === "Professional" && <span className="text-voiceai-primary">🔹</span>}
-                  {tier.name === "Enterprise" && <span className="text-voiceai-primary">🔹</span>}
+                <h3 className="text-2xl font-bold mb-2 flex items-center gap-2 text-foreground">
+                  {tier.name === "Professional" && <span className="text-primary">🔹</span>}
+                  {tier.name === "Enterprise" && <span className="text-primary">🔹</span>}
                   {tier.name}
                 </h3>
-                <p className="text-muted-foreground mb-6">{tier.description}</p>
+                <p className="text-foreground/80 mb-6">{tier.description}</p>
                 
                 <div className="mb-6">
                   {tier.name === "Enterprise" ? (
-                    <div className="text-4xl font-bold">Custom</div>
+                    <div className="text-4xl font-bold text-foreground">Custom</div>
                   ) : (
                     <>
-                      <div className="text-4xl font-bold">
+                      <div className="text-4xl font-bold text-foreground">
                         ${isAnnual ? tier.annualPrice : tier.monthlyPrice}
-                        <span className="text-lg font-normal text-muted-foreground">/mo</span>
+                        <span className="text-lg font-normal text-foreground/70">/mo</span>
                       </div>
                       {isAnnual && tier.annualTotal > 0 && (
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-foreground/70 mt-1">
                           Billed annually (${tier.annualTotal}/year)
                         </p>
                       )}
@@ -131,7 +131,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
                 </div>
                 
                 <button
-                  className={`w-full py-3 px-4 rounded-lg font-medium mb-8 ${tier.popular ? 'bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white' : tier.name === "Enterprise" ? 'bg-white text-voiceai-primary border border-voiceai-primary/20' : 'bg-voiceai-primary/10 text-voiceai-primary'}`}
+                  className={`w-full py-3 px-4 rounded-lg font-medium mb-8 transition-all ${tier.popular ? 'btn-primary' : tier.name === "Enterprise" ? 'btn-secondary' : 'bg-primary/20 text-primary border border-primary/30 hover:bg-primary/30'}`}
                   onClick={onOpenCalendar}
                   type="button"
                 >
@@ -139,19 +139,19 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
                 </button>
                 
                 <div className="space-y-4 mb-6">
-                  <p className="text-sm font-medium">Includes:</p>
+                  <p className="text-sm font-medium text-foreground">Includes:</p>
                   <ul className="space-y-3">
                     {tier.features.map(feature => (
                       <li key={feature} className="flex items-start gap-2 text-sm">
-                        <Check className="h-5 w-5 text-green-500 flex-shrink-0" />
-                        <span>{feature}</span>
+                        <Check className="h-5 w-5 text-green-400 flex-shrink-0" />
+                        <span className="text-foreground/90">{feature}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
                 
-                <div className="mt-6 pt-6 border-t border-border">
-                  <p className="flex items-start gap-2 text-sm text-voiceai-primary font-medium">
+                <div className="mt-6 pt-6 border-t border-white/10">
+                  <p className="flex items-start gap-2 text-sm text-primary font-medium">
                     {tier.icon}
                     <span>{tier.tagline}</span>
                   </p>
@@ -162,7 +162,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
         </div>
         
         <div className="text-center mt-16">
-          <p className="text-muted-foreground mb-4">Still have questions? We're here to help!</p>
+          <p className="text-foreground/80 mb-4">Still have questions? We're here to help!</p>
           <a href="#contact" className="btn-primary inline-block">Contact Us</a>
         </div>
       </div>

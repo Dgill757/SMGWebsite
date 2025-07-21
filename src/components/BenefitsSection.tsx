@@ -70,28 +70,28 @@ const BenefitsSection: React.FC = () => {
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {benefits.map((benefit, index) => (
-            <div key={index} className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg card-hover border border-border relative overflow-hidden">
-              <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gradient-to-br ${benefit.color} opacity-10`}></div>
-              <div className={`inline-flex items-center justify-center p-3 rounded-lg bg-gradient-to-br ${benefit.color} text-white mb-4`}>
+            <div key={index} className="glassmorphism rounded-xl p-6 shadow-lg card-hover border border-white/10 relative overflow-hidden">
+              <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gradient-to-br ${benefit.color} opacity-20`}></div>
+              <div className={`inline-flex items-center justify-center p-3 rounded-lg bg-gradient-to-br ${benefit.color} text-white mb-4 shadow-lg`}>
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-bold mb-2">{benefit.title}</h3>
-              <p className="text-muted-foreground">{benefit.description}</p>
+              <h3 className="text-xl font-bold mb-2 text-foreground">{benefit.title}</h3>
+              <p className="text-foreground/80">{benefit.description}</p>
             </div>
           ))}
         </div>
         
-        <div className="mt-16 p-8 rounded-2xl bg-gradient-to-r from-voiceai-primary/10 to-voiceai-secondary/10 border border-voiceai-primary/20">
+        <div className="mt-16 p-8 rounded-2xl glassmorphism border border-primary/30">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div>
-              <h3 className="heading-md mb-2">Calculate Your ROI</h3>
-              <p className="text-muted-foreground">
+              <h3 className="heading-md mb-2 text-foreground">Calculate Your ROI</h3>
+              <p className="text-foreground/80">
                 See how much revenue you're leaving on the table with missed calls and leads.
               </p>
             </div>
-            <div className="bg-voiceai-dark/5 rounded-xl p-6 text-center">
+            <div className="glassmorphism rounded-xl p-6 text-center border border-white/20">
               <div className="text-3xl font-bold text-gradient mb-2">$120,000+</div>
-              <p className="text-sm text-muted-foreground">Average annual revenue increase</p>
+              <p className="text-sm text-foreground/70">Average annual revenue increase</p>
             </div>
             <button 
               onClick={() => setIsROIDialogOpen(true)}

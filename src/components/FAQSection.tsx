@@ -68,12 +68,12 @@ const FAQSection: React.FC = () => {
               <AccordionItem 
                 key={index} 
                 value={`item-${index}`}
-                className="bg-white dark:bg-voiceai-dark/40 rounded-lg shadow-sm"
+                className="glassmorphism rounded-lg shadow-sm border border-white/10"
               >
-                <AccordionTrigger className="px-6 py-4 text-left font-medium hover:no-underline">
+                <AccordionTrigger className="px-6 py-4 text-left font-medium hover:no-underline text-foreground">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="px-6 pb-4 pt-0 text-muted-foreground">
+                <AccordionContent className="px-6 pb-4 pt-0 text-foreground/80">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
