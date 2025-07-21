@@ -102,7 +102,7 @@ const Industries = () => {
       <div className="pt-28 pb-20 bg-background">
         <div className="container mx-auto px-4">
           <h1 className="heading-lg text-center mb-4">
-            Industries We Service with Voice AI Solutions
+            <span className="text-gradient">Industries We Service</span> with <span className="text-white">Voice AI Solutions</span>
           </h1>
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
             Don't be the last in your industry to adopt AI—your competitors will all be on it in 5 years. Get ahead today with SummitVoiceAI.
@@ -118,18 +118,18 @@ const Industries = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg hover:shadow-xl transition cursor-pointer"
+                  className="bg-gradient-to-br from-voiceai-dark/60 to-black/50 border border-white/10 rounded-xl p-6 shadow-2xl hover:shadow-voiceai-primary/20 hover:-translate-y-1 transition-all duration-300 backdrop-blur-lg"
                 >
-                  <div className="inline-flex items-center mb-4 text-voiceai-primary">
+                  <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white shadow-lg">
                     {industry.icon}
                   </div>
-                  <h3 className="text-xl font-bold mb-2">
+                  <h3 className="text-xl font-bold mb-2 text-white">
                     {industry.title}
                   </h3>
-                  <p className="text-muted-foreground mb-4">
+                  <p className="text-white/80 mb-4 leading-relaxed">
                     {industry.description}
                   </p>
-                  <Link to={industry.link} className="text-voiceai-primary font-semibold flex items-center" onClick={() => window.scrollTo(0, 0)}>
+                  <Link to={industry.link} className="text-gradient font-bold flex items-center hover:scale-105 transition-transform" onClick={() => window.scrollTo(0, 0)}>
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
                 </motion.div>

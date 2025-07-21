@@ -31,7 +31,7 @@ interface UseCase {
 // Industry data
 const industriesData = {
   'healthcare': {
-    title: "AI Voice Assistant for Healthcare: Transforming Patient Experience",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Healthcare</span>: <span className='text-gradient'>Transforming Patient Experience</span>",
     subheading: "Eliminate frustrating IVR systems and missed calls while improving CAHPS scores and patient satisfaction",
     icon: <Building2 className="w-12 h-12" />,
     description: "Healthcare practices face unique challenges with high call volumes, complex scheduling needs, and after-hours emergencies. SummitVoiceAI for Healthcare delivers 24/7 patient support that understands medical terminology, handles appointment scheduling, and ensures no patient call goes unanswered.",
@@ -248,7 +248,7 @@ const industriesData = {
     ]
   },
   'home-services': {
-    title: "AI Voice Assistant for Home Services: Never Miss Another Call",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Home Services</span>: <span className='text-gradient'>Never Miss Another Call</span>",
     subheading: "Transform how your service business handles calls, schedules appointments, and captures emergency jobs 24/7",
     icon: <Wrench className="w-12 h-12" />,
     description: "Home service businesses face unique communication challenges with technicians in the field and a constant stream of urgent service requests. SummitVoiceAI for Home Services gives plumbers, electricians, HVAC specialists and other contractors a sophisticated AI receptionist that handles calls, qualifies leads, and schedules appointments around the clock.",
@@ -465,7 +465,7 @@ const industriesData = {
     ]
   },
   'real-estate': {
-    title: "AI Voice Assistant for Real Estate: Never Miss Another Lead",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Real Estate</span>: <span className='text-gradient'>Never Miss Another Lead</span>",
     subheading: "Capture inquiries 24/7, qualify buyers and sellers, and schedule showings while you're with clients",
     icon: <Home className="w-12 h-12" />,
     description: "Real estate professionals juggle client meetings, showings, and constant inquiries—often missing valuable leads when unavailable. SummitVoiceAI for Real Estate captures every call, qualifies prospects, schedules showings, and delivers property information 24/7, ensuring no opportunity slips through the cracks.",
@@ -682,7 +682,7 @@ const industriesData = {
     ]
   },
   'legal': {
-    title: "AI Voice Assistant for Legal Practices: Transform Client Intake",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Legal Practices</span>: <span className='text-gradient'>Transform Client Intake</span>",
     subheading: "Capture leads 24/7, qualify potential clients, and schedule consultations while maximizing billable hours",
     icon: <Scale className="w-12 h-12" />,
     description: "Law firms and legal practices face unique challenges balancing client acquisition with billable time. SummitVoiceAI for Legal creates a seamless intake process that screens potential clients, schedules consultations, and collects case information—allowing attorneys to focus on high-value casework rather than administrative tasks.",
@@ -899,7 +899,7 @@ const industriesData = {
     ]
   },
   'automotive': {
-    title: "AI Voice Assistant for Automotive: Transform Service Scheduling",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Automotive</span>: <span className='text-gradient'>Transform Service Scheduling</span>",
     subheading: "Capture service requests 24/7, schedule appointments efficiently, and boost customer satisfaction",
     icon: <Car className="w-12 h-12" />,
     description: "Dealerships and automotive service centers struggle with phone bottlenecks, missed calls, and inefficient scheduling. SummitVoiceAI for Automotive creates a seamless service scheduling experience that handles appointment bookings, recalls, service inquiries, and parts availability—improving customer satisfaction while maximizing service bay utilization.",
@@ -1116,7 +1116,7 @@ const industriesData = {
     ]
   },
   'professional-services': {
-    title: "AI Voice Assistant for Professional Services: Streamline Client Acquisition",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Professional Services</span>: <span className='text-gradient'>Streamline Client Acquisition</span>",
     subheading: "Capture inquiries 24/7, qualify prospects, and schedule consultations without interrupting billable work",
     icon: <Calculator className="w-12 h-12" />,
     description: "Financial advisors, CPAs, consultants, and other professional service providers face the constant challenge of balancing client acquisition with revenue-generating work. SummitVoiceAI for Professional Services handles prospect inquiries, schedules consultations, and collects intake information—allowing professionals to focus on delivering high-value services rather than administrative tasks.",
@@ -1333,7 +1333,7 @@ const industriesData = {
     ]
   },
   'landscaping': {
-    title: "AI Voice Assistant for Landscaping & Outdoor Services: Never Miss a Service Opportunity",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Landscaping & Outdoor Services</span>: <span className='text-gradient'>Never Miss a Service Opportunity</span>",
     subheading: "Capture inquiries 24/7, schedule estimates, and manage seasonal demand while you're on job sites",
     icon: <Scissors className="w-12 h-12" />,
     description: "Landscaping and outdoor service providers face unique challenges with weather dependence, seasonal demand patterns, and communication while working on job sites. SummitVoiceAI for Landscaping handles service inquiries, schedules estimates, manages weather rescheduling, and ensures no new business opportunity is missed while your team is focused on current projects.",
@@ -1546,7 +1546,7 @@ const industriesData = {
     ]
   },
   'customer-service': {
-    title: "AI Voice Assistant for Call Centers: Transform Customer Experience",
+    title: "<span className='text-gradient'>AI Voice Assistant</span> for <span className='text-white'>Call Centers</span>: <span className='text-gradient'>Transform Customer Experience</span>",
     subheading: "Handle routine inquiries, reduce hold times, and support human agents during volume spikes",
     icon: <Headphones className="w-12 h-12" />,
     description: "Call centers struggle with unpredictable volume spikes, high agent turnover, and balancing quality with efficiency. SummitVoiceAI for Call Centers creates a hybrid model where AI handles routine inquiries and data collection while seamlessly escalating complex situations to your human agents—improving customer experience, reducing costs, and maintaining service quality.",
@@ -1856,8 +1856,7 @@ const IndustryPage = () => {
                   <span className="text-sm font-medium">Industry Solution</span>
                 </div>
                 
-                <h1 className="heading-xl">
-                  {industry.title}
+                <h1 className="heading-xl" dangerouslySetInnerHTML={{ __html: industry.title }}>
                 </h1>
                 
                 <p className="text-xl text-muted-foreground">

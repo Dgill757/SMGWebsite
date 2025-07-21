@@ -72,11 +72,11 @@ const Navbar: React.FC = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" onClick={(e) => scrollToSection('features', e)} className="text-foreground/80 hover:text-gradient transition-all duration-300 text-base font-medium hover:scale-105">Features</a>
-            <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="text-foreground/80 hover:text-gradient transition-all duration-300 text-base font-medium hover:scale-105">How It Works</a>
-            <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="text-foreground/80 hover:text-gradient transition-all duration-300 text-base font-medium hover:scale-105">Use Cases</a>
-            <Link to="/industries" className="text-foreground/80 hover:text-gradient transition-all duration-300 text-base font-medium hover:scale-105" onClick={() => window.scrollTo(0, 0)}>Industries</Link>
-            <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="text-foreground/80 hover:text-gradient transition-all duration-300 text-base font-medium hover:scale-105">Pricing</a>
+            <a href="#features" onClick={(e) => scrollToSection('features', e)} className="nav-link">Features</a>
+            <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="nav-link">How It Works</a>
+            <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="nav-link">Use Cases</a>
+            <Link to="/industries" className="nav-link" onClick={() => window.scrollTo(0, 0)}>Industries</Link>
+            <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="nav-link">Pricing</a>
             <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="btn-primary">Get Started</a>
           </div>
           
@@ -93,28 +93,28 @@ const Navbar: React.FC = () => {
           <div className="md:hidden absolute top-full left-0 w-full glassmorphism shadow-2xl py-6 px-4 space-y-6 border-t border-white/10">
             <a 
               href="#features" 
-              className="block py-3 text-foreground/80 hover:text-gradient active:text-gradient text-base font-medium transition-all duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('features', e)}
             >
               Features
             </a>
             <a 
               href="#how-it-works" 
-              className="block py-3 text-foreground/80 hover:text-gradient active:text-gradient text-base font-medium transition-all duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('how-it-works', e)}
             >
               How It Works
             </a>
             <a 
               href="#use-cases" 
-              className="block py-3 text-foreground/80 hover:text-gradient active:text-gradient text-base font-medium transition-all duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('use-cases', e)}
             >
               Use Cases
             </a>
             <Link 
               to="/industries" 
-              className="block py-3 text-foreground/80 hover:text-gradient active:text-gradient text-base font-medium transition-all duration-300"
+              className="block py-3 nav-link text-base font-medium"
               onClick={() => {
                 setIsMobileMenuOpen(false);
                 window.scrollTo(0, 0);
@@ -124,7 +124,7 @@ const Navbar: React.FC = () => {
             </Link>
             <a 
               href="#pricing" 
-              className="block py-3 text-foreground/80 hover:text-gradient active:text-gradient text-base font-medium transition-all duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('pricing', e)}
             >
               Pricing

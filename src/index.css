@@ -138,6 +138,17 @@
     animation: gradientShift 8s ease-in-out infinite;
   }
   
+  .nav-link {
+    @apply text-foreground/80 text-base font-medium transition-all duration-300 hover:scale-105;
+  }
+  
+  .nav-link:hover {
+    @apply bg-clip-text text-transparent;
+    background: linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%);
+    background-size: 200% 200%;
+    animation: gradientShift 2s ease-in-out infinite;
+  }
+  
   @keyframes gradientShift {
     0%, 100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
