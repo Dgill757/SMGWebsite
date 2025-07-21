@@ -55,8 +55,8 @@ const UseCaseExamplesSection = ({ useCases }: UseCaseExamplesSectionProps) => {
 
 const ConversationFlow = ({ useCase }: { useCase: UseCase }) => {
   return (
-    <div className="bg-white dark:bg-voiceai-dark/40 rounded-xl p-6 shadow-lg overflow-hidden">
-      <div className="text-lg font-semibold mb-6 pb-2 border-b border-border/30 text-center">
+    <div className="bg-gradient-to-br from-voiceai-dark/80 to-black/60 border border-white/10 rounded-xl p-6 shadow-2xl shadow-voiceai-primary/20 overflow-hidden">
+      <div className="text-lg font-semibold mb-6 pb-2 border-b border-white/20 text-center text-white">
         Conversation Flow
       </div>
       <div className="space-y-4">
@@ -70,16 +70,16 @@ const ConversationFlow = ({ useCase }: { useCase: UseCase }) => {
             className={`flex gap-3 ${step.type === 'ai' ? 'justify-start' : 'justify-end'}`}
           >
             <div 
-              className={`max-w-[80%] p-3 rounded-lg ${
+              className={`max-w-[80%] p-3 rounded-lg shadow-lg ${
                 step.type === 'ai' 
                   ? 'bg-voiceai-primary text-white rounded-bl-none' 
-                  : 'bg-gray-100 dark:bg-gray-800 rounded-br-none'
+                  : 'bg-blue-600 text-white rounded-br-none'
               }`}
             >
-              <div className="text-xs mb-1 opacity-70">
+              <div className="text-xs mb-1 opacity-80">
                 {step.type === 'ai' ? 'VoiceAI Assistant' : 'Customer'}
               </div>
-              <p>{step.text}</p>
+              <p className="font-medium">{step.text}</p>
             </div>
           </motion.div>
         ))}
