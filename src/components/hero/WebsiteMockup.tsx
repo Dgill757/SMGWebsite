@@ -42,7 +42,7 @@ const WebsiteMockup = () => {
               </div>
               
               {/* Voice AI Button */}
-              <div className="absolute bottom-6 right-6">
+              <div className="absolute bottom-6 right-6" style={{ zIndex: 9998 }}>
                 <div className="relative">
                   {/* Pulsing ring effect */}
                   <div className="absolute inset-0 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary animate-ping opacity-30"></div>
@@ -57,7 +57,7 @@ const WebsiteMockup = () => {
                   </button>
                   
                   {/* Tooltip */}
-                  <div className="absolute -top-20 right-0 w-52 p-3 rounded-xl glassmorphism text-sm text-white shadow-lg opacity-90 border border-white/20">
+                  <div className="absolute -top-20 right-0 w-52 p-3 rounded-xl glassmorphism text-sm text-white shadow-lg opacity-90 border border-white/20" style={{ zIndex: 9999 }}>
                     <p className="text-voiceai-primary font-semibold">✨ AI Voice Assistant Active</p>
                     <p className="text-xs mt-1 text-white/90">Welcome to our service. How can we help you today? Click to speak with our AI assistant.</p>
                   </div>

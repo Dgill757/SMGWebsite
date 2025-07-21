@@ -26,7 +26,7 @@ const FeatureItem = ({ Icon, text, colorClass }: FeatureItemProps) => {
       <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${getGradient()} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
         <Icon size={24} className={`${getIconColor()} group-hover:scale-110 transition-transform duration-300`} />
       </div>
-      <span className="text-base font-semibold text-foreground/90 group-hover:text-gradient transition-all duration-300">{text}</span>
+      <span className="text-base font-semibold text-foreground/90 group-hover:text-white transition-all duration-300">{text}</span>
     </div>
   );
 };

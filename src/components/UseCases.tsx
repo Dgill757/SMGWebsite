@@ -213,9 +213,9 @@ const UseCases: React.FC = () => {
                      <h3 className="text-xl font-bold mb-3 text-white">{industry.name}</h3>
                      <p className="text-white/90 mb-6">{industry.description}</p>
                        
-                       <div className="mt-auto">
-                         <a href="#pricing" className="btn-primary w-full text-center">Get Started</a>
-                       </div>
+                        <div className="mt-auto">
+                          <a href="#pricing" className="btn-primary w-full text-center block">Get Started</a>
+                        </div>
                      </div>
                   </div>
                   
