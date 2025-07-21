@@ -88,7 +88,7 @@ const Footer: React.FC = () => {
                   <line x1="12" x2="12" y1="19" y2="22" />
                 </svg>
               </div>
-              <span className="font-bold text-xl text-white">SummitVoiceAI</span>
+              <span className="font-bold text-xl text-gradient">SummitVoiceAI</span>
             </div>
             <p className="text-gray-400">
               Summit Voice AI - The #1 AI voice solution for service businesses. Never miss a call, automate scheduling, and increase your revenue.

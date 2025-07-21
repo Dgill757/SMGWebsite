@@ -53,7 +53,7 @@ const TestimonialsSection: React.FC = () => {
     <section className="section-padding bg-gradient-to-b from-voiceai-primary/5 to-voiceai-secondary/5">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="heading-lg">What Our <span className="text-voiceai-primary font-bold">Customers</span> Say</h2>
+          <h2 className="heading-lg">What Our <span className="text-gradient">Clients</span> Say</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             See how service businesses just like yours are transforming their operations and growing their revenue with Voice AI.
           </p>

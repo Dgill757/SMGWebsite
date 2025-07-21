@@ -66,7 +66,7 @@ const Navbar: React.FC = () => {
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-r from-voiceai-primary to-voiceai-secondary rounded-xl blur opacity-30 animate-pulse"></div>
               </div>
-              <span className="font-bold text-2xl text-white">SummitVoiceAI</span>
+              <span className="font-bold text-2xl text-gradient">SummitVoiceAI</span>
             </Link>
             <span className="text-sm text-foreground/70 mt-1 sm:mt-0 sm:ml-4 navbar-tagline font-medium">The Future of Websites Is Here</span>
           </div>

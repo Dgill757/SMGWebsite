@@ -176,7 +176,7 @@ const UseCases: React.FC = () => {
     <section id="use-cases" className="section-padding">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="heading-lg">Perfect for <span className="text-voiceai-primary font-bold">Any Service Business</span></h2>
+          <h2 className="heading-lg">Perfect for <span className="text-gradient">Any Service Business</span></h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             See how businesses across different industries are using Voice AI to transform their operations and boost revenue.
           </p>
@@ -206,7 +206,7 @@ const UseCases: React.FC = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                   {/* Industry Description */}
                   <div className="lg:col-span-1">
-                  <div className="bg-white/90 dark:bg-voiceai-dark/90 rounded-xl p-6 shadow-lg border border-white/20">
+                  <div className="bg-white/95 dark:bg-voiceai-dark/95 rounded-xl p-6 shadow-lg border border-white/20">
                     <div className="inline-flex items-center justify-center p-3 rounded-lg bg-voiceai-primary/20 text-voiceai-primary mb-4">
                       {industry.icon}
                     </div>
@@ -220,7 +220,7 @@ const UseCases: React.FC = () => {
                   </div>
                   
                   <div className="lg:col-span-1">
-                    <div className="bg-white/90 dark:bg-voiceai-dark/90 rounded-xl p-6 shadow-lg border border-white/20 h-full">
+                    <div className="bg-white/95 dark:bg-voiceai-dark/95 rounded-xl p-6 shadow-lg border border-white/20 h-full">
                       <h4 className="font-bold mb-4 text-foreground">Key Benefits</h4>
                       <div className="space-y-4">
                         {industry.benefits.map((benefit, index) => (
