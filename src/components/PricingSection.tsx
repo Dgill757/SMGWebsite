@@ -74,7 +74,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
   return <section id="pricing" className="section-padding bg-gradient-to-b from-background to-voiceai-primary/5">
       <div className="container mx-auto">
         <div className="text-center mb-16">
-          <h2 className="heading-lg">Simple, <span className="text-gradient">Transparent</span> Pricing</h2>
+          <h2 className="heading-lg">Simple, <span className="text-voiceai-primary font-bold">Transparent</span> Pricing</h2>
           <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             Choose the plan that fits your business needs. All plans include our core Voice AI technology.
           </p>

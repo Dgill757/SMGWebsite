@@ -72,7 +72,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
                   <span className="text-sm font-semibold tracking-wide text-foreground">The Future of Websites Is Here</span>
                 </div>
               <h1 className="heading-xl mb-6">
-                Give Your Website a <span className="text-gradient">Voice</span> & <span className="text-gradient">Brain</span>
+                Give Your Website a <span className="text-voiceai-primary font-bold">Voice</span> & <span className="text-voiceai-secondary font-bold">Brain</span>
               </h1>
               <p className="mt-3 lg:mt-4 text-xl text-foreground/80 leading-relaxed font-medium">
                 Stop losing leads to unanswered calls and static forms. Our Voice AI handles calls, qualifies leads, books appointments, and follows up—all while you sleep.
