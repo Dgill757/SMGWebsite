@@ -32,24 +32,25 @@ const WebsiteMockup = () => {
                 
                 {/* Mock chat interface */}
                 <div className="space-y-3 text-left">
-                  <div className="bg-white/10 backdrop-blur-lg border border-white/20 p-3 rounded-lg text-xs text-white/90 max-w-xs shadow-lg">
+                  <div className="bg-gray-100 border border-gray-300 p-3 rounded-lg text-xs text-gray-800 max-w-xs shadow-md font-medium">
                     Hi! I'm interested in your services...
                   </div>
-                  <div className="bg-white/90 backdrop-blur-lg border border-white/30 p-3 rounded-lg text-xs text-gray-900 max-w-xs ml-auto shadow-lg font-medium">
+                  <div className="bg-voiceai-primary/90 backdrop-blur-lg border border-voiceai-primary/30 p-3 rounded-lg text-xs text-white max-w-xs ml-auto shadow-lg font-medium">
                     I'd be happy to help! Let me connect you with an expert right away.
                   </div>
                 </div>
               </div>
               
               {/* Voice AI Button */}
-              <div className="absolute bottom-6 right-6" style={{ zIndex: 99999 }}>
-                <div className="relative">
+              <div className="absolute bottom-6 right-6" style={{ zIndex: 999999, position: 'absolute' }}>
+                <div className="relative" style={{ zIndex: 999999 }}>
                   {/* Enhanced glow effect for visibility */}
-                  <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-voiceai-primary/40 to-voiceai-secondary/40 animate-ping opacity-50"></div>
-                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary animate-ping opacity-30"></div>
-                  <div className="absolute inset-2 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary animate-ping opacity-40" style={{ animationDelay: '0.5s' }}></div>
+                  <div className="absolute -inset-6 rounded-full bg-gradient-to-r from-voiceai-primary/60 to-voiceai-secondary/60 animate-ping opacity-75" style={{ zIndex: 999998 }}></div>
+                  <div className="absolute -inset-4 rounded-full bg-gradient-to-r from-voiceai-primary/40 to-voiceai-secondary/40 animate-ping opacity-50" style={{ zIndex: 999998 }}></div>
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary animate-ping opacity-30" style={{ zIndex: 999998 }}></div>
+                  <div className="absolute inset-2 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary animate-ping opacity-40" style={{ animationDelay: '0.5s', zIndex: 999998 }}></div>
                   
-                  <button className="relative w-16 h-16 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary flex items-center justify-center shadow-2xl shadow-voiceai-primary/70 hover:scale-110 transition-transform duration-300 border-2 border-white/20">
+                  <button className="relative w-16 h-16 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary flex items-center justify-center shadow-2xl shadow-voiceai-primary/70 hover:scale-110 transition-transform duration-300 border-2 border-white/20" style={{ zIndex: 999999 }}>
                     <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path>
                       <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
@@ -58,10 +59,10 @@ const WebsiteMockup = () => {
                   </button>
                   
                   {/* Enhanced Tooltip with better visibility */}
-                  <div className="absolute -top-24 right-0 w-56 p-4 rounded-xl bg-white/95 text-sm text-gray-900 shadow-2xl opacity-95 border-2 border-voiceai-primary/30 backdrop-blur-md" style={{ zIndex: 99999 }}>
+                  <div className="absolute -top-28 right-0 w-60 p-4 rounded-xl bg-white shadow-2xl border-2 border-voiceai-primary/20 backdrop-blur-md" style={{ zIndex: 999999 }}>
                     <p className="text-voiceai-primary font-bold text-base">✨ AI Voice Assistant Active</p>
-                    <p className="text-xs mt-1 text-gray-700 font-medium">Welcome to our service. How can we help you today? Click to speak with our AI assistant.</p>
-                    <div className="absolute bottom-[-8px] right-6 w-4 h-4 bg-white/95 border-r border-b border-voiceai-primary/30 transform rotate-45"></div>
+                    <p className="text-sm mt-1 text-gray-700 font-medium">Welcome to our service. How can we help you today? Click to speak with our AI assistant.</p>
+                    <div className="absolute bottom-[-8px] right-6 w-4 h-4 bg-white border-r border-b border-voiceai-primary/20 transform rotate-45"></div>
                   </div>
                   
                   {/* Active indicator */}

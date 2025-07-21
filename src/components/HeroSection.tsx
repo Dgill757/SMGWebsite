@@ -72,7 +72,19 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
                   <span className="text-sm font-semibold tracking-wide text-foreground">The Future of Websites Is Here</span>
                 </div>
               <h1 className="heading-xl mb-6">
-                <span className="text-gradient">Give Your Website</span> a <span className="text-white font-bold">Voice</span> & <span className="text-gradient font-bold">Brain</span>
+                <span style={{ 
+                  background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  color: '#7C3AED'
+                }}>Give Your Website</span> a <span className="text-white font-bold">Voice</span> & <span style={{ 
+                  background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  color: '#F472B6'
+                }} className="font-bold">Brain</span>
               </h1>
               <p className="mt-3 lg:mt-4 text-xl text-foreground/80 leading-relaxed font-medium">
                 Stop losing leads to unanswered calls and static forms. Our Voice AI handles calls, qualifies leads, books appointments, and follows up—all while you sleep.

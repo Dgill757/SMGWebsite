@@ -102,7 +102,13 @@ const Industries = () => {
       <div className="pt-28 pb-20 bg-background">
         <div className="container mx-auto px-4">
           <h1 className="heading-lg text-center mb-4">
-            <span className="text-gradient">Industries We Service</span> with <span className="text-white">Voice AI Solutions</span>
+            <span style={{ 
+              background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: '#7C3AED'
+            }}>Industries We Service</span> with <span className="text-white">Voice AI Solutions</span>
           </h1>
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
             Don't be the last in your industry to adopt AI—your competitors will all be on it in 5 years. Get ahead today with SummitVoiceAI.
@@ -129,7 +135,7 @@ const Industries = () => {
                   <p className="text-white/80 mb-4 leading-relaxed">
                     {industry.description}
                   </p>
-                  <Link to={industry.link} className="text-gradient font-bold flex items-center hover:scale-105 transition-transform" onClick={() => window.scrollTo(0, 0)}>
+                  <Link to={industry.link} className="inline-flex items-center font-bold text-white bg-gradient-to-r from-voiceai-primary to-voiceai-secondary px-4 py-2 rounded-lg hover:scale-105 transition-transform shadow-lg" onClick={() => window.scrollTo(0, 0)}>
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
                 </motion.div>
