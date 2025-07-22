@@ -119,7 +119,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           
           {/* Floating Demo Widget */}
           <div 
-            className="absolute top-1/2 -translate-y-1/2 right-8 lg:right-16 xl:right-24 z-[99999] animate-float"
+            className="absolute top-1/4 right-8 lg:right-16 xl:right-24 z-[99999] animate-float"
             style={{
               zIndex: 99999,
               pointerEvents: 'auto'
