@@ -264,7 +264,7 @@
     }
   }
 
-  /* Revenue Loss Prevention Section */
+  /* Revenue Loss Prevention Section - Dark Glass Feature Boxes */
   .revenue-section {
     background: rgba(10, 10, 15, 0.8);
     backdrop-filter: blur(20px);
@@ -308,117 +308,643 @@
     margin: 0 auto;
   }
 
-  .revenue-grid {
+  /* Features Grid Layout */
+  .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 2rem;
-    max-width: 1200px;
+    gap: 24px;
+    padding: 40px 20px;
+    max-width: 1400px;
     margin: 0 auto;
     position: relative;
     z-index: 2;
   }
 
-  .revenue-card {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  /* Dark Glass Feature Box */
+  .feature-box {
+    background: rgba(15, 15, 15, 0.8);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(99, 102, 241, 0.2);
-    border-radius: 24px;
-    padding: 2.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 24px;
     position: relative;
     overflow: hidden;
-    transition: all 0.4s ease;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
+    animation: fadeInUp 0.6s ease-out;
   }
 
-  .revenue-card::before {
+  .feature-box:nth-child(1) { animation-delay: 0.1s; }
+  .feature-box:nth-child(2) { animation-delay: 0.2s; }
+  .feature-box:nth-child(3) { animation-delay: 0.3s; }
+  .feature-box:nth-child(4) { animation-delay: 0.4s; }
+  .feature-box:nth-child(5) { animation-delay: 0.5s; }
+  .feature-box:nth-child(6) { animation-delay: 0.6s; }
+  .feature-box:nth-child(7) { animation-delay: 0.7s; }
+  .feature-box:nth-child(8) { animation-delay: 0.8s; }
+  .feature-box:nth-child(9) { animation-delay: 0.9s; }
+
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Electric Border Hover Effect */
+  .feature-box:hover {
+    transform: translateY(-8px);
+    border-color: rgba(138, 43, 226, 0.6);
+    box-shadow: 0 20px 40px rgba(138, 43, 226, 0.2);
+    background: rgba(20, 20, 20, 0.9);
+  }
+
+  .feature-box:hover::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.1), transparent);
-    transition: left 1s ease;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, #8a2be2, #4169e1, #00ffff, #8a2be2);
+    background-size: 400% 400%;
+    border-radius: 18px;
+    z-index: -1;
+    animation: electric-border 2s linear infinite;
   }
 
-  .revenue-card:hover::before {
-    left: 100%;
+  @keyframes electric-border {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 400% 400%; }
   }
 
-  .revenue-card:hover {
-    transform: translateY(-10px);
-    border-color: rgba(99, 102, 241, 0.4);
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.3),
-        0 0 60px rgba(99, 102, 241, 0.2);
-  }
-
-  .card-icon {
+  /* Feature Icon Base */
+  .feature-icon {
     width: 80px;
     height: 80px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     margin-bottom: 1.5rem;
     position: relative;
-    overflow: hidden;
   }
 
-  .card-icon::after {
-    content: '';
+  /* Feature Text Styling */
+  .feature-title {
+    background: linear-gradient(135deg, #ffffff, #e0e0e0);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 600;
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+  }
+
+  .feature-description {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.6;
+    transition: color 0.3s ease;
+  }
+
+  .feature-box:hover .feature-description {
+    color: rgba(255, 255, 255, 0.95);
+  }
+
+  /* 24/7 Availability - Orbital Rings */
+  .orbital-rings {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .ring {
     position: absolute;
-    top: -50%;
-    left: -50%;
-    width: 200%;
-    height: 200%;
-    background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.3), transparent);
-    animation: rotate 3s linear infinite;
+    border: 2px solid #00ffff;
+    border-radius: 50%;
+    animation: orbit 4s linear infinite;
   }
 
-  @keyframes rotate {
+  .ring-1 {
+    width: 60px;
+    height: 60px;
+    top: 10px;
+    left: 10px;
+    border-color: rgba(0, 255, 255, 0.6);
+  }
+
+  .ring-2 {
+    width: 40px;
+    height: 40px;
+    top: 20px;
+    left: 20px;
+    border-color: rgba(0, 255, 255, 0.4);
+    animation-duration: 6s;
+    animation-direction: reverse;
+  }
+
+  .core {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #00ffff;
+    border-radius: 50%;
+    top: 30px;
+    left: 30px;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes orbit {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
 
-  .card-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: white;
-    margin-bottom: 1rem;
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 5px #00ffff; }
+    50% { box-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
   }
 
-  .card-description {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.7);
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-  }
-
-  .card-metric {
+  /* Save $100K+ - Holographic Currency */
+  .holographic-currency {
+    position: relative;
+    width: 100%;
+    height: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 1rem;
-    background: rgba(99, 102, 241, 0.1);
-    border-radius: 12px;
-    border: 1px solid rgba(99, 102, 241, 0.2);
+    justify-content: center;
   }
 
-  .metric-value {
+  .currency-symbol {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #00ff41;
+    filter: drop-shadow(0 0 10px #00ff41);
+    animation: shimmer 3s ease-in-out infinite;
+  }
+
+  .floating-particles {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: #ffd700;
+    border-radius: 50%;
+    animation: float-up 2s ease-out infinite;
+  }
+
+  .particle:nth-child(1) {
+    left: 20%;
+    animation-delay: 0s;
+  }
+
+  .particle:nth-child(2) {
+    left: 50%;
+    animation-delay: 0.7s;
+  }
+
+  .particle:nth-child(3) {
+    left: 80%;
+    animation-delay: 1.4s;
+  }
+
+  @keyframes shimmer {
+    0%, 100% { filter: drop-shadow(0 0 10px #00ff41); }
+    50% { filter: drop-shadow(0 0 20px #00ff41) drop-shadow(0 0 30px #ffd700); }
+  }
+
+  @keyframes float-up {
+    0% {
+      bottom: 10%;
+      opacity: 1;
+    }
+    100% {
+      bottom: 90%;
+      opacity: 0;
+    }
+  }
+
+  /* Smart Learning - Neural Network */
+  .neural-network {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .node {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    background: linear-gradient(135deg, #8a2be2, #4169e1);
+    border-radius: 50%;
+    animation: neural-pulse 2s ease-in-out infinite;
+  }
+
+  .node-1 {
+    top: 10px;
+    left: 20px;
+  }
+
+  .node-2 {
+    top: 30px;
+    right: 15px;
+    animation-delay: 0.7s;
+  }
+
+  .node-3 {
+    bottom: 10px;
+    left: 30px;
+    animation-delay: 1.4s;
+  }
+
+  .connection {
+    position: absolute;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #4169e1, transparent);
+    animation: data-flow 3s ease-in-out infinite;
+  }
+
+  .con-1 {
+    width: 40px;
+    top: 16px;
+    left: 32px;
+    transform: rotate(45deg);
+  }
+
+  .con-2 {
+    width: 30px;
+    top: 36px;
+    right: 27px;
+    transform: rotate(-45deg);
+    animation-delay: 1.5s;
+  }
+
+  @keyframes neural-pulse {
+    0%, 100% { box-shadow: 0 0 5px #8a2be2; }
+    50% { box-shadow: 0 0 15px #8a2be2, 0 0 25px #4169e1; }
+  }
+
+  @keyframes data-flow {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 1; }
+  }
+
+  /* Perfect Call Handling - Soundwave Phone */
+  .soundwave-phone {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .phone-silhouette {
     font-size: 2rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, #6366f1, #ec4899);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    z-index: 2;
   }
 
-  .metric-label {
-    color: rgba(255, 255, 255, 0.8);
-    font-size: 0.9rem;
+  .soundwaves {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .wave {
+    position: absolute;
+    border: 2px solid transparent;
+    border-radius: 50%;
+    animation: sound-wave 2s ease-out infinite;
+  }
+
+  .wave-1 {
+    width: 40px;
+    height: 40px;
+    top: 20px;
+    left: 20px;
+    border-color: rgba(255, 107, 53, 0.6);
+  }
+
+  .wave-2 {
+    width: 60px;
+    height: 60px;
+    top: 10px;
+    left: 10px;
+    border-color: rgba(247, 147, 30, 0.4);
+    animation-delay: 0.5s;
+  }
+
+  .wave-3 {
+    width: 80px;
+    height: 80px;
+    top: 0;
+    left: 0;
+    border-color: rgba(255, 107, 53, 0.2);
+    animation-delay: 1s;
+  }
+
+  @keyframes sound-wave {
+    0% {
+      transform: scale(0.8);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1.2);
+      opacity: 0;
+    }
+  }
+
+  /* Seamless Scheduling - Holographic Calendar */
+  .holographic-calendar {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .calendar-base {
+    font-size: 2rem;
+    z-index: 2;
+  }
+
+  .floating-dates {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .date-block {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: rgba(30, 144, 255, 0.8);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    color: white;
+    animation: float-reorganize 4s ease-in-out infinite;
+  }
+
+  .date-block:nth-child(1) {
+    top: 5px;
+    right: 10px;
+  }
+
+  .date-block:nth-child(2) {
+    bottom: 5px;
+    left: 5px;
+    animation-delay: 1.3s;
+  }
+
+  .date-block:nth-child(3) {
+    top: 15px;
+    left: 15px;
+    animation-delay: 2.6s;
+  }
+
+  @keyframes float-reorganize {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(180deg); }
+  }
+
+  /* Lead Qualification - Scanning User */
+  .scanning-user {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .user-silhouette {
+    font-size: 2rem;
+    z-index: 2;
+  }
+
+  .scan-lines {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .scan-beam {
+    position: absolute;
+    width: 60px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff3366, transparent);
+    top: 20px;
+    left: 10px;
+    animation: scan-move 3s ease-in-out infinite;
+  }
+
+  .checkmarks {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .check {
+    position: absolute;
+    color: #ff6b9d;
+    font-size: 1rem;
+    opacity: 0;
+    animation: check-appear 3s ease-in-out infinite;
+  }
+
+  .check:nth-child(1) {
+    top: 10px;
+    right: 15px;
+    animation-delay: 1s;
+  }
+
+  .check:nth-child(2) {
+    bottom: 10px;
+    right: 10px;
+    animation-delay: 2s;
+  }
+
+  @keyframes scan-move {
+    0%, 100% { top: 20px; }
+    50% { top: 50px; }
+  }
+
+  @keyframes check-appear {
+    0%, 70% { opacity: 0; transform: scale(0.5); }
+    80%, 90% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.5); }
+  }
+
+  /* Revenue Growth - Ascending Bars */
+  .ascending-bars {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .bar {
+    width: 15px;
+    background: linear-gradient(180deg, #ff1493, #da70d6);
+    border-radius: 2px 2px 0 0;
+    animation: bar-growth 2s ease-in-out infinite;
+  }
+
+  .bar-1 {
+    height: 30px;
+  }
+
+  .bar-2 {
+    height: 45px;
+    animation-delay: 0.3s;
+  }
+
+  .bar-3 {
+    height: 60px;
+    animation-delay: 0.6s;
+  }
+
+  .energy-trail {
+    position: absolute;
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ff1493, transparent);
+    top: 10px;
+    animation: energy-flow 2s ease-in-out infinite;
+  }
+
+  @keyframes bar-growth {
+    0%, 50% { transform: scaleY(0.8); }
+    100% { transform: scaleY(1.2); }
+  }
+
+  @keyframes energy-flow {
+    0%, 100% { left: -100%; }
+    50% { left: 100%; }
+  }
+
+  /* No Training Needed - Protected Shield */
+  .protected-shield {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .shield-base {
+    font-size: 2rem;
+    z-index: 2;
+  }
+
+  .ai-chip {
+    position: absolute;
+    font-size: 1rem;
+    top: 30px;
+    right: 25px;
+  }
+
+  .protective-aura {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border: 2px solid #20b2aa;
+    border-radius: 50%;
+    top: 5px;
+    left: 5px;
+    animation: aura-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes aura-pulse {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.6;
+      box-shadow: 0 0 10px #20b2aa;
+    }
+    50% {
+      transform: scale(1.1);
+      opacity: 1;
+      box-shadow: 0 0 20px #20b2aa, 0 0 30px #48d1cc;
+    }
+  }
+
+  /* Instant Deployment - Rocket Launch */
+  .rocket-launch {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .rocket {
+    font-size: 2rem;
+    animation: rocket-wobble 2s ease-in-out infinite;
+    z-index: 2;
+  }
+
+  .electric-trail {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
+
+  .spark {
+    position: absolute;
+    width: 3px;
+    height: 8px;
+    background: linear-gradient(180deg, #ffd700, #ffffff);
+    border-radius: 2px;
+    animation: electric-spark 1.5s ease-out infinite;
+  }
+
+  .spark-1 {
+    bottom: 15px;
+    left: 35px;
+  }
+
+  .spark-2 {
+    bottom: 25px;
+    left: 45px;
+    animation-delay: 0.3s;
+  }
+
+  .spark-3 {
+    bottom: 20px;
+    right: 30px;
+    animation-delay: 0.6s;
+  }
+
+  @keyframes rocket-wobble {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-5px) rotate(2deg); }
+  }
+
+  @keyframes electric-spark {
+    0% {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.5);
+    }
   }
 
   /* ROI Calculator Section */
