@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import HeroSection from '@/components/HeroSection';
-import BenefitsSection from '@/components/BenefitsSection';
+import RevenueSection from '@/components/RevenueSection';
+import EnhancedROICalculator from '@/components/EnhancedROICalculator';
 import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
 import DemoSection from '@/components/DemoSection';
@@ -78,7 +79,8 @@ const Index = () => {
           {/* Widget component placed immediately after HeroSection - DO NOT MODIFY */}
           <Widget />
           
-          <BenefitsSection />
+          <RevenueSection />
+          <EnhancedROICalculator />
           <HowItWorks />
           <UseCases />
           <DemoSection />
