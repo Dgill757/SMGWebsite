@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
@@ -120,49 +119,96 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           
           {/* Floating Widget - positioned to the right of the headline */}
           <div 
-            className="absolute top-1/4 right-8 lg:right-16 xl:right-24 z-[99999]"
+            className="absolute top-1/4 right-8 lg:right-16 xl:right-24 z-[99999] animate-float"
             style={{
               zIndex: 99999,
               pointerEvents: 'auto'
             }}
           >
             <div 
-              className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-sm min-w-[320px]"
+              className="relative group cursor-pointer transition-all duration-500 hover:scale-105"
               style={{
-                background: 'rgba(255, 255, 255, 0.95)',
-                backdropFilter: 'blur(20px)',
-                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 40px rgba(124, 58, 237, 0.15)'
+                filter: 'drop-shadow(0 0 40px rgba(124, 58, 237, 0.4))'
               }}
             >
-              <div className="text-center mb-6">
-                <h3 className="text-gray-900 font-semibold text-xl mb-2">Welcome to Our Service</h3>
-                <p className="text-gray-600 text-sm">How can we help you today?</p>
-              </div>
-              
-              <RawHtmlBlock 
-                html='<div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>'
-                className="widget-content mb-4"
-              />
-              
-              {/* Click to speak text */}
-              <div className="text-center mb-4">
-                <p className="text-gray-700 text-sm">Click to speak with our AI assistant</p>
-              </div>
-              
-              {/* Floating Voice Button */}
-              <div className="absolute -bottom-4 -right-4">
-                <div 
-                  className="w-16 h-16 rounded-full shadow-lg cursor-pointer flex items-center justify-center relative transition-transform hover:scale-105"
-                  style={{
-                    background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)',
-                    boxShadow: '0 8px 25px rgba(124, 58, 237, 0.4)'
-                  }}
-                >
-                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse border-2 border-white"></div>
-                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4z"/>
-                    <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5a.75.75 0 001.5 0v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"/>
-                  </svg>
+              <div 
+                className="relative rounded-2xl p-6 max-w-sm min-w-[320px] backdrop-blur-xl border transition-all duration-500 group-hover:border-voiceai-primary/50"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.95) 100%)',
+                  border: '1px solid rgba(124, 58, 237, 0.3)',
+                  boxShadow: `
+                    0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                    0 0 40px rgba(124, 58, 237, 0.2),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.1)
+                  `
+                }}
+              >
+                {/* Animated border glow */}
+                <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                     style={{
+                       background: 'linear-gradient(135deg, rgba(124, 58, 237, 0.1) 0%, rgba(59, 130, 246, 0.1) 50%, rgba(244, 114, 182, 0.1) 100%)',
+                       filter: 'blur(1px)'
+                     }}
+                ></div>
+                
+                <div className="relative z-10">
+                  <div className="text-center mb-6">
+                    <h3 className="font-semibold text-xl mb-2 bg-gradient-to-r from-white via-gray-100 to-white bg-clip-text text-transparent">
+                      Welcome to Our Service
+                    </h3>
+                    <p className="text-gray-300 text-sm opacity-90">How can we help you today?</p>
+                  </div>
+                  
+                  <RawHtmlBlock 
+                    html='<div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>'
+                    className="widget-content mb-6"
+                  />
+                  
+                  {/* Click to speak text with gradient */}
+                  <div className="text-center mb-4">
+                    <p className="text-sm bg-gradient-to-r from-gray-300 to-gray-100 bg-clip-text text-transparent">
+                      Click to speak with our AI assistant
+                    </p>
+                  </div>
+                </div>
+                
+                {/* Floating Voice Button with enhanced effects */}
+                <div className="absolute -bottom-6 -right-6">
+                  <div className="relative">
+                    {/* Pulsing glow ring */}
+                    <div className="absolute inset-0 rounded-full animate-ping" 
+                         style={{
+                           background: 'radial-gradient(circle, rgba(124, 58, 237, 0.4) 0%, transparent 70%)',
+                           transform: 'scale(1.5)'
+                         }}
+                    ></div>
+                    
+                    {/* Main button */}
+                    <div 
+                      className="relative w-16 h-16 rounded-full shadow-2xl cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 group/button"
+                      style={{
+                        background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
+                        boxShadow: `
+                          0 8px 32px rgba(124, 58, 237, 0.6),
+                          0 0 60px rgba(124, 58, 237, 0.3),
+                          inset 0 1px 0 rgba(255, 255, 255, 0.2)
+                        `
+                      }}
+                    >
+                      {/* Red notification dot */}
+                      <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full animate-pulse border-2 border-white shadow-lg"
+                           style={{
+                             boxShadow: '0 0 20px rgba(239, 68, 68, 0.8)'
+                           }}
+                      ></div>
+                      
+                      {/* Microphone icon */}
+                      <svg className="w-8 h-8 text-white transition-transform duration-300 group-hover/button:scale-110" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M7 4a3 3 0 616 0v4a3 3 0 11-6 0V4z"/>
+                        <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5a.75.75 0 001.5 0v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"/>
+                      </svg>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
