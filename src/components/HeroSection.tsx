@@ -120,56 +120,50 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           
           {/* Floating Widget - positioned to the right of the headline */}
           <div 
-            className="absolute top-1/2 right-4 lg:right-8 xl:right-12 transform -translate-y-1/2 z-[99999]"
+            className="absolute top-1/4 right-8 lg:right-16 xl:right-24 z-[99999]"
             style={{
-              position: 'absolute',
-              top: '50%',
-              right: '1rem',
-              transform: 'translateY(-50%)',
               zIndex: 99999,
               pointerEvents: 'auto'
             }}
           >
             <div 
-              className="glassmorphism p-6 rounded-xl shadow-2xl border border-white/20 max-w-sm"
+              className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-sm min-w-[320px]"
               style={{
-                background: 'rgba(15, 23, 42, 0.9)',
+                background: 'rgba(255, 255, 255, 0.95)',
                 backdropFilter: 'blur(20px)',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                boxShadow: '0 0 40px rgba(124, 58, 237, 0.3), 0 20px 40px rgba(0, 0, 0, 0.3)'
+                boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 40px rgba(124, 58, 237, 0.15)'
               }}
             >
-              <div className="text-center mb-4">
-                <h3 className="text-white font-semibold text-lg mb-2">Welcome to Our Service</h3>
-                <p className="text-gray-300 text-sm">How can we help you today?</p>
+              <div className="text-center mb-6">
+                <h3 className="text-gray-900 font-semibold text-xl mb-2">Welcome to Our Service</h3>
+                <p className="text-gray-600 text-sm">How can we help you today?</p>
               </div>
               
               <RawHtmlBlock 
                 html='<div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>'
-                className="widget-content"
+                className="widget-content mb-4"
               />
               
+              {/* Click to speak text */}
+              <div className="text-center mb-4">
+                <p className="text-gray-700 text-sm">Click to speak with our AI assistant</p>
+              </div>
+              
               {/* Floating Voice Button */}
-              <div className="absolute -bottom-3 -right-3">
+              <div className="absolute -bottom-4 -right-4">
                 <div 
-                  className="w-12 h-12 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary shadow-lg cursor-pointer flex items-center justify-center relative"
+                  className="w-16 h-16 rounded-full shadow-lg cursor-pointer flex items-center justify-center relative transition-transform hover:scale-105"
                   style={{
                     background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)',
-                    boxShadow: '0 0 20px rgba(124, 58, 237, 0.6)'
+                    boxShadow: '0 8px 25px rgba(124, 58, 237, 0.4)'
                   }}
                 >
-                  <div className="absolute inset-0 rounded-full bg-red-500 w-3 h-3 top-0 right-0 animate-pulse"></div>
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full animate-pulse border-2 border-white"></div>
+                  <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4z"/>
                     <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5a.75.75 0 001.5 0v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"/>
                   </svg>
                 </div>
-              </div>
-              
-              {/* Tooltip */}
-              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black text-white px-3 py-1 rounded text-xs whitespace-nowrap opacity-90">
-                Click to speak with our AI assistant
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
               </div>
             </div>
           </div>
