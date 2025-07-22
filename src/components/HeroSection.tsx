@@ -1,10 +1,11 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { PhoneCall, Calendar, CreditCard } from 'lucide-react';
 import BackgroundElements from './hero/BackgroundElements';
 import FeatureItem from './hero/FeatureItem';
 import WebsiteMockup from './hero/WebsiteMockup';
 import HeroActions from './hero/HeroActions';
+import RawHtmlBlock from './RawHtmlBlock';
 
 interface HeroSectionProps {
   calendarOpen: boolean;
@@ -13,6 +14,16 @@ interface HeroSectionProps {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen }) => {
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    // Initialize the floating widget
+    setTimeout(() => {
+      if (window.widgetLib && typeof window.widgetLib.scanWidgets === 'function') {
+        window.widgetLib.scanWidgets();
+        console.log('Floating widget initialized in hero section');
+      }
+    }, 150);
+  }, []);
 
   const scrollToWidget = (event: React.MouseEvent) => {
     event.preventDefault();
@@ -106,6 +117,62 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           </div>
           
           <WebsiteMockup />
+          
+          {/* Floating Widget - positioned to the right of the headline */}
+          <div 
+            className="absolute top-1/2 right-4 lg:right-8 xl:right-12 transform -translate-y-1/2 z-[99999]"
+            style={{
+              position: 'absolute',
+              top: '50%',
+              right: '1rem',
+              transform: 'translateY(-50%)',
+              zIndex: 99999,
+              pointerEvents: 'auto'
+            }}
+          >
+            <div 
+              className="glassmorphism p-6 rounded-xl shadow-2xl border border-white/20 max-w-sm"
+              style={{
+                background: 'rgba(15, 23, 42, 0.9)',
+                backdropFilter: 'blur(20px)',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
+                boxShadow: '0 0 40px rgba(124, 58, 237, 0.3), 0 20px 40px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              <div className="text-center mb-4">
+                <h3 className="text-white font-semibold text-lg mb-2">Welcome to Our Service</h3>
+                <p className="text-gray-300 text-sm">How can we help you today?</p>
+              </div>
+              
+              <RawHtmlBlock 
+                html='<div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>'
+                className="widget-content"
+              />
+              
+              {/* Floating Voice Button */}
+              <div className="absolute -bottom-3 -right-3">
+                <div 
+                  className="w-12 h-12 rounded-full bg-gradient-to-r from-voiceai-primary to-voiceai-secondary shadow-lg cursor-pointer flex items-center justify-center relative"
+                  style={{
+                    background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)',
+                    boxShadow: '0 0 20px rgba(124, 58, 237, 0.6)'
+                  }}
+                >
+                  <div className="absolute inset-0 rounded-full bg-red-500 w-3 h-3 top-0 right-0 animate-pulse"></div>
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4z"/>
+                    <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5a.75.75 0 001.5 0v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"/>
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Tooltip */}
+              <div className="absolute -top-12 left-1/2 transform -translate-x-1/2 bg-black text-white px-3 py-1 rounded text-xs whitespace-nowrap opacity-90">
+                Click to speak with our AI assistant
+                <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black"></div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       
