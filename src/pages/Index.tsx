@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import HeroSection from '@/components/HeroSection';
 import RevenueSection from '@/components/RevenueSection';
-import EnhancedROICalculator from '@/components/EnhancedROICalculator';
+import MissedCallCalculator from '@/components/ROICalculator';
 import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
 import DemoSection from '@/components/DemoSection';
@@ -80,7 +80,9 @@ const Index = () => {
           <Widget />
           
           <RevenueSection />
-          <EnhancedROICalculator />
+          <section className="min-h-screen bg-black wavy-bg py-12">
+            <MissedCallCalculator />
+          </section>
           <HowItWorks />
           <UseCases />
           <DemoSection />
