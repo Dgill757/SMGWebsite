@@ -126,37 +126,52 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             }}
           >
             <div 
-              className="relative max-w-[400px] w-80 backdrop-blur-lg transition-all duration-500 hover:scale-[1.02]"
+              className="relative max-w-[600px] w-[500px] backdrop-blur-xl transition-all duration-500 hover:scale-[1.02]"
               style={{
-                background: 'rgba(255, 255, 255, 0.8)',
+                background: 'rgba(255, 255, 255, 0.1)',
                 borderRadius: '24px',
+                border: '1px solid rgba(255, 255, 255, 0.2)',
                 boxShadow: `
-                  0 0 40px rgba(124, 58, 237, 0.3),
-                  0 25px 50px -12px rgba(0, 0, 0, 0.25),
-                  inset 0 1px 0 rgba(255, 255, 255, 0.9)
+                  0 0 60px rgba(124, 58, 237, 0.4),
+                  0 32px 64px -12px rgba(0, 0, 0, 0.4),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                  inset 0 -1px 0 rgba(0, 0, 0, 0.1)
                 `
               }}
             >
-              {/* Browser Bar */}
-              <div className="flex items-center justify-between p-4 border-b border-gray-200/50">
-                <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
+              {/* Dark Browser Bar */}
+              <div 
+                className="flex items-center justify-between p-6 border-b"
+                style={{
+                  borderColor: 'rgba(255, 255, 255, 0.1)',
+                  background: 'rgba(0, 0, 0, 0.2)'
+                }}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className="w-4 h-4 rounded-full bg-red-500 opacity-80"></div>
+                  <div className="w-4 h-4 rounded-full bg-yellow-500 opacity-80"></div>
+                  <div className="w-4 h-4 rounded-full bg-green-500 opacity-80"></div>
                 </div>
-                <div className="flex-1 mx-4">
-                  <div className="bg-gray-100/80 rounded-lg px-3 py-1 text-sm text-gray-600 text-center">
+                <div className="flex-1 mx-6">
+                  <div 
+                    className="rounded-lg px-4 py-2 text-sm text-center"
+                    style={{
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      color: 'rgba(255, 255, 255, 0.7)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)'
+                    }}
+                  >
                     yourwebsite.com
                   </div>
                 </div>
               </div>
               
               {/* Content */}
-              <div className="p-6 text-center">
-                <h3 className="text-xl font-semibold text-gray-800 mb-2">
+              <div className="p-8 text-center">
+                <h3 className="text-2xl font-semibold text-white mb-3">
                   Welcome to Our Service
                 </h3>
-                <p className="text-gray-600 text-sm mb-8">
+                <p className="text-gray-300 text-base mb-10 opacity-90">
                   How can we help you today?
                 </p>
                 
@@ -168,36 +183,47 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
                   />
                 </div>
                 
-                {/* Voice Button */}
-                <div className="flex justify-center mb-6">
+                {/* Enhanced Voice Button */}
+                <div className="flex justify-center mb-8">
                   <div 
-                    className="relative w-20 h-20 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 group"
+                    className="relative w-24 h-24 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 hover:scale-110 group"
                     style={{
                       background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
                       boxShadow: `
-                        0 8px 32px rgba(124, 58, 237, 0.4),
-                        0 0 40px rgba(124, 58, 237, 0.2)
+                        0 0 40px rgba(124, 58, 237, 0.6),
+                        0 0 80px rgba(124, 58, 237, 0.4),
+                        0 12px 40px rgba(124, 58, 237, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3)
                       `
                     }}
                     onClick={scrollToWidget}
                   >
-                    {/* Pulsing ring */}
-                    <div className="absolute inset-0 rounded-full animate-ping opacity-30"
+                    {/* Enhanced Pulsing ring */}
+                    <div className="absolute inset-0 rounded-full animate-ping opacity-40"
                          style={{
                            background: 'linear-gradient(135deg, #7C3AED, #3B82F6)',
-                           transform: 'scale(1.2)'
+                           transform: 'scale(1.3)'
+                         }}
+                    ></div>
+                    
+                    {/* Secondary glow ring */}
+                    <div className="absolute inset-0 rounded-full opacity-60"
+                         style={{
+                           background: 'radial-gradient(circle, rgba(124, 58, 237, 0.3) 0%, transparent 70%)',
+                           transform: 'scale(2)',
+                           filter: 'blur(20px)'
                          }}
                     ></div>
                     
                     {/* Microphone icon */}
-                    <svg className="w-10 h-10 text-white relative z-10 transition-transform duration-300 group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-12 h-12 text-white relative z-10 transition-transform duration-300 group-hover:scale-110" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M7 4a3 3 0 616 0v4a3 3 0 11-6 0V4z"/>
                       <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5a.75.75 0 001.5 0v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"/>
                     </svg>
                   </div>
                 </div>
                 
-                <p className="text-sm text-gray-600">
+                <p className="text-base text-gray-300 opacity-90">
                   Click to speak with our AI assistant
                 </p>
               </div>
