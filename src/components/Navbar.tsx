@@ -54,7 +54,7 @@ const Navbar: React.FC = () => {
           : 'py-6 bg-transparent'
       }`}>
         <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center">
+          <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3" onClick={() => window.scrollTo(0, 0)}>
               <div className="relative">
                 <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-3 rounded-xl shadow-lg shadow-voiceai-primary/50">
@@ -66,9 +66,9 @@ const Navbar: React.FC = () => {
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-r from-voiceai-primary to-voiceai-secondary rounded-xl blur opacity-30 animate-pulse"></div>
               </div>
-              <span className="font-bold text-2xl text-white">SummitVoiceAI</span>
+              <span className="font-bold text-2xl bg-gradient-to-r from-voiceai-primary to-voiceai-secondary bg-clip-text text-transparent">SummitVoiceAI</span>
             </Link>
-            <span className="text-sm text-foreground/70 mt-1 sm:mt-0 sm:ml-4 navbar-tagline font-medium">The Future of Websites Is Here</span>
+            <span className="text-sm text-foreground/70 ml-4 navbar-tagline font-medium hidden sm:block">The Future of Websites Is Here</span>
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
