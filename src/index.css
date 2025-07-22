@@ -308,7 +308,7 @@
     margin: 0 auto;
   }
 
-  /* Features Grid Layout */
+  /* Features Grid Layout Enhancement */
   .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
@@ -320,7 +320,7 @@
     z-index: 2;
   }
 
-  /* Dark Glass Feature Box */
+  /* Dark Glass Feature Box - Exact Specifications */
   .feature-box {
     background: rgba(15, 15, 15, 0.8);
     backdrop-filter: blur(20px);
@@ -331,9 +331,10 @@
     overflow: hidden;
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    animation: fadeInUp 0.6s ease-out;
+    animation: fadeInStagger 0.6s ease-out both;
   }
 
+  /* Stagger Animation - 100ms delay between each */
   .feature-box:nth-child(1) { animation-delay: 0.1s; }
   .feature-box:nth-child(2) { animation-delay: 0.2s; }
   .feature-box:nth-child(3) { animation-delay: 0.3s; }
@@ -344,7 +345,7 @@
   .feature-box:nth-child(8) { animation-delay: 0.8s; }
   .feature-box:nth-child(9) { animation-delay: 0.9s; }
 
-  @keyframes fadeInUp {
+  @keyframes fadeInStagger {
     from {
       opacity: 0;
       transform: translateY(30px);
@@ -355,7 +356,7 @@
     }
   }
 
-  /* Electric Border Hover Effect */
+  /* Hover Effects - Exact Specifications */
   .feature-box:hover {
     transform: translateY(-8px);
     border-color: rgba(138, 43, 226, 0.6);
@@ -363,6 +364,7 @@
     background: rgba(20, 20, 20, 0.9);
   }
 
+  /* Electric Glow Animation on Hover */
   .feature-box:hover::before {
     content: '';
     position: absolute;
@@ -393,7 +395,7 @@
     position: relative;
   }
 
-  /* Feature Text Styling */
+  /* Text Enhancement - Exact Specifications */
   .feature-title {
     background: linear-gradient(135deg, #ffffff, #e0e0e0);
     background-clip: text;
@@ -402,6 +404,7 @@
     font-weight: 600;
     font-size: 1.25rem;
     margin-bottom: 8px;
+    transition: all 0.3s ease;
   }
 
   .feature-description {
@@ -410,11 +413,16 @@
     transition: color 0.3s ease;
   }
 
+  /* Electric Text on Hover */
   .feature-box:hover .feature-description {
     color: rgba(255, 255, 255, 0.95);
   }
 
-  /* 24/7 Availability - Orbital Rings */
+  .feature-box:hover .feature-title {
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  }
+
+  /* 1. 24/7 Availability - Pulsing Orbital Rings */
   .orbital-rings {
     position: relative;
     width: 100%;
@@ -425,7 +433,7 @@
     position: absolute;
     border: 2px solid #00ffff;
     border-radius: 50%;
-    animation: orbit 4s linear infinite;
+    animation: gentleOrbit 4s linear infinite;
   }
 
   .ring-1 {
@@ -454,20 +462,26 @@
     border-radius: 50%;
     top: 30px;
     left: 30px;
-    animation: pulse 2s ease-in-out infinite;
+    animation: electricPulse 3s ease-in-out infinite;
   }
 
-  @keyframes orbit {
+  @keyframes gentleOrbit {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
   }
 
-  @keyframes pulse {
-    0%, 100% { box-shadow: 0 0 5px #00ffff; }
-    50% { box-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff; }
+  @keyframes electricPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px #00ffff;
+      background: #00ffff;
+    }
+    50% { 
+      box-shadow: 0 0 20px #00ffff, 0 0 30px #00ffff, 0 0 40px #ffffff;
+      background: #ffffff;
+    }
   }
 
-  /* Save $100K+ - Holographic Currency */
+  /* 2. Save $100K+ - Holographic Currency with Floating Particles */
   .holographic-currency {
     position: relative;
     width: 100%;
@@ -482,13 +496,15 @@
     font-weight: bold;
     color: #00ff41;
     filter: drop-shadow(0 0 10px #00ff41);
-    animation: shimmer 3s ease-in-out infinite;
+    animation: holographicShimmer 3s ease-in-out infinite;
+    z-index: 2;
   }
 
   .floating-particles {
     position: absolute;
     width: 100%;
     height: 100%;
+    pointer-events: none;
   }
 
   .particle {
@@ -497,7 +513,7 @@
     height: 4px;
     background: #ffd700;
     border-radius: 50%;
-    animation: float-up 2s ease-out infinite;
+    animation: floatUpward 2s ease-out infinite;
   }
 
   .particle:nth-child(1) {
@@ -515,23 +531,31 @@
     animation-delay: 1.4s;
   }
 
-  @keyframes shimmer {
-    0%, 100% { filter: drop-shadow(0 0 10px #00ff41); }
-    50% { filter: drop-shadow(0 0 20px #00ff41) drop-shadow(0 0 30px #ffd700); }
+  @keyframes holographicShimmer {
+    0%, 100% { 
+      filter: drop-shadow(0 0 10px #00ff41);
+      text-shadow: 0 0 10px #00ff41;
+    }
+    50% { 
+      filter: drop-shadow(0 0 20px #00ff41) drop-shadow(0 0 30px #ffd700);
+      text-shadow: 0 0 20px #00ff41, 0 0 30px #ffd700;
+    }
   }
 
-  @keyframes float-up {
+  @keyframes floatUpward {
     0% {
       bottom: 10%;
       opacity: 1;
+      transform: scale(1);
     }
     100% {
       bottom: 90%;
       opacity: 0;
+      transform: scale(0.5);
     }
   }
 
-  /* Smart Learning - Neural Network */
+  /* 3. Smart Learning - Neural Network with Data Flow */
   .neural-network {
     position: relative;
     width: 100%;
@@ -544,7 +568,7 @@
     height: 12px;
     background: linear-gradient(135deg, #8a2be2, #4169e1);
     border-radius: 50%;
-    animation: neural-pulse 2s ease-in-out infinite;
+    animation: neuralPulse 2s ease-in-out infinite;
   }
 
   .node-1 {
@@ -568,7 +592,7 @@
     position: absolute;
     height: 2px;
     background: linear-gradient(90deg, transparent, #4169e1, transparent);
-    animation: data-flow 3s ease-in-out infinite;
+    animation: dataFlow 3s ease-in-out infinite;
   }
 
   .con-1 {
@@ -586,17 +610,30 @@
     animation-delay: 1.5s;
   }
 
-  @keyframes neural-pulse {
-    0%, 100% { box-shadow: 0 0 5px #8a2be2; }
-    50% { box-shadow: 0 0 15px #8a2be2, 0 0 25px #4169e1; }
+  @keyframes neuralPulse {
+    0%, 100% { 
+      box-shadow: 0 0 5px #8a2be2;
+      transform: scale(1);
+    }
+    50% { 
+      box-shadow: 0 0 15px #8a2be2, 0 0 25px #4169e1;
+      transform: scale(1.2);
+    }
   }
 
-  @keyframes data-flow {
-    0%, 100% { opacity: 0.3; }
-    50% { opacity: 1; }
+  @keyframes dataFlow {
+    0%, 100% { 
+      opacity: 0.3;
+      background-size: 200% 100%;
+      background-position: -100% 0;
+    }
+    50% { 
+      opacity: 1;
+      background-position: 100% 0;
+    }
   }
 
-  /* Perfect Call Handling - Soundwave Phone */
+  /* 4. Perfect Call Handling - Soundwave with Phone */
   .soundwave-phone {
     position: relative;
     width: 100%;
@@ -609,6 +646,7 @@
   .phone-silhouette {
     font-size: 2rem;
     z-index: 2;
+    filter: drop-shadow(0 0 5px #ff6b35);
   }
 
   .soundwaves {
@@ -621,7 +659,7 @@
     position: absolute;
     border: 2px solid transparent;
     border-radius: 50%;
-    animation: sound-wave 2s ease-out infinite;
+    animation: soundWavePulse 2s ease-out infinite;
   }
 
   .wave-1 {
@@ -629,7 +667,7 @@
     height: 40px;
     top: 20px;
     left: 20px;
-    border-color: rgba(255, 107, 53, 0.6);
+    border-color: rgba(255, 107, 53, 0.8);
   }
 
   .wave-2 {
@@ -637,7 +675,7 @@
     height: 60px;
     top: 10px;
     left: 10px;
-    border-color: rgba(247, 147, 30, 0.4);
+    border-color: rgba(247, 147, 30, 0.6);
     animation-delay: 0.5s;
   }
 
@@ -646,22 +684,22 @@
     height: 80px;
     top: 0;
     left: 0;
-    border-color: rgba(255, 107, 53, 0.2);
+    border-color: rgba(255, 107, 53, 0.4);
     animation-delay: 1s;
   }
 
-  @keyframes sound-wave {
+  @keyframes soundWavePulse {
     0% {
       transform: scale(0.8);
       opacity: 1;
     }
     100% {
-      transform: scale(1.2);
+      transform: scale(1.4);
       opacity: 0;
     }
   }
 
-  /* Seamless Scheduling - Holographic Calendar */
+  /* 5. Seamless Scheduling - Holographic Calendar with Floating Dates */
   .holographic-calendar {
     position: relative;
     width: 100%;
@@ -674,6 +712,8 @@
   .calendar-base {
     font-size: 2rem;
     z-index: 2;
+    color: #1e90ff;
+    filter: drop-shadow(0 0 8px #1e90ff);
   }
 
   .floating-dates {
@@ -686,14 +726,16 @@
     position: absolute;
     width: 20px;
     height: 20px;
-    background: rgba(30, 144, 255, 0.8);
+    background: linear-gradient(135deg, #1e90ff, #ffffff);
     border-radius: 4px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.7rem;
-    color: white;
-    animation: float-reorganize 4s ease-in-out infinite;
+    color: #000;
+    font-weight: bold;
+    animation: floatingReorganize 4s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(30, 144, 255, 0.6);
   }
 
   .date-block:nth-child(1) {
@@ -713,12 +755,18 @@
     animation-delay: 2.6s;
   }
 
-  @keyframes float-reorganize {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(180deg); }
+  @keyframes floatingReorganize {
+    0%, 100% { 
+      transform: translateY(0) rotate(0deg) scale(1);
+      opacity: 0.8;
+    }
+    50% { 
+      transform: translateY(-15px) rotate(180deg) scale(1.1);
+      opacity: 1;
+    }
   }
 
-  /* Lead Qualification - Scanning User */
+  /* 6. Lead Qualification - Scanning User with Checkmarks */
   .scanning-user {
     position: relative;
     width: 100%;
@@ -731,6 +779,8 @@
   .user-silhouette {
     font-size: 2rem;
     z-index: 2;
+    color: #ff3366;
+    filter: drop-shadow(0 0 5px #ff3366);
   }
 
   .scan-lines {
@@ -743,10 +793,11 @@
     position: absolute;
     width: 60px;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #ff3366, transparent);
+    background: linear-gradient(90deg, transparent, #ff3366, #ff6b9d, transparent);
     top: 20px;
     left: 10px;
-    animation: scan-move 3s ease-in-out infinite;
+    animation: scanBeamMove 3s ease-in-out infinite;
+    box-shadow: 0 0 5px #ff3366;
   }
 
   .checkmarks {
@@ -759,8 +810,10 @@
     position: absolute;
     color: #ff6b9d;
     font-size: 1rem;
+    font-weight: bold;
     opacity: 0;
-    animation: check-appear 3s ease-in-out infinite;
+    animation: checkmarkAppear 3s ease-in-out infinite;
+    text-shadow: 0 0 5px #ff6b9d;
   }
 
   .check:nth-child(1) {
@@ -775,18 +828,29 @@
     animation-delay: 2s;
   }
 
-  @keyframes scan-move {
-    0%, 100% { top: 20px; }
-    50% { top: 50px; }
+  @keyframes scanBeamMove {
+    0%, 100% { top: 15px; opacity: 0.6; }
+    25% { top: 30px; opacity: 1; }
+    50% { top: 45px; opacity: 1; }
+    75% { top: 60px; opacity: 0.8; }
   }
 
-  @keyframes check-appear {
-    0%, 70% { opacity: 0; transform: scale(0.5); }
-    80%, 90% { opacity: 1; transform: scale(1); }
-    100% { opacity: 0; transform: scale(0.5); }
+  @keyframes checkmarkAppear {
+    0%, 60% { 
+      opacity: 0; 
+      transform: scale(0.5) rotate(-45deg); 
+    }
+    70%, 90% { 
+      opacity: 1; 
+      transform: scale(1) rotate(0deg); 
+    }
+    100% { 
+      opacity: 0; 
+      transform: scale(0.5) rotate(45deg); 
+    }
   }
 
-  /* Revenue Growth - Ascending Bars */
+  /* 7. Revenue Growth - 3D Ascending Bars with Energy Trails */
   .ascending-bars {
     position: relative;
     width: 100%;
@@ -801,7 +865,22 @@
     width: 15px;
     background: linear-gradient(180deg, #ff1493, #da70d6);
     border-radius: 2px 2px 0 0;
-    animation: bar-growth 2s ease-in-out infinite;
+    animation: barGrowthPulse 2s ease-in-out infinite;
+    box-shadow: 0 0 10px rgba(255, 20, 147, 0.5);
+    position: relative;
+  }
+
+  .bar::after {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -1px;
+    right: -1px;
+    height: 4px;
+    background: linear-gradient(90deg, transparent, #ffffff, transparent);
+    border-radius: 2px;
+    opacity: 0;
+    animation: barSparkle 2s ease-in-out infinite;
   }
 
   .bar-1 {
@@ -822,22 +901,41 @@
     position: absolute;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, transparent, #ff1493, transparent);
+    background: linear-gradient(90deg, transparent, #ff1493, #da70d6, transparent);
     top: 10px;
-    animation: energy-flow 2s ease-in-out infinite;
+    animation: energyTrailFlow 2s ease-in-out infinite;
+    box-shadow: 0 0 8px #ff1493;
   }
 
-  @keyframes bar-growth {
-    0%, 50% { transform: scaleY(0.8); }
-    100% { transform: scaleY(1.2); }
+  @keyframes barGrowthPulse {
+    0%, 50% { 
+      transform: scaleY(0.8); 
+      box-shadow: 0 0 5px rgba(255, 20, 147, 0.3);
+    }
+    100% { 
+      transform: scaleY(1.2); 
+      box-shadow: 0 0 15px rgba(255, 20, 147, 0.8);
+    }
   }
 
-  @keyframes energy-flow {
-    0%, 100% { left: -100%; }
-    50% { left: 100%; }
+  @keyframes barSparkle {
+    0%, 60% { opacity: 0; }
+    70%, 90% { opacity: 1; }
+    100% { opacity: 0; }
   }
 
-  /* No Training Needed - Protected Shield */
+  @keyframes energyTrailFlow {
+    0%, 100% { 
+      transform: translateX(-100%);
+      opacity: 0;
+    }
+    50% { 
+      transform: translateX(100%);
+      opacity: 1;
+    }
+  }
+
+  /* 8. No Training Needed - Shield with AI Chip and Protective Aura */
   .protected-shield {
     position: relative;
     width: 100%;
@@ -849,14 +947,17 @@
 
   .shield-base {
     font-size: 2rem;
-    z-index: 2;
+    z-index: 3;
+    filter: drop-shadow(0 0 8px #20b2aa);
   }
 
   .ai-chip {
     position: absolute;
     font-size: 1rem;
-    top: 30px;
-    right: 25px;
+    top: 25px;
+    right: 20px;
+    z-index: 4;
+    animation: chipGlow 2s ease-in-out infinite;
   }
 
   .protective-aura {
@@ -867,10 +968,22 @@
     border-radius: 50%;
     top: 5px;
     left: 5px;
-    animation: aura-pulse 3s ease-in-out infinite;
+    animation: protectiveAuraPulse 3s ease-in-out infinite;
   }
 
-  @keyframes aura-pulse {
+  .protected-shield::after {
+    content: '';
+    position: absolute;
+    width: 85px;
+    height: 85px;
+    border: 1px solid rgba(72, 209, 204, 0.3);
+    border-radius: 50%;
+    top: -2px;
+    left: -2px;
+    animation: outerAura 4s ease-in-out infinite;
+  }
+
+  @keyframes protectiveAuraPulse {
     0%, 100% {
       transform: scale(1);
       opacity: 0.6;
@@ -879,11 +992,31 @@
     50% {
       transform: scale(1.1);
       opacity: 1;
-      box-shadow: 0 0 20px #20b2aa, 0 0 30px #48d1cc;
+      box-shadow: 0 0 20px #20b2aa, 0 0 30px #48d1cc, 0 0 40px #20b2aa;
     }
   }
 
-  /* Instant Deployment - Rocket Launch */
+  @keyframes outerAura {
+    0%, 100% {
+      transform: scale(1);
+      opacity: 0.3;
+    }
+    50% {
+      transform: scale(1.15);
+      opacity: 0.1;
+    }
+  }
+
+  @keyframes chipGlow {
+    0%, 100% { 
+      filter: drop-shadow(0 0 3px #48d1cc);
+    }
+    50% { 
+      filter: drop-shadow(0 0 8px #48d1cc) drop-shadow(0 0 12px #20b2aa);
+    }
+  }
+
+  /* 9. Instant Deployment - Rocket with Electric Sparks */
   .rocket-launch {
     position: relative;
     width: 100%;
@@ -895,8 +1028,9 @@
 
   .rocket {
     font-size: 2rem;
-    animation: rocket-wobble 2s ease-in-out infinite;
+    animation: rocketLaunch 2s ease-in-out infinite;
     z-index: 2;
+    filter: drop-shadow(0 0 8px #ffd700);
   }
 
   .electric-trail {
@@ -911,7 +1045,8 @@
     height: 8px;
     background: linear-gradient(180deg, #ffd700, #ffffff);
     border-radius: 2px;
-    animation: electric-spark 1.5s ease-out infinite;
+    animation: electricSparkTrail 1.5s ease-out infinite;
+    box-shadow: 0 0 4px #ffd700;
   }
 
   .spark-1 {
@@ -931,19 +1066,46 @@
     animation-delay: 0.6s;
   }
 
-  @keyframes rocket-wobble {
-    0%, 100% { transform: translateY(0) rotate(-2deg); }
-    50% { transform: translateY(-5px) rotate(2deg); }
+  .rocket-launch::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    left: 30px;
+    right: 30px;
+    height: 20px;
+    background: linear-gradient(180deg, transparent, rgba(255, 215, 0, 0.4), transparent);
+    border-radius: 50%;
+    animation: thrustGlow 2s ease-in-out infinite;
   }
 
-  @keyframes electric-spark {
+  @keyframes rocketLaunch {
+    0%, 100% { 
+      transform: translateY(0) rotate(-2deg);
+    }
+    50% { 
+      transform: translateY(-8px) rotate(2deg);
+    }
+  }
+
+  @keyframes electricSparkTrail {
     0% {
       opacity: 1;
       transform: translateY(0) scale(1);
     }
     100% {
       opacity: 0;
-      transform: translateY(-20px) scale(0.5);
+      transform: translateY(-25px) scale(0.3);
+    }
+  }
+
+  @keyframes thrustGlow {
+    0%, 100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.8;
+      transform: scale(1.2);
     }
   }
 
