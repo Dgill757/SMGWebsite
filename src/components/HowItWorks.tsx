@@ -20,7 +20,7 @@ const HowItWorks: React.FC = () => {
             </div>
             <div className="space-y-2">
               <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
-                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
                 <p className="text-gray-100 dark:text-white">Hello! Thank you for calling Ascend Roofing. I'm your AI assistant. How may I help you today?</p>
               </div>
               <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
@@ -49,7 +49,7 @@ const HowItWorks: React.FC = () => {
             </div>
             <div className="space-y-2">
               <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
-                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
                 <p className="text-gray-100 dark:text-white">I'd be happy to help with that! Could you tell me a bit more about your roof issue? When did you first notice it, and what's the approximate size of your home?</p>
               </div>
               <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
@@ -57,7 +57,7 @@ const HowItWorks: React.FC = () => {
                 <p className="text-gray-800 dark:text-foreground/90">We noticed a leak last week after the storm. Our house is about 2,500 square feet with a shingle roof that's about 15 years old.</p>
               </div>
               <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
-                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
                 <p className="text-gray-100 dark:text-white">Thank you for that information. Based on what you've shared, it sounds like you might need more than a simple repair. Would you be open to discussing replacement options as well?</p>
               </div>
             </div>
@@ -79,7 +79,7 @@ const HowItWorks: React.FC = () => {
               </div>
               <div>
                 <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm mb-2 border border-voiceai-primary/40">
-                  <p className="font-medium mb-1 text-gray-900 dark:text-foreground">AI Assistant</p>
+                  <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
                   <p className="text-gray-100 dark:text-white">Great! I can schedule a free inspection with one of our specialists. We have availability this Thursday at 10 AM or Friday at 2 PM. Which works better for you?</p>
                 </div>
                 <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
