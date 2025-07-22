@@ -119,7 +119,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           
           {/* Floating Demo Widget */}
           <div 
-            className="absolute top-1/4 right-8 lg:right-16 xl:right-24 z-[99999] animate-float"
+            className="absolute top-[15%] right-8 lg:right-16 xl:right-24 z-[99999] animate-float"
             style={{
               zIndex: 99999,
               pointerEvents: 'auto'
@@ -141,9 +141,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             >
               {/* Dark Browser Bar */}
               <div 
-                className="flex items-center justify-between p-6 border-b"
+                className="flex items-center justify-between p-6"
                 style={{
-                  borderColor: 'rgba(255, 255, 255, 0.1)',
                   background: 'rgba(0, 0, 0, 0.2)'
                 }}
               >
