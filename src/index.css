@@ -1368,4 +1368,90 @@
   .hover-scale-sm:hover {
     transform: scale(1.02);
   }
+
+  /* Dark glass container */
+  .glass-container {
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Electric glow animation */
+  .electric-glow {
+    position: relative;
+  }
+
+  .electric-glow::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(45deg, 
+      #8a2be2, #4169e1, #00ffff, #8a2be2, #4169e1, #00ffff);
+    background-size: 400% 400%;
+    border-radius: 22px;
+    z-index: -1;
+    animation: electric-border 3s ease-in-out infinite;
+    opacity: 0.7;
+  }
+
+  @keyframes electric-border {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  /* Input styling */
+  .glass-input {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    backdrop-filter: blur(10px);
+  }
+
+  .glass-input:focus {
+    outline: none;
+    border-color: rgba(138, 43, 226, 0.5);
+    box-shadow: 0 0 20px rgba(138, 43, 226, 0.3);
+  }
+
+  /* Pulsing revenue numbers */
+  .revenue-pulse {
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-glow {
+    0%, 100% { 
+      text-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+      transform: scale(1);
+    }
+    50% { 
+      text-shadow: 0 0 20px rgba(138, 43, 226, 0.8);
+      transform: scale(1.02);
+    }
+  }
+
+  /* Attention-grabbing alert */
+  .alert-glow {
+    background: linear-gradient(135deg, 
+      rgba(255, 99, 102, 0.1),
+      rgba(138, 43, 226, 0.1)
+    );
+    border: 1px solid rgba(255, 99, 102, 0.3);
+    animation: alert-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes alert-pulse {
+    0%, 100% { 
+      box-shadow: 0 0 15px rgba(255, 99, 102, 0.2);
+    }
+    50% { 
+      box-shadow: 0 0 30px rgba(255, 99, 102, 0.4);
+    }
+  }
 }

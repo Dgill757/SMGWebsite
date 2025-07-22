@@ -1,119 +1,171 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const ROICalculator = () => {
-  const [averageClientValue, setAverageClientValue] = useState(500);
-  const [missedCallsPerMonth, setMissedCallsPerMonth] = useState(50);
-  const [averageCloseRate, setAverageCloseRate] = useState(25);
-  const [monthlyRevenueLost, setMonthlyRevenueLost] = useState(0);
-  const [annualRevenueLost, setAnnualRevenueLost] = useState(0);
-  const [returnOnInvestment, setReturnOnInvestment] = useState(0);
+const MissedCallCalculator = () => {
+  const [clientValue, setClientValue] = useState(2500);
+  const [missedCalls, setMissedCalls] = useState(25);
+  const [closeRate, setCloseRate] = useState(20);
+  const [monthlyRevenue, setMonthlyRevenue] = useState(0);
+  const [annualRevenue, setAnnualRevenue] = useState(0);
 
-  const calculate = () => {
-    const monthlyLost = averageClientValue * missedCallsPerMonth * (averageCloseRate / 100);
-    const annualLost = monthlyLost * 12;
-    const roi = (monthlyLost / 500) * 100;
-
-    setMonthlyRevenueLost(monthlyLost);
-    setAnnualRevenueLost(annualLost);
-    setReturnOnInvestment(roi);
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      maximumFractionDigits: 0,
+    }).format(value);
   };
 
+  const calculateResults = () => {
+    const monthly = (clientValue * missedCalls * (closeRate / 100));
+    const annual = monthly * 12;
+    setMonthlyRevenue(monthly);
+    setAnnualRevenue(annual);
+  };
+
+  useEffect(() => {
+    calculateResults();
+  }, [clientValue, missedCalls, closeRate]);
+
   return (
-    <div className="w-full max-w-4xl mx-auto">
-      <div className="flex flex-col md:flex-row gap-8">
-        <div className="md:w-1/2">
-          <h2 className="text-xl font-bold mb-4 text-foreground">Enter Your Details</h2>
-          <div className="space-y-6">
-            <div>
-              <label htmlFor="average-client-value" className="block mb-2 text-foreground/80 font-medium">
-                Average Client Value ($)
-              </label>
-              <input
-                type="number"
-                id="average-client-value"
-                value={averageClientValue}
-                onChange={(e) => setAverageClientValue(Number(e.target.value))}
-                className="w-full h-10 px-3 border border-white/20 rounded-md bg-voiceai-dark/50 text-foreground focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="missed-calls-per-month" className="block mb-2 text-foreground/80 font-medium">
-                Missed Calls Per Month
-              </label>
-              <input
-                type="number"
-                id="missed-calls-per-month"
-                value={missedCallsPerMonth}
-                onChange={(e) => setMissedCallsPerMonth(Number(e.target.value))}
-                className="w-full h-10 px-3 border border-white/20 rounded-md bg-voiceai-dark/50 text-foreground focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
-              />
-            </div>
-            
-            <div>
-              <label htmlFor="average-close-rate" className="block mb-2 text-foreground/80 font-medium">
-                Average Close Rate (%)
-              </label>
-              <input
-                type="number"
-                id="average-close-rate"
-                value={averageCloseRate}
-                onChange={(e) => setAverageCloseRate(Number(e.target.value))}
-                className="w-full h-10 px-3 border border-white/20 rounded-md bg-voiceai-dark/50 text-foreground focus:outline-none focus:ring-2 focus:ring-voiceai-primary"
-              />
-            </div>
-            
-            <button 
-              onClick={calculate}
-              className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white font-medium py-3 px-6 rounded-md hover:opacity-90 transition-opacity shadow-lg"
-            >
-              Calculate ROI
-            </button>
-          </div>
+    <div className="max-w-6xl mx-auto p-6 md:p-12">
+      {/* Main Calculator Container */}
+      <div className="glass-container electric-glow p-8 md:p-12">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-4">
+            Calculate Your Missed Call Revenue Loss
+          </h1>
+          <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto">
+            Discover the shocking amount of revenue your business is losing every month from unanswered calls. 
+            The numbers might surprise you.
+          </p>
         </div>
-        
-        <div className="md:w-1/2">
-          <h2 className="text-xl font-bold mb-4 text-foreground">Your Results</h2>
-          <div className="space-y-4">
-            <div className="glassmorphism p-4 rounded-lg border border-white/20">
-              <h3 className="font-bold text-foreground">Monthly Revenue Lost:</h3>
-              <p className="text-2xl font-bold text-red-400">${monthlyRevenueLost.toLocaleString()}</p>
+
+        {/* Calculator Grid */}
+        <div className="grid lg:grid-cols-2 gap-10">
+          {/* Input Section */}
+          <div className="space-y-8">
+            <h2 className="text-2xl font-semibold text-white mb-6 flex items-center">
+              <span className="w-3 h-3 bg-purple-500 rounded-full mr-3 animate-pulse"></span>
+              Enter Your Business Data
+            </h2>
+
+            <div className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Average Client/Sale Value (USD)
+                </label>
+                <input
+                  type="number"
+                  value={clientValue}
+                  onChange={(e) => setClientValue(parseFloat(e.target.value) || 0)}
+                  className="glass-input w-full px-4 py-3 text-white placeholder-gray-400"
+                  placeholder="e.g., 2500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Estimated Missed Calls Per Month
+                </label>
+                <input
+                  type="number"
+                  value={missedCalls}
+                  onChange={(e) => setMissedCalls(parseFloat(e.target.value) || 0)}
+                  className="glass-input w-full px-4 py-3 text-white placeholder-gray-400"
+                  placeholder="e.g., 25"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2">
+                  Your Close Rate (%)
+                </label>
+                <input
+                  type="number"
+                  value={closeRate}
+                  onChange={(e) => setCloseRate(parseFloat(e.target.value) || 0)}
+                  className="glass-input w-full px-4 py-3 text-white placeholder-gray-400"
+                  placeholder="e.g., 20"
+                />
+              </div>
             </div>
-            
-            <div className="glassmorphism p-4 rounded-lg border border-white/20">
-              <h3 className="font-bold text-foreground">Annual Revenue Lost:</h3>
-              <p className="text-2xl font-bold text-red-400">${annualRevenueLost.toLocaleString()}</p>
+          </div>
+
+          {/* Results Section */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-semibold text-white mb-6 flex items-center">
+              <span className="w-3 h-3 bg-red-500 rounded-full mr-3 animate-pulse"></span>
+              Your Revenue Loss
+            </h2>
+
+            {/* Revenue Loss Display */}
+            <div className="space-y-4">
+              <div className="glass-container p-6 border-purple-500/30">
+                <p className="text-gray-300 text-sm mb-2">Monthly Revenue Lost</p>
+                <p className="text-4xl font-bold text-purple-400 revenue-pulse">
+                  {formatCurrency(monthlyRevenue)}
+                </p>
+              </div>
+
+              <div className="glass-container p-6 border-red-500/30">
+                <p className="text-gray-300 text-sm mb-2">Annual Revenue Lost</p>
+                <p className="text-4xl font-bold text-red-400 revenue-pulse">
+                  {formatCurrency(annualRevenue)}
+                </p>
+              </div>
             </div>
-            
-            <div className="glassmorphism p-4 rounded-lg border border-white/20">
-              <h3 className="font-bold text-foreground">Our Monthly Service:</h3>
-              <p className="text-2xl font-bold text-voiceai-primary">$500.00</p>
-            </div>
-            
-            <div className="glassmorphism p-4 rounded-lg border border-white/20 bg-gradient-to-r from-voiceai-primary/10 to-voiceai-secondary/10">
-              <h3 className="font-bold text-foreground">Return on Investment:</h3>
-              <p className="text-2xl font-bold text-green-400">{returnOnInvestment.toFixed(1)}%</p>
-              <div className="mt-2 bg-voiceai-primary/20 rounded-full h-2">
-                <div 
-                  className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary h-2 rounded-full transition-all duration-500"
-                  style={{width: `${Math.min(returnOnInvestment, 100)}%`}}
-                ></div>
+
+            {/* Eye-Opening Message */}
+            <div className="alert-glow glass-container p-6 mt-8">
+              <div className="flex items-start space-x-3">
+                <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
+                  <span className="text-white text-sm font-bold">!</span>
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-white mb-3">Reality Check</h3>
+                  <div className="text-gray-200 leading-relaxed">
+                    {monthlyRevenue > 0 ? (
+                      <>
+                        <p className="mb-3">
+                          <strong>According to the information you provided, you are currently losing 
+                          <span className="text-red-400 font-bold text-xl"> {formatCurrency(monthlyRevenue)}</span> 
+                          per month</strong>, which translates into 
+                          <span className="text-red-400 font-bold text-xl"> {formatCurrency(annualRevenue)}</span> 
+                          annually — and this is likely on the low end.
+                        </p>
+                        <p className="mb-3">
+                          <strong>What type of impact could making an additional 
+                          <span className="text-purple-400 font-bold"> {formatCurrency(monthlyRevenue)}</span> 
+                          per month have on your business?</strong>
+                        </p>
+                        <p className="text-cyan-400 font-semibold">
+                          Don't let another missed call go unanswered. Every call is potential revenue.
+                        </p>
+                      </>
+                    ) : (
+                      <p>Enter your business data above to see how much revenue you're losing to missed calls.</p>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-      
-      <div className="mt-8 p-6 glassmorphism rounded-lg border border-white/20">
-        <h3 className="font-bold text-foreground mb-2">What This Means For Your Business:</h3>
-        <p className="text-foreground/80">
-          Based on your inputs, you could be losing <span className="text-red-400 font-bold">${annualRevenueLost.toLocaleString()}</span> annually from missed calls. 
-          Our service can help you capture these opportunities with a positive ROI of <span className="text-green-400 font-bold">{returnOnInvestment.toFixed(1)}%</span>.
-        </p>
+
+        {/* Call to Action */}
+        <div className="text-center mt-12 pt-8 border-t border-gray-700">
+          <p className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent mb-4">
+            Don't Let Another Missed Call Cost You Money
+          </p>
+          <p className="text-gray-300 mb-6">
+            Every minute you wait, potential revenue walks away. Take action now.
+          </p>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ROICalculator;
+export default MissedCallCalculator;
