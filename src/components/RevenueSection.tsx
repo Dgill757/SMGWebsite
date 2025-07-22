@@ -9,6 +9,7 @@ const RevenueSection = () => {
       </div>
       
       <div className="features-grid">
+        
         <div className="feature-box">
           <div className="feature-icon availability-icon">
             <div className="orbital-rings">
