@@ -276,53 +276,122 @@ const Navbar: React.FC = () => {
         </div>
         
         {isMobileMenuOpen && (
-          <div className="md:hidden absolute top-full left-0 w-full glassmorphism shadow-2xl py-6 px-4 space-y-6 border-t border-white/10">
-            <a 
-              href="#features" 
-              className="block py-3 nav-link text-base font-medium" 
-              onClick={(e) => scrollToSection('features', e)}
-            >
-              Features
-            </a>
-            <a 
-              href="#how-it-works" 
-              className="block py-3 nav-link text-base font-medium" 
-              onClick={(e) => scrollToSection('how-it-works', e)}
-            >
-              How It Works
-            </a>
-            <a 
-              href="#use-cases" 
-              className="block py-3 nav-link text-base font-medium" 
-              onClick={(e) => scrollToSection('use-cases', e)}
-            >
-              Use Cases
-            </a>
-            <Link 
-              to="/industries" 
-              className="block py-3 nav-link text-base font-medium"
-              onClick={() => {
-                setIsMobileMenuOpen(false);
-                window.scrollTo(0, 0);
-              }}
-            >
-              Industries
-            </Link>
-            <a 
-              href="#pricing" 
-              className="block py-3 nav-link text-base font-medium" 
-              onClick={(e) => scrollToSection('pricing', e)}
-            >
-              Pricing
-            </a>
-            <a 
-              href="#pricing" 
-              className="block py-3 btn-primary text-center" 
-              onClick={(e) => scrollToSection('pricing', e)}
-            >
-              Get Started
-            </a>
-          </div>
+          <>
+            {/* Mobile Menu Backdrop */}
+            <div 
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
+              onClick={() => setIsMobileMenuOpen(false)}
+            />
+            
+            {/* Mobile Menu */}
+            <div className="fixed inset-x-0 top-0 z-50 md:hidden">
+              <div 
+                className="glassmorphism shadow-2xl border-b border-white/10 min-h-screen"
+                style={{
+                  background: 'rgba(0, 0, 0, 0.9)',
+                  backdropFilter: 'blur(20px)'
+                }}
+              >
+                {/* Mobile Header */}
+                <div className="flex items-center justify-between p-4 border-b border-white/10">
+                  <Link to="/" className="flex items-center space-x-3" onClick={() => {
+                    setIsMobileMenuOpen(false);
+                    window.scrollTo(0, 0);
+                  }}>
+                    <div className="relative">
+                      <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg shadow-lg shadow-voiceai-primary/50">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
+                          <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                          <line x1="12" x2="12" y1="19" y2="22"/>
+                        </svg>
+                      </div>
+                    </div>
+                    <span className="font-bold text-xl bg-gradient-to-r from-voiceai-primary to-voiceai-secondary bg-clip-text text-transparent">SummitVoiceAI</span>
+                  </Link>
+                  <button 
+                    className="glassmorphism p-2 rounded-lg" 
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    aria-label="Close menu"
+                  >
+                    <X size={24} className="text-white" />
+                  </button>
+                </div>
+                
+                {/* Mobile Navigation Links */}
+                <div className="px-4 py-6 space-y-2">
+                  <a 
+                    href="#features" 
+                    className="block py-4 px-4 rounded-lg text-white text-lg font-medium hover:bg-white/10 transition-colors border border-transparent hover:border-white/20" 
+                    onClick={(e) => {
+                      scrollToSection('features', e);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Features
+                  </a>
+                  <a 
+                    href="#how-it-works" 
+                    className="block py-4 px-4 rounded-lg text-white text-lg font-medium hover:bg-white/10 transition-colors border border-transparent hover:border-white/20" 
+                    onClick={(e) => {
+                      scrollToSection('how-it-works', e);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    How It Works
+                  </a>
+                  <a 
+                    href="#use-cases" 
+                    className="block py-4 px-4 rounded-lg text-white text-lg font-medium hover:bg-white/10 transition-colors border border-transparent hover:border-white/20" 
+                    onClick={(e) => {
+                      scrollToSection('use-cases', e);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Use Cases
+                  </a>
+                  <Link 
+                    to="/industries" 
+                    className="block py-4 px-4 rounded-lg text-white text-lg font-medium hover:bg-white/10 transition-colors border border-transparent hover:border-white/20"
+                    onClick={() => {
+                      setIsMobileMenuOpen(false);
+                      window.scrollTo(0, 0);
+                    }}
+                  >
+                    Industries
+                  </Link>
+                  <a 
+                    href="#pricing" 
+                    className="block py-4 px-4 rounded-lg text-white text-lg font-medium hover:bg-white/10 transition-colors border border-transparent hover:border-white/20" 
+                    onClick={(e) => {
+                      scrollToSection('pricing', e);
+                      setIsMobileMenuOpen(false);
+                    }}
+                  >
+                    Pricing
+                  </a>
+                  
+                  {/* Mobile CTA Button */}
+                  <div className="pt-6">
+                    <a 
+                      href="#pricing" 
+                      className="block py-4 px-6 rounded-lg text-center text-white font-semibold text-lg transition-all shadow-xl"
+                      style={{
+                        background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 100%)',
+                        boxShadow: '0 4px 15px rgba(124, 58, 237, 0.4)'
+                      }}
+                      onClick={(e) => {
+                        scrollToSection('pricing', e);
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Get Started
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         )}
       </nav>
     </>

@@ -55,47 +55,47 @@ const BenefitsSection: React.FC = () => {
   }];
   
   return (
-    <section id="features" className="pt-0 pb-20 px-4 md:px-8 lg:px-16 relative">
+    <section id="features" className="py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 relative">
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background/50 to-background"></div>
       
       <div className="container mx-auto relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="heading-lg">
+        <div className="text-center mb-12 sm:mb-16">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold mb-4 sm:mb-6 leading-tight">
             Stop Losing <span className="text-voiceai-primary font-bold">Revenue</span> in Missed Opportunities
           </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg lg:text-xl text-foreground/80 max-w-3xl mx-auto leading-relaxed">
             If your business misses 2-5 calls a day, that's 60-150 potential customers lost monthly. At $5,000-$10,000 per customer, you're leaving massive revenue on the table.
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {benefits.map((benefit, index) => (
-            <div key={index} className="glassmorphism rounded-xl p-6 shadow-lg card-hover border border-white/10 relative overflow-hidden">
-              <div className={`absolute -right-6 -top-6 w-24 h-24 rounded-full bg-gradient-to-br ${benefit.color} opacity-20`}></div>
-              <div className={`inline-flex items-center justify-center p-3 rounded-lg bg-gradient-to-br ${benefit.color} text-white mb-4 shadow-lg`}>
+            <div key={index} className="glassmorphism rounded-xl p-6 sm:p-8 shadow-lg card-hover border border-white/10 relative overflow-hidden">
+              <div className={`absolute -right-6 -top-6 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br ${benefit.color} opacity-20`}></div>
+              <div className={`inline-flex items-center justify-center p-3 sm:p-4 rounded-lg bg-gradient-to-br ${benefit.color} text-white mb-4 sm:mb-6 shadow-lg mx-auto`}>
                 {benefit.icon}
               </div>
-              <h3 className="text-xl font-bold mb-2 text-foreground">{benefit.title}</h3>
-              <p className="text-foreground/80">{benefit.description}</p>
+              <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-center text-foreground">{benefit.title}</h3>
+              <p className="text-sm sm:text-base text-foreground/80 text-center leading-relaxed">{benefit.description}</p>
             </div>
           ))}
         </div>
         
-        <div className="mt-16 p-8 rounded-2xl glassmorphism border border-primary/30">
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-            <div>
-              <h3 className="heading-md mb-2 text-foreground">Calculate Your ROI</h3>
-              <p className="text-foreground/80">
+        <div className="mt-12 sm:mt-16 p-6 sm:p-8 rounded-2xl glassmorphism border border-primary/30">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 sm:gap-8">
+            <div className="text-center lg:text-left">
+              <h3 className="text-2xl sm:text-3xl font-bold mb-2 sm:mb-3 text-foreground">Calculate Your ROI</h3>
+              <p className="text-sm sm:text-base text-foreground/80 max-w-md">
                 See how much revenue you're leaving on the table with missed calls and leads.
               </p>
             </div>
-            <div className="glassmorphism rounded-xl p-6 text-center border border-white/20">
-              <div className="text-3xl font-bold text-voiceai-primary mb-2">$120,000+</div>
-              <p className="text-sm text-foreground/70">Average annual revenue increase</p>
+            <div className="glassmorphism rounded-xl p-4 sm:p-6 text-center border border-white/20">
+              <div className="text-2xl sm:text-3xl font-bold text-voiceai-primary mb-2">$120,000+</div>
+              <p className="text-xs sm:text-sm text-foreground/70">Average annual revenue increase</p>
             </div>
             <button 
               onClick={() => setIsROIDialogOpen(true)}
-              className="btn-primary"
+              className="btn-primary w-full sm:w-auto whitespace-nowrap"
             >
               Get Your Custom ROI Analysis
             </button>
@@ -106,7 +106,7 @@ const BenefitsSection: React.FC = () => {
       <Dialog open={isROIDialogOpen} onOpenChange={setIsROIDialogOpen}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle className="text-2xl font-bold mb-4">Missed Call ROI Calculator</DialogTitle>
+            <DialogTitle className="text-xl sm:text-2xl font-bold mb-4">Missed Call ROI Calculator</DialogTitle>
           </DialogHeader>
           <ROICalculator />
         </DialogContent>
