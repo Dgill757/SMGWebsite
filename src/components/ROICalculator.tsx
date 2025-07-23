@@ -31,11 +31,11 @@ const MissedCallCalculator = () => {
     section: {
       minHeight: '100vh',
       background: `
-        radial-gradient(ellipse at top left, rgba(138, 43, 226, 0.15) 0%, transparent 40%),
-        radial-gradient(ellipse at top right, rgba(65, 105, 225, 0.12) 0%, transparent 40%),
-        radial-gradient(ellipse at bottom left, rgba(0, 255, 255, 0.08) 0%, transparent 40%),
-        radial-gradient(ellipse at bottom right, rgba(138, 43, 226, 0.1) 0%, transparent 40%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.98) 0%, rgba(5, 5, 10, 0.99) 100%)
+        radial-gradient(ellipse at 20% 30%, rgba(138, 43, 226, 0.06) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 70%, rgba(65, 105, 225, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse at 60% 20%, rgba(0, 255, 255, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse at 40% 80%, rgba(138, 43, 226, 0.05) 0%, transparent 60%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.99) 0%, rgba(2, 2, 8, 1) 100%)
       `,
       position: 'relative' as const,
       overflow: 'hidden' as const,
@@ -127,86 +127,66 @@ const MissedCallCalculator = () => {
     <>
       <style>
         {`
-          /* Electric Wave Animations */
-          @keyframes electricWaves {
+          /* Subtle Electric Flow Animations */
+          @keyframes subtleElectricFlow {
             0%, 100% { 
-              transform: translateX(-10%) rotate(0deg); 
-              opacity: 0.3;
-            }
-            33% { 
-              transform: translateX(5%) rotate(0.3deg); 
-              opacity: 0.6;
-            }
-            66% { 
-              transform: translateX(-5%) rotate(-0.3deg); 
-              opacity: 0.4;
-            }
-          }
-
-          @keyframes floatingCurrent {
-            0% { transform: translateY(0px) rotate(0deg); }
-            25% { transform: translateY(-20px) rotate(90deg); }
-            50% { transform: translateY(0px) rotate(180deg); }
-            75% { transform: translateY(20px) rotate(270deg); }
-            100% { transform: translateY(0px) rotate(360deg); }
-          }
-
-          /* Floating Particles */
-          @keyframes floatParticle1 {
-            0%, 100% { 
-              transform: translateY(0px) translateX(0px) scale(1); 
-              opacity: 0.6;
-            }
-            25% { 
-              transform: translateY(-30px) translateX(20px) scale(1.2); 
-              opacity: 0.8;
-            }
-            50% { 
-              transform: translateY(-10px) translateX(-15px) scale(0.8); 
-              opacity: 0.4;
-            }
-            75% { 
-              transform: translateY(15px) translateX(25px) scale(1.1); 
-              opacity: 0.7;
-            }
-          }
-
-          @keyframes floatParticle2 {
-            0%, 100% { 
-              transform: translateY(0px) translateX(0px) rotate(0deg); 
+              transform: translateX(-2%) rotate(0deg); 
               opacity: 0.5;
             }
             33% { 
-              transform: translateY(25px) translateX(-20px) rotate(120deg); 
-              opacity: 0.8;
+              transform: translateX(1%) rotate(0.1deg); 
+              opacity: 0.7;
             }
             66% { 
-              transform: translateY(-15px) translateX(30px) rotate(240deg); 
+              transform: translateX(-1%) rotate(-0.1deg); 
+              opacity: 0.6;
+            }
+          }
+
+          /* Gentle Floating Particles */
+          @keyframes gentleFloat1 {
+            0%, 100% { 
+              transform: translateY(0px) translateX(0px) scale(1); 
+              opacity: 0.2;
+            }
+            50% { 
+              transform: translateY(-15px) translateX(10px) scale(1.1); 
               opacity: 0.3;
             }
           }
 
-          @keyframes floatParticle3 {
+          @keyframes gentleFloat2 {
             0%, 100% { 
-              transform: translateY(0px) translateX(0px) scale(1); 
-              opacity: 0.4;
+              transform: translateY(0px) translateX(0px); 
+              opacity: 0.15;
             }
             50% { 
-              transform: translateY(-40px) translateX(-25px) scale(1.3); 
-              opacity: 0.7;
+              transform: translateY(20px) translateX(-12px); 
+              opacity: 0.25;
             }
           }
 
-          /* Shimmer Lines */
-          @keyframes shimmerLine1 {
+          @keyframes gentleFloat3 {
+            0%, 100% { 
+              transform: translateY(0px) translateX(0px) scale(1); 
+              opacity: 0.1;
+            }
+            50% { 
+              transform: translateY(-25px) translateX(-8px) scale(1.2); 
+              opacity: 0.2;
+            }
+          }
+
+          /* Ultra-Subtle Shimmer Lines */
+          @keyframes gentleShimmer1 {
             0% { transform: translateX(-100%); opacity: 0; }
-            50% { opacity: 0.6; }
+            50% { opacity: 0.1; }
             100% { transform: translateX(100%); opacity: 0; }
           }
 
-          @keyframes shimmerLine2 {
+          @keyframes gentleShimmer2 {
             0% { transform: translateX(100%); opacity: 0; }
-            50% { opacity: 0.4; }
+            50% { opacity: 0.08; }
             100% { transform: translateX(-100%); opacity: 0; }
           }
 
@@ -244,36 +224,37 @@ const MissedCallCalculator = () => {
         `}
       </style>
       <section style={calculatorStyles.section} className="bg-black">
-        {/* Electric Wave Background */}
+        {/* Subtle Electric Background Atmosphere */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          {/* Gentle Electric Waves */}
           <div 
-            className="absolute w-full h-full opacity-30"
+            className="absolute w-full h-full"
             style={{
               background: `
-                linear-gradient(45deg, transparent 40%, rgba(138, 43, 226, 0.1) 50%, transparent 60%),
-                linear-gradient(-45deg, transparent 40%, rgba(65, 105, 225, 0.08) 50%, transparent 60%),
-                linear-gradient(90deg, transparent 45%, rgba(0, 255, 255, 0.06) 50%, transparent 55%)
+                linear-gradient(45deg, transparent 48%, rgba(138, 43, 226, 0.02) 50%, transparent 52%),
+                linear-gradient(-45deg, transparent 48%, rgba(65, 105, 225, 0.015) 50%, transparent 52%),
+                linear-gradient(90deg, transparent 49%, rgba(0, 255, 255, 0.01) 50%, transparent 51%)
               `,
-              animation: 'electricWaves 12s ease-in-out infinite, floatingCurrent 8s linear infinite'
+              animation: 'subtleElectricFlow 20s ease-in-out infinite'
             }}
           />
           
-          {/* Floating Electric Particles */}
-          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400 rounded-full opacity-60" 
-               style={{animation: 'floatParticle1 15s ease-in-out infinite'}} />
-          <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-cyan-400 rounded-full opacity-50" 
-               style={{animation: 'floatParticle2 18s ease-in-out infinite'}} />
-          <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-blue-400 rounded-full opacity-40" 
-               style={{animation: 'floatParticle3 20s ease-in-out infinite'}} />
+          {/* Floating Energy Particles - Much Subtler */}
+          <div className="absolute top-1/5 left-1/5 w-1 h-1 bg-purple-400 rounded-full opacity-20" 
+               style={{animation: 'gentleFloat1 25s ease-in-out infinite'}} />
+          <div className="absolute top-4/5 right-1/5 w-0.5 h-0.5 bg-cyan-400 rounded-full opacity-15" 
+               style={{animation: 'gentleFloat2 30s ease-in-out infinite'}} />
+          <div className="absolute top-2/5 left-4/5 w-0.5 h-0.5 bg-blue-400 rounded-full opacity-10" 
+               style={{animation: 'gentleFloat3 35s ease-in-out infinite'}} />
           
-          {/* Electric Shimmer Lines */}
+          {/* Ultra-Subtle Shimmer Accents */}
           <div 
-            className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60"
-            style={{animation: 'shimmerLine1 10s linear infinite'}}
+            className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-10"
+            style={{animation: 'gentleShimmer1 25s linear infinite'}}
           />
           <div 
-            className="absolute bottom-0 right-0 w-full h-px bg-gradient-to-l from-transparent via-cyan-400 to-transparent opacity-40"
-            style={{animation: 'shimmerLine2 14s linear infinite'}}
+            className="absolute bottom-0 right-0 w-full h-px bg-gradient-to-l from-transparent via-cyan-400 to-transparent opacity-8"
+            style={{animation: 'gentleShimmer2 35s linear infinite'}}
           />
         </div>
         
