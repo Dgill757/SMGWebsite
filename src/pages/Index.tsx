@@ -80,7 +80,9 @@ const Index = () => {
           <Widget />
           
           <RevenueSection />
-          <MissedCallCalculator />
+          <section className="min-h-screen bg-black wavy-bg py-12">
+            <MissedCallCalculator />
+          </section>
           <HowItWorks />
           <UseCases />
           <DemoSection />

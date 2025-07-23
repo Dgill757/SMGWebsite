@@ -50,12 +50,11 @@ const Navbar: React.FC = () => {
       
       <nav className={`fixed w-full z-50 transition-all duration-500 ${
         isScrolled 
-          ? 'py-2 glassmorphism shadow-2xl shadow-voiceai-primary/20' 
-          : 'py-4 bg-transparent'
+          ? 'py-3 glassmorphism shadow-2xl shadow-voiceai-primary/20' 
+          : 'py-6 bg-transparent'
       }`}>
-        <div className="w-full flex justify-between items-center px-6 lg:px-12">
-          {/* Logo Section */}
-          <div className="flex items-center flex-shrink-0">
+        <div className="container mx-auto flex justify-between items-center px-4 md:px-6">
+          <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-3" onClick={() => window.scrollTo(0, 0)}>
               <div className="relative">
                 <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-3 rounded-xl shadow-lg shadow-voiceai-primary/50">
@@ -67,61 +66,22 @@ const Navbar: React.FC = () => {
                 </div>
                 <div className="absolute -inset-1 bg-gradient-to-r from-voiceai-primary to-voiceai-secondary rounded-xl blur opacity-30 animate-pulse"></div>
               </div>
-              <span className="font-bold text-2xl bg-gradient-to-r from-voiceai-primary to-voiceai-secondary bg-clip-text text-transparent whitespace-nowrap">SummitVoiceAI</span>
+              <span className="font-bold text-2xl bg-gradient-to-r from-voiceai-primary to-voiceai-secondary bg-clip-text text-transparent">SummitVoiceAI</span>
             </Link>
-            <span className="text-sm text-foreground/70 font-medium bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent ml-4 hidden xl:block whitespace-nowrap">The Future of Websites Is Here</span>
+            <span className="text-sm text-foreground/70 ml-4 navbar-tagline font-medium hidden sm:block">The Future of Websites Is Here</span>
           </div>
           
-          {/* Navigation Links - Desktop - All in one line */}
-          <div className="hidden lg:flex items-center justify-end space-x-6 xl:space-x-8 flex-grow">
-            <a 
-              href="#features" 
-              onClick={(e) => scrollToSection('features', e)} 
-              className="navbar-tab-link relative group whitespace-nowrap"
-            >
-              Features
-            </a>
-            <a 
-              href="#how-it-works" 
-              onClick={(e) => scrollToSection('how-it-works', e)} 
-              className="navbar-tab-link relative group whitespace-nowrap"
-            >
-              How It Works
-            </a>
-            <a 
-              href="#use-cases" 
-              onClick={(e) => scrollToSection('use-cases', e)} 
-              className="navbar-tab-link relative group whitespace-nowrap"
-            >
-              Use Cases
-            </a>
-            <Link 
-              to="/industries" 
-              className="navbar-tab-link relative group whitespace-nowrap" 
-              onClick={() => window.scrollTo(0, 0)}
-            >
-              Industries
-            </Link>
-            <a 
-              href="#pricing" 
-              onClick={(e) => scrollToSection('pricing', e)} 
-              className="navbar-tab-link relative group whitespace-nowrap"
-            >
-              Pricing
-            </a>
-            <a 
-              href="#pricing" 
-              onClick={(e) => scrollToSection('pricing', e)} 
-              className="navbar-btn-primary bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-semibold px-6 py-3 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-purple-500/30 relative overflow-hidden group whitespace-nowrap"
-            >
-              <span className="relative z-10">Get Started</span>
-              <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-            </a>
+          <div className="hidden md:flex items-center space-x-8">
+            <a href="#features" onClick={(e) => scrollToSection('features', e)} className="nav-link">Features</a>
+            <a href="#how-it-works" onClick={(e) => scrollToSection('how-it-works', e)} className="nav-link">How It Works</a>
+            <a href="#use-cases" onClick={(e) => scrollToSection('use-cases', e)} className="nav-link">Use Cases</a>
+            <Link to="/industries" className="nav-link" onClick={() => window.scrollTo(0, 0)}>Industries</Link>
+            <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="nav-link">Pricing</a>
+            <a href="#pricing" onClick={(e) => scrollToSection('pricing', e)} className="btn-primary">Get Started</a>
           </div>
           
-          {/* Mobile Menu Button */}
           <button 
-            className="lg:hidden glassmorphism p-2 rounded-lg hover:bg-white/20 transition-all duration-300" 
+            className="md:hidden glassmorphism p-2 rounded-lg" 
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
           >
@@ -129,33 +89,32 @@ const Navbar: React.FC = () => {
           </button>
         </div>
         
-        {/* Mobile Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden absolute top-full left-0 w-full glassmorphism shadow-2xl py-6 px-4 space-y-6 border-t border-white/10">
+          <div className="md:hidden absolute top-full left-0 w-full glassmorphism shadow-2xl py-6 px-4 space-y-6 border-t border-white/10">
             <a 
               href="#features" 
-              className="block py-3 enhanced-nav-link text-base font-medium text-foreground/80 hover:text-white transition-colors duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('features', e)}
             >
               Features
             </a>
             <a 
               href="#how-it-works" 
-              className="block py-3 enhanced-nav-link text-base font-medium text-foreground/80 hover:text-white transition-colors duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('how-it-works', e)}
             >
               How It Works
             </a>
             <a 
               href="#use-cases" 
-              className="block py-3 enhanced-nav-link text-base font-medium text-foreground/80 hover:text-white transition-colors duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('use-cases', e)}
             >
               Use Cases
             </a>
             <Link 
               to="/industries" 
-              className="block py-3 enhanced-nav-link text-base font-medium text-foreground/80 hover:text-white transition-colors duration-300"
+              className="block py-3 nav-link text-base font-medium"
               onClick={() => {
                 setIsMobileMenuOpen(false);
                 window.scrollTo(0, 0);
@@ -165,14 +124,14 @@ const Navbar: React.FC = () => {
             </Link>
             <a 
               href="#pricing" 
-              className="block py-3 enhanced-nav-link text-base font-medium text-foreground/80 hover:text-white transition-colors duration-300" 
+              className="block py-3 nav-link text-base font-medium" 
               onClick={(e) => scrollToSection('pricing', e)}
             >
               Pricing
             </a>
             <a 
               href="#pricing" 
-              className="block py-3 enhanced-btn-primary text-center bg-gradient-to-r from-purple-600 to-cyan-500 hover:from-purple-500 hover:to-cyan-400 text-white font-semibold rounded-lg transition-all duration-300" 
+              className="block py-3 btn-primary text-center" 
               onClick={(e) => scrollToSection('pricing', e)}
             >
               Get Started
