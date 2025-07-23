@@ -31,66 +31,92 @@ const MissedCallCalculator = () => {
     section: {
       minHeight: '100vh',
       background: `
-        radial-gradient(circle at 25% 25%, rgba(138, 43, 226, 0.08) 0%, transparent 50%),
-        radial-gradient(circle at 75% 75%, rgba(65, 105, 225, 0.06) 0%, transparent 50%),
-        radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.03) 0%, transparent 50%),
-        linear-gradient(180deg, rgba(0, 0, 0, 0.95) 0%, rgba(10, 10, 15, 0.98) 100%)
+        radial-gradient(ellipse at top left, rgba(138, 43, 226, 0.15) 0%, transparent 40%),
+        radial-gradient(ellipse at top right, rgba(65, 105, 225, 0.12) 0%, transparent 40%),
+        radial-gradient(ellipse at bottom left, rgba(0, 255, 255, 0.08) 0%, transparent 40%),
+        radial-gradient(ellipse at bottom right, rgba(138, 43, 226, 0.1) 0%, transparent 40%),
+        linear-gradient(180deg, rgba(0, 0, 0, 0.98) 0%, rgba(5, 5, 10, 0.99) 100%)
       `,
       position: 'relative' as const,
       overflow: 'hidden' as const,
       padding: '4rem 1rem'
     },
     mainContainer: {
-      background: 'rgba(8, 8, 12, 0.75)',
-      backdropFilter: 'blur(25px)',
+      background: `
+        linear-gradient(135deg, 
+          rgba(15, 15, 25, 0.85) 0%, 
+          rgba(8, 8, 18, 0.9) 50%, 
+          rgba(12, 12, 22, 0.85) 100%
+        )
+      `,
+      backdropFilter: 'blur(40px)',
       border: '1px solid rgba(255, 255, 255, 0.08)',
-      borderRadius: '24px',
+      borderRadius: '32px',
       padding: '3rem',
       position: 'relative' as const,
       overflow: 'hidden' as const,
       boxShadow: `
-        0 0 60px rgba(138, 43, 226, 0.05),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1)
+        0 0 80px rgba(138, 43, 226, 0.08),
+        0 0 40px rgba(65, 105, 225, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12)
       `,
     },
     input: {
-      background: 'rgba(255, 255, 255, 0.03)',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
-      borderRadius: '12px',
-      backdropFilter: 'blur(15px)',
+      background: `
+        linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.04) 0%, 
+          rgba(255, 255, 255, 0.02) 100%
+        )
+      `,
+      border: '1px solid rgba(255, 255, 255, 0.12)',
+      borderRadius: '16px',
+      backdropFilter: 'blur(20px)',
       transition: 'all 0.3s ease',
-      color: 'white'
+      color: 'white',
+      boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.08)'
     },
     resultCard: {
-      background: 'rgba(255, 255, 255, 0.02)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(255, 255, 255, 0.06)',
-      borderRadius: '16px',
+      background: `
+        linear-gradient(135deg, 
+          rgba(255, 255, 255, 0.03) 0%, 
+          rgba(255, 255, 255, 0.01) 100%
+        )
+      `,
+      backdropFilter: 'blur(30px)',
+      border: '1px solid rgba(255, 255, 255, 0.1)',
+      borderRadius: '20px',
       padding: '2rem',
       transition: 'all 0.4s ease',
       position: 'relative' as const,
-      overflow: 'hidden' as const
+      overflow: 'hidden' as const,
+      boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
     },
     resultCardPurple: {
-      borderColor: 'rgba(138, 43, 226, 0.2)'
+      borderColor: 'rgba(138, 43, 226, 0.25)',
+      boxShadow: '0 0 30px rgba(138, 43, 226, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
     },
     resultCardRed: {
-      borderColor: 'rgba(239, 68, 68, 0.2)'
+      borderColor: 'rgba(239, 68, 68, 0.25)',
+      boxShadow: '0 0 30px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
     },
     alertContainer: {
-      background: 'linear-gradient(135deg, rgba(239, 68, 68, 0.08), rgba(138, 43, 226, 0.06))',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
-      borderRadius: '16px',
+      background: `
+        linear-gradient(135deg, 
+          rgba(239, 68, 68, 0.06) 0%, 
+          rgba(138, 43, 226, 0.04) 50%,
+          rgba(239, 68, 68, 0.06) 100%
+        )
+      `,
+      backdropFilter: 'blur(30px)',
+      border: '1px solid rgba(239, 68, 68, 0.25)',
+      borderRadius: '20px',
       padding: '2rem',
       position: 'relative' as const,
-      overflow: 'hidden' as const
+      overflow: 'hidden' as const,
+      boxShadow: '0 0 40px rgba(239, 68, 68, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
     },
     numberGlow: {
-      textShadow: '0 0 20px rgba(138, 43, 226, 0.2), 0 0 40px rgba(138, 43, 226, 0.1)'
-    },
-    pulseIndicator: {
-      animation: 'calc-gentle-pulse 3s ease-in-out infinite'
+      textShadow: '0 0 15px rgba(255, 255, 255, 0.3)'
     },
     iconGlow: {
       boxShadow: '0 0 15px rgba(239, 68, 68, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2)'
@@ -101,15 +127,87 @@ const MissedCallCalculator = () => {
     <>
       <style>
         {`
-          @keyframes calc-gentle-pulse {
+          /* Electric Wave Animations */
+          @keyframes electricWaves {
             0%, 100% { 
-              opacity: 0.6; 
-              transform: scale(1);
+              transform: translateX(-10%) rotate(0deg); 
+              opacity: 0.3;
+            }
+            33% { 
+              transform: translateX(5%) rotate(0.3deg); 
+              opacity: 0.6;
+            }
+            66% { 
+              transform: translateX(-5%) rotate(-0.3deg); 
+              opacity: 0.4;
+            }
+          }
+
+          @keyframes floatingCurrent {
+            0% { transform: translateY(0px) rotate(0deg); }
+            25% { transform: translateY(-20px) rotate(90deg); }
+            50% { transform: translateY(0px) rotate(180deg); }
+            75% { transform: translateY(20px) rotate(270deg); }
+            100% { transform: translateY(0px) rotate(360deg); }
+          }
+
+          /* Floating Particles */
+          @keyframes floatParticle1 {
+            0%, 100% { 
+              transform: translateY(0px) translateX(0px) scale(1); 
+              opacity: 0.6;
+            }
+            25% { 
+              transform: translateY(-30px) translateX(20px) scale(1.2); 
+              opacity: 0.8;
             }
             50% { 
-              opacity: 1; 
-              transform: scale(1.1);
+              transform: translateY(-10px) translateX(-15px) scale(0.8); 
+              opacity: 0.4;
             }
+            75% { 
+              transform: translateY(15px) translateX(25px) scale(1.1); 
+              opacity: 0.7;
+            }
+          }
+
+          @keyframes floatParticle2 {
+            0%, 100% { 
+              transform: translateY(0px) translateX(0px) rotate(0deg); 
+              opacity: 0.5;
+            }
+            33% { 
+              transform: translateY(25px) translateX(-20px) rotate(120deg); 
+              opacity: 0.8;
+            }
+            66% { 
+              transform: translateY(-15px) translateX(30px) rotate(240deg); 
+              opacity: 0.3;
+            }
+          }
+
+          @keyframes floatParticle3 {
+            0%, 100% { 
+              transform: translateY(0px) translateX(0px) scale(1); 
+              opacity: 0.4;
+            }
+            50% { 
+              transform: translateY(-40px) translateX(-25px) scale(1.3); 
+              opacity: 0.7;
+            }
+          }
+
+          /* Shimmer Lines */
+          @keyframes shimmerLine1 {
+            0% { transform: translateX(-100%); opacity: 0; }
+            50% { opacity: 0.6; }
+            100% { transform: translateX(100%); opacity: 0; }
+          }
+
+          @keyframes shimmerLine2 {
+            0% { transform: translateX(100%); opacity: 0; }
+            50% { opacity: 0.4; }
+            100% { transform: translateX(-100%); opacity: 0; }
           }
 
           .calc-input-focus:focus {
@@ -146,7 +244,40 @@ const MissedCallCalculator = () => {
         `}
       </style>
       <section style={calculatorStyles.section} className="bg-black">
-        <div className="max-w-6xl mx-auto">
+        {/* Electric Wave Background */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div 
+            className="absolute w-full h-full opacity-30"
+            style={{
+              background: `
+                linear-gradient(45deg, transparent 40%, rgba(138, 43, 226, 0.1) 50%, transparent 60%),
+                linear-gradient(-45deg, transparent 40%, rgba(65, 105, 225, 0.08) 50%, transparent 60%),
+                linear-gradient(90deg, transparent 45%, rgba(0, 255, 255, 0.06) 50%, transparent 55%)
+              `,
+              animation: 'electricWaves 12s ease-in-out infinite, floatingCurrent 8s linear infinite'
+            }}
+          />
+          
+          {/* Floating Electric Particles */}
+          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-purple-400 rounded-full opacity-60" 
+               style={{animation: 'floatParticle1 15s ease-in-out infinite'}} />
+          <div className="absolute top-3/4 right-1/4 w-1 h-1 bg-cyan-400 rounded-full opacity-50" 
+               style={{animation: 'floatParticle2 18s ease-in-out infinite'}} />
+          <div className="absolute top-1/2 left-3/4 w-1.5 h-1.5 bg-blue-400 rounded-full opacity-40" 
+               style={{animation: 'floatParticle3 20s ease-in-out infinite'}} />
+          
+          {/* Electric Shimmer Lines */}
+          <div 
+            className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-purple-400 to-transparent opacity-60"
+            style={{animation: 'shimmerLine1 10s linear infinite'}}
+          />
+          <div 
+            className="absolute bottom-0 right-0 w-full h-px bg-gradient-to-l from-transparent via-cyan-400 to-transparent opacity-40"
+            style={{animation: 'shimmerLine2 14s linear infinite'}}
+          />
+        </div>
+        
+        <div className="max-w-6xl mx-auto relative z-10">
           {/* Main Calculator Container */}
           <div style={calculatorStyles.mainContainer} className="calc-main-container">
             {/* Header */}
@@ -165,7 +296,7 @@ const MissedCallCalculator = () => {
               {/* Input Section */}
               <div className="space-y-8">
                 <h2 className="text-2xl font-semibold text-white mb-8 flex items-center">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full mr-3" style={calculatorStyles.pulseIndicator}></div>
+                  <div className="w-2 h-2 bg-purple-400 rounded-full mr-3"></div>
                   Enter Your Business Data
                 </h2>
 
@@ -217,7 +348,7 @@ const MissedCallCalculator = () => {
               {/* Results Section */}
               <div className="space-y-8">
                 <h2 className="text-2xl font-semibold text-white mb-8 flex items-center">
-                  <div className="w-2 h-2 bg-red-400 rounded-full mr-3" style={calculatorStyles.pulseIndicator}></div>
+                  <div className="w-2 h-2 bg-red-400 rounded-full mr-3"></div>
                   Your Revenue Loss
                 </h2>
 
