@@ -27,22 +27,10 @@ const MissedCallCalculator = () => {
   }, [clientValue, missedCalls, closeRate]);
 
   return (
-    <div 
-      className="calc-premium-wrapper"
-      style={{
-        minHeight: '100vh',
-        background: `
-          radial-gradient(ellipse at 20% 30%, rgba(138, 43, 226, 0.08) 0%, transparent 60%),
-          radial-gradient(ellipse at 80% 70%, rgba(65, 105, 225, 0.06) 0%, transparent 60%),
-          radial-gradient(ellipse at 60% 20%, rgba(0, 255, 255, 0.04) 0%, transparent 60%),
-          radial-gradient(ellipse at 40% 80%, rgba(138, 43, 226, 0.07) 0%, transparent 60%),
-          linear-gradient(180deg, rgba(16, 16, 32, 1) 0%, rgba(8, 8, 20, 1) 100%)
-        `,
-        position: 'relative',
-        overflow: 'hidden',
-        padding: '4rem 1rem'
-      }}
-    >
+    <section className="py-16 bg-background relative overflow-hidden">
+      <div className="absolute inset-0 opacity-30">
+        <div className="absolute inset-0 bg-gradient-to-br from-voiceai-primary/10 via-transparent to-voiceai-secondary/10"></div>
+      </div>
       {/* Electric Background Effects - Scoped to this component only */}
       <div 
         style={{
@@ -348,7 +336,7 @@ const MissedCallCalculator = () => {
           }
         }
       `}</style>
-    </div>
+    </section>
   );
 };
 
