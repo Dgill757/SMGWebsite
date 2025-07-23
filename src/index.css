@@ -130,6 +130,16 @@
     background: var(--gradient-accent);
   }
 
+  .section-padding {
+    padding: 5rem 0;
+  }
+
+  @media (max-width: 768px) {
+    .section-padding {
+      padding: 3rem 0;
+    }
+  }
+
   .section-divider {
     height: 1px;
     background: linear-gradient(90deg, transparent, hsl(var(--border)), transparent);
