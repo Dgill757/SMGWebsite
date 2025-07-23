@@ -67,18 +67,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
   };
 
   return (
-    <div className="min-h-[70vh] flex flex-col justify-center relative overflow-hidden pt-2 pb-4">
+    <div className="min-h-[100vh] sm:min-h-[70vh] flex flex-col justify-center relative overflow-hidden pt-8 pb-8 px-4 sm:px-0">
       <BackgroundElements />
       
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
-          <div className="w-full lg:w-1/2 space-y-4 lg:space-y-6">
+        <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-10">
+          <div className="w-full lg:w-1/2 space-y-6 lg:space-y-6 text-center lg:text-left">
             <div>
-                <div className="inline-flex items-center gap-3 glassmorphism px-6 py-3 rounded-full mb-6 lg:mb-8 shadow-lg shadow-voiceai-primary/30 border border-white/20">
-                  <span className="animate-pulse rounded-full w-3 h-3 bg-gradient-to-r from-voiceai-primary to-voiceai-secondary shadow-lg shadow-voiceai-primary/50"></span>
-                  <span className="text-sm font-semibold tracking-wide text-foreground">The Future of Websites Is Here</span>
-                </div>
-              <h1 className="heading-xl mb-6">
+              <div className="inline-flex items-center gap-3 glassmorphism px-4 py-2 sm:px-6 sm:py-3 rounded-full mb-6 lg:mb-8 shadow-lg shadow-voiceai-primary/30 border border-white/20">
+                <span className="animate-pulse rounded-full w-3 h-3 bg-gradient-to-r from-voiceai-primary to-voiceai-secondary shadow-lg shadow-voiceai-primary/50"></span>
+                <span className="text-xs sm:text-sm font-semibold tracking-wide text-foreground">The Future of Websites Is Here</span>
+              </div>
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold leading-tight mb-4 sm:mb-6">
                 <span style={{ 
                   background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
                   WebkitBackgroundClip: 'text',
@@ -93,7 +93,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
                   color: '#F472B6'
                 }} className="font-bold">Brain</span>
               </h1>
-              <p className="mt-3 lg:mt-4 text-xl text-foreground/80 leading-relaxed font-medium">
+              <p className="text-base sm:text-lg lg:text-xl text-foreground/80 leading-relaxed font-medium max-w-2xl mx-auto lg:mx-0">
                 Stop losing leads to unanswered calls and static forms. Our Voice AI handles calls, qualifies leads, books appointments, and follows up—all while you sleep.
               </p>
             </div>
@@ -105,18 +105,20 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               setCalendarOpen={setCalendarOpen}
             />
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 lg:mt-12">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 mt-8 lg:mt-12">
               <FeatureItem Icon={PhoneCall} text="Never Miss a Call" colorClass="glassmorphism" />
               <FeatureItem Icon={Calendar} text="Auto Scheduling" colorClass="glassmorphism" />
               <FeatureItem Icon={CreditCard} text="Billing & Invoicing" colorClass="glassmorphism" />
             </div>
           </div>
           
-          <WebsiteMockup />
+          <div className="hidden lg:block">
+            <WebsiteMockup />
+          </div>
           
-          {/* Floating Demo Widget */}
+          {/* Floating Demo Widget - Desktop Only */}
           <div 
-            className="absolute top-[15%] right-8 lg:right-16 xl:right-24 z-[99999] animate-float"
+            className="hidden lg:block absolute top-[15%] right-8 lg:right-16 xl:right-24 z-[99999] animate-float"
             style={{
               zIndex: 99999,
               pointerEvents: 'auto'
@@ -224,6 +226,93 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
                 </p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+      
+      {/* Mobile Widget Card */}
+      <div className="block lg:hidden mt-12 mx-4">
+        <div 
+          className="relative max-w-sm mx-auto backdrop-blur-xl transition-all duration-500 hover:scale-[1.02]"
+          style={{
+            background: 'rgba(255, 255, 255, 0.1)',
+            borderRadius: '20px',
+            border: '1px solid rgba(255, 255, 255, 0.2)',
+            boxShadow: `
+              0 0 40px rgba(124, 58, 237, 0.4),
+              0 20px 40px -12px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.1)
+            `
+          }}
+        >
+          {/* Mobile Browser Bar */}
+          <div 
+            className="flex items-center justify-between p-4"
+            style={{
+              background: 'rgba(0, 0, 0, 0.2)'
+            }}
+          >
+            <div className="flex items-center space-x-2">
+              <div className="w-3 h-3 rounded-full bg-red-500 opacity-80"></div>
+              <div className="w-3 h-3 rounded-full bg-yellow-500 opacity-80"></div>
+              <div className="w-3 h-3 rounded-full bg-green-500 opacity-80"></div>
+            </div>
+            <div className="flex-1 mx-4">
+              <div 
+                className="rounded-lg px-3 py-1 text-xs text-center"
+                style={{
+                  background: 'rgba(255, 255, 255, 0.1)',
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  border: '1px solid rgba(255, 255, 255, 0.1)'
+                }}
+              >
+                yourwebsite.com
+              </div>
+            </div>
+          </div>
+          
+          {/* Mobile Content */}
+          <div className="p-6 text-center">
+            <h3 className="text-lg font-semibold text-white mb-2">
+              Welcome to Our Service
+            </h3>
+            <p className="text-gray-300 text-sm mb-6 opacity-90">
+              How can we help you today?
+            </p>
+            
+            {/* Mobile Voice Button */}
+            <div className="flex justify-center mb-6">
+              <div 
+                className="relative w-16 h-16 rounded-full cursor-pointer flex items-center justify-center transition-all duration-300 active:scale-95 group"
+                style={{
+                  background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
+                  boxShadow: `
+                    0 0 30px rgba(124, 58, 237, 0.6),
+                    0 8px 20px rgba(124, 58, 237, 0.3),
+                    inset 0 1px 0 rgba(255, 255, 255, 0.3)
+                  `
+                }}
+                onClick={scrollToWidget}
+              >
+                {/* Mobile Pulsing ring */}
+                <div className="absolute inset-0 rounded-full animate-ping opacity-40"
+                     style={{
+                       background: 'linear-gradient(135deg, #7C3AED, #3B82F6)',
+                       transform: 'scale(1.2)'
+                     }}
+                ></div>
+                
+                {/* Microphone icon */}
+                <svg className="w-8 h-8 text-white relative z-10" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M7 4a3 3 0 616 0v4a3 3 0 11-6 0V4z"/>
+                  <path d="M5.5 9.643a.75.75 0 00-1.5 0V10c0 3.06 2.29 5.585 5.25 5.954V17.5a.75.75 0 001.5 0v-1.546A6.001 6.001 0 0016 10v-.357a.75.75 0 00-1.5 0V10a4.5 4.5 0 01-9 0v-.357z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <p className="text-sm text-gray-300 opacity-90">
+              Tap to speak with our AI assistant
+            </p>
           </div>
         </div>
       </div>
