@@ -70,9 +70,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
     <div className="min-h-[70vh] flex flex-col justify-center relative overflow-hidden pt-2 pb-4">
       <BackgroundElements />
       
-      {/* Section divider */}
-      <div className="section-divider"></div>
-      
       <div className="container mx-auto px-4 md:px-6 relative z-10">
         <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-10">
           <div className="w-full lg:w-1/2 space-y-4 lg:space-y-6">
@@ -230,9 +227,6 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           </div>
         </div>
       </div>
-      
-      {/* Bottom section divider */}
-      <div className="section-divider mt-12"></div>
     </div>
   );
 };
