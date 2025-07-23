@@ -28,7 +28,7 @@ const MissedCallCalculator = () => {
 
   return (
     <div 
-      className="missed-call-calc-wrapper"
+      className="calc-premium-wrapper"
       style={{
         minHeight: '100vh',
         background: `
@@ -36,16 +36,15 @@ const MissedCallCalculator = () => {
           radial-gradient(ellipse at 80% 70%, rgba(65, 105, 225, 0.06) 0%, transparent 60%),
           radial-gradient(ellipse at 60% 20%, rgba(0, 255, 255, 0.04) 0%, transparent 60%),
           radial-gradient(ellipse at 40% 80%, rgba(138, 43, 226, 0.07) 0%, transparent 60%),
-          linear-gradient(180deg, rgba(0, 0, 0, 0.98) 0%, rgba(2, 2, 8, 1) 100%)
+          linear-gradient(180deg, rgba(16, 16, 32, 1) 0%, rgba(8, 8, 20, 1) 100%)
         `,
         position: 'relative',
         overflow: 'hidden',
         padding: '4rem 1rem'
       }}
     >
-      {/* Electric Background Effects - Completely Scoped */}
+      {/* Electric Background Effects */}
       <div 
-        className="missed-call-calc-bg-effects"
         style={{
           position: 'absolute',
           inset: '0',
@@ -56,7 +55,6 @@ const MissedCallCalculator = () => {
       >
         {/* Floating Electric Particles */}
         <div 
-          className="missed-call-calc-particle-1"
           style={{
             position: 'absolute',
             top: '15%',
@@ -66,11 +64,10 @@ const MissedCallCalculator = () => {
             backgroundColor: 'rgba(147, 51, 234, 0.3)',
             borderRadius: '50%',
             boxShadow: '0 0 10px rgba(147, 51, 234, 0.5)',
-            animation: 'missed-call-calc-float-1 20s ease-in-out infinite'
+            animation: 'calc-premium-float-1 20s ease-in-out infinite'
           }}
         />
         <div 
-          className="missed-call-calc-particle-2"
           style={{
             position: 'absolute',
             top: '70%',
@@ -80,11 +77,10 @@ const MissedCallCalculator = () => {
             backgroundColor: 'rgba(56, 189, 248, 0.25)',
             borderRadius: '50%',
             boxShadow: '0 0 8px rgba(56, 189, 248, 0.4)',
-            animation: 'missed-call-calc-float-2 25s ease-in-out infinite'
+            animation: 'calc-premium-float-2 25s ease-in-out infinite'
           }}
         />
         <div 
-          className="missed-call-calc-particle-3"
           style={{
             position: 'absolute',
             top: '45%',
@@ -94,66 +90,17 @@ const MissedCallCalculator = () => {
             backgroundColor: 'rgba(14, 165, 233, 0.2)',
             borderRadius: '50%',
             boxShadow: '0 0 6px rgba(14, 165, 233, 0.3)',
-            animation: 'missed-call-calc-float-3 30s ease-in-out infinite'
-          }}
-        />
-
-        {/* Electric Wave Lines */}
-        <div 
-          className="missed-call-calc-wave-1"
-          style={{
-            position: 'absolute',
-            top: '20%',
-            left: '0',
-            width: '100%',
-            height: '1px',
-            background: 'linear-gradient(90deg, transparent, rgba(147, 51, 234, 0.15), transparent)',
-            animation: 'missed-call-calc-wave-flow-1 18s linear infinite'
-          }}
-        />
-        <div 
-          className="missed-call-calc-wave-2"
-          style={{
-            position: 'absolute',
-            bottom: '30%',
-            right: '0',
-            width: '100%',
-            height: '1px',
-            background: 'linear-gradient(270deg, transparent, rgba(56, 189, 248, 0.12), transparent)',
-            animation: 'missed-call-calc-wave-flow-2 22s linear infinite'
-          }}
-        />
-
-        {/* Subtle Electric Grid */}
-        <div 
-          className="missed-call-calc-grid"
-          style={{
-            position: 'absolute',
-            inset: '0',
-            backgroundImage: `
-              linear-gradient(rgba(147, 51, 234, 0.03) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(147, 51, 234, 0.03) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px',
-            opacity: 0.3,
-            animation: 'missed-call-calc-grid-shimmer 25s ease-in-out infinite'
+            animation: 'calc-premium-float-3 30s ease-in-out infinite'
           }}
         />
       </div>
       
       <div className="max-w-6xl mx-auto relative" style={{ zIndex: 10 }}>
-        {/* Main Calculator Glass Container */}
+        {/* Main Calculator Container */}
         <div 
-          className="missed-call-calc-main-container"
           style={{
-            background: `
-              linear-gradient(135deg, 
-                rgba(15, 15, 25, 0.85) 0%, 
-                rgba(8, 8, 18, 0.9) 50%, 
-                rgba(12, 12, 22, 0.85) 100%
-              )
-            `,
-            backdropFilter: 'blur(25px)',
+            background: 'rgba(16, 16, 32, 0.9)',
+            backdropFilter: 'blur(30px)',
             border: '1px solid rgba(255, 255, 255, 0.1)',
             borderRadius: '24px',
             padding: '3rem',
@@ -161,25 +108,13 @@ const MissedCallCalculator = () => {
             overflow: 'hidden',
             boxShadow: `
               0 0 60px rgba(138, 43, 226, 0.1),
-              0 0 30px rgba(65, 105, 225, 0.08),
-              inset 0 1px 0 rgba(255, 255, 255, 0.12)
+              inset 0 1px 0 rgba(255, 255, 255, 0.1)
             `
           }}
         >
-          {/* Glass Container Inner Glow */}
-          <div 
-            style={{
-              position: 'absolute',
-              inset: '0',
-              background: 'radial-gradient(circle at 50% 0%, rgba(147, 51, 234, 0.05), transparent 70%)',
-              borderRadius: '24px',
-              pointerEvents: 'none'
-            }}
-          />
-
           {/* Header */}
           <div className="text-center mb-12 relative" style={{ zIndex: 2 }}>
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-white via-purple-200 to-cyan-200 bg-clip-text text-transparent mb-6 leading-tight">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
               Calculate Your Missed Call Revenue Loss
             </h1>
             <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
@@ -206,15 +141,13 @@ const MissedCallCalculator = () => {
                     type="number"
                     value={clientValue}
                     onChange={(e) => setClientValue(parseFloat(e.target.value) || 0)}
-                    className="missed-call-calc-input w-full px-6 py-4 text-white placeholder-gray-400 text-lg"
+                    className="w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
                     placeholder="e.g., 2500"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '12px',
+                      background: 'rgba(32, 32, 64, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
                       backdropFilter: 'blur(10px)',
-                      transition: 'all 0.3s ease',
-                      boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                      color: 'white'
                     }}
                   />
                 </div>
@@ -227,15 +160,13 @@ const MissedCallCalculator = () => {
                     type="number"
                     value={missedCalls}
                     onChange={(e) => setMissedCalls(parseFloat(e.target.value) || 0)}
-                    className="missed-call-calc-input w-full px-6 py-4 text-white placeholder-gray-400 text-lg"
+                    className="w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
                     placeholder="e.g., 25"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '12px',
+                      background: 'rgba(32, 32, 64, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
                       backdropFilter: 'blur(10px)',
-                      transition: 'all 0.3s ease',
-                      boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                      color: 'white'
                     }}
                   />
                 </div>
@@ -248,15 +179,13 @@ const MissedCallCalculator = () => {
                     type="number"
                     value={closeRate}
                     onChange={(e) => setCloseRate(parseFloat(e.target.value) || 0)}
-                    className="missed-call-calc-input w-full px-6 py-4 text-white placeholder-gray-400 text-lg"
+                    className="w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
                     placeholder="e.g., 20"
                     style={{
-                      background: 'rgba(255, 255, 255, 0.05)',
-                      border: '1px solid rgba(255, 255, 255, 0.15)',
-                      borderRadius: '12px',
+                      background: 'rgba(32, 32, 64, 0.8)',
+                      border: '1px solid rgba(255, 255, 255, 0.1)',
                       backdropFilter: 'blur(10px)',
-                      transition: 'all 0.3s ease',
-                      boxShadow: 'inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                      color: 'white'
                     }}
                   />
                 </div>
@@ -273,76 +202,55 @@ const MissedCallCalculator = () => {
               {/* Revenue Loss Display */}
               <div className="space-y-6">
                 <div 
-                  className="missed-call-calc-result-purple"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'rgba(147, 51, 234, 0.1)',
                     backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(147, 51, 234, 0.25)',
+                    border: '1px solid rgba(147, 51, 234, 0.3)',
                     borderRadius: '16px',
                     padding: '2rem',
-                    transition: 'all 0.3s ease',
                     position: 'relative',
-                    overflow: 'hidden',
-                    boxShadow: '0 0 20px rgba(147, 51, 234, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                    overflow: 'hidden'
                   }}
                 >
                   <p className="text-gray-400 text-sm mb-3">Monthly Revenue Lost</p>
-                  <p 
-                    className="text-5xl font-bold text-purple-300" 
-                    style={{textShadow: '0 0 10px rgba(147, 51, 234, 0.3)'}}
-                  >
+                  <p className="text-5xl font-bold text-purple-300">
                     {formatCurrency(monthlyRevenue)}
                   </p>
                 </div>
 
                 <div 
-                  className="missed-call-calc-result-red"
                   style={{
-                    background: 'rgba(255, 255, 255, 0.03)',
+                    background: 'rgba(239, 68, 68, 0.1)',
                     backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(239, 68, 68, 0.25)',
+                    border: '1px solid rgba(239, 68, 68, 0.3)',
                     borderRadius: '16px',
                     padding: '2rem',
-                    transition: 'all 0.3s ease',
                     position: 'relative',
-                    overflow: 'hidden',
-                    boxShadow: '0 0 20px rgba(239, 68, 68, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+                    overflow: 'hidden'
                   }}
                 >
                   <p className="text-gray-400 text-sm mb-3">Annual Revenue Lost</p>
-                  <p 
-                    className="text-5xl font-bold text-red-300"
-                    style={{textShadow: '0 0 10px rgba(239, 68, 68, 0.3)'}}
-                  >
+                  <p className="text-5xl font-bold text-red-300">
                     {formatCurrency(annualRevenue)}
                   </p>
                 </div>
               </div>
 
-              {/* Eye-Opening Message */}
+              {/* Reality Check Section */}
               <div 
-                className="missed-call-calc-alert"
                 style={{
-                  background: `
-                    linear-gradient(135deg, 
-                      rgba(239, 68, 68, 0.06) 0%, 
-                      rgba(138, 43, 226, 0.04) 50%,
-                      rgba(239, 68, 68, 0.06) 100%
-                    )
-                  `,
+                  background: 'rgba(32, 32, 64, 0.8)',
                   backdropFilter: 'blur(15px)',
                   border: '1px solid rgba(239, 68, 68, 0.2)',
                   borderRadius: '16px',
                   padding: '2rem',
                   position: 'relative',
-                  overflow: 'hidden',
-                  boxShadow: '0 0 25px rgba(239, 68, 68, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.08)'
+                  overflow: 'hidden'
                 }}
               >
                 <div className="flex items-start space-x-4">
                   <div 
-                    className="w-8 h-8 bg-gradient-to-br from-red-400 to-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
-                    style={{boxShadow: '0 0 10px rgba(239, 68, 68, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2)'}}
+                    className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1"
                   >
                     <span className="text-white text-sm font-bold">!</span>
                   </div>
@@ -352,16 +260,16 @@ const MissedCallCalculator = () => {
                       {monthlyRevenue > 0 ? (
                         <>
                           <p>
-                            <strong>According to the information you provided, you are currently losing 
-                            <span className="text-red-300 font-bold text-xl mx-1">{formatCurrency(monthlyRevenue)}</span> 
-                            per month</strong>, which translates into 
-                            <span className="text-red-300 font-bold text-xl mx-1">{formatCurrency(annualRevenue)}</span> 
+                            According to the information you provided, you are currently losing{' '}
+                            <span className="text-red-300 font-bold text-xl">{formatCurrency(monthlyRevenue)}</span>{' '}
+                            per month, which translates into{' '}
+                            <span className="text-red-300 font-bold text-xl">{formatCurrency(annualRevenue)}</span>{' '}
                             annually — and this is likely on the low end.
                           </p>
                           <p>
-                            <strong>What type of impact could making an additional 
-                            <span className="text-purple-300 font-bold mx-1">{formatCurrency(monthlyRevenue)}</span> 
-                            per month have on your business?</strong>
+                            What type of impact could making an additional{' '}
+                            <span className="text-purple-300 font-bold">{formatCurrency(monthlyRevenue)}</span>{' '}
+                            per month have on your business?
                           </p>
                           <p className="text-cyan-300 font-semibold text-lg">
                             Don't let another missed call go unanswered. Every call is potential revenue.
@@ -389,10 +297,9 @@ const MissedCallCalculator = () => {
         </div>
       </div>
 
-      {/* Component-specific CSS with unique prefixes */}
+      {/* Component-specific CSS */}
       <style>{`
-        /* All animations scoped with missed-call-calc- prefix */
-        @keyframes missed-call-calc-float-1 {
+        @keyframes calc-premium-float-1 {
           0%, 100% { 
             transform: translateY(0px) translateX(0px) scale(1); 
             opacity: 0.3;
@@ -403,7 +310,7 @@ const MissedCallCalculator = () => {
           }
         }
 
-        @keyframes missed-call-calc-float-2 {
+        @keyframes calc-premium-float-2 {
           0%, 100% { 
             transform: translateY(0px) translateX(0px); 
             opacity: 0.25;
@@ -414,7 +321,7 @@ const MissedCallCalculator = () => {
           }
         }
 
-        @keyframes missed-call-calc-float-3 {
+        @keyframes calc-premium-float-3 {
           0%, 100% { 
             transform: translateY(0px) translateX(0px) scale(1); 
             opacity: 0.2;
@@ -425,51 +332,22 @@ const MissedCallCalculator = () => {
           }
         }
 
-        @keyframes missed-call-calc-wave-flow-1 {
-          0% { transform: translateX(-100%); opacity: 0; }
-          50% { opacity: 0.15; }
-          100% { transform: translateX(100%); opacity: 0; }
-        }
-
-        @keyframes missed-call-calc-wave-flow-2 {
-          0% { transform: translateX(100%); opacity: 0; }
-          50% { opacity: 0.12; }
-          100% { transform: translateX(-100%); opacity: 0; }
-        }
-
-        @keyframes missed-call-calc-grid-shimmer {
-          0%, 100% { opacity: 0.1; }
-          50% { opacity: 0.3; }
-        }
-
-        .missed-call-calc-input:focus {
+        .calc-premium-wrapper input:focus {
           outline: none !important;
           border-color: rgba(147, 51, 234, 0.4) !important;
-          background: rgba(255, 255, 255, 0.08) !important;
-          box-shadow: 0 0 20px rgba(147, 51, 234, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+          background: rgba(32, 32, 64, 1) !important;
+          box-shadow: 0 0 20px rgba(147, 51, 234, 0.2) !important;
           transform: translateY(-1px);
         }
 
-        .missed-call-calc-result-purple:hover {
-          border-color: rgba(147, 51, 234, 0.4) !important;
-          box-shadow: 0 0 30px rgba(147, 51, 234, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-          transform: translateY(-2px);
-        }
-
-        .missed-call-calc-result-red:hover {
-          border-color: rgba(239, 68, 68, 0.4) !important;
-          box-shadow: 0 0 30px rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
-          transform: translateY(-2px);
-        }
-
         @media (max-width: 1024px) {
-          .missed-call-calc-main-container {
+          .calc-premium-wrapper > div > div {
             padding: 2rem;
           }
         }
 
         @media (max-width: 768px) {
-          .missed-call-calc-main-container {
+          .calc-premium-wrapper > div > div {
             padding: 1.5rem;
           }
         }
