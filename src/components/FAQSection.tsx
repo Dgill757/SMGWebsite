@@ -53,11 +53,11 @@ const FAQSection: React.FC = () => {
   ];
 
   return (
-    <section id="faq" className="section-padding bg-muted">
+    <section id="faq" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 bg-muted">
       <div className="container mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="heading-lg">Frequently <span className="text-voiceai-primary font-bold">Asked Questions</span></h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
+        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold mb-4">Frequently <span className="text-voiceai-primary font-bold">Asked Questions</span></h2>
+          <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
             Everything you need to know about our Voice AI solution
           </p>
         </div>

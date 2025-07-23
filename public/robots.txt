@@ -55,6 +55,12 @@ Allow: /privacy-policy
 Allow: /cookie-policy
 Allow: /gdpr-compliance
 
-# Clean parameters
-Clean-param: utm_source&utm_medium&utm_campaign&utm_content&fbclid
+# Clean parameters for better crawling
+Clean-param: utm_source&utm_medium&utm_campaign&utm_content&fbclid&gclid&msclkid
+
+# Host specification for clarity
+Host: https://summitaivoice.com
+
+# Crawl optimization
+Request-rate: 1/1s
 
