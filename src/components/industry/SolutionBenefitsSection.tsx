@@ -73,8 +73,8 @@ const SolutionBenefitsSection = ({ benefits, comparisons }: SolutionBenefitsSect
           </div>
         </div>
 
-        <div className="bg-muted rounded-xl p-8 max-w-5xl mx-auto">
-          <h3 className="text-xl font-semibold mb-6 text-center">Calculate Your Potential ROI</h3>
+        <div className="glassmorphism rounded-xl p-8 max-w-5xl mx-auto border border-white/20">
+          <h3 className="text-xl font-semibold mb-6 text-center text-white">Calculate Your Potential ROI</h3>
           <ROICalculator />
         </div>
       </div>

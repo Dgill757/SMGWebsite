@@ -36,23 +36,23 @@ const IndustryStatsSection = ({ stats, industryName, keywords }: IndustryStatsPr
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="bg-white dark:bg-voiceai-dark/30 rounded-xl p-6 shadow-md hover:shadow-lg transition-all border border-border/50 relative overflow-hidden group"
+              className="glassmorphism rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-white/20 relative overflow-hidden group"
             >
               {/* Subtle glow effect on hover */}
               <div className="absolute -inset-0.5 bg-gradient-to-r from-voiceai-primary/0 via-voiceai-primary/5 to-voiceai-secondary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-xl blur-xl" />
               
               <div className="relative">
-                <h3 className="text-lg font-medium text-muted-foreground mb-1">
+                <h3 className="text-lg font-medium text-white/70 mb-1">
                   {stat.metric}
                 </h3>
                 <div className="text-2xl font-bold mb-3 text-voiceai-primary">
                   {stat.value}
                 </div>
                 <div className="flex flex-col justify-between h-full">
-                  <p className="text-sm mb-2">
+                  <p className="text-sm mb-2 text-white/90">
                     {stat.benefit}
                   </p>
-                  <div className="text-xs text-muted-foreground mt-auto">
+                  <div className="text-xs text-white/60 mt-auto">
                     Source: {stat.source}
                   </div>
                 </div>
