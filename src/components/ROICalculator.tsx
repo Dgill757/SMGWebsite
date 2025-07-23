@@ -215,7 +215,7 @@ const MissedCallCalculator = () => {
                               <p>
                                 <strong>What type of impact could making an additional 
                                 <span className="text-purple-400 font-bold"> {formatCurrency(monthlyRevenue)}</span> 
-                                per month have on your business?</strong>
+                                 per month have on your business?</strong>
                               </p>
                               <p className="text-cyan-400 font-semibold">
                                 Don't let another missed call go unanswered. Every call is potential revenue.
