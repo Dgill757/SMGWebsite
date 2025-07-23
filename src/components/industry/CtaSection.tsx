@@ -72,7 +72,7 @@ const CtaSection = ({
                 </div>
                 <h3 className="font-semibold text-lg mb-2 text-white">Calculate ROI</h3>
                 <p className="text-sm text-white/70 mb-6">See how much you can save with SummitVoiceAI</p>
-                <a href="#roi-calculator" className="mt-auto btn-primary w-full text-center">
+                <a href="#roi-calculator" className="mt-auto btn-secondary w-full text-center">
                   Calculate Now
                 </a>
               </div>
