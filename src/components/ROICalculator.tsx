@@ -43,7 +43,7 @@ const MissedCallCalculator = () => {
         padding: '4rem 1rem'
       }}
     >
-      {/* Electric Background Effects */}
+      {/* Electric Background Effects - Scoped to this component only */}
       <div 
         style={{
           position: 'absolute',
@@ -141,14 +141,8 @@ const MissedCallCalculator = () => {
                     type="number"
                     value={clientValue}
                     onChange={(e) => setClientValue(parseFloat(e.target.value) || 0)}
-                    className="w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
+                    className="calc-premium-input w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
                     placeholder="e.g., 2500"
-                    style={{
-                      background: 'rgba(32, 32, 64, 0.8)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(10px)',
-                      color: 'white'
-                    }}
                   />
                 </div>
 
@@ -160,14 +154,8 @@ const MissedCallCalculator = () => {
                     type="number"
                     value={missedCalls}
                     onChange={(e) => setMissedCalls(parseFloat(e.target.value) || 0)}
-                    className="w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
+                    className="calc-premium-input w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
                     placeholder="e.g., 25"
-                    style={{
-                      background: 'rgba(32, 32, 64, 0.8)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(10px)',
-                      color: 'white'
-                    }}
                   />
                 </div>
 
@@ -179,14 +167,8 @@ const MissedCallCalculator = () => {
                     type="number"
                     value={closeRate}
                     onChange={(e) => setCloseRate(parseFloat(e.target.value) || 0)}
-                    className="w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
+                    className="calc-premium-input w-full px-6 py-4 text-white placeholder-gray-400 text-lg rounded-lg transition-all duration-300"
                     placeholder="e.g., 20"
-                    style={{
-                      background: 'rgba(32, 32, 64, 0.8)',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      backdropFilter: 'blur(10px)',
-                      color: 'white'
-                    }}
                   />
                 </div>
               </div>
@@ -202,15 +184,7 @@ const MissedCallCalculator = () => {
               {/* Revenue Loss Display */}
               <div className="space-y-6">
                 <div 
-                  style={{
-                    background: 'rgba(147, 51, 234, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(147, 51, 234, 0.3)',
-                    borderRadius: '16px',
-                    padding: '2rem',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
+                  className="calc-premium-result-purple"
                 >
                   <p className="text-gray-400 text-sm mb-3">Monthly Revenue Lost</p>
                   <p className="text-5xl font-bold text-purple-300">
@@ -219,15 +193,7 @@ const MissedCallCalculator = () => {
                 </div>
 
                 <div 
-                  style={{
-                    background: 'rgba(239, 68, 68, 0.1)',
-                    backdropFilter: 'blur(15px)',
-                    border: '1px solid rgba(239, 68, 68, 0.3)',
-                    borderRadius: '16px',
-                    padding: '2rem',
-                    position: 'relative',
-                    overflow: 'hidden'
-                  }}
+                  className="calc-premium-result-red"
                 >
                   <p className="text-gray-400 text-sm mb-3">Annual Revenue Lost</p>
                   <p className="text-5xl font-bold text-red-300">
@@ -238,15 +204,7 @@ const MissedCallCalculator = () => {
 
               {/* Reality Check Section */}
               <div 
-                style={{
-                  background: 'rgba(32, 32, 64, 0.8)',
-                  backdropFilter: 'blur(15px)',
-                  border: '1px solid rgba(239, 68, 68, 0.2)',
-                  borderRadius: '16px',
-                  padding: '2rem',
-                  position: 'relative',
-                  overflow: 'hidden'
-                }}
+                className="calc-premium-reality-check"
               >
                 <div className="flex items-start space-x-4">
                   <div 
@@ -297,8 +255,9 @@ const MissedCallCalculator = () => {
         </div>
       </div>
 
-      {/* Component-specific CSS */}
+      {/* Component-specific CSS - Only affects this calculator */}
       <style>{`
+        /* All styles scoped with calc-premium- prefix */
         @keyframes calc-premium-float-1 {
           0%, 100% { 
             transform: translateY(0px) translateX(0px) scale(1); 
@@ -332,12 +291,49 @@ const MissedCallCalculator = () => {
           }
         }
 
-        .calc-premium-wrapper input:focus {
+        .calc-premium-input {
+          background: rgba(32, 32, 64, 0.8) !important;
+          border: 1px solid rgba(255, 255, 255, 0.1) !important;
+          backdropFilter: blur(10px);
+          color: white !important;
+        }
+
+        .calc-premium-input:focus {
           outline: none !important;
           border-color: rgba(147, 51, 234, 0.4) !important;
           background: rgba(32, 32, 64, 1) !important;
           box-shadow: 0 0 20px rgba(147, 51, 234, 0.2) !important;
           transform: translateY(-1px);
+        }
+
+        .calc-premium-result-purple {
+          background: rgba(147, 51, 234, 0.1);
+          backdrop-filter: blur(15px);
+          border: 1px solid rgba(147, 51, 234, 0.3);
+          border-radius: 16px;
+          padding: 2rem;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .calc-premium-result-red {
+          background: rgba(239, 68, 68, 0.1);
+          backdrop-filter: blur(15px);
+          border: 1px solid rgba(239, 68, 68, 0.3);
+          border-radius: 16px;
+          padding: 2rem;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .calc-premium-reality-check {
+          background: rgba(32, 32, 64, 0.8);
+          backdrop-filter: blur(15px);
+          border: 1px solid rgba(239, 68, 68, 0.2);
+          border-radius: 16px;
+          padding: 2rem;
+          position: relative;
+          overflow: hidden;
         }
 
         @media (max-width: 1024px) {
