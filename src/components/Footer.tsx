@@ -125,13 +125,13 @@ const Footer: React.FC = () => {
           <div>
             <h3 className="font-bold text-lg mb-4">Industries We Serve</h3>
             <ul className="space-y-2">
-              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Home Services (HVAC, Plumbing)</Link></li>
-              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Real Estate Agencies</Link></li>
-              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Law Firms</Link></li>
-              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Accounting & CPA Firms</Link></li>
-              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Healthcare Practices</Link></li>
-              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Automotive Services</Link></li>
-              <li><Link to="/industries" className="text-gray-400 hover:text-white transition-colors">Landscaping Companies</Link></li>
+              <li><Link to="/industries/home-services" className="text-gray-400 hover:text-white transition-colors">Home Services (HVAC, Plumbing)</Link></li>
+              <li><Link to="/industries/real-estate" className="text-gray-400 hover:text-white transition-colors">Real Estate Agencies</Link></li>
+              <li><Link to="/industries/law-firms" className="text-gray-400 hover:text-white transition-colors">Law Firms</Link></li>
+              <li><Link to="/industries/accounting" className="text-gray-400 hover:text-white transition-colors">Accounting & CPA Firms</Link></li>
+              <li><Link to="/industries/healthcare" className="text-gray-400 hover:text-white transition-colors">Healthcare Practices</Link></li>
+              <li><Link to="/industries/automotive" className="text-gray-400 hover:text-white transition-colors">Automotive Services</Link></li>
+              <li><Link to="/industries/landscaping" className="text-gray-400 hover:text-white transition-colors">Landscaping Companies</Link></li>
             </ul>
           </div>
           

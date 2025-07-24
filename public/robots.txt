@@ -1,9 +1,12 @@
 
-# SummitVoiceAI v10.0.0 robots.txt
-# Optimized for search engine coverage
+# SummitVoiceAI robots.txt
+# Optimized for Voice AI and service business search rankings
 
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /api/
+Disallow: *.json$
 
 Sitemap: https://summitaivoice.com/sitemap.xml
 

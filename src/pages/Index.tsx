@@ -54,9 +54,15 @@ const Index = () => {
   return (
     <>
       <SEO 
-        title="SummitVoiceAI - #1 AI Voice Assistant for Service Businesses | Never Miss a Call"
-        description="Transform your service business with SummitVoiceAI's cutting-edge AI voice assistant. Capture every call, qualify leads, and book appointments 24/7—increase revenue by 40% with our AI receptionist technology."
+        title="SummitVoiceAI - #1 Voice AI for Service Businesses | Best Voice AI Company in United States"
+        description="Transform your service business with SummitVoiceAI's cutting-edge voice AI technology. The best voice AI receptionist automation for service-based businesses. Never miss calls, automate scheduling, qualify leads 24/7. Number one voice AI company in United States."
         keywords={[
+          "voice AI",
+          "voice AI service-based business", 
+          "best voice AI for businesses",
+          "voice AI receptionist",
+          "voice AI automation",
+          "number one voice AI company in United States",
           "AI voice assistant", 
           "virtual receptionist", 
           "voice AI for business",
@@ -66,7 +72,41 @@ const Index = () => {
           "lead qualification AI",
           "phone automation",
           "business voice assistant",
-          "AI receptionist"
+          "AI receptionist",
+          "voice AI technology",
+          "automated phone system",
+          "AI phone answering service",
+          "voice automation software",
+          "intelligent voice assistant",
+          "conversational AI",
+          "voice AI solutions",
+          "AI customer service",
+          "voice recognition AI",
+          "smart phone assistant",
+          "voice AI platform",
+          "business phone AI",
+          "automated call handling",
+          "voice AI integration",
+          "AI powered receptionist",
+          "voice AI for service companies",
+          "professional voice AI",
+          "enterprise voice AI",
+          "voice AI software",
+          "AI voice technology",
+          "automated appointment booking",
+          "voice AI scheduling",
+          "AI call management",
+          "voice AI lead capture",
+          "intelligent call routing",
+          "voice AI analytics",
+          "AI phone support",
+          "voice AI customer service",
+          "automated voice response",
+          "voice AI CRM integration",
+          "AI telephone assistant",
+          "voice AI for small business",
+          "commercial voice AI",
+          "voice AI ROI"
         ]}
         schema={[getOrganizationSchema(), getFAQSchema(faqs)]}
       />
