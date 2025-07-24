@@ -11,7 +11,7 @@ import FAQSection from '@/components/FAQSection';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from "@/components/CalendarDialog";
 import Widget from '@/components/Widget';
-import { SEO, getOrganizationSchema, getFAQSchema, getSoftwareApplicationSchema, getWebSiteSchema } from '@/lib/seo';
+import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 
 const Index = () => {
   const location = useLocation();
@@ -54,8 +54,8 @@ const Index = () => {
   return (
     <>
       <SEO 
-        title="SummitVoiceAI - #1 AI Voice Assistant for Service Businesses | Never Miss a Lead"
-        description="Transform your service business with SummitVoiceAI's cutting-edge AI voice assistant. Capture every call, qualify leads, and book appointments 24/7. Increase revenue by 40% with our human-like AI receptionist that works around the clock."
+        title="SummitVoiceAI - #1 AI Voice Assistant for Service Businesses | Never Miss a Call"
+        description="Transform your service business with SummitVoiceAI's cutting-edge AI voice assistant. Capture every call, qualify leads, and book appointments 24/7—increase revenue by 40% with our AI receptionist technology."
         keywords={[
           "AI voice assistant", 
           "virtual receptionist", 
@@ -66,31 +66,9 @@ const Index = () => {
           "lead qualification AI",
           "phone automation",
           "business voice assistant",
-          "AI receptionist",
-          "HVAC AI assistant",
-          "plumbing AI receptionist",
-          "real estate AI",
-          "healthcare AI assistant",
-          "legal AI receptionist",
-          "automotive AI",
-          "professional services AI",
-          "landscaping AI",
-          "home services AI",
-          "AI for small business",
-          "voice technology",
-          "conversational AI",
-          "intelligent call routing",
-          "automated customer service",
-          "voice-powered CRM",
-          "business phone AI",
-          "call center automation",
-          "AI sales assistant",
-          "smart scheduling",
-          "missed call prevention",
-          "appointment booking AI",
-          "lead capture automation"
+          "AI receptionist"
         ]}
-        schema={[getOrganizationSchema(), getFAQSchema(faqs), getSoftwareApplicationSchema(), getWebSiteSchema()]}
+        schema={[getOrganizationSchema(), getFAQSchema(faqs)]}
       />
       
       <div className="min-h-screen bg-background text-foreground overflow-x-hidden">

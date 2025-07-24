@@ -115,27 +115,27 @@ const Industries = () => {
           </p>
         </div>
 
-        <section className="py-16 sm:py-20 bg-background">
-          <div className="container mx-auto px-4 sm:px-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {industries.map((industry, index) => (
                 <motion.div 
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-voiceai-dark/60 to-black/50 border border-white/10 rounded-xl p-6 sm:p-8 shadow-2xl hover:shadow-voiceai-primary/20 hover:-translate-y-1 transition-all duration-300 backdrop-blur-lg"
+                  className="bg-gradient-to-br from-voiceai-dark/60 to-black/50 border border-white/10 rounded-xl p-6 shadow-2xl hover:shadow-voiceai-primary/20 hover:-translate-y-1 transition-all duration-300 backdrop-blur-lg"
                 >
-                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 mb-4 sm:mb-6 rounded-lg bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white shadow-lg">
+                  <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white shadow-lg">
                     {industry.icon}
                   </div>
-                  <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-white leading-tight">
+                  <h3 className="text-xl font-bold mb-2 text-white">
                     {industry.title}
                   </h3>
-                  <p className="text-sm sm:text-base text-white/80 mb-4 sm:mb-6 leading-relaxed">
+                  <p className="text-white/80 mb-4 leading-relaxed">
                     {industry.description}
                   </p>
-                  <Link to={industry.link} className="inline-flex items-center font-bold text-white bg-gradient-to-r from-voiceai-primary to-voiceai-secondary px-4 py-2 sm:px-6 sm:py-3 rounded-lg hover:scale-105 transition-transform shadow-lg text-sm sm:text-base" onClick={() => window.scrollTo(0, 0)}>
+                  <Link to={industry.link} className="inline-flex items-center font-bold text-white bg-gradient-to-r from-voiceai-primary to-voiceai-secondary px-4 py-2 rounded-lg hover:scale-105 transition-transform shadow-lg" onClick={() => window.scrollTo(0, 0)}>
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
                 </motion.div>

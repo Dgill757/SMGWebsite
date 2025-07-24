@@ -77,8 +77,8 @@ const Footer: React.FC = () => {
   };
 
   return <footer id="contact" className="bg-voiceai-dark text-white">
-      <div className="container mx-auto py-8 sm:py-12 lg:py-16 px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
+      <div className="container mx-auto py-16 px-4 md:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
               <div className="bg-gradient-to-r from-voiceai-primary to-voiceai-secondary p-2 rounded-lg">

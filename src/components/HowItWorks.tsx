@@ -212,13 +212,13 @@ const HowItWorks: React.FC = () => {
   ];
 
   return (
-    <section id="how-it-works" className="py-12 sm:py-16 lg:py-20 px-4 sm:px-6 lg:px-8 relative">
+    <section id="how-it-works" className="section-padding relative">
       <div className="absolute inset-0 neural-bg opacity-20"></div>
       
       <div className="container mx-auto relative z-10">
-        <div className="text-center mb-8 sm:mb-12 lg:mb-16">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold leading-tight">How Your <span className="text-voiceai-primary font-bold">Smart Website</span> Works</h2>
-          <p className="mt-4 text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="heading-lg">How Your <span className="text-voiceai-primary font-bold">Smart Website</span> Works</h2>
+          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
             From answering calls to processing payments, our Voice AI handles the entire customer journey so you can focus on delivering exceptional service.
           </p>
         </div>
