@@ -8,49 +8,139 @@ const BenefitsSection: React.FC = () => {
   const [isROIDialogOpen, setIsROIDialogOpen] = useState(false);
   
   const benefits = [{
-    icon: <Clock className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-cyan-400/20 to-blue-600/40 animate-pulse"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-cyan-400 to-blue-600 flex items-center justify-center">
+          <div className="w-6 h-6 rounded-full bg-white"></div>
+        </div>
+        <div className="absolute inset-4 rounded-full border-2 border-cyan-300 animate-pulse"></div>
+      </div>
+    ),
     title: "24/7 Availability",
-    description: "Never miss a call again. Our AI assistant works around the clock, capturing leads while you sleep.",
+    description: "Your AI assistant never sleeps, ensuring every call is answered and every opportunity captured, regardless of time or day.",
     color: "from-blue-500 to-cyan-400"
   }, {
-    icon: <DollarSign className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-green-400/20 to-emerald-600/40"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center">
+          <DollarSign className="h-8 w-8 text-white font-bold" />
+        </div>
+        <div className="absolute -top-1 -right-1 w-6 h-6 bg-yellow-400 rounded-full animate-bounce"></div>
+      </div>
+    ),
     title: "Save $100K+ Annually",
-    description: "Replace multiple sales and admin staff with a tireless AI that never takes breaks or vacations.",
+    description: "Replace expensive reception staff while delivering superior service quality and capturing more revenue opportunities.",
     color: "from-green-500 to-emerald-400"
   }, {
-    icon: <Brain className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-purple-400/20 to-indigo-600/40"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center">
+          <div className="flex space-x-1">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse" style={{animationDelay: '0.4s'}}></div>
+          </div>
+        </div>
+      </div>
+    ),
     title: "Smart Learning",
-    description: "Train once and forget. Our AI continuously improves from interactions with your customers.",
+    description: "AI continuously adapts and improves from every interaction, becoming more effective at converting leads over time.",
     color: "from-voiceai-primary to-purple-400"
   }, {
-    icon: <PhoneCall className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-orange-400/20 to-red-600/40"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-orange-400 to-red-600 flex items-center justify-center">
+          <PhoneCall className="h-8 w-8 text-white" />
+        </div>
+        <div className="absolute inset-1 rounded-full border border-orange-300 animate-ping"></div>
+      </div>
+    ),
     title: "Perfect Call Handling",
-    description: "Convert more calls into sales with perfect script execution every single time.",
+    description: "Handle multiple calls simultaneously with perfect consistency, professional tone, and accurate information delivery.",
     color: "from-orange-500 to-amber-400"
   }, {
-    icon: <Calendar className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-blue-400/20 to-cyan-600/40"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-blue-400 to-cyan-600 flex items-center justify-center">
+          <div className="grid grid-cols-2 gap-1">
+            <div className="w-2 h-2 bg-white rounded-sm"></div>
+            <div className="w-2 h-2 bg-white/60 rounded-sm"></div>
+            <div className="w-2 h-2 bg-white/60 rounded-sm"></div>
+            <div className="w-2 h-2 bg-white rounded-sm"></div>
+          </div>
+        </div>
+        <div className="absolute -top-1 -left-1 w-3 h-3 bg-blue-200 rounded text-xs flex items-center justify-center text-blue-800 font-bold">31</div>
+        <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-200 rounded text-xs flex items-center justify-center text-blue-800 font-bold">7</div>
+      </div>
+    ),
     title: "Seamless Scheduling",
-    description: "Automatically book appointments directly into your calendar when customers are ready.",
+    description: "Automatically coordinate appointments, send confirmations, and manage your calendar without any manual intervention.",
     color: "from-voiceai-secondary to-sky-400"
   }, {
-    icon: <UserCheck className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-red-400/20 to-pink-600/40"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-red-400 to-pink-600 flex items-center justify-center">
+          <UserCheck className="h-8 w-8 text-white" />
+        </div>
+        <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full flex items-center justify-center">
+          <div className="w-2 h-1 bg-white rounded"></div>
+        </div>
+      </div>
+    ),
     title: "Lead Qualification",
-    description: "Only spend time on qualified leads that match your perfect customer profile.",
+    description: "Intelligently assess caller intent, budget, and timeline to prioritize high-value prospects for your sales team.",
     color: "from-red-500 to-rose-400"
   }, {
-    icon: <BarChart className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-pink-400/20 to-purple-600/40"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-pink-400 to-purple-600 flex items-center justify-center">
+          <div className="flex space-x-1 items-end">
+            <div className="w-2 h-3 bg-white rounded-sm"></div>
+            <div className="w-2 h-4 bg-white rounded-sm"></div>
+            <div className="w-2 h-6 bg-white rounded-sm"></div>
+          </div>
+        </div>
+        <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-8 h-1 bg-pink-300 rounded-full"></div>
+      </div>
+    ),
     title: "Revenue Growth",
-    description: "Increase close rates with immediate follow-up on every lead, every time.",
+    description: "Increase conversion rates by 40% with instant response times and professional, consistent customer interactions.",
     color: "from-voiceai-accent to-pink-400"
   }, {
-    icon: <BotIcon className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-teal-400/20 to-cyan-600/40 animate-pulse"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-teal-400 to-cyan-600 flex items-center justify-center">
+          <div className="w-6 h-6 rounded bg-white flex items-center justify-center">
+            <div className="w-3 h-3 rounded bg-teal-500"></div>
+          </div>
+        </div>
+        <div className="absolute inset-3 rounded-full border border-teal-200"></div>
+      </div>
+    ),
     title: "No Training Needed",
-    description: "Unlike human employees, our AI never forgets what it's learned or needs retraining.",
+    description: "Deploy instantly with pre-configured industry knowledge and conversational abilities that work from day one.",
     color: "from-teal-500 to-cyan-400"
   }, {
-    icon: <Zap className="h-6 w-6" />,
+    icon: (
+      <div className="relative w-20 h-20">
+        <div className="absolute inset-0 rounded-full bg-gradient-to-br from-yellow-400/20 to-orange-600/40"></div>
+        <div className="absolute inset-2 rounded-full bg-gradient-to-br from-yellow-400 to-orange-600 flex items-center justify-center">
+          <Zap className="h-8 w-8 text-white" />
+        </div>
+        <div className="absolute -top-1 -right-1 w-3 h-6 bg-yellow-300 rounded-full transform rotate-12"></div>
+        <div className="absolute -bottom-1 -left-1 w-2 h-4 bg-orange-300 rounded-full transform -rotate-12"></div>
+      </div>
+    ),
     title: "Instant Deployment",
-    description: "Be up and running in minutes, not weeks. No complicated setup or integration required.",
+    description: "Get up and running in minutes, not months. Simple setup process with immediate impact on your business operations.",
     color: "from-yellow-500 to-amber-400"
   }];
   
@@ -72,7 +162,7 @@ const BenefitsSection: React.FC = () => {
           {benefits.map((benefit, index) => (
             <div key={index} className="glassmorphism rounded-xl p-6 sm:p-8 shadow-lg card-hover border border-white/10 relative overflow-hidden">
               <div className={`absolute -right-6 -top-6 w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-br ${benefit.color} opacity-20`}></div>
-              <div className={`inline-flex items-center justify-center p-3 sm:p-4 rounded-lg bg-gradient-to-br ${benefit.color} text-white mb-4 sm:mb-6 shadow-lg mx-auto`}>
+              <div className="flex items-center justify-center mb-4 sm:mb-6 mx-auto">
                 {benefit.icon}
               </div>
               <h3 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3 text-center text-foreground">{benefit.title}</h3>
