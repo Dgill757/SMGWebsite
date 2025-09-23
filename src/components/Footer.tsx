@@ -120,6 +120,11 @@ const Footer: React.FC = () => {
               <li><a href="/#pricing" className="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
               <li><a href="/#faq" className="text-gray-400 hover:text-white transition-colors">FAQ</a></li>
             </ul>
+            
+            <h3 className="font-bold text-lg mb-4 mt-6">Resources</h3>
+            <ul className="space-y-2">
+              <li><Link to="/articles" className="text-gray-400 hover:text-white transition-colors">Articles & Reports</Link></li>
+            </ul>
           </div>
           
           <div>

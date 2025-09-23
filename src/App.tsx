@@ -8,6 +8,8 @@ import { useEffect } from "react";
 import Index from "./pages/Index";
 import Industries from "./pages/Industries";
 import IndustryPage from "./pages/IndustryPage";
+import Articles from "./pages/Articles";
+import ArticleDetail from "./pages/ArticleDetail";
 import NotFound from "./pages/NotFound";
 import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -59,6 +61,8 @@ const App = () => {
               <Route path="/" element={<Index />} />
               <Route path="/industries" element={<Industries />} />
               <Route path="/industries/:industrySlug" element={<IndustryPage />} />
+              <Route path="/articles" element={<Articles />} />
+              <Route path="/articles/:slug" element={<ArticleDetail />} />
               <Route path="/terms-of-service" element={<TermsOfService />} />
               <Route path="/privacy-policy" element={<PrivacyPolicy />} />
               <Route path="/cookie-policy" element={<CookiePolicy />} />
