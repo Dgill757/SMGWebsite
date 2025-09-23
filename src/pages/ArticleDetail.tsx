@@ -288,6 +288,17 @@ const ArticleDetail: React.FC = () => {
 
           {/* ROI Calculator */}
           <section id="roi-calculator" className="my-20">
+            <style>
+              {`
+                /* Kill browser spinners globally (safety if any number inputs sneak in) */
+                input[type=number]::-webkit-outer-spin-button,
+                input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+                input[type=number] { -moz-appearance: textfield; }
+                /* Unified input look + padding so nothing overlaps while typing */
+                .svai-input { padding-right: 0.75rem; }
+              `}
+            </style>
+
             <div className="bg-card rounded-2xl shadow-xl p-6 md:p-10 border border-border">
               <div className="mb-8 text-center">
                 <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
@@ -306,11 +317,12 @@ const ArticleDetail: React.FC = () => {
                     <label className="block text-sm font-semibold text-foreground">Average Client Value ($)</label>
                     <input 
                       id="avgClientValue" 
-                      type="number" 
-                      min="0" 
-                      step="1" 
+                      inputMode="decimal" 
+                      autoComplete="off" 
+                      enterKeyHint="done"
+                      type="text" 
                       defaultValue="2500"
-                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                     />
                   </div>
 
@@ -318,11 +330,12 @@ const ArticleDetail: React.FC = () => {
                     <label className="block text-sm font-semibold text-foreground">Missed Calls / Month</label>
                     <input 
                       id="missedCalls" 
-                      type="number" 
-                      min="0" 
-                      step="1" 
+                      inputMode="decimal" 
+                      autoComplete="off" 
+                      enterKeyHint="done"
+                      type="text" 
                       defaultValue="30"
-                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                     />
                   </div>
 
@@ -330,12 +343,12 @@ const ArticleDetail: React.FC = () => {
                     <label className="block text-sm font-semibold text-foreground">Close Rate on Calls (%)</label>
                     <input 
                       id="closeRate" 
-                      type="number" 
-                      min="0" 
-                      max="100" 
-                      step="1" 
+                      inputMode="decimal" 
+                      autoComplete="off" 
+                      enterKeyHint="done"
+                      type="text" 
                       defaultValue="35"
-                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                     />
                   </div>
 
@@ -343,11 +356,12 @@ const ArticleDetail: React.FC = () => {
                     <label className="block text-sm font-semibold text-foreground">Website Leads / Month</label>
                     <input 
                       id="webLeads" 
-                      type="number" 
-                      min="0" 
-                      step="1" 
+                      inputMode="decimal" 
+                      autoComplete="off" 
+                      enterKeyHint="done"
+                      type="text" 
                       defaultValue="60"
-                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                     />
                     <p className="text-xs text-muted-foreground mt-1">
                       We'll apply a default widget uplift of <span className="font-semibold">+25%</span> to turn more visitors into live conversations.
@@ -361,11 +375,12 @@ const ArticleDetail: React.FC = () => {
                     <label className="block text-sm font-semibold text-foreground">After-Hours Calls / Month</label>
                     <input 
                       id="afterHoursCalls" 
-                      type="number" 
-                      min="0" 
-                      step="1" 
+                      inputMode="decimal" 
+                      autoComplete="off" 
+                      enterKeyHint="done"
+                      type="text" 
                       defaultValue="18"
-                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                     />
                     <div className="flex items-center mt-2">
                       <input 
@@ -384,11 +399,12 @@ const ArticleDetail: React.FC = () => {
                     <label className="block text-sm font-semibold text-foreground">Receptionist Cost / Month ($)</label>
                     <input 
                       id="receptionistCost" 
-                      type="number" 
-                      min="0" 
-                      step="1" 
+                      inputMode="decimal" 
+                      autoComplete="off" 
+                      enterKeyHint="done"
+                      type="text" 
                       defaultValue="3500"
-                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                     />
                     <p className="text-xs text-muted-foreground mt-1">If you don't have one, set to 0 — AI handles overflow & after-hours regardless.</p>
                   </div>
@@ -398,23 +414,24 @@ const ArticleDetail: React.FC = () => {
                       <label className="block text-sm font-semibold text-foreground">Dormant Leads in CRM</label>
                       <input 
                         id="dormantLeads" 
-                        type="number" 
-                        min="0" 
-                        step="1" 
+                        inputMode="decimal" 
+                        autoComplete="off" 
+                        enterKeyHint="done"
+                        type="text" 
                         defaultValue="2000"
-                        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                        className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                       />
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-foreground">Reactivation Rate (%)</label>
                       <input 
                         id="reactivationRate" 
-                        type="number" 
-                        min="0" 
-                        max="100" 
-                        step="1" 
+                        inputMode="decimal" 
+                        autoComplete="off" 
+                        enterKeyHint="done"
+                        type="text" 
                         defaultValue="8"
-                        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                        className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
                       />
                       <p className="text-xs text-muted-foreground mt-1">Typical 6–10% response with smart AI campaigns.</p>
                     </div>
@@ -424,19 +441,19 @@ const ArticleDetail: React.FC = () => {
 
               {/* KPIs */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
-                <div className="rounded-xl p-5 bg-primary text-primary-foreground">
+                <div className="rounded-xl p-5 bg-[#003f5c] text-white">
                   <div className="text-xs uppercase tracking-wide opacity-80">Missed-Call Loss / Mo</div>
                   <div id="kpiMissedLoss" className="text-2xl font-black mt-1">$0</div>
                 </div>
-                <div className="rounded-xl p-5 bg-secondary text-secondary-foreground">
+                <div className="rounded-xl p-5 bg-[#2f4b7c] text-white">
                   <div className="text-xs uppercase tracking-wide opacity-80">Website Uplift Revenue</div>
                   <div id="kpiWebUplift" className="text-2xl font-black mt-1">$0</div>
                 </div>
-                <div className="rounded-xl p-5 bg-accent text-accent-foreground">
+                <div className="rounded-xl p-5 bg-[#665191] text-white">
                   <div className="text-xs uppercase tracking-wide opacity-80">DB Reactivation / Mo</div>
                   <div id="kpiReactivation" className="text-2xl font-black mt-1">$0</div>
                 </div>
-                <div className="rounded-xl p-5 bg-muted text-muted-foreground">
+                <div className="rounded-xl p-5 bg-[#ff7c43] text-white">
                   <div className="text-xs uppercase tracking-wide opacity-80">Receptionist Savings</div>
                   <div id="kpiSavings" className="text-2xl font-black mt-1">$0</div>
                 </div>
@@ -444,31 +461,25 @@ const ArticleDetail: React.FC = () => {
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-8">
-                <Button 
+                <button 
                   id="calcBtn"
-                  className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 rounded-lg text-white font-semibold bg-gradient-to-r from-[#d45087] to-[#ff7c43] shadow hover:shadow-lg transform hover:-translate-y-0.5 transition"
                 >
                   Calculate ROI
-                </Button>
-                <Button 
-                  variant="outline" 
-                  asChild 
-                  className="w-full sm:w-auto"
+                </button>
+                <a 
+                  href={article.cta_calendly_url} 
+                  target="_blank" 
+                  rel="noopener"
+                  className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 rounded-lg font-semibold border border-border text-foreground hover:border-foreground"
                 >
-                  <a 
-                    href={article.cta_calendly_url} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex justify-center items-center"
-                  >
-                    Book a 15-Minute ROI Review
-                  </a>
-                </Button>
+                  Book a 15-Minute ROI Review
+                </a>
               </div>
 
               {/* Chart + Summary */}
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
-                <div className="bg-muted/50 rounded-xl p-6">
+                <div className="bg-muted rounded-xl p-6">
                   <h3 className="text-lg font-bold text-foreground mb-4">Monthly Projection</h3>
                   <div className="relative h-72">
                     <canvas id="roiChart"></canvas>
@@ -478,7 +489,7 @@ const ArticleDetail: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="bg-muted/50 rounded-xl p-6">
+                <div className="bg-muted rounded-xl p-6">
                   <h3 className="text-lg font-bold text-foreground mb-4">Your ROI Snapshot</h3>
                   <ul className="space-y-2 text-sm text-foreground">
                     <li>Recovered revenue from missed + after-hours calls: <span id="outRecoveredMissed" className="font-semibold">$0</span></li>
@@ -487,11 +498,11 @@ const ArticleDetail: React.FC = () => {
                     <li>Estimated receptionist savings / overflow coverage value: <span id="outSavings" className="font-semibold">$0</span></li>
                     <li className="mt-2">Total monthly gain (before AI plan): <span id="outGain" className="font-semibold">$0</span></li>
                     <li>AI plan cost (locked): <span id="outPlanCost" className="font-semibold">$997</span></li>
-                    <li className="text-primary font-semibold">Net ROI (monthly): <span id="outNetRoi" className="font-black">$0</span></li>
-                    <li className="text-primary font-semibold">ROI Multiple: <span id="outRoiMultiple" className="font-black">0×</span> &nbsp;|&nbsp; ROI %: <span id="outRoiPercent" className="font-black">0%</span></li>
+                    <li className="text-foreground font-semibold">Net ROI (monthly): <span id="outNetRoi" className="font-black">$0</span></li>
+                    <li className="text-foreground font-semibold">ROI Multiple: <span id="outRoiMultiple" className="font-black">0×</span> &nbsp;|&nbsp; ROI %: <span id="outRoiPercent" className="font-black">0%</span></li>
                   </ul>
 
-                  <div className="mt-5 rounded-lg bg-background border p-4">
+                  <div className="mt-5 rounded-lg bg-card border p-4">
                     <p id="roiBlurb" className="text-sm text-foreground leading-6">
                       Enter your numbers and click "Calculate ROI" to see what you're leaving on the table — and what flips when every call is answered and every lead is followed up.
                     </p>
@@ -500,13 +511,183 @@ const ArticleDetail: React.FC = () => {
               </div>
 
               {/* 6–12 Month Outlook */}
-              <div className="mt-10 bg-primary text-primary-foreground rounded-xl p-6">
+              <div className="mt-10 bg-[#003f5c] text-white rounded-xl p-6">
                 <h3 className="text-lg font-bold mb-2">6–12 Month Outlook</h3>
                 <p id="outlook" className="text-sm opacity-95">
                   Once calculated, you'll see conservative projections for the next 6 and 12 months based on your inputs.
                 </p>
               </div>
             </div>
+
+            <script>
+              {`
+                (function(){
+                  const $ = id => document.getElementById(id);
+
+                  // Grab inputs (text-based now)
+                  const avgClientValue   = $('avgClientValue');
+                  const missedCalls      = $('missedCalls');
+                  const closeRate        = $('closeRate');
+                  const webLeads         = $('webLeads');
+                  const afterHoursCalls  = $('afterHoursCalls');
+                  const missAfterHours   = $('missAfterHours');
+                  const receptionistCost = $('receptionistCost');
+                  const dormantLeads     = $('dormantLeads');
+                  const reactivationRate = $('reactivationRate');
+                  const calcBtn          = $('calcBtn');
+
+                  // Prevent scroll wheel from changing values or blurring
+                  [avgClientValue, missedCalls, closeRate, webLeads, afterHoursCalls, receptionistCost, dormantLeads, reactivationRate]
+                    .forEach(inp => {
+                      if (inp) inp.addEventListener('wheel', e => e.preventDefault(), { passive:false });
+                    });
+
+                  // Sanitize to number (keeps user typing visible)
+                  const num = (el) => {
+                    if (!el) return 0;
+                    const v = (el.value || '').toString().replace(/[^0-9.]/g, '');
+                    return Number(v || 0);
+                  };
+
+                  // KPIs / outputs
+                  const kpiMissedLoss    = $('kpiMissedLoss');
+                  const kpiWebUplift     = $('kpiWebUplift');
+                  const kpiReactivation  = $('kpiReactivation');
+                  const kpiSavings       = $('kpiSavings');
+
+                  const outRecoveredMissed = $('outRecoveredMissed');
+                  const outWebUplift       = $('outWebUplift');
+                  const outReactivation    = $('outReactivation');
+                  const outSavings         = $('outSavings');
+                  const outGain            = $('outGain');
+                  const outPlanCost        = $('outPlanCost');
+                  const outNetRoi          = $('outNetRoi');
+                  const outRoiMultiple     = $('outRoiMultiple');
+                  const outRoiPercent      = $('outRoiPercent');
+                  const roiBlurb           = $('roiBlurb');
+                  const outlook            = $('outlook');
+
+                  const fmt = (n) => n.toLocaleString(undefined, { style:'currency', currency:'USD', maximumFractionDigits:0 });
+                  const pct = (n) => Math.max(0, Math.min(100, n)).toFixed(0) + '%';
+
+                  // Assumptions
+                  const PLAN_PRICE = 997;            // locked
+                  const WIDGET_UPLIFT_RATE = 0.25;   // +25% more website leads → convos
+                  const ANSWER_RATE_WITH_AI = 0.92;  // recovered share of missed totals
+                  const AFTER_HOURS_MISS_RATE = 0.85;// currently missed share if box checked
+                  const RECEPTIONIST_OFFSET_FACTOR = 0.35;
+
+                  // Chart
+                  let chart;
+                  function ensureChart(){
+                    const ctx = $('roiChart');
+                    if (!ctx || typeof Chart === 'undefined') return null;
+                    if (chart) return chart;
+                    chart = new Chart(ctx, {
+                      type: 'bar',
+                      data: {
+                        labels: ['Missed Calls', 'Web Uplift', 'DB Reactivation', 'Recpt. Savings', 'AI Cost'],
+                        datasets: [
+                          { label: 'Current (Loss/Cost)', backgroundColor: '#ff7c43', borderRadius: 6, data: [0,0,0,0,-PLAN_PRICE] },
+                          { label: 'With Summit Voice AI (Gain)', backgroundColor: '#665191', borderRadius: 6, data: [0,0,0,0,0] }
+                        ]
+                      },
+                      options: {
+                        responsive: true, maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } },
+                        scales: { y: { beginAtZero: true, ticks: { callback:v=>'$'+Number(v).toLocaleString() } } }
+                      }
+                    });
+                    return chart;
+                  }
+
+                  function calculate(){
+                    const v  = num(avgClientValue);
+                    const m  = num(missedCalls);
+                    const cr = Math.min(100, Math.max(0, num(closeRate))) / 100;
+                    const wl = num(webLeads);
+                    const ah = num(afterHoursCalls);
+                    const missAH = missAfterHours && missAfterHours.checked ? AFTER_HOURS_MISS_RATE : 0;
+                    const recCost = num(receptionistCost);
+                    const db = num(dormantLeads);
+                    const rr = Math.min(100, Math.max(0, num(reactivationRate))) / 100;
+
+                    // Current losses
+                    const missedNowRevenue = m * cr * v;
+                    const afterHoursLostNow = ah * missAH * cr * v;
+
+                    // Recovered with AI
+                    const totalMissedCount = m + (missAH * ah);
+                    const recoveredMissedRevenue = totalMissedCount * ANSWER_RATE_WITH_AI * cr * v;
+
+                    // Website uplift
+                    const webUpliftRevenue = wl * WIDGET_UPLIFT_RATE * cr * v;
+
+                    // DB reactivation (monthly from annual pool)
+                    const reactivatedPerMonth = (db * rr) / 12;
+                    const dbReactivationRevenue = reactivatedPerMonth * cr * v;
+
+                    // Receptionist savings
+                    const receptionistSavings = recCost * RECEPTIONIST_OFFSET_FACTOR;
+
+                    // Totals
+                    const totalGainBeforePlan = recoveredMissedRevenue + webUpliftRevenue + dbReactivationRevenue + receptionistSavings;
+                    const net = totalGainBeforePlan - PLAN_PRICE;
+
+                    // KPIs
+                    if (kpiMissedLoss) kpiMissedLoss.textContent = fmt(missedNowRevenue + afterHoursLostNow);
+                    if (kpiWebUplift) kpiWebUplift.textContent = fmt(webUpliftRevenue);
+                    if (kpiReactivation) kpiReactivation.textContent = fmt(dbReactivationRevenue);
+                    if (kpiSavings) kpiSavings.textContent = fmt(receptionistSavings);
+
+                    if (outRecoveredMissed) outRecoveredMissed.textContent = fmt(recoveredMissedRevenue);
+                    if (outWebUplift) outWebUplift.textContent = fmt(webUpliftRevenue);
+                    if (outReactivation) outReactivation.textContent = fmt(dbReactivationRevenue);
+                    if (outSavings) outSavings.textContent = fmt(receptionistSavings);
+                    if (outGain) outGain.textContent = fmt(totalGainBeforePlan);
+                    if (outPlanCost) outPlanCost.textContent = fmt(PLAN_PRICE);
+                    if (outNetRoi) outNetRoi.textContent = fmt(net);
+
+                    const roiMultiple = PLAN_PRICE > 0 ? totalGainBeforePlan / PLAN_PRICE : 0;
+                    const roiPercent  = PLAN_PRICE > 0 ? ((totalGainBeforePlan - PLAN_PRICE) / PLAN_PRICE) * 100 : 0;
+                    if (outRoiMultiple) outRoiMultiple.textContent = roiMultiple.toFixed(1) + '×';
+                    if (outRoiPercent) outRoiPercent.textContent = pct(roiPercent);
+
+                    // Narrative blurb
+                    if (roiBlurb) {
+                      roiBlurb.textContent =
+                        'Based on ' + m + ' missed calls/month, an average client value of ' + fmt(v) + ', and a ' + pct(cr*100) + ' close rate, you\'re potentially leaving ' + fmt(missedNowRevenue + afterHoursLostNow) + ' on the table every month from missed and after-hours calls that often drive straight to competitors. Implementing Voice AI now recovers an estimated ' + fmt(recoveredMissedRevenue) + ' from calls alone, adds ' + fmt(webUpliftRevenue) + ' from website conversations, revives ' + fmt(dbReactivationRevenue) + ' from dormant leads, and offsets about ' + fmt(receptionistSavings) + ' in receptionist workload — for an estimated monthly net ROI of ' + fmt(net) + ' after a $' + PLAN_PRICE + ' plan.';
+                    }
+
+                    // 6–12 month outlook
+                    const sixMo  = Math.max(0, net) * 6;
+                    const twelve = Math.max(0, net) * 12;
+                    if (outlook) {
+                      outlook.textContent =
+                        'If you implement now, the conservative projected impact is approximately ' + fmt(sixMo) + ' over the next 6 months and ' + fmt(twelve) + ' over the next 12 months (based on your inputs). Early adopters capture more market share, spend less time on the phone, and focus on higher-value work while AI handles the front desk, follow-up, and reactivation.';
+                    }
+
+                    // Chart
+                    const c = ensureChart();
+                    if (c){
+                      c.data.datasets[0].data = [
+                        -(missedNowRevenue + afterHoursLostNow), 0, 0, -recCost, -PLAN_PRICE
+                      ];
+                      c.data.datasets[1].data = [
+                        recoveredMissedRevenue, webUpliftRevenue, dbReactivationRevenue, receptionistSavings, 0
+                      ];
+                      c.update();
+                    }
+                  }
+
+                  // Calculate on button
+                  if (calcBtn) calcBtn.addEventListener('click', calculate);
+
+                  // First render with defaults
+                  calculate();
+                })();
+              `}
+            </script>
           </section>
         </div>
       </main>
