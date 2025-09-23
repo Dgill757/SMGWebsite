@@ -290,12 +290,43 @@ const ArticleDetail: React.FC = () => {
           <section id="roi-calculator" className="my-20">
             <style>
               {`
-                /* Kill browser spinners globally (safety if any number inputs sneak in) */
+                /* --- INPUT UX PATCH --- */
+                /* Remove any browser decoration containers that can overlay digits */
+                input::-webkit-textfield-decoration-container { display: none !important; }
+                input::-webkit-contacts-auto-fill-button,
+                input::-webkit-credentials-auto-fill-button { visibility: hidden; display: none !important; pointer-events: none; height: 0; width: 0; margin: 0; }
+
+                /* Spinner kill if any number inputs slip in */
                 input[type=number]::-webkit-outer-spin-button,
                 input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
                 input[type=number] { -moz-appearance: textfield; }
-                /* Unified input look + padding so nothing overlaps while typing */
-                .svai-input { padding-right: 0.75rem; }
+
+                /* Unified, bigger inputs */
+                .svai-input {
+                  height: 3.25rem;                   /* taller = more digits visible */
+                  padding: 0 1rem;                   /* comfortable padding */
+                  font-size: 1.125rem;               /* text-lg */
+                  line-height: 1.2;
+                  border-radius: 0.75rem;
+                  caret-color: #7c3aed;              /* visible caret */
+                  font-variant-numeric: tabular-nums;
+                }
+                .svai-input:focus {
+                  outline: none;
+                  box-shadow: 0 0 0 3px rgba(124,58,237,.7);  /* clear purple focus ring */
+                }
+                
+                /* Ensure chart containers have proper height and Chart.js can render */
+                .chart-container canvas {
+                  max-height: 100% !important;
+                  width: 100% !important;
+                }
+                
+                /* Force chart visibility */
+                canvas {
+                  display: block !important;
+                  visibility: visible !important;
+                }
               `}
             </style>
 
@@ -322,7 +353,7 @@ const ArticleDetail: React.FC = () => {
                       enterKeyHint="done"
                       type="text" 
                       defaultValue="2500"
-                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                     />
                   </div>
 
@@ -335,7 +366,7 @@ const ArticleDetail: React.FC = () => {
                       enterKeyHint="done"
                       type="text" 
                       defaultValue="30"
-                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                     />
                   </div>
 
@@ -348,7 +379,7 @@ const ArticleDetail: React.FC = () => {
                       enterKeyHint="done"
                       type="text" 
                       defaultValue="35"
-                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                     />
                   </div>
 
@@ -361,7 +392,7 @@ const ArticleDetail: React.FC = () => {
                       enterKeyHint="done"
                       type="text" 
                       defaultValue="60"
-                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                     />
                     <p className="text-xs text-muted-foreground mt-1">
                       We'll apply a default widget uplift of <span className="font-semibold">+25%</span> to turn more visitors into live conversations.
@@ -380,7 +411,7 @@ const ArticleDetail: React.FC = () => {
                       enterKeyHint="done"
                       type="text" 
                       defaultValue="18"
-                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                     />
                     <div className="flex items-center mt-2">
                       <input 
@@ -404,7 +435,7 @@ const ArticleDetail: React.FC = () => {
                       enterKeyHint="done"
                       type="text" 
                       defaultValue="3500"
-                      className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                     />
                     <p className="text-xs text-muted-foreground mt-1">If you don't have one, set to 0 — AI handles overflow & after-hours regardless.</p>
                   </div>
@@ -419,7 +450,7 @@ const ArticleDetail: React.FC = () => {
                         enterKeyHint="done"
                         type="text" 
                         defaultValue="2000"
-                        className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                        className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                       />
                     </div>
                     <div>
@@ -431,7 +462,7 @@ const ArticleDetail: React.FC = () => {
                         enterKeyHint="done"
                         type="text" 
                         defaultValue="8"
-                        className="svai-input mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                        className="svai-input mt-1 w-full border border-input bg-background text-foreground focus:ring-0" 
                       />
                       <p className="text-xs text-muted-foreground mt-1">Typical 6–10% response with smart AI campaigns.</p>
                     </div>
