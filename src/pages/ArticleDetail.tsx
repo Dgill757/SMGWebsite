@@ -37,7 +37,207 @@ const ArticleDetail: React.FC = () => {
   };
 
   React.useEffect(() => {
-    // Initialize ROI Calculator when component mounts
+    // Load Chart.js and initialize all charts
+    const loadChartJS = () => {
+      return new Promise((resolve, reject) => {
+        if (typeof (window as any).Chart !== 'undefined') {
+          resolve((window as any).Chart);
+          return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js';
+        script.async = true;
+        script.onload = () => {
+          if (typeof (window as any).Chart !== 'undefined') {
+            resolve((window as any).Chart);
+          } else {
+            reject(new Error('Chart.js failed to load'));
+          }
+        };
+        script.onerror = () => reject(new Error('Chart.js script failed to load'));
+        document.head.appendChild(script);
+      });
+    };
+
+    const initializeAllCharts = async () => {
+      try {
+        const Chart = await loadChartJS();
+        
+        // Chart colors for consistency
+        const chartColors = {
+          primary: '#d45087',
+          secondary: '#ff7c43', 
+          dark: '#003f5c',
+          light: '#f0f4f8',
+          accent1: '#665191',
+          accent2: '#ffa600'
+        };
+
+        // Helper function to safely get element
+        const $ = (id: string) => document.getElementById(id);
+
+        // Initialize missed calls chart (pie chart)
+        const missedCallsElement = $('missedCallsChart') as HTMLCanvasElement;
+        if (missedCallsElement) {
+          new (Chart as any)(missedCallsElement, {
+            type: 'doughnut',
+            data: {
+              labels: ['Calls Answered', 'Calls Missed'],
+              datasets: [{
+                data: [38, 62],
+                backgroundColor: [chartColors.accent1, chartColors.primary],
+                borderColor: '#ffffff',
+                borderWidth: 4
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '70%',
+              plugins: {
+                legend: { 
+                  position: 'bottom',
+                  labels: { usePointStyle: true, padding: 20 }
+                }
+              }
+            }
+          });
+        }
+
+        // Initialize voicemail abandonment chart (pie chart) 
+        const voicemailElement = $('voicemailAbandonmentChart') as HTMLCanvasElement;
+        if (voicemailElement) {
+          new (Chart as any)(voicemailElement, {
+            type: 'doughnut',
+            data: {
+              labels: ['Left Voicemail', 'Hung Up'],
+              datasets: [{
+                data: [15, 85],
+                backgroundColor: [chartColors.accent2, chartColors.secondary],
+                borderColor: '#ffffff',
+                borderWidth: 4
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              cutout: '70%',
+              plugins: {
+                legend: { 
+                  position: 'bottom',
+                  labels: { usePointStyle: true, padding: 20 }
+                }
+              }
+            }
+          });
+        }
+
+        // Initialize speed to lead chart (line chart)
+        const speedElement = $('speedToLeadChart') as HTMLCanvasElement;
+        if (speedElement) {
+          new (Chart as any)(speedElement, {
+            type: 'line',
+            data: {
+              labels: ['< 1 min', '< 5 min', '< 1 hr', '< 24 hrs', '> 24 hrs'],
+              datasets: [{
+                label: 'Conversion Likelihood',
+                data: [100, 95, 40, 15, 5],
+                borderColor: chartColors.primary,
+                backgroundColor: 'rgba(212, 80, 135, 0.2)',
+                fill: true,
+                tension: 0.4,
+                pointBackgroundColor: chartColors.primary,
+                pointBorderColor: '#fff',
+                pointHoverRadius: 7,
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: chartColors.primary,
+                pointRadius: 5,
+                pointBorderWidth: 2
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  max: 100,
+                  ticks: {
+                    callback: function(value) { return value + '%' }
+                  },
+                  grid: { color: 'rgba(0,0,0,0.1)' }
+                },
+                x: {
+                  grid: { color: 'rgba(0,0,0,0.1)' }
+                }
+              },
+              plugins: {
+                legend: { display: false }
+              }
+            }
+          });
+        }
+
+        // Initialize comparison chart (horizontal bar chart)
+        const comparisonElement = $('comparisonChart') as HTMLCanvasElement;
+        if (comparisonElement) {
+          new (Chart as any)(comparisonElement, {
+            type: 'bar',
+            data: {
+              labels: ['Call Answer Rate', '24/7 Availability', 'Scalability'],
+              datasets: [
+                {
+                  label: 'Voice AI',
+                  data: [92, 100, 100],
+                  backgroundColor: chartColors.accent1,
+                  borderRadius: 4
+                },
+                {
+                  label: 'Traditional Front Desk',
+                  data: [65, 33, 10],
+                  backgroundColor: chartColors.secondary,
+                  borderRadius: 4
+                }
+              ]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              indexAxis: 'y',
+              scales: {
+                x: {
+                  beginAtZero: true,
+                  max: 100,
+                  ticks: {
+                    callback: function(value) { return value + '%' }
+                  },
+                  grid: { color: 'rgba(0,0,0,0.1)' }
+                },
+                y: {
+                  grid: { display: false }
+                }
+              },
+              plugins: {
+                legend: { 
+                  position: 'bottom',
+                  labels: { usePointStyle: true, padding: 20 }
+                }
+              }
+            }
+          });
+        }
+
+        // Initialize ROI Calculator
+        initROICalculator();
+
+      } catch (error) {
+        console.error('Failed to initialize charts:', error);
+        // Fallback: still try to initialize ROI calculator
+        setTimeout(initROICalculator, 1000);
+      }
+    };
+
     const initROICalculator = () => {
       const $ = (id: string) => document.getElementById(id);
 
@@ -71,7 +271,7 @@ const ArticleDetail: React.FC = () => {
         if (chart) return chart;
         
         const Chart = (window as any).Chart;
-        chart = new Chart(ctx, {
+        chart = new (Chart as any)(ctx, {
           type: 'bar',
           data: {
             labels: ['Missed Calls', 'Web Uplift', 'DB Reactivation', 'Recpt. Savings', 'AI Cost'],
@@ -179,7 +379,9 @@ const ArticleDetail: React.FC = () => {
       calculate(); // Initial calculation
     };
 
-    const timer = setTimeout(initROICalculator, 100);
+    // Start initialization with proper timing
+    const timer = setTimeout(initializeAllCharts, 100);
+    
     return () => clearTimeout(timer);
   }, []);
 
@@ -191,8 +393,8 @@ const ArticleDetail: React.FC = () => {
         keywords={article.tags}
       />
       
-      <main className="min-h-screen bg-background">
-        <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <main className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30">
+        <div className="container mx-auto px-4 py-8 max-w-6xl">
           {/* Breadcrumbs */}
           <Breadcrumb className="mb-6">
             <BreadcrumbList>
@@ -230,60 +432,71 @@ const ArticleDetail: React.FC = () => {
           </Button>
 
           {/* Article Header */}
-          <header className="mb-8">
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 leading-tight">
-              {article.title}
-            </h1>
-            
-            {/* Meta Information */}
-            <div className="flex flex-wrap items-center gap-4 mb-6 text-sm text-muted-foreground">
-              <div className="flex items-center">
-                <Calendar className="w-4 h-4 mr-1" />
-                {formatDate(article.published_at)}
+          <header className="mb-12 text-center">
+            <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-primary/10 rounded-3xl p-8 md:p-12 border border-primary/20 shadow-lg">
+              <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-foreground mb-6 leading-tight">
+                {article.title}
+              </h1>
+              
+              {/* Meta Information */}
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground mb-6">
+                <div className="flex items-center bg-card/50 rounded-full px-4 py-2 border">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  <span className="font-medium">{formatDate(article.published_at)}</span>
+                </div>
+                <div className="flex items-center flex-wrap gap-2">
+                  <Tag className="w-4 h-4" />
+                  {article.tags.map(tag => (
+                    <Badge key={tag} variant="secondary" className="text-xs capitalize font-medium">
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-              <div className="flex items-center flex-wrap gap-2">
-                <Tag className="w-4 h-4" />
-                {article.tags.map(tag => (
-                  <Badge key={tag} variant="secondary" className="text-xs capitalize">
-                    {tag}
-                  </Badge>
-                ))}
-              </div>
+              
+              <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+                {article.excerpt}
+              </p>
             </div>
           </header>
 
           {/* Article Content */}
-          <article className="prose prose-lg max-w-none mb-12">
-            <RawHtmlBlock 
-              html={article.content_html}
-              className="article-content"
-            />
+          <article className="prose prose-lg prose-slate max-w-none mb-16">
+            <div className="bg-card rounded-3xl shadow-xl border border-border/50 overflow-hidden">
+              <RawHtmlBlock 
+                html={article.content_html}
+                className="article-content"
+              />
+            </div>
           </article>
 
-          {/* Sticky CTA */}
-          <div className="sticky bottom-0 bg-gradient-to-r from-primary to-primary/90 p-6 rounded-xl text-center text-primary-foreground shadow-lg mb-12">
-            <h3 className="text-xl md:text-2xl font-bold mb-2">
-              Ready to Transform Your Business?
-            </h3>
-            <p className="text-primary-foreground/90 mb-4">
-              See how Voice AI can revolutionize your service business with a personalized demo.
-            </p>
-            <Button
-              asChild
-              size="lg"
-              variant="secondary"
-              className="text-lg px-8 py-3"
-            >
-              <a
-                href={article.cta_calendly_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center"
+          {/* Enhanced CTA */}
+          <div className="relative overflow-hidden bg-gradient-to-br from-primary via-primary to-primary/80 rounded-3xl p-8 md:p-12 text-center text-primary-foreground shadow-2xl mb-16 border border-primary/20">
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent animate-pulse"></div>
+            <div className="relative z-10">
+              <h3 className="text-2xl md:text-3xl font-black mb-4">
+                Ready to Transform Your Business?
+              </h3>
+              <p className="text-primary-foreground/90 mb-6 text-lg max-w-2xl mx-auto leading-relaxed">
+                See how Voice AI can revolutionize your service business with a personalized demo. Join hundreds of home service companies already using AI to capture more leads.
+              </p>
+              <Button
+                asChild
+                size="lg"
+                variant="secondary"
+                className="text-lg px-10 py-4 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
-                Book a Demo
-                <ExternalLink className="w-5 h-5 ml-2" />
-              </a>
-            </Button>
+                <a
+                  href={article.cta_calendly_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center"
+                >
+                  Book Your Free Demo
+                  <ExternalLink className="w-5 h-5 ml-2" />
+                </a>
+              </Button>
+            </div>
           </div>
 
           {/* ROI Calculator */}
@@ -330,7 +543,7 @@ const ArticleDetail: React.FC = () => {
               `}
             </style>
 
-            <div className="bg-card rounded-2xl shadow-xl p-6 md:p-10 border border-border">
+            <div className="bg-card/95 backdrop-blur rounded-3xl shadow-2xl p-8 md:p-12 border border-border/50">
               <div className="mb-8 text-center">
                 <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
                   ROI Calculator — Summit Voice AI
@@ -725,86 +938,153 @@ const ArticleDetail: React.FC = () => {
 
       <style>{`
         .article-content {
-          line-height: 1.7;
+          line-height: 1.8;
+          padding: 2rem;
         }
         
         .article-content h1,
         .article-content h2,
         .article-content h3,
         .article-content h4 {
-          margin-top: 2rem;
-          margin-bottom: 1rem;
-          font-weight: 700;
+          margin-top: 3rem;
+          margin-bottom: 1.5rem;
+          font-weight: 800;
           line-height: 1.2;
+          color: hsl(var(--foreground));
         }
         
         .article-content h1 {
-          font-size: 2.25rem;
+          font-size: 2.75rem;
+          background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)) 70%, hsl(var(--accent)));
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
         }
         
         .article-content h2 {
-          font-size: 1.875rem;
+          font-size: 2.25rem;
+          color: hsl(var(--primary));
         }
         
         .article-content h3 {
-          font-size: 1.5rem;
+          font-size: 1.75rem;
+          color: hsl(var(--primary));
         }
         
         .article-content h4 {
-          font-size: 1.25rem;
+          font-size: 1.375rem;
         }
         
         .article-content p {
-          margin-bottom: 1.5rem;
+          margin-bottom: 1.75rem;
+          color: hsl(var(--muted-foreground));
+          font-size: 1.125rem;
         }
         
         .article-content ul,
         .article-content ol {
-          margin-bottom: 1.5rem;
-          padding-left: 1.5rem;
+          margin-bottom: 2rem;
+          padding-left: 2rem;
         }
         
         .article-content li {
-          margin-bottom: 0.5rem;
+          margin-bottom: 0.75rem;
+          color: hsl(var(--muted-foreground));
         }
         
         .article-content img {
           max-width: 100%;
           height: auto;
-          border-radius: 0.5rem;
-          margin: 1.5rem auto;
+          border-radius: 1rem;
+          margin: 2rem auto;
           display: block;
+          box-shadow: 0 20px 40px -12px rgba(0,0,0,0.15);
         }
         
         .article-content canvas {
           max-width: 100% !important;
           height: auto !important;
+          border-radius: 0.75rem;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .article-content .chart-container {
+          margin: 2rem auto;
+          padding: 1rem;
+          background: hsl(var(--card));
+          border-radius: 1rem;
+          border: 1px solid hsl(var(--border));
+          box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+        }
+        
+        .article-content section {
+          margin: 3rem 0;
+        }
+        
+        .article-content .bg-white {
+          background: hsl(var(--card)) !important;
+          border: 1px solid hsl(var(--border));
+        }
+        
+        .article-content .bg-gray-50 {
+          background: hsl(var(--muted)) !important;
+        }
+        
+        .article-content .text-gray-700 {
+          color: hsl(var(--foreground)) !important;
+        }
+        
+        .article-content .text-gray-600 {
+          color: hsl(var(--muted-foreground)) !important;
         }
         
         @media (max-width: 768px) {
           .article-content {
             font-size: 1rem;
+            padding: 1.5rem;
           }
           
           .article-content h1 {
-            font-size: 1.875rem;
+            font-size: 2rem;
           }
           
           .article-content h2 {
-            font-size: 1.5rem;
+            font-size: 1.75rem;
           }
           
           .article-content h3 {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
           }
           
           .article-content h4 {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
           }
           
           .article-content canvas {
-            height: 200px !important;
+            height: 250px !important;
           }
+          
+          .article-content .chart-container {
+            height: 280px !important;
+          }
+        }
+        
+        /* Chart responsiveness improvements */
+        .article-content .chart-container canvas {
+          display: block !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+        }
+        
+        /* Loading state for charts */
+        .article-content .chart-container:empty::after {
+          content: 'Loading chart...';
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          color: hsl(var(--muted-foreground));
+          font-style: italic;
         }
       `}</style>
     </>
