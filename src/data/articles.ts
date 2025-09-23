@@ -22,324 +22,357 @@ export const articles: Article[] = [
     show_in_listing: true,
     content_html: `
       <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
       
-      <div class="max-w-4xl mx-auto px-4 py-8">
-        <div class="bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900 rounded-xl p-8 text-white mb-8">
-          <div class="max-w-3xl mx-auto text-center">
-            <h1 class="text-4xl md:text-5xl font-bold mb-6 bg-gradient-to-r from-blue-200 to-purple-200 bg-clip-text text-transparent">
-              The Voice AI Revolution for Roofing & Home Services
-            </h1>
-            <p class="text-xl md:text-2xl text-blue-100 leading-relaxed">
-              How Voice AI Eliminates Missed Calls, Kills Voicemails, and Books Jobs 24/7 with Inbound, Outbound, Reminders, and Database Reactivation
-            </p>
-          </div>
-        </div>
+      <style>
+        .article-content {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8;
+            padding: 0;
+            margin: 0;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 300px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 350px;
+            }
+        }
+        .stat-card h3 {
+            font-size: 4rem;
+            font-weight: 900;
+            line-height: 1;
+        }
+        .gradient-text {
+            background: linear-gradient(to right, #d45087, #ff7c43);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+      </style>
 
-        <div class="prose prose-lg max-w-none">
-          <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-8 rounded-r-lg">
-            <div class="flex items-center mb-2">
-              <svg class="w-6 h-6 text-yellow-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
-              </svg>
-              <h3 class="text-lg font-semibold text-yellow-800">Industry Reality Check</h3>
-            </div>
-            <p class="text-yellow-700 font-medium">The roofing and home services industry loses $67 billion annually to missed calls and poor follow-up. Every missed call is a lost job opportunity.</p>
-          </div>
+      <div class="container mx-auto p-4 md:p-8 max-w-6xl text-gray-700">
 
-          <h2 class="text-3xl font-bold text-gray-900 mb-6">The Current Problem: Your Phone is Bleeding Money</h2>
-          
-          <div class="grid md:grid-cols-2 gap-8 mb-8">
-            <div class="bg-red-50 p-6 rounded-lg border border-red-200">
-              <h3 class="text-xl font-bold text-red-800 mb-4">📱 Missed Call Crisis</h3>
-              <ul class="space-y-2 text-red-700">
-                <li>• 62% of calls to contractors go unanswered</li>
-                <li>• Average job value: $3,500 - $15,000</li>
-                <li>• Customers call 3-5 competitors before choosing</li>
-                <li>• 80% won't leave voicemails</li>
-              </ul>
-            </div>
-            <div class="bg-orange-50 p-6 rounded-lg border border-orange-200">
-              <h3 class="text-xl font-bold text-orange-800 mb-4">⏰ Time Drain</h3>
-              <ul class="space-y-2 text-orange-700">
-                <li>• 4+ hours daily returning calls</li>
-                <li>• Scheduling back-and-forth wastes hours</li>
-                <li>• No-shows cost $200-500 per occurrence</li>
-                <li>• Follow-up calls rarely happen</li>
-              </ul>
-            </div>
-          </div>
+        <header class="text-center my-12 md:my-20">
+            <h1 class="text-4xl md:text-6xl font-black text-[#003f5c] leading-tight">Turn Every Missed Call into a Booked Job.</h1>
+            <p class="mt-4 text-xl md:text-2xl font-semibold text-[#665191]">AI is Your New 24/7 Front Desk.</p>
+        </header>
 
-          <div class="bg-gray-100 p-6 rounded-lg mb-8">
-            <h3 class="text-2xl font-bold text-center mb-4">Lost Revenue Calculator</h3>
-            <div class="max-w-2xl mx-auto">
-              <canvas id="revenueChart" width="400" height="200"></canvas>
-            </div>
-          </div>
-
-          <h2 class="text-3xl font-bold text-gray-900 mb-6">The Voice AI Solution: 24/7 Revenue Machine</h2>
-          
-          <div class="grid md:grid-cols-3 gap-6 mb-8">
-            <div class="bg-green-50 p-6 rounded-lg border border-green-200 text-center">
-              <div class="text-3xl font-bold text-green-600 mb-2">97%</div>
-              <div class="text-green-800 font-medium">Call Answer Rate</div>
-            </div>
-            <div class="bg-blue-50 p-6 rounded-lg border border-blue-200 text-center">
-              <div class="text-3xl font-bold text-blue-600 mb-2">75%</div>
-              <div class="text-blue-800 font-medium">Calls Convert to Bookings</div>
-            </div>
-            <div class="bg-purple-50 p-6 rounded-lg border border-purple-200 text-center">
-              <div class="text-3xl font-bold text-purple-600 mb-2">24/7</div>
-              <div class="text-purple-800 font-medium">Never Miss Another Call</div>
-            </div>
-          </div>
-
-          <h3 class="text-2xl font-bold text-gray-900 mb-4">4 Ways Voice AI Transforms Your Business</h3>
-
-          <div class="space-y-8 mb-8">
-            <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200">
-              <h4 class="text-xl font-bold text-blue-900 mb-3">1. 🔵 Inbound Call Mastery</h4>
-              <ul class="space-y-2 text-blue-800">
-                <li>• Answers every call in 2 rings</li>
-                <li>• Qualifies leads with smart questions</li>
-                <li>• Books appointments instantly</li>
-                <li>• Handles multiple calls simultaneously</li>
-                <li>• Provides instant quotes for standard services</li>
-              </ul>
-            </div>
-
-            <div class="bg-gradient-to-r from-green-50 to-emerald-50 p-6 rounded-lg border border-green-200">
-              <h4 class="text-xl font-bold text-green-900 mb-3">2. 🟢 Outbound Lead Follow-Up</h4>
-              <ul class="space-y-2 text-green-800">
-                <li>• Calls new leads within 5 minutes</li>
-                <li>• Follows up until contact is made</li>
-                <li>• Nurtures leads with personalized messages</li>
-                <li>• Converts cold leads into hot prospects</li>
-                <li>• Handles objections with proven scripts</li>
-              </ul>
-            </div>
-
-            <div class="bg-gradient-to-r from-orange-50 to-red-50 p-6 rounded-lg border border-orange-200">
-              <h4 class="text-xl font-bold text-orange-900 mb-3">3. 🟠 Smart Appointment Reminders</h4>
-              <ul class="space-y-2 text-orange-800">
-                <li>• Reduces no-shows by 85%</li>
-                <li>• Confirms appointments 24 hours ahead</li>
-                <li>• Reschedules automatically if needed</li>
-                <li>• Sends prep instructions to customers</li>
-                <li>• Handles emergency rescheduling</li>
-              </ul>
-            </div>
-
-            <div class="bg-gradient-to-r from-purple-50 to-pink-50 p-6 rounded-lg border border-purple-200">
-              <h4 class="text-xl font-bold text-purple-900 mb-3">4. 🟣 Database Reactivation</h4>
-              <ul class="space-y-2 text-purple-800">
-                <li>• Revives dormant customer database</li>
-                <li>• Offers seasonal services and maintenance</li>
-                <li>• Generates referrals from happy customers</li>
-                <li>• Identifies upsell opportunities</li>
-                <li>• Reactivates 30-40% of old customers</li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="bg-gradient-to-r from-gray-100 to-gray-200 p-8 rounded-lg mb-8">
-            <h3 class="text-2xl font-bold text-center mb-6">ROI Impact Analysis</h3>
-            <div class="max-w-3xl mx-auto">
-              <canvas id="roiChart" width="600" height="300"></canvas>
-            </div>
-          </div>
-
-          <h2 class="text-3xl font-bold text-gray-900 mb-6">Real Results from Real Contractors</h2>
-
-          <div class="grid md:grid-cols-2 gap-6 mb-8">
-            <div class="bg-white p-6 rounded-lg shadow-lg border">
-              <div class="mb-4">
-                <h4 class="text-lg font-bold text-gray-900">Elite Roofing Co.</h4>
-                <p class="text-gray-600">Phoenix, AZ</p>
-              </div>
-              <div class="space-y-2 text-sm">
-                <div class="flex justify-between">
-                  <span>Monthly Revenue Before:</span>
-                  <span class="font-bold text-red-600">$85,000</span>
+        <section id="problem" class="my-16">
+            <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-[#003f5c] mb-8">Why Roofing Companies Are Bleeding Leads</h2>
+                <p class="text-center max-w-3xl mx-auto text-lg mb-12">Every day, potential customers are looking for a solution to their roofing problem. But for many home service businesses, the most common outcome is a lost opportunity. Your team is busy on job sites, it's after hours, and another potential job goes straight to a competitor who simply answered the phone.</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8 text-center">
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <div class="chart-container h-64 md:h-72 mx-auto">
+                            <canvas id="missedCallsChart"></canvas>
+                        </div>
+                        <h3 class="text-xl font-bold mt-4 text-[#003f5c]">The Silent Revenue Killer</h3>
+                        <p class="mt-2">A significant portion of calls to small businesses go unanswered, especially during peak hours or after 5 PM. Each missed call is a lost sale.</p>
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-6">
+                        <div class="chart-container h-64 md:h-72 mx-auto">
+                             <canvas id="voicemailAbandonmentChart"></canvas>
+                        </div>
+                        <h3 class="text-xl font-bold mt-4 text-[#003f5c]">Voicemails Are Dead</h3>
+                        <p class="mt-2">The vast majority of callers today will not leave a voicemail. They simply hang up and dial your competitor, assuming they'll never get a call back.</p>
+                    </div>
                 </div>
-                <div class="flex justify-between">
-                  <span>Monthly Revenue After:</span>
-                  <span class="font-bold text-green-600">$142,000</span>
+            </div>
+        </section>
+
+        <section id="data" class="my-16">
+             <div class="bg-[#003f5c] text-white rounded-2xl shadow-xl p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">The Shocking ROI of Speed</h2>
+                 <p class="text-center max-w-3xl mx-auto text-lg mb-12 opacity-90">The data is undeniable. In today's on-demand world, customers expect an immediate response. Failing to meet this expectation is the single biggest leak in your sales funnel.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                    <div class="stat-card bg-[#2f4b7c] rounded-lg p-6">
+                        <h3 class="gradient-text">82%</h3>
+                        <p class="font-semibold mt-2">of consumers expect an immediate response to an inquiry.</p>
+                    </div>
+                     <div class="stat-card bg-[#2f4b7c] rounded-lg p-6">
+                        <h3 class="gradient-text">47</h3>
+                        <p class="font-semibold mt-2">The average lead response time in home services is 47 HOURS.</p>
+                    </div>
+                     <div class="stat-card bg-[#2f4b7c] rounded-lg p-6">
+                        <h3 class="gradient-text">100x</h3>
+                        <p class="font-semibold mt-2">Leads are 100x more likely to respond if called in under 5 minutes.</p>
+                    </div>
                 </div>
-                <div class="flex justify-between border-t pt-2">
-                  <span class="font-bold">Increase:</span>
-                  <span class="font-bold text-green-600">+67%</span>
+                 <div class="mt-12 bg-white rounded-lg p-6 shadow-inner">
+                    <h3 class="text-xl font-bold text-center text-[#003f5c] mb-4">The Conversion Cliff: Speed to Lead</h3>
+                     <div class="chart-container h-72">
+                        <canvas id="speedToLeadChart"></canvas>
+                     </div>
+                     <p class="text-center text-gray-600 mt-4">This chart visualizes the dramatic decay in lead conversion probability over time. The first 5 minutes are critical; after an hour, your chances have plummeted.</p>
+                 </div>
+            </div>
+        </section>
+
+        <section id="solution" class="my-16">
+             <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-[#003f5c] mb-8">The Voice AI Solution: Never Miss a Lead Again</h2>
+                <p class="text-center max-w-3xl mx-auto text-lg mb-12">Voice and conversational AI aren't about replacing your team; they're about empowering them to do what they do best: high-quality roofing jobs. Let AI handle the front desk so your team can focus on the field.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                     <div class="bg-gray-50 rounded-lg p-6 text-center">
+                        <div class="text-5xl mb-4">📞</div>
+                         <h3 class="font-bold text-xl text-[#003f5c]">Never Miss a Call</h3>
+                         <p class="mt-2">An AI receptionist answers every single call, 24/7/365, including after-hours, weekends, and holidays. More leads captured, higher conversion.</p>
+                     </div>
+                     <div class="bg-gray-50 rounded-lg p-6 text-center">
+                         <div class="text-5xl mb-4">⚡️</div>
+                         <h3 class="font-bold text-xl text-[#003f5c]">Instant Follow-Up</h3>
+                         <p class="mt-2">AI triggers texts and emails the moment a lead comes in, keeping them warm and engaged while your competitors are still trying to find the phone.</p>
+                     </div>
+                     <div class="bg-gray-50 rounded-lg p-6 text-center">
+                         <div class="text-5xl mb-4">🗓️</div>
+                         <h3 class="font-bold text-xl text-[#003f5c]">Automated Reminders</h3>
+                         <p class="mt-2">Proactively send appointment reminders via SMS or voice, dramatically reducing no-shows and improving scheduling efficiency.</p>
+                     </div>
+                     <div class="bg-gray-50 rounded-lg p-6 text-center">
+                         <div class="text-5xl mb-4">📈</div>
+                         <h3 class="font-bold text-xl text-[#003f5c]">Data & Insights</h3>
+                         <p class="mt-2">AI captures and analyzes call data, giving you actionable insights into what marketing channels are working and which jobs are most profitable.</p>
+                     </div>
+                     <div class="bg-gray-50 rounded-lg p-6 text-center">
+                         <div class="text-5xl mb-4">🌪️</div>
+                         <h3 class="font-bold text-xl text-[#003f5c]">Infinite Scalability</h3>
+                         <p class="mt-2">When a storm hits and demand spikes, your AI scales instantly to handle unlimited call volume without you needing to hire and train temporary staff.</p>
+                     </div>
+                      <div class="bg-gray-50 rounded-lg p-6 text-center">
+                         <div class="text-5xl mb-4">🏆</div>
+                         <h3 class="font-bold text-xl text-[#003f5c]">Gain a Competitive Edge</h3>
+                         <p class="mt-2">While your competitors are stuck in the past with voicemails, you'll be capturing their frustrated customers and dominating the market.</p>
+                     </div>
+                 </div>
+            </div>
+        </section>
+
+         <section id="comparison" class="my-16">
+            <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-center text-[#003f5c] mb-8">AI vs. The Traditional Front Desk</h2>
+                <p class="text-center max-w-3xl mx-auto text-lg mb-12">An AI receptionist is not just a replacement; it's a force multiplier that provides coverage and efficiency that a human-only approach simply cannot match.</p>
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
                 </div>
-              </div>
-              <p class="text-gray-700 text-sm mt-4 italic">"We went from missing 40+ calls per week to answering every single one. Our booking rate tripled overnight."</p>
+                <p class="text-center text-gray-600 mt-4">This chart clearly shows the advantage of AI in core metrics. While a busy human receptionist can answer 60-70% of calls, an AI system consistently answers over 90%, ensuring you never miss an opportunity.</p>
             </div>
+        </section>
 
-            <div class="bg-white p-6 rounded-lg shadow-lg border">
-              <div class="mb-4">
-                <h4 class="text-lg font-bold text-gray-900">Precision HVAC</h4>
-                <p class="text-gray-600">Denver, CO</p>
-              </div>
-              <div class="space-y-2 text-sm">
-                <div class="flex justify-between">
-                  <span>No-Show Rate Before:</span>
-                  <span class="font-bold text-red-600">32%</span>
-                </div>
-                <div class="flex justify-between">
-                  <span>No-Show Rate After:</span>
-                  <span class="font-bold text-green-600">4%</span>
-                </div>
-                <div class="flex justify-between border-t pt-2">
-                  <span class="font-bold">Time Saved:</span>
-                  <span class="font-bold text-green-600">25 hrs/week</span>
-                </div>
-              </div>
-              <p class="text-gray-700 text-sm mt-4 italic">"The reminder system eliminated our no-show problem. We can actually plan our days now."</p>
+        <section id="transformation" class="my-16">
+            <div class="bg-[#003f5c] text-white rounded-2xl shadow-xl p-8 md:p-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-8">The 'Before & After AI' Snapshot</h2>
+                <p class="text-center max-w-3xl mx-auto text-lg mb-12 opacity-90">Implementing Voice AI fundamentally transforms your business operations, shifting focus from administrative tasks to revenue-generating activities.</p>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div class="bg-gray-100/10 rounded-lg p-6 border-l-4 border-[#f95d6a]">
+                        <h3 class="font-bold text-2xl text-white mb-4">Before AI: The Daily Grind</h3>
+                         <ul class="space-y-3">
+                            <li class="flex items-start"><span class="text-2xl mr-3">📞</span> <div><strong class="text-[#ffa600]">50% Missed Calls:</strong> Revenue lost daily during peak hours.</div></li>
+                             <li class="flex items-start"><span class="text-2xl mr-3">⏰</span> <div><strong class="text-[#ffa600]">15+ Hours/Week:</strong> Owner stuck on the phone with admin tasks.</div></li>
+                             <li class="flex items-start"><span class="text-2xl mr-3">😞</span> <div><strong class="text-[#ffa600]">20% No-Shows:</strong> Lost time and fuel from unconfirmed appointments.</div></li>
+                             <li class="flex items-start"><span class="text-2xl mr-3">📉</span> <div><strong class="text-[#ffa600]">Stagnant Growth:</strong> Inability to handle more leads or scale for storm season.</div></li>
+                         </ul>
+                     </div>
+                     <div class="bg-gray-100/20 rounded-lg p-6 border-l-4 border-[#8fbc8f]">
+                         <h3 class="font-bold text-2xl text-white mb-4">After AI: The Growth Engine</h3>
+                         <ul class="space-y-3">
+                             <li class="flex items-start"><span class="text-2xl mr-3">✅</span> <div><strong class="text-[#8fbc8f]">92% Answer Rate:</strong> Every lead is captured and qualified, 24/7.</div></li>
+                             <li class="flex items-start"><span class="text-2xl mr-3">🚀</span> <div><strong class="text-[#8fbc8f]">3 Hours/Week:</strong> Owner focuses on strategy, sales, and crew management.</div></li>
+                             <li class="flex items-start"><span class="text-2xl mr-3">👍</span> <div><strong class="text-[#8fbc8f]">Under 5% No-Shows:</strong> Automated reminders keep the schedule tight.</div></li>
+                             <li class="flex items-start"><span class="text-2xl mr-3">📈</span> <div><strong class="text-[#8fbc8f]">Scalable Growth:</strong> Ready to handle any surge in demand, effortlessly.</div></li>
+                         </ul>
+                     </div>
+                 </div>
             </div>
-          </div>
+        </section>
 
-          <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-8 rounded-xl text-white text-center mb-8">
-            <h3 class="text-2xl font-bold mb-4">Conservative ROI Projection</h3>
-            <div class="grid md:grid-cols-3 gap-6">
-              <div>
-                <div class="text-3xl font-bold mb-2">$500</div>
-                <div class="text-indigo-200">Monthly Investment</div>
-              </div>
-              <div>
-                <div class="text-3xl font-bold mb-2">$3,200</div>
-                <div class="text-indigo-200">Additional Monthly Revenue</div>
-              </div>
-              <div>
-                <div class="text-3xl font-bold mb-2">540%</div>
-                <div class="text-indigo-200">Return on Investment</div>
-              </div>
-            </div>
-            <p class="text-indigo-100 mt-4">Based on capturing just 2 additional jobs per month at $1,600 average value</p>
-          </div>
+        <footer class="text-center my-12 md:my-20">
+            <h2 class="text-3xl md:text-4xl font-bold text-[#003f5c]">Ready to Revolutionize Your Business?</h2>
+            <p class="mt-4 max-w-2xl mx-auto text-lg">Don't let another lead slip away. The future is here, and early adopters are winning big. It's time to take the AI leap and secure your competitive edge.</p>
+            <a href="https://calendly.com/aivoice/call" target="_blank" class="inline-block bg-gradient-to-r from-[#d45087] to-[#ff7c43] text-white font-bold text-xl py-4 px-10 rounded-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mt-8">Book a Demo Now</a>
+        </footer>
 
-          <h2 class="text-3xl font-bold text-gray-900 mb-6">How It Works: Simple 3-Step Setup</h2>
-
-          <div class="grid md:grid-cols-3 gap-6 mb-8">
-            <div class="text-center">
-              <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="text-2xl font-bold text-blue-600">1</span>
-              </div>
-              <h4 class="text-lg font-bold mb-2">Custom Configuration</h4>
-              <p class="text-gray-600">We program your AI with your services, pricing, and availability.</p>
-            </div>
-            <div class="text-center">
-              <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="text-2xl font-bold text-green-600">2</span>
-              </div>
-              <h4 class="text-lg font-bold mb-2">Phone Integration</h4>
-              <p class="text-gray-600">Connect to your existing phone system in under 24 hours.</p>
-            </div>
-            <div class="text-center">
-              <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="text-2xl font-bold text-purple-600">3</span>
-              </div>
-              <h4 class="text-lg font-bold mb-2">Launch & Optimize</h4>
-              <p class="text-gray-600">Go live and watch your booking rate soar while we fine-tune performance.</p>
-            </div>
-          </div>
-
-          <div class="bg-red-50 border-l-4 border-red-400 p-6 mb-8 rounded-r-lg">
-            <h3 class="text-lg font-bold text-red-800 mb-2">⚠️ The Cost of Waiting</h3>
-            <p class="text-red-700">Every day you delay costs you an average of $400-800 in missed opportunities. Your competitors are already implementing Voice AI - don't get left behind.</p>
-          </div>
-
-          <div class="text-center bg-gradient-to-r from-blue-600 to-purple-600 p-8 rounded-xl text-white">
-            <h3 class="text-2xl font-bold mb-4">Ready to Transform Your Business?</h3>
-            <p class="text-xl mb-6 text-blue-100">See exactly how Voice AI will impact YOUR revenue with a personalized demo.</p>
-            <a href="https://calendly.com/aivoice/call" target="_blank" class="inline-block bg-white text-blue-600 font-bold py-3 px-8 rounded-lg text-lg hover:bg-gray-100 transition-colors">
-              Book Your Free Demo Now →
-            </a>
-            <p class="text-sm text-blue-200 mt-3">30-minute call • Custom ROI analysis • No obligation</p>
-          </div>
-        </div>
       </div>
 
       <script>
-        // Revenue Loss Chart
-        const ctx1 = document.getElementById('revenueChart');
-        if (ctx1) {
-          new Chart(ctx1, {
-            type: 'bar',
-            data: {
-              labels: ['Missed Calls', 'No Follow-up', 'No-Shows', 'Poor Scheduling'],
-              datasets: [{
-                label: 'Monthly Revenue Loss',
-                data: [8500, 3200, 2100, 1800],
-                backgroundColor: ['#ef4444', '#f97316', '#eab308', '#f59e0b'],
-                borderColor: ['#dc2626', '#ea580c', '#ca8a04', '#d97706'],
-                borderWidth: 1
-              }]
-            },
-            options: {
-              responsive: true,
-              plugins: {
-                title: {
-                  display: true,
-                  text: 'Average Monthly Revenue Loss by Issue'
-                },
-                legend: {
-                  display: false
-                }
-              },
-              scales: {
-                y: {
-                  beginAtZero: true,
-                  ticks: {
-                    callback: function(value) {
-                      return '$' + value.toLocaleString();
-                    }
-                  }
-                }
-              }
+        // Wait for Chart.js to load before initializing charts
+        document.addEventListener('DOMContentLoaded', function() {
+          // Add a small delay to ensure Chart.js is fully loaded
+          setTimeout(function() {
+            if (typeof Chart !== 'undefined') {
+              initializeCharts();
+            } else {
+              // Retry after a longer delay if Chart.js isn't ready
+              setTimeout(initializeCharts, 1000);
             }
-          });
-        }
+          }, 500);
+        });
 
-        // ROI Chart
-        const ctx2 = document.getElementById('roiChart');
-        if (ctx2) {
-          new Chart(ctx2, {
-            type: 'line',
-            data: {
-              labels: ['Month 1', 'Month 2', 'Month 3', 'Month 4', 'Month 5', 'Month 6'],
-              datasets: [{
-                label: 'Revenue Without Voice AI',
-                data: [85000, 87000, 86000, 88000, 89000, 87000],
-                borderColor: '#ef4444',
-                backgroundColor: 'rgba(239, 68, 68, 0.1)',
-                tension: 0.1
-              }, {
-                label: 'Revenue With Voice AI',
-                data: [85000, 115000, 125000, 135000, 142000, 148000],
-                borderColor: '#22c55e',
-                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                tension: 0.1
-              }]
-            },
-            options: {
-              responsive: true,
+        function initializeCharts() {
+          const tooltipCallback = {
               plugins: {
-                title: {
-                  display: true,
-                  text: '6-Month Revenue Comparison'
-                }
-              },
-              scales: {
-                y: {
-                  beginAtZero: false,
-                  min: 80000,
-                  ticks: {
-                    callback: function(value) {
-                      return '$' + (value/1000) + 'K';
-                    }
+                  tooltip: {
+                      callbacks: {
+                          title: function(tooltipItems) {
+                              const item = tooltipItems[0];
+                              let label = item.chart.data.labels[item.dataIndex];
+                              if (Array.isArray(label)) {
+                                return label.join(' ');
+                              } else {
+                                return label;
+                              }
+                          }
+                      }
                   }
-                }
               }
-            }
-          });
+          };
+
+          const chartColors = {
+              primary: '#d45087',
+              secondary: '#ff7c43',
+              dark: '#003f5c',
+              light: '#f0f4f8',
+              accent1: '#665191',
+              accent2: '#ffa600'
+          };
+
+          // Check if elements exist before creating charts
+          const missedCallsElement = document.getElementById('missedCallsChart');
+          if (missedCallsElement) {
+            new Chart(missedCallsElement, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Calls Answered', 'Calls Missed'],
+                    datasets: [{
+                        data: [38, 62],
+                        backgroundColor: [chartColors.accent1, chartColors.primary],
+                        borderColor: chartColors.light,
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                     plugins: {
+                        ...tooltipCallback.plugins,
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+          }
+
+          const voicemailElement = document.getElementById('voicemailAbandonmentChart');
+          if (voicemailElement) {
+            new Chart(voicemailElement, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Left Voicemail', 'Hung Up'],
+                    datasets: [{
+                        data: [15, 85],
+                        backgroundColor: [chartColors.accent2, chartColors.secondary],
+                        borderColor: chartColors.light,
+                        borderWidth: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        ...tooltipCallback.plugins,
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+          }
+          
+          const speedElement = document.getElementById('speedToLeadChart');
+          if (speedElement) {
+            new Chart(speedElement, {
+                type: 'line',
+                data: {
+                    labels: ['< 1 min', '< 5 min', '< 1 hr', '< 24 hrs', '> 24 hrs'],
+                    datasets: [{
+                        label: 'Conversion Likelihood',
+                        data: [100, 95, 40, 15, 5],
+                        borderColor: chartColors.primary,
+                        backgroundColor: 'rgba(212, 80, 135, 0.2)',
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: chartColors.primary,
+                        pointBorderColor: '#fff',
+                        pointHoverRadius: 7,
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: chartColors.primary
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value) { return value + '%' }
+                            }
+                        }
+                    },
+                    plugins: {
+                         ...tooltipCallback.plugins,
+                        legend: { display: false }
+                    }
+                }
+            });
+          }
+          
+          const comparisonElement = document.getElementById('comparisonChart');
+          if (comparisonElement) {
+            new Chart(comparisonElement, {
+                type: 'bar',
+                data: {
+                    labels: ['Call Answer Rate', '24/7 Availability', 'Scalability'],
+                    datasets: [
+                        {
+                            label: 'Voice AI',
+                            data: [92, 100, 100],
+                            backgroundColor: chartColors.accent1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: 'Traditional Front Desk',
+                            data: [65, 33, 10],
+                            backgroundColor: chartColors.secondary,
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    indexAxis: 'y',
+                    scales: {
+                        x: {
+                            ticks: {
+                                callback: function(value) { return value + '%' }
+                            }
+                        }
+                    },
+                    plugins: {
+                        ...tooltipCallback.plugins,
+                        legend: { position: 'bottom' }
+                    }
+                }
+            });
+          }
         }
       </script>
     `
