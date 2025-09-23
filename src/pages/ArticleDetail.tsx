@@ -36,6 +36,153 @@ const ArticleDetail: React.FC = () => {
     });
   };
 
+  React.useEffect(() => {
+    // Initialize ROI Calculator when component mounts
+    const initROICalculator = () => {
+      const $ = (id: string) => document.getElementById(id);
+
+      const avgClientValue = $('avgClientValue') as HTMLInputElement;
+      const missedCalls = $('missedCalls') as HTMLInputElement;
+      const closeRate = $('closeRate') as HTMLInputElement;
+      const webLeads = $('webLeads') as HTMLInputElement;
+      const afterHoursCalls = $('afterHoursCalls') as HTMLInputElement;
+      const missAfterHours = $('missAfterHours') as HTMLInputElement;
+      const receptionistCost = $('receptionistCost') as HTMLInputElement;
+      const dormantLeads = $('dormantLeads') as HTMLInputElement;
+      const reactivationRate = $('reactivationRate') as HTMLInputElement;
+      const calcBtn = $('calcBtn');
+
+      if (!avgClientValue || !calcBtn) return;
+
+      const fmt = (n: number) => n.toLocaleString(undefined, { style:'currency', currency:'USD', maximumFractionDigits:0 });
+      const pct = (n: number) => `${n.toFixed(0)}%`;
+
+      const PLAN_PRICE = 997;
+      const WIDGET_UPLIFT_RATE = 0.25;
+      const ANSWER_RATE_WITH_AI = 0.92;
+      const AFTER_HOURS_MISS_RATE = 0.85;
+      const RECEPTIONIST_OFFSET_FACTOR = 0.35;
+
+      let chart: any;
+      
+      const ensureChart = () => {
+        const ctx = $('roiChart') as HTMLCanvasElement;
+        if (!ctx || typeof (window as any).Chart === 'undefined') return null;
+        if (chart) return chart;
+        
+        const Chart = (window as any).Chart;
+        chart = new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ['Missed Calls', 'Web Uplift', 'DB Reactivation', 'Recpt. Savings', 'AI Cost'],
+            datasets: [
+              {
+                label: 'Current (Loss/Cost)',
+                data: [0, 0, 0, 0, -PLAN_PRICE],
+                backgroundColor: '#ef4444',
+                borderRadius: 6
+              },
+              {
+                label: 'With Summit Voice AI (Gain)',
+                data: [0, 0, 0, 0, 0],
+                backgroundColor: '#8b5cf6',
+                borderRadius: 6
+              }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+              y: {
+                ticks: { callback: (v: any) => '$' + Number(v).toLocaleString() },
+                beginAtZero: true
+              }
+            }
+          }
+        });
+        return chart;
+      };
+
+      const calculate = () => {
+        const v = Number(avgClientValue.value || 0);
+        const m = Number(missedCalls.value || 0);
+        const cr = Math.min(100, Math.max(0, Number(closeRate.value || 0))) / 100;
+        const wl = Number(webLeads.value || 0);
+        const ah = Number(afterHoursCalls.value || 0);
+        const missAH = missAfterHours.checked ? AFTER_HOURS_MISS_RATE : 0;
+        const recCost = Number(receptionistCost.value || 0);
+        const db = Number(dormantLeads.value || 0);
+        const rr = Math.min(100, Math.max(0, Number(reactivationRate.value || 0))) / 100;
+
+        const missedNowRevenue = m * cr * v;
+        const afterHoursLostNow = ah * missAH * cr * v;
+        const totalMissedCount = m + (missAH * ah);
+        const recoveredMissedRevenue = totalMissedCount * ANSWER_RATE_WITH_AI * cr * v;
+        const webUpliftRevenue = wl * WIDGET_UPLIFT_RATE * cr * v;
+        const reactivatedPerMonth = (db * rr) / 12;
+        const dbReactivationRevenue = reactivatedPerMonth * cr * v;
+        const receptionistSavings = recCost * RECEPTIONIST_OFFSET_FACTOR;
+        const totalGainBeforePlan = recoveredMissedRevenue + webUpliftRevenue + dbReactivationRevenue + receptionistSavings;
+        const net = totalGainBeforePlan - PLAN_PRICE;
+
+        // Update UI elements
+        const updates = [
+          ['kpiMissedLoss', fmt(missedNowRevenue + afterHoursLostNow)],
+          ['kpiWebUplift', fmt(webUpliftRevenue)],
+          ['kpiReactivation', fmt(dbReactivationRevenue)],
+          ['kpiSavings', fmt(receptionistSavings)],
+          ['outRecoveredMissed', fmt(recoveredMissedRevenue)],
+          ['outWebUplift', fmt(webUpliftRevenue)],
+          ['outReactivation', fmt(dbReactivationRevenue)],
+          ['outSavings', fmt(receptionistSavings)],
+          ['outGain', fmt(totalGainBeforePlan)],
+          ['outPlanCost', fmt(PLAN_PRICE)],
+          ['outNetRoi', fmt(net)]
+        ];
+
+        updates.forEach(([id, value]) => {
+          const el = $(id);
+          if (el) el.textContent = value;
+        });
+
+        const roiMultiple = PLAN_PRICE > 0 ? totalGainBeforePlan / PLAN_PRICE : 0;
+        const roiPercent = PLAN_PRICE > 0 ? ((totalGainBeforePlan - PLAN_PRICE) / PLAN_PRICE) * 100 : 0;
+        
+        const multipleEl = $('outRoiMultiple');
+        const percentEl = $('outRoiPercent');
+        if (multipleEl) multipleEl.textContent = `${roiMultiple.toFixed(1)}×`;
+        if (percentEl) percentEl.textContent = pct(roiPercent);
+
+        const roiBlurb = $('roiBlurb');
+        if (roiBlurb) {
+          roiBlurb.textContent = `Based on ${m} missed calls/month, an average client value of ${fmt(v)}, and a ${pct(cr*100)} close rate, you are potentially leaving ${fmt(missedNowRevenue + afterHoursLostNow)} on the table every month from missed and after-hours calls. Implementing Voice AI recovers an estimated ${fmt(recoveredMissedRevenue)} from calls alone, adds ${fmt(webUpliftRevenue)} from website conversations, revives ${fmt(dbReactivationRevenue)} from dormant leads, and offsets about ${fmt(receptionistSavings)} in receptionist workload — for an estimated monthly net ROI of ${fmt(net)} after a $${PLAN_PRICE} plan.`;
+        }
+
+        const sixMo = Math.max(0, net) * 6;
+        const twelve = Math.max(0, net) * 12;
+        const outlook = $('outlook');
+        if (outlook) {
+          outlook.textContent = `If you implement now, the conservative projected impact is approximately ${fmt(sixMo)} over the next 6 months and ${fmt(twelve)} over the next 12 months. Early adopters capture more market share while AI handles the front desk, follow-up, and reactivation.`;
+        }
+
+        const c = ensureChart();
+        if (c) {
+          c.data.datasets[0].data = [-(missedNowRevenue + afterHoursLostNow), 0, 0, -recCost, -PLAN_PRICE];
+          c.data.datasets[1].data = [recoveredMissedRevenue, webUpliftRevenue, dbReactivationRevenue, receptionistSavings, 0];
+          c.update();
+        }
+      };
+
+      calcBtn.addEventListener('click', calculate);
+      calculate(); // Initial calculation
+    };
+
+    const timer = setTimeout(initROICalculator, 100);
+    return () => clearTimeout(timer);
+  }, []);
+
   return (
     <>
       <SEO 
@@ -114,7 +261,7 @@ const ArticleDetail: React.FC = () => {
           </article>
 
           {/* Sticky CTA */}
-          <div className="sticky bottom-0 bg-gradient-to-r from-primary to-primary/90 p-6 rounded-xl text-center text-primary-foreground shadow-lg">
+          <div className="sticky bottom-0 bg-gradient-to-r from-primary to-primary/90 p-6 rounded-xl text-center text-primary-foreground shadow-lg mb-12">
             <h3 className="text-xl md:text-2xl font-bold mb-2">
               Ready to Transform Your Business?
             </h3>
@@ -138,6 +285,229 @@ const ArticleDetail: React.FC = () => {
               </a>
             </Button>
           </div>
+
+          {/* ROI Calculator */}
+          <section id="roi-calculator" className="my-20">
+            <div className="bg-card rounded-2xl shadow-xl p-6 md:p-10 border border-border">
+              <div className="mb-8 text-center">
+                <h2 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+                  ROI Calculator — Summit Voice AI
+                </h2>
+                <p className="mt-3 text-muted-foreground max-w-3xl mx-auto">
+                  Plug in your numbers to see how much revenue you're leaving on the table from missed calls, slow follow-up, and silent web visitors — and what flips when AI answers <em>every</em> call, follows up instantly, and reactivates dormant leads.
+                </p>
+              </div>
+
+              {/* Inputs */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Left column */}
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground">Average Client Value ($)</label>
+                    <input 
+                      id="avgClientValue" 
+                      type="number" 
+                      min="0" 
+                      step="1" 
+                      defaultValue="2500"
+                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground">Missed Calls / Month</label>
+                    <input 
+                      id="missedCalls" 
+                      type="number" 
+                      min="0" 
+                      step="1" 
+                      defaultValue="30"
+                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground">Close Rate on Calls (%)</label>
+                    <input 
+                      id="closeRate" 
+                      type="number" 
+                      min="0" 
+                      max="100" 
+                      step="1" 
+                      defaultValue="35"
+                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground">Website Leads / Month</label>
+                    <input 
+                      id="webLeads" 
+                      type="number" 
+                      min="0" 
+                      step="1" 
+                      defaultValue="60"
+                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">
+                      We'll apply a default widget uplift of <span className="font-semibold">+25%</span> to turn more visitors into live conversations.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Right column */}
+                <div className="space-y-5">
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground">After-Hours Calls / Month</label>
+                    <input 
+                      id="afterHoursCalls" 
+                      type="number" 
+                      min="0" 
+                      step="1" 
+                      defaultValue="18"
+                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                    />
+                    <div className="flex items-center mt-2">
+                      <input 
+                        id="missAfterHours" 
+                        type="checkbox"
+                        defaultChecked
+                        className="rounded border-input text-primary focus:ring-primary" 
+                      />
+                      <label htmlFor="missAfterHours" className="ml-2 text-sm text-muted-foreground">
+                        We currently miss most after-hours calls
+                      </label>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-foreground">Receptionist Cost / Month ($)</label>
+                    <input 
+                      id="receptionistCost" 
+                      type="number" 
+                      min="0" 
+                      step="1" 
+                      defaultValue="3500"
+                      className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">If you don't have one, set to 0 — AI handles overflow & after-hours regardless.</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground">Dormant Leads in CRM</label>
+                      <input 
+                        id="dormantLeads" 
+                        type="number" 
+                        min="0" 
+                        step="1" 
+                        defaultValue="2000"
+                        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-foreground">Reactivation Rate (%)</label>
+                      <input 
+                        id="reactivationRate" 
+                        type="number" 
+                        min="0" 
+                        max="100" 
+                        step="1" 
+                        defaultValue="8"
+                        className="mt-1 w-full rounded-lg border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50" 
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Typical 6–10% response with smart AI campaigns.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* KPIs */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-10">
+                <div className="rounded-xl p-5 bg-primary text-primary-foreground">
+                  <div className="text-xs uppercase tracking-wide opacity-80">Missed-Call Loss / Mo</div>
+                  <div id="kpiMissedLoss" className="text-2xl font-black mt-1">$0</div>
+                </div>
+                <div className="rounded-xl p-5 bg-secondary text-secondary-foreground">
+                  <div className="text-xs uppercase tracking-wide opacity-80">Website Uplift Revenue</div>
+                  <div id="kpiWebUplift" className="text-2xl font-black mt-1">$0</div>
+                </div>
+                <div className="rounded-xl p-5 bg-accent text-accent-foreground">
+                  <div className="text-xs uppercase tracking-wide opacity-80">DB Reactivation / Mo</div>
+                  <div id="kpiReactivation" className="text-2xl font-black mt-1">$0</div>
+                </div>
+                <div className="rounded-xl p-5 bg-muted text-muted-foreground">
+                  <div className="text-xs uppercase tracking-wide opacity-80">Receptionist Savings</div>
+                  <div id="kpiSavings" className="text-2xl font-black mt-1">$0</div>
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mt-8">
+                <Button 
+                  id="calcBtn"
+                  className="w-full sm:w-auto bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90"
+                >
+                  Calculate ROI
+                </Button>
+                <Button 
+                  variant="outline" 
+                  asChild 
+                  className="w-full sm:w-auto"
+                >
+                  <a 
+                    href={article.cta_calendly_url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="inline-flex justify-center items-center"
+                  >
+                    Book a 15-Minute ROI Review
+                  </a>
+                </Button>
+              </div>
+
+              {/* Chart + Summary */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-10">
+                <div className="bg-muted/50 rounded-xl p-6">
+                  <h3 className="text-lg font-bold text-foreground mb-4">Monthly Projection</h3>
+                  <div className="relative h-72">
+                    <canvas id="roiChart"></canvas>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-3">
+                    Projection compares your <span className="font-semibold">current status</span> vs <span className="font-semibold">with Summit Voice AI</span> across recovered missed calls, website uplift, database reactivation, and net savings.
+                  </p>
+                </div>
+
+                <div className="bg-muted/50 rounded-xl p-6">
+                  <h3 className="text-lg font-bold text-foreground mb-4">Your ROI Snapshot</h3>
+                  <ul className="space-y-2 text-sm text-foreground">
+                    <li>Recovered revenue from missed + after-hours calls: <span id="outRecoveredMissed" className="font-semibold">$0</span></li>
+                    <li>Incremental revenue from website widget uplift (+25% default): <span id="outWebUplift" className="font-semibold">$0</span></li>
+                    <li>Reactivated revenue from dormant leads: <span id="outReactivation" className="font-semibold">$0</span></li>
+                    <li>Estimated receptionist savings / overflow coverage value: <span id="outSavings" className="font-semibold">$0</span></li>
+                    <li className="mt-2">Total monthly gain (before AI plan): <span id="outGain" className="font-semibold">$0</span></li>
+                    <li>AI plan cost (locked): <span id="outPlanCost" className="font-semibold">$997</span></li>
+                    <li className="text-primary font-semibold">Net ROI (monthly): <span id="outNetRoi" className="font-black">$0</span></li>
+                    <li className="text-primary font-semibold">ROI Multiple: <span id="outRoiMultiple" className="font-black">0×</span> &nbsp;|&nbsp; ROI %: <span id="outRoiPercent" className="font-black">0%</span></li>
+                  </ul>
+
+                  <div className="mt-5 rounded-lg bg-background border p-4">
+                    <p id="roiBlurb" className="text-sm text-foreground leading-6">
+                      Enter your numbers and click "Calculate ROI" to see what you're leaving on the table — and what flips when every call is answered and every lead is followed up.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* 6–12 Month Outlook */}
+              <div className="mt-10 bg-primary text-primary-foreground rounded-xl p-6">
+                <h3 className="text-lg font-bold mb-2">6–12 Month Outlook</h3>
+                <p id="outlook" className="text-sm opacity-95">
+                  Once calculated, you'll see conservative projections for the next 6 and 12 months based on your inputs.
+                </p>
+              </div>
+            </div>
+          </section>
         </div>
       </main>
 
