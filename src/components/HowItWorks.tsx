@@ -1,262 +1,304 @@
+import React, { useState, useRef, useEffect } from 'react';
 
-import React, { useState } from 'react';
-import { Check, PhoneCall, Calendar, Mail, BellRing, CreditCard, Users } from 'lucide-react';
-import VoiceWaveAnimation from './VoiceWaveAnimation';
-
-const HowItWorks: React.FC = () => {
-  const [activeStep, setActiveStep] = useState(0);
-  
-  const steps = [
-    {
-      id: 'call',
-      icon: <PhoneCall className="h-5 w-5" />,
-      title: 'Handles Calls',
-      description: "When a visitor calls your business or clicks the voice widget, our AI assistant answers immediately and engages in natural conversation.",
-      visual: (
-        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-voiceai-primary/20 flex items-center justify-center flex-shrink-0">
-              <PhoneCall className="h-5 w-5 text-voiceai-primary" />
+const STEPS = [
+  {
+    num: '01',
+    id: 'call',
+    title: 'Ava Answers Every Call',
+    description:
+      'The moment someone calls your business or clicks the voice widget on your site, Ava answers instantly — no hold music, no missed calls. She engages in fluid, natural conversation that feels completely human.',
+    highlight: 'Zero missed calls. Ever.',
+    accent: '#7C3AED',
+    visual: (
+      <div style={{ padding: '1.5rem' }}>
+        <div style={{
+          background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)',
+          borderRadius: 16, padding: '1.25rem', marginBottom: '1rem',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: '50%',
+              background: 'linear-gradient(135deg,#7C3AED,#3B82F6)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+            }}>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.58 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
             </div>
-            <div className="space-y-2">
-              <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
-                <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
-                <p className="text-gray-100 dark:text-white">Hello! Thank you for calling Ascend Roofing. I'm your AI assistant. How may I help you today?</p>
-              </div>
-              <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
-                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">Customer</p>
-                <p className="text-gray-800 dark:text-foreground/90">Hi, I'm calling about getting a quote for a roof repair.</p>
-              </div>
-              <div className="flex items-center">
-                <p className="text-sm text-gray-800 dark:text-foreground/70 mr-2">AI thinking...</p>
-                <VoiceWaveAnimation isAnimating={activeStep === 0} className="h-4" />
-              </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', fontWeight: 500 }}>Incoming call</div>
+              <div style={{ fontSize: '0.9rem', color: '#fff', fontWeight: 600 }}>+1 (555) 823-4491</div>
             </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'qualify',
-      icon: <Users className="h-5 w-5" />,
-      title: 'Qualifies Leads',
-      description: "Our AI asks the right questions to determine if the caller is a good fit for your services, saving you time and resources.",
-      visual: (
-        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
-          <div className="flex items-start gap-4">
-            <div className="w-10 h-10 rounded-full bg-voiceai-secondary/20 flex items-center justify-center flex-shrink-0">
-              <Users className="h-5 w-5 text-voiceai-secondary" />
-            </div>
-            <div className="space-y-2">
-              <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
-                <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
-                <p className="text-gray-100 dark:text-white">I'd be happy to help with that! Could you tell me a bit more about your roof issue? When did you first notice it, and what's the approximate size of your home?</p>
-              </div>
-              <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
-                <p className="font-medium mb-1 text-gray-900 dark:text-foreground">Customer</p>
-                <p className="text-gray-800 dark:text-foreground/90">We noticed a leak last week after the storm. Our house is about 2,500 square feet with a shingle roof that's about 15 years old.</p>
-              </div>
-              <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm border border-voiceai-primary/40">
-                <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
-                <p className="text-gray-100 dark:text-white">Thank you for that information. Based on what you've shared, it sounds like you might need more than a simple repair. Would you be open to discussing replacement options as well?</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'schedule',
-      icon: <Calendar className="h-5 w-5" />,
-      title: 'Books Appointments',
-      description: "Once qualified, the AI assistant schedules appointments directly into your calendar based on your real-time availability.",
-      visual: (
-        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
-          <div className="space-y-4">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-full bg-voiceai-accent/20 flex items-center justify-center flex-shrink-0">
-                <Calendar className="h-5 w-5 text-voiceai-accent" />
-              </div>
-              <div>
-                <div className="bg-voiceai-primary/30 rounded-lg p-3 text-sm mb-2 border border-voiceai-primary/40">
-                  <p className="font-medium mb-1 text-gray-100 dark:text-white">AI Assistant</p>
-                  <p className="text-gray-100 dark:text-white">Great! I can schedule a free inspection with one of our specialists. We have availability this Thursday at 10 AM or Friday at 2 PM. Which works better for you?</p>
-                </div>
-                <div className="bg-gray-100 dark:bg-voiceai-dark/80 rounded-lg p-3 text-sm border border-gray-300 dark:border-white/40">
-                  <p className="font-medium mb-1 text-gray-900 dark:text-foreground">Customer</p>
-                  <p className="text-gray-800 dark:text-foreground/90">Thursday at 10 AM works for me.</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-voiceai-secondary/20 rounded-lg p-4 border border-voiceai-secondary/30">
-              <div className="flex items-center mb-2">
-                <Calendar className="h-4 w-4 mr-2 text-voiceai-secondary" />
-                <p className="font-medium text-foreground">New Appointment Booked</p>
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-sm">
-                <p className="text-foreground/70">Customer:</p>
-                <p className="text-foreground">John Smith</p>
-                <p className="text-foreground/70">Date:</p>
-                <p className="text-foreground">Thursday, June 15</p>
-                <p className="text-foreground/70">Time:</p>
-                <p className="text-foreground">10:00 AM - 11:00 AM</p>
-                <p className="text-foreground/70">Service:</p>
-                <p className="text-foreground">Roof Inspection</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'follow-up',
-      icon: <Mail className="h-5 w-5" />,
-      title: 'Handles Follow-up',
-      description: "The AI sends confirmation emails, text reminders, and follows up after appointments to keep your pipeline flowing.",
-      visual: (
-        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3 border-b border-white/20 pb-3">
-              <Mail className="h-5 w-5 text-voiceai-primary" />
-              <div>
-                <p className="font-medium text-foreground">Appointment Confirmation</p>
-                <p className="text-xs text-foreground/70">Sent: Just now</p>
-              </div>
-              <div className="ml-auto bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-1 rounded">
-                Delivered
-              </div>
-            </div>
-            
-            <div className="border border-white/20 rounded-lg p-4 text-sm bg-white/50 dark:bg-voiceai-dark/50">
-              <p className="font-medium mb-2 text-foreground">Subject: Your Roof Inspection Appointment Confirmation</p>
-              <p className="mb-3 text-foreground/90">Hello John,</p>
-              <p className="mb-3 text-foreground/90">Your appointment for a roof inspection has been scheduled for Thursday, June 15th at 10:00 AM. Our specialist will arrive within the scheduled time window.</p>
-              <p className="mb-3 text-foreground/90">Please have access to your roof available, and feel free to prepare any questions you might have about your roofing needs.</p>
-              <div className="bg-voiceai-primary/10 p-3 rounded-lg text-center border border-voiceai-primary/20">
-                <p className="mb-1 font-medium text-foreground">Calendar Invite Attached</p>
-                <div className="flex justify-center">
-                  <button className="text-voiceai-primary hover:underline text-xs flex items-center">
-                    <Calendar className="h-3 w-3 mr-1" />
-                    Add to Calendar
-                  </button>
-                </div>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-3">
-              <BellRing className="h-5 w-5 text-voiceai-accent" />
-              <div>
-                <p className="font-medium text-foreground">Reminder Scheduled</p>
-                <p className="text-xs text-foreground/70">24 hours before appointment</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    },
-    {
-      id: 'invoice',
-      icon: <CreditCard className="h-5 w-5" />,
-      title: 'Handles Payments',
-      description: "When it's time to collect payment, our AI can send invoices, process payments, and update your financial records.",
-      visual: (
-        <div className="bg-white/98 dark:bg-voiceai-dark/95 rounded-xl p-4 shadow-lg border border-gray-200 dark:border-white/30">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between bg-voiceai-primary/10 p-3 rounded-lg border border-voiceai-primary/20">
-              <div className="flex items-center">
-                <CreditCard className="h-5 w-5 text-voiceai-secondary mr-2" />
-                <p className="font-medium text-foreground">Invoice #1234</p>
-              </div>
-              <div className="bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-xs px-2 py-1 rounded">
-                Paid
-              </div>
-            </div>
-            
-            <div className="border border-white/20 rounded-lg bg-white/50 dark:bg-voiceai-dark/50">
-              <div className="p-4 border-b border-white/20">
-                <div className="flex justify-between items-center">
-                  <p className="font-bold text-foreground">Invoice Total</p>
-                  <p className="font-bold text-foreground">$2,500.00</p>
-                </div>
-              </div>
-              
-              <div className="p-4 space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <p className="text-foreground/80">Roof Repair Service</p>
-                  <p className="text-foreground">$2,200.00</p>
-                </div>
-                <div className="flex justify-between">
-                  <p className="text-foreground/80">Materials Fee</p>
-                  <p className="text-foreground">$300.00</p>
-                </div>
-                <div className="flex justify-between font-medium pt-2 border-t border-white/20 mt-2">
-                  <p className="text-foreground">Total</p>
-                  <p className="text-foreground">$2,500.00</p>
-                </div>
-              </div>
-              
-              <div className="p-4 bg-voiceai-secondary/10 text-sm rounded-b-lg border-t border-white/20">
-                <div className="flex items-center gap-2 mb-2">
-                  <Check className="h-4 w-4 text-green-500" />
-                  <p className="font-medium text-foreground">Payment Processed Successfully</p>
-                </div>
-                <p className="text-foreground/70 text-xs">Transaction ID: 8392748291</p>
-                <p className="text-foreground/70 text-xs">Processed on: June 22, 2023 at 3:45 PM</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )
-    }
-  ];
-
-  return (
-    <section id="how-it-works" className="section-padding relative">
-      <div className="absolute inset-0 neural-bg opacity-20"></div>
-      
-      <div className="container mx-auto relative z-10">
-        <div className="text-center mb-16">
-          <h2 className="heading-lg">How Your <span className="text-voiceai-primary font-bold">Smart Website</span> Works</h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            From answering calls to processing payments, our Voice AI handles the entire customer journey so you can focus on delivering exceptional service.
-          </p>
-        </div>
-        
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-16">
-          {/* Steps Navigator */}
-          <div className="lg:w-1/3">
-            <div className="space-y-1">
-              {steps.map((step, index) => (
-                <button
-                  key={step.id}
-                  className={`w-full flex items-center gap-4 p-4 rounded-lg transition-all text-left
-                             ${activeStep === index 
-                                ? 'bg-voiceai-primary/10 text-voiceai-primary shadow-sm' 
-                                : 'hover:bg-voiceai-primary/5'}`}
-                  onClick={() => setActiveStep(index)}
-                >
-                  <div className={`w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0
-                                  ${activeStep === index 
-                                    ? 'bg-voiceai-primary text-white' 
-                                    : 'bg-muted text-muted-foreground'}`}>
-                    {step.icon}
-                  </div>
-                  <div>
-                    <p className="font-medium">{step.title}</p>
-                    <p className="text-sm text-muted-foreground line-clamp-2">{step.description}</p>
-                  </div>
-                </button>
+            <div style={{ marginLeft: 'auto', display: 'flex', gap: '0.4rem' }}>
+              {[...Array(5)].map((_,i) => (
+                <div key={i} style={{
+                  width: 3, borderRadius: 2, background: '#7C3AED',
+                  height: `${8 + Math.sin(i) * 8}px`,
+                  animation: `wave 1.2s ease-in-out infinite`,
+                  animationDelay: `${i * 0.15}s`,
+                }} />
               ))}
             </div>
           </div>
-          
-          {/* Visual Demonstration */}
-          <div className="lg:w-2/3">
-            <div className="bg-gradient-to-r from-voiceai-primary/20 to-voiceai-secondary/20 p-1 rounded-2xl shadow-xl">
-              <div className="bg-background rounded-xl p-6">
-                {steps[activeStep].visual}
+          <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)', fontStyle: 'italic' }}>
+            "Hi, this is Ava with Summit Voice AI! How can I help you today?"
+          </div>
+        </div>
+        <div style={{
+          display: 'flex', alignItems: 'center', gap: '0.5rem',
+          background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)',
+          borderRadius: 10, padding: '0.75rem 1rem',
+        }}>
+          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#22C55E', boxShadow: '0 0 8px rgba(34,197,94,0.8)' }} />
+          <span style={{ fontSize: '0.8rem', color: '#22C55E', fontWeight: 600 }}>Call connected — response time: 0.3s</span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    num: '02',
+    id: 'qualify',
+    title: 'Qualifies & Books',
+    description:
+      'Ava intelligently assesses each caller — their intent, budget, urgency, and fit. High-value leads get booked directly into your calendar. Low-quality leads get filtered. Your time is protected.',
+    highlight: 'Only real buyers reach you.',
+    accent: '#3B82F6',
+    visual: (
+      <div style={{ padding: '1.5rem' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {[
+            { label: 'Service needed', value: 'HVAC Repair', done: true },
+            { label: 'Budget range', value: '$500 – $2,000', done: true },
+            { label: 'Timeline', value: 'This week (urgent)', done: true },
+            { label: 'Appointment', value: 'Tue Mar 12, 2pm', done: true },
+          ].map((item) => (
+            <div key={item.label} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              background: 'rgba(59,130,246,0.07)', border: '1px solid rgba(59,130,246,0.15)',
+              borderRadius: 12, padding: '0.85rem 1.1rem',
+            }}>
+              <span style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>{item.label}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600 }}>{item.value}</span>
+                <div style={{
+                  width: 18, height: 18, borderRadius: '50%',
+                  background: 'rgba(34,197,94,0.15)', border: '1px solid rgba(34,197,94,0.3)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                }}>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#22C55E" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+  {
+    num: '03',
+    id: 'followup',
+    title: 'Auto Follow-Up',
+    description:
+      'After every call, Ava automatically sends confirmation texts, reminder emails, and follow-up sequences. No-shows drop. Conversion rates climb. All on autopilot.',
+    highlight: 'Your CRM, always up to date.',
+    accent: '#F472B6',
+    visual: (
+      <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {[
+          { icon: '📱', label: 'SMS Confirmation', time: 'Sent instantly', color: '#F472B6' },
+          { icon: '📧', label: 'Email Reminder', time: '24h before appt.', color: '#7C3AED' },
+          { icon: '🔔', label: 'CRM Updated', time: 'Real-time sync', color: '#3B82F6' },
+          { icon: '📊', label: 'Lead Score Logged', time: 'Auto-tagged', color: '#22C55E' },
+        ].map((item) => (
+          <div key={item.label} style={{
+            display: 'flex', alignItems: 'center', gap: '0.9rem',
+            background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 12, padding: '0.85rem 1.1rem',
+          }}>
+            <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: '0.85rem', color: '#fff', fontWeight: 600 }}>{item.label}</div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{item.time}</div>
+            </div>
+            <div style={{
+              width: 8, height: 8, borderRadius: '50%', background: item.color,
+              boxShadow: `0 0 8px ${item.color}`,
+            }} />
+          </div>
+        ))}
+      </div>
+    ),
+  },
+  {
+    num: '04',
+    id: 'revenue',
+    title: 'Revenue Grows 24/7',
+    description:
+      'While you sleep, Ava keeps working — answering calls, booking appointments, and closing more leads. Month over month, you see the compound effect: more revenue with less overhead.',
+    highlight: 'Average client ROI: 684%',
+    accent: '#7C3AED',
+    visual: (
+      <div style={{ padding: '1.5rem' }}>
+        <div style={{
+          background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)',
+          borderRadius: 16, padding: '1.25rem',
+        }}>
+          <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)', marginBottom: '1rem', fontWeight: 500, letterSpacing: '0.06em' }}>
+            MONTHLY REVENUE IMPACT
+          </div>
+          {[
+            { month: 'Before Ava', value: 45, label: '$22K' },
+            { month: 'Month 1', value: 65, label: '$32K' },
+            { month: 'Month 3', value: 85, label: '$42K' },
+            { month: 'Month 6', value: 100, label: '$67K+' },
+          ].map((bar, i) => (
+            <div key={bar.month} style={{ marginBottom: '0.75rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
+                <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.5)' }}>{bar.month}</span>
+                <span style={{ fontSize: '0.78rem', color: '#fff', fontWeight: 600 }}>{bar.label}</span>
+              </div>
+              <div style={{ height: 6, background: 'rgba(255,255,255,0.06)', borderRadius: 3, overflow: 'hidden' }}>
+                <div style={{
+                  height: '100%', width: `${bar.value}%`, borderRadius: 3,
+                  background: i === 0
+                    ? 'rgba(255,255,255,0.2)'
+                    : `linear-gradient(90deg, #7C3AED, #3B82F6)`,
+                  transition: 'width 1s ease',
+                }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    ),
+  },
+];
+
+function useInView(ref: React.RefObject<Element>, threshold = 0.15) {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, [ref, threshold]);
+  return inView;
+}
+
+const HowItWorks: React.FC = () => {
+  const [active, setActive] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef);
+
+  return (
+    <section
+      ref={sectionRef}
+      id="how-it-works"
+      style={{ position: 'relative', background: '#07070A', padding: '7rem 0', overflow: 'hidden' }}
+    >
+      {/* BG */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', width: 800, height: 800, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'radial-gradient(circle, rgba(124,58,237,0.05) 0%, transparent 60%)', borderRadius: '50%' }} />
+      </div>
+
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 1.5rem', position: 'relative' }}>
+
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '5rem', opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(24px)', transition: 'all 0.6s ease' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.22)', borderRadius: 999, padding: '0.4rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+            The Journey
+          </div>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,4vw,3.2rem)', lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff', marginBottom: '1.2rem' }}>
+            How Ava Turns Calls Into{' '}
+            <span style={{ background: 'linear-gradient(135deg,#7C3AED,#F472B6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Closed Revenue</span>
+          </h2>
+          <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 520, margin: '0 auto' }}>
+            Four seamless steps. Zero manual work. Compounding returns every month.
+          </p>
+        </div>
+
+        {/* Step Tabs */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="block md:grid">
+
+          {/* Left: Step List */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            {STEPS.map((step, i) => (
+              <button
+                key={step.id}
+                onClick={() => setActive(i)}
+                style={{
+                  display: 'flex', alignItems: 'flex-start', gap: '1.25rem',
+                  padding: '1.5rem',
+                  background: active === i ? `${step.accent}10` : 'rgba(255,255,255,0.025)',
+                  border: `1px solid ${active === i ? `${step.accent}35` : 'rgba(255,255,255,0.07)'}`,
+                  borderRadius: 18, cursor: 'pointer', textAlign: 'left',
+                  transition: 'all 0.3s ease',
+                  opacity: inView ? 1 : 0,
+                  transform: inView ? 'none' : 'translateX(-20px)',
+                  transitionDelay: `${i * 0.1 + 0.2}s`,
+                  boxShadow: active === i ? `0 0 0 1px ${step.accent}20, 0 8px 30px rgba(0,0,0,0.3)` : 'none',
+                }}
+              >
+                <div style={{
+                  fontSize: '0.7rem', fontWeight: 800, letterSpacing: '0.06em',
+                  color: active === i ? step.accent : 'rgba(255,255,255,0.25)',
+                  fontFamily: 'monospace', flexShrink: 0, paddingTop: '0.2rem',
+                  transition: 'color 0.3s',
+                }}>
+                  {step.num}
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{
+                    fontSize: '1rem', fontWeight: 700, color: active === i ? '#fff' : 'rgba(255,255,255,0.65)',
+                    marginBottom: '0.4rem', letterSpacing: '-0.01em', transition: 'color 0.3s',
+                  }}>
+                    {step.title}
+                  </div>
+                  {active === i && (
+                    <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.6 }}>
+                      {step.description}
+                    </div>
+                  )}
+                  {active === i && (
+                    <div style={{
+                      display: 'inline-flex', alignItems: 'center', gap: '0.4rem',
+                      marginTop: '0.75rem', fontSize: '0.78rem', color: step.accent, fontWeight: 600,
+                    }}>
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      {step.highlight}
+                    </div>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          {/* Right: Visual */}
+          <div style={{
+            background: 'rgba(255,255,255,0.025)',
+            border: `1px solid ${STEPS[active].accent}25`,
+            borderRadius: 24,
+            overflow: 'hidden',
+            transition: 'border-color 0.4s ease',
+            display: 'flex', flexDirection: 'column',
+            opacity: inView ? 1 : 0,
+            transform: inView ? 'none' : 'translateX(20px)',
+            transitionDelay: '0.3s',
+          }}
+            className="hidden md:flex"
+          >
+            {/* Top bar */}
+            <div style={{
+              padding: '1rem 1.5rem',
+              background: `${STEPS[active].accent}10`,
+              borderBottom: `1px solid ${STEPS[active].accent}20`,
+              display: 'flex', alignItems: 'center', gap: '0.5rem',
+            }}>
+              <div style={{ width: 8, height: 8, borderRadius: '50%', background: STEPS[active].accent, boxShadow: `0 0 10px ${STEPS[active].accent}` }} />
+              <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)' }}>
+                Step {STEPS[active].num} — {STEPS[active].title}
+              </span>
+            </div>
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center' }}>
+              {STEPS[active].visual}
             </div>
           </div>
         </div>

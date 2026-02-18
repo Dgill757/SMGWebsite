@@ -1,239 +1,249 @@
+import React, { useState, useRef, useEffect } from 'react';
 
-import React, { useState, useEffect } from 'react';
-
-const MissedCallCalculator = () => {
-  const [clientValue, setClientValue] = useState(2500);
-  const [missedCalls, setMissedCalls] = useState(25);
-  const [closeRate, setCloseRate] = useState(20);
-  const [monthlyRevenue, setMonthlyRevenue] = useState(0);
-  const [annualRevenue, setAnnualRevenue] = useState(0);
-
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
-  const calculateResults = () => {
-    const monthly = (clientValue * missedCalls * (closeRate / 100));
-    const annual = monthly * 12;
-    setMonthlyRevenue(monthly);
-    setAnnualRevenue(annual);
-  };
-
+function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
+  const [inView, setInView] = useState(false);
   useEffect(() => {
-    calculateResults();
-  }, [clientValue, missedCalls, closeRate]);
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el); return () => obs.disconnect();
+  }, [ref, threshold]);
+  return inView;
+}
 
-  const calculatorStyles = {
-    container: {
-      position: 'relative' as const,
-      background: 'linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 50%, rgba(15, 23, 42, 0.9) 100%)',
-      backdropFilter: 'blur(20px)',
-      border: '1px solid rgba(148, 163, 184, 0.1)',
-      borderRadius: '24px',
-      boxShadow: `
-        0 0 40px rgba(139, 92, 246, 0.15),
-        0 0 80px rgba(59, 130, 246, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1)
-      `,
-      overflow: 'hidden' as const
-    },
-    floatingElements: {
-      position: 'absolute' as const,
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      pointerEvents: 'none' as const,
-      background: `
-        radial-gradient(circle at 20% 30%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%)
-      `
-    },
-    input: {
-      background: 'rgba(30, 41, 59, 0.6)',
-      border: '1px solid rgba(148, 163, 184, 0.2)',
-      borderRadius: '12px',
-      padding: '12px 16px',
-      color: 'white',
-      fontSize: '16px',
-      outline: 'none',
-      transition: 'all 0.3s ease',
-      backdropFilter: 'blur(10px)'
-    },
-    inputFocus: {
-      borderColor: 'rgba(139, 92, 246, 0.5)',
-      boxShadow: '0 0 0 3px rgba(139, 92, 246, 0.1), 0 0 20px rgba(139, 92, 246, 0.2)'
-    },
-    resultCard: {
-      background: 'rgba(30, 41, 59, 0.6)',
-      border: '1px solid rgba(148, 163, 184, 0.15)',
-      borderRadius: '16px',
-      padding: '20px',
-      backdropFilter: 'blur(15px)'
-    },
-    realityCard: {
-      background: 'rgba(30, 41, 59, 0.7)',
-      border: '1px solid rgba(239, 68, 68, 0.2)',
-      borderRadius: '16px',
-      padding: '24px',
-      backdropFilter: 'blur(15px)',
-      boxShadow: '0 0 30px rgba(239, 68, 68, 0.1)'
+interface SliderProps {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  step: number;
+  format: (v: number) => string;
+  accent: string;
+  onChange: (v: number) => void;
+}
+
+const Slider: React.FC<SliderProps> = ({ label, value, min, max, step, format, accent, onChange }) => {
+  const pct = ((value - min) / (max - min)) * 100;
+  return (
+    <div style={{ marginBottom: '1.75rem' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.6rem' }}>
+        <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', fontWeight: 500 }}>{label}</span>
+        <span style={{ fontSize: '0.9rem', fontWeight: 800, color: '#fff', letterSpacing: '-0.02em' }}>{format(value)}</span>
+      </div>
+      <div style={{ position: 'relative', height: 6, background: 'rgba(255,255,255,0.08)', borderRadius: 3 }}>
+        <div style={{ position: 'absolute', left: 0, top: 0, height: '100%', width: `${pct}%`, background: `linear-gradient(90deg, ${accent}, #3B82F6)`, borderRadius: 3, transition: 'width 0.1s' }} />
+        <input
+          type="range"
+          min={min} max={max} step={step} value={value}
+          onChange={e => onChange(Number(e.target.value))}
+          style={{
+            position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+            width: '100%', opacity: 0, cursor: 'pointer', height: 24, margin: 0,
+          }}
+        />
+        <div style={{
+          position: 'absolute', top: '50%', transform: 'translate(-50%, -50%)',
+          left: `${pct}%`, width: 18, height: 18, borderRadius: '50%',
+          background: '#fff', border: `3px solid ${accent}`,
+          boxShadow: `0 0 12px ${accent}60`, transition: 'left 0.1s',
+          pointerEvents: 'none',
+        }} />
+      </div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '0.4rem' }}>
+        <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.2)' }}>{format(min)}</span>
+        <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.2)' }}>{format(max)}</span>
+      </div>
+    </div>
+  );
+};
+
+const fmt$ = (v: number) => `$${v.toLocaleString()}`;
+const fmtK = (v: number) => v >= 1000 ? `$${(v / 1000).toFixed(0)}K` : `$${v}`;
+const fmtPct = (v: number) => `${v}%`;
+const fmtNum = (v: number) => v.toString();
+
+const MissedCallCalculator: React.FC = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef);
+
+  // Inputs
+  const [monthlyCallVolume, setMonthlyCallVolume] = useState(200);
+  const [missedCallPct, setMissedCallPct] = useState(30);
+  const [closeRate, setCloseRate] = useState(25);
+  const [avgJobValue, setAvgJobValue] = useState(1500);
+  const [staffCost, setStaffCost] = useState(4500);
+
+  // Computed results
+  const missedCalls = Math.round(monthlyCallVolume * (missedCallPct / 100));
+  const recoveredRevenue = Math.round(missedCalls * (closeRate / 100) * avgJobValue);
+  const staffSavings = staffCost;
+  const avaCost = 997; // Professional plan
+  const netROI = recoveredRevenue + staffSavings - avaCost;
+  const roiMultiple = netROI > 0 ? Math.round(netROI / avaCost) : 0;
+  const annualValue = netROI * 12;
+
+  const [animated, setAnimated] = useState(false);
+  useEffect(() => {
+    if (inView && !animated) {
+      setAnimated(true);
     }
-  };
+  }, [inView, animated]);
+
+  const ResultCard: React.FC<{ label: string; value: string; sub: string; accent: string; delay: string }> =
+    ({ label, value, sub, accent, delay }) => (
+      <div style={{
+        background: 'rgba(255,255,255,0.03)', border: `1px solid ${accent}25`,
+        borderRadius: 20, padding: '1.75rem',
+        opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(20px)',
+        transition: `all 0.5s ease ${delay}`,
+        position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: `linear-gradient(90deg, ${accent}, transparent)` }} />
+        <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: '0.6rem' }}>{label}</div>
+        <div style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 900, letterSpacing: '-0.04em', background: `linear-gradient(135deg, ${accent}, #fff)`, WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1, marginBottom: '0.4rem' }}>
+          {value}
+        </div>
+        <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', lineHeight: 1.4 }}>{sub}</div>
+      </div>
+    );
 
   return (
-    <section className="relative py-20 overflow-hidden">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-20 right-10 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-cyan-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '4s'}}></div>
+    <section ref={sectionRef} id="roi-calculator"
+      style={{ position: 'relative', background: '#07070A', padding: '7rem 0', overflow: 'hidden' }}
+    >
+      {/* BG glows */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', width: 800, height: 600, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'radial-gradient(ellipse, rgba(59,130,246,0.06) 0%, transparent 60%)' }} />
       </div>
-      
-      <div className="max-w-6xl mx-auto px-6 relative z-10">
-        <div style={calculatorStyles.container}>
-          <div style={calculatorStyles.floatingElements}></div>
-          
-          <div className="relative z-10 p-8 md:p-12">
-            {/* Header */}
-            <div className="text-center mb-12">
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                Calculate Your Missed Call Revenue Loss
-              </h1>
-              <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto">
-                Discover the shocking amount of revenue your business is losing every month from unanswered calls. 
-                The numbers might surprise you.
-              </p>
-            </div>
 
-            {/* Calculator Grid */}
-            <div className="grid lg:grid-cols-2 gap-12">
-              {/* Input Section */}
-              <div className="space-y-8">
-                <h2 className="text-2xl font-semibold text-white mb-6 flex items-center">
-                  <span className="w-3 h-3 bg-purple-500 rounded-full mr-3"></span>
-                  Enter Your Business Data
-                </h2>
+      <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 1.5rem', position: 'relative' }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '4rem', opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(24px)', transition: 'all 0.6s ease' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(59,130,246,0.1)', border: '1px solid rgba(59,130,246,0.22)', borderRadius: 999, padding: '0.4rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+            ROI Calculator
+          </div>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,4vw,3.2rem)', lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff', marginBottom: '1.2rem' }}>
+            See Your{' '}
+            <span style={{ background: 'linear-gradient(135deg,#3B82F6,#7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Exact ROI</span>
+            {' '}in 30 Seconds
+          </h2>
+          <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65 }}>
+            Drag the sliders to match your business. Watch your potential returns update instantly.
+          </p>
+        </div>
 
-                <div className="space-y-6">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Average Client/Sale Value (USD)
-                    </label>
-                    <input
-                      type="number"
-                      value={clientValue}
-                      onChange={(e) => setClientValue(parseFloat(e.target.value) || 0)}
-                      style={calculatorStyles.input}
-                      onFocus={(e) => Object.assign(e.target.style, calculatorStyles.inputFocus)}
-                      onBlur={(e) => Object.assign(e.target.style, calculatorStyles.input)}
-                      className="w-full"
-                      placeholder="2500"
-                    />
-                  </div>
+        {/* Main Layout */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2.5rem', alignItems: 'start' }} className="roi-grid">
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Estimated Missed Calls Per Month
-                    </label>
-                    <input
-                      type="number"
-                      value={missedCalls}
-                      onChange={(e) => setMissedCalls(parseFloat(e.target.value) || 0)}
-                      style={calculatorStyles.input}
-                      onFocus={(e) => Object.assign(e.target.style, calculatorStyles.inputFocus)}
-                      onBlur={(e) => Object.assign(e.target.style, calculatorStyles.input)}
-                      className="w-full"
-                      placeholder="25"
-                    />
-                  </div>
+          {/* Left: Sliders */}
+          <div style={{
+            background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)',
+            borderRadius: 24, padding: '2.5rem',
+            opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(24px)',
+            transition: 'all 0.6s ease 0.1s',
+          }}>
+            <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#fff', marginBottom: '2rem', letterSpacing: '-0.01em' }}>
+              Tell us about your business
+            </h3>
 
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3">
-                      Your Close Rate (%)
-                    </label>
-                    <input
-                      type="number"
-                      value={closeRate}
-                      onChange={(e) => setCloseRate(parseFloat(e.target.value) || 0)}
-                      style={calculatorStyles.input}
-                      onFocus={(e) => Object.assign(e.target.style, calculatorStyles.inputFocus)}
-                      onBlur={(e) => Object.assign(e.target.style, calculatorStyles.input)}
-                      className="w-full"
-                      placeholder="20"
-                    />
-                  </div>
-                </div>
+            <Slider
+              label="Monthly call volume"
+              value={monthlyCallVolume} min={50} max={2000} step={25}
+              format={fmtNum} accent="#7C3AED"
+              onChange={setMonthlyCallVolume}
+            />
+            <Slider
+              label="Calls currently missed or going to voicemail"
+              value={missedCallPct} min={5} max={70} step={5}
+              format={fmtPct} accent="#3B82F6"
+              onChange={setMissedCallPct}
+            />
+            <Slider
+              label="Lead-to-client close rate"
+              value={closeRate} min={5} max={80} step={5}
+              format={fmtPct} accent="#F472B6"
+              onChange={setCloseRate}
+            />
+            <Slider
+              label="Average job / contract value"
+              value={avgJobValue} min={200} max={25000} step={100}
+              format={fmt$} accent="#7C3AED"
+              onChange={setAvgJobValue}
+            />
+            <Slider
+              label="Monthly receptionist / staff cost"
+              value={staffCost} min={0} max={15000} step={250}
+              format={fmt$} accent="#3B82F6"
+              onChange={setStaffCost}
+            />
+
+            {/* Missed calls summary */}
+            <div style={{ background: 'rgba(124,58,237,0.08)', border: '1px solid rgba(124,58,237,0.2)', borderRadius: 14, padding: '1rem 1.25rem', marginTop: '0.5rem' }}>
+              <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.3rem' }}>You're currently missing</div>
+              <div style={{ fontSize: '1.4rem', fontWeight: 900, color: '#7C3AED', letterSpacing: '-0.03em' }}>
+                ~{missedCalls} calls/mo
               </div>
-
-              {/* Results Section */}
-              <div className="space-y-6">
-                <h2 className="text-2xl font-semibold text-white mb-6 flex items-center">
-                  <span className="w-3 h-3 bg-red-500 rounded-full mr-3"></span>
-                  Your Revenue Loss
-                </h2>
-
-                {/* Revenue Loss Display */}
-                <div className="space-y-6">
-                  <div style={calculatorStyles.resultCard}>
-                    <p className="text-gray-400 text-sm mb-2">Monthly Revenue Lost</p>
-                    <p className="text-4xl font-bold text-purple-400">
-                      {formatCurrency(monthlyRevenue)}
-                    </p>
-                  </div>
-
-                  <div style={calculatorStyles.resultCard}>
-                    <p className="text-gray-400 text-sm mb-2">Annual Revenue Lost</p>
-                    <p className="text-4xl font-bold text-red-400">
-                      {formatCurrency(annualRevenue)}
-                    </p>
-                  </div>
-
-                  {/* Reality Check */}
-                  <div style={calculatorStyles.realityCard}>
-                    <div className="flex items-start space-x-3">
-                      <div className="w-6 h-6 bg-red-500 rounded-full flex items-center justify-center flex-shrink-0 mt-1">
-                        <span className="text-white text-sm font-bold">!</span>
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-white mb-3">Reality Check</h3>
-                        <div className="text-gray-200 leading-relaxed space-y-3">
-                          {monthlyRevenue > 0 ? (
-                            <>
-                              <p>
-                                <strong>According to the information you provided, you are currently losing 
-                                <span className="text-red-400 font-bold"> {formatCurrency(monthlyRevenue)}</span> 
-                                per month</strong>, which translates into 
-                                <span className="text-red-400 font-bold"> {formatCurrency(annualRevenue)}</span> 
-                                annually — and this is likely on the low end.
-                              </p>
-                              <p>
-                                <strong>What type of impact could making an additional 
-                                <span className="text-purple-400 font-bold"> {formatCurrency(monthlyRevenue)}</span> 
-                                 per month have on your business?</strong>
-                              </p>
-                              <p className="text-cyan-400 font-semibold">
-                                Don't let another missed call go unanswered. Every call is potential revenue.
-                              </p>
-                            </>
-                          ) : (
-                            <p>Enter your business data above to see how much revenue you're losing to missed calls.</p>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', marginTop: '0.2rem' }}>
+                That's {missedCalls * 12} missed opportunities per year
               </div>
             </div>
           </div>
+
+          {/* Right: Results */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <ResultCard
+              label="Revenue Recovered Monthly"
+              value={fmtK(recoveredRevenue)}
+              sub={`${missedCalls} missed calls × ${closeRate}% close × ${fmt$(avgJobValue)} avg`}
+              accent="#7C3AED" delay="0.2s"
+            />
+            <ResultCard
+              label="Staff Cost Savings Monthly"
+              value={fmtK(staffSavings)}
+              sub="Eliminate or reduce receptionist overhead"
+              accent="#3B82F6" delay="0.3s"
+            />
+            <ResultCard
+              label="Net Monthly ROI with Ava"
+              value={netROI >= 0 ? `+${fmtK(netROI)}` : fmtK(netROI)}
+              sub={`After Ava's cost ($${avaCost}/mo Professional plan)`}
+              accent="#F472B6" delay="0.4s"
+            />
+
+            {/* Big ROI banner */}
+            <div style={{
+              background: 'linear-gradient(135deg, rgba(124,58,237,0.15), rgba(59,130,246,0.1))',
+              border: '1px solid rgba(124,58,237,0.3)',
+              borderRadius: 20, padding: '2rem',
+              opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(20px)',
+              transition: 'all 0.5s ease 0.5s',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)', marginBottom: '0.5rem' }}>First-Year Value</div>
+              <div style={{ fontSize: 'clamp(2.5rem,5vw,3.5rem)', fontWeight: 900, letterSpacing: '-0.05em', background: 'linear-gradient(135deg,#7C3AED,#3B82F6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1 }}>
+                {fmtK(annualValue)}
+              </div>
+              <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', margin: '0.5rem 0 1.25rem' }}>
+                {roiMultiple > 0 ? `${roiMultiple}× return on investment` : 'Adjust inputs above'}
+              </div>
+              <a href="#pricing" className="btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', textDecoration: 'none', fontSize: '0.9rem' }}>
+                <span>Unlock This ROI — Get Started</span>
+              </a>
+            </div>
+
+            {/* Disclaimer */}
+            <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.2)', lineHeight: 1.6, textAlign: 'center' }}>
+              * Estimates based on average client performance data. Actual results vary by industry and implementation.
+            </p>
+          </div>
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .roi-grid { grid-template-columns: 1fr !important; }
+        }
+        input[type='range'] { -webkit-appearance: none; appearance: none; }
+      `}</style>
     </section>
   );
 };

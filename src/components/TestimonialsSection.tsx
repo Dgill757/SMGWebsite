@@ -1,160 +1,150 @@
+import React, { useState, useRef, useEffect } from 'react';
 
-import React, { useState } from 'react';
-import { ChevronLeft, ChevronRight, Star } from 'lucide-react';
+const TESTIMONIALS = [
+  {
+    name: 'John Peterson',
+    role: 'Owner, Premier Roofing',
+    avatar: 'JP',
+    quote: 'We were missing 3–4 calls per day because our office staff was overwhelmed. Since Ava, we\'ve captured 100% of calls and increased monthly revenue by over $45,000. It pays for itself 50x over.',
+    metrics: [
+      { label: 'Appointments', value: '+127%' },
+      { label: 'Monthly Revenue', value: '$45K+' },
+      { label: 'Cost Reduction', value: '$8,500' },
+    ],
+    stars: 5, accent: '#7C3AED',
+  },
+  {
+    name: 'Sarah Williams',
+    role: 'CEO, Elite Home Services',
+    avatar: 'SW',
+    quote: 'Ava has become our best salesperson. She never forgets to follow up, always sticks to the script, and has increased our close rate by 43%. It\'s like having a 24/7 sales team that never asks for a raise.',
+    metrics: [
+      { label: 'Leads Captured', value: '100%' },
+      { label: 'Close Rate', value: '+43%' },
+      { label: 'ROI', value: '684%' },
+    ],
+    stars: 5, accent: '#3B82F6',
+  },
+  {
+    name: 'Michael Rodriguez',
+    role: 'Director, Sunshine Plumbing',
+    avatar: 'MR',
+    quote: 'Emergency calls used to go to voicemail after hours — we lost those customers. Now Ava handles every call, qualifies the emergency, and dispatches our on-call tech. After-hours revenue is up 215%.',
+    metrics: [
+      { label: 'After-Hours Rev.', value: '+215%' },
+      { label: 'Customer Sat.', value: '97%' },
+      { label: 'Annual Savings', value: '$127K' },
+    ],
+    stars: 5, accent: '#F472B6',
+  },
+];
+
+function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold });
+    obs.observe(el); return () => obs.disconnect();
+  }, [ref, threshold]);
+  return inView;
+}
 
 const TestimonialsSection: React.FC = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
-  
-  const testimonials = [
-    {
-      name: "John Peterson",
-      role: "Owner, Premier Roofing",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      quote: "We were missing 3-4 calls per day because our office staff was overwhelmed. Since implementing the Voice AI, we've captured 100% of calls and increased our monthly revenue by over $45,000.",
-      metrics: [
-        { label: "Increase in Appointments", value: "127%" },
-        { label: "Monthly Revenue Increase", value: "$45K+" },
-        { label: "Cost Reduction", value: "$8,500/mo" }
-      ]
-    },
-    {
-      name: "Sarah Williams",
-      role: "CEO, Elite Home Services",
-      image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      quote: "The Voice AI has become our best salesperson. It never forgets to follow up, always sticks to the script, and has increased our close rate by 43%. It's like having a 24/7 sales team that never sleeps or asks for a raise.",
-      metrics: [
-        { label: "Leads Captured", value: "100%" },
-        { label: "Close Rate Increase", value: "43%" },
-        { label: "ROI", value: "684%" }
-      ]
-    },
-    {
-      name: "Michael Rodriguez",
-      role: "Director, Sunshine Plumbing",
-      image: "https://images.unsplash.com/photo-1603415526960-f7e0328c63b1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2340&q=80",
-      quote: "Our emergency service calls used to go to voicemail after hours, and we'd lose those customers. Now our AI assistant handles them all, qualifying the emergency, and dispatching our on-call technician when needed. Our after-hours revenue is up 215%.",
-      metrics: [
-        { label: "After-Hours Revenue", value: "+215%" },
-        { label: "Customer Satisfaction", value: "97%" },
-        { label: "Annual Savings", value: "$127K" }
-      ]
-    }
-  ];
-  
-  const prevTestimonial = () => {
-    setActiveIndex((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1));
-  };
-  
-  const nextTestimonial = () => {
-    setActiveIndex((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1));
-  };
+  const [active, setActive] = useState(0);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef);
+  const t = TESTIMONIALS[active];
 
   return (
-    <section className="section-padding bg-gradient-to-b from-voiceai-primary/5 to-voiceai-secondary/5">
-      <div className="container mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="heading-lg">What Our <span className="text-voiceai-primary font-bold">Clients</span> Say</h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            See how service businesses just like yours are transforming their operations and growing their revenue with Voice AI.
+    <section ref={sectionRef} id="testimonials"
+      style={{ position: 'relative', background: '#07070A', padding: '7rem 0', overflow: 'hidden' }}
+    >
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div style={{ position: 'absolute', width: 800, height: 600, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', background: 'radial-gradient(ellipse, rgba(124,58,237,0.06) 0%, transparent 60%)' }} />
+      </div>
+
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 1.5rem', position: 'relative' }}>
+        {/* Header */}
+        <div style={{ textAlign: 'center', marginBottom: '4rem', opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(24px)', transition: 'all 0.6s ease' }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.22)', borderRadius: 999, padding: '0.4rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+            Social Proof
+          </div>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,4vw,3.2rem)', lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff', marginBottom: '1.2rem' }}>
+            What Our <span style={{ background: 'linear-gradient(135deg,#7C3AED,#F472B6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Clients</span> Say
+          </h2>
+          <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, margin: '0 auto' }}>
+            Real results from real businesses that made the switch to Voice AI.
           </p>
         </div>
-        
-        <div className="relative">
-          {/* Testimonial Navigation */}
-          <div className="absolute -left-4 top-1/2 transform -translate-y-1/2 z-10">
-            <button 
-              onClick={prevTestimonial}
-              className="w-10 h-10 rounded-full glassmorphism shadow-lg flex items-center justify-center hover:bg-white/20 border border-white/20"
-            >
-              <ChevronLeft className="h-5 w-5 text-foreground" />
-            </button>
-          </div>
-          
-          <div className="absolute -right-4 top-1/2 transform -translate-y-1/2 z-10">
-            <button 
-              onClick={nextTestimonial}
-              className="w-10 h-10 rounded-full glassmorphism shadow-lg flex items-center justify-center hover:bg-white/20 border border-white/20"
-            >
-              <ChevronRight className="h-5 w-5 text-foreground" />
-            </button>
-          </div>
-          
-          {/* Testimonial Content */}
-          <div className="glassmorphism rounded-2xl shadow-xl overflow-hidden border border-white/10">
-            <div className="grid grid-cols-1 lg:grid-cols-2">
-              {/* Image and Info */}
-              <div className="relative h-full min-h-[300px] lg:min-h-[500px] bg-gradient-to-br from-primary to-secondary">
-                <div className="absolute inset-0 opacity-20">
-                  <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
-                    <defs>
-                      <pattern id="pattern-circles" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                        <circle cx="10" cy="10" r="1.5" fill="white" />
-                      </pattern>
-                    </defs>
-                    <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-circles)" />
-                  </svg>
+
+        {/* Main Card */}
+        <div style={{
+          background: 'rgba(255,255,255,0.025)', border: `1px solid ${t.accent}25`,
+          borderRadius: 28, overflow: 'hidden',
+          opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(30px)',
+          transition: 'all 0.6s ease 0.2s, border-color 0.4s',
+          display: 'grid', gridTemplateColumns: '1fr 1.8fr',
+        }} className="grid-cols-1 md:grid-cols-testimonial">
+          {/* Left: Person */}
+          <div style={{ padding: '3rem 2.5rem', background: `linear-gradient(160deg, ${t.accent}18, rgba(0,0,0,0.3))`, borderRight: `1px solid ${t.accent}15`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+            <div style={{
+              width: 96, height: 96, borderRadius: '50%', marginBottom: '1.5rem',
+              background: `linear-gradient(135deg,${t.accent},#3B82F6)`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: '2rem', fontWeight: 800, color: '#fff',
+              border: `3px solid ${t.accent}40`,
+              boxShadow: `0 0 40px ${t.accent}30`,
+            }}>
+              {t.avatar}
+            </div>
+            <div style={{ fontWeight: 700, color: '#fff', fontSize: '1.1rem', marginBottom: '0.3rem' }}>{t.name}</div>
+            <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.45)', marginBottom: '1rem' }}>{t.role}</div>
+            <div style={{ display: 'flex', gap: '3px', marginBottom: '2rem' }}>
+              {[...Array(5)].map((_,i) => <svg key={i} width="16" height="16" viewBox="0 0 24 24" fill="#F59E0B"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>)}
+            </div>
+            {/* Metrics */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', width: '100%' }}>
+              {t.metrics.map((m) => (
+                <div key={m.label} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'rgba(255,255,255,0.06)', borderRadius: 10, padding: '0.6rem 1rem' }}>
+                  <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.45)' }}>{m.label}</span>
+                  <span style={{ fontSize: '0.95rem', fontWeight: 800, color: t.accent }}>{m.value}</span>
                 </div>
-                
-                <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white text-center">
-                  <div className="w-24 h-24 rounded-full border-4 border-white/30 overflow-hidden mb-4">
-                    <img 
-                      src={testimonials[activeIndex].image} 
-                      alt={testimonials[activeIndex].name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-xl font-bold">{testimonials[activeIndex].name}</h3>
-                  <p className="text-white/80">{testimonials[activeIndex].role}</p>
-                  
-                  <div className="flex items-center mt-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-4 w-4 fill-current text-yellow-300" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              
-              {/* Testimonial and Metrics */}
-              <div className="p-8 lg:p-12 flex flex-col justify-between">
-                <div>
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" className="mb-6 opacity-20">
-                    <path d="M14.4 24H7.2C6.64 24 6.08 23.76 5.68 23.36C5.28 22.96 5.04 22.4 5.04 21.84V14.64C5.04 14.08 5.28 13.52 5.68 13.12C6.08 12.72 6.64 12.48 7.2 12.48H14.4C14.96 12.48 15.52 12.72 15.92 13.12C16.32 13.52 16.56 14.08 16.56 14.64V21.84C16.56 22.4 16.32 22.96 15.92 23.36C15.52 23.76 14.96 24 14.4 24ZM7.2 14.64V21.84H14.4V14.64H7.2Z" fill="currentColor" />
-                    <path d="M28.8 24H21.6C21.04 24 20.48 23.76 20.08 23.36C19.68 22.96 19.44 22.4 19.44 21.84V14.64C19.44 14.08 19.68 13.52 20.08 13.12C20.48 12.72 21.04 12.48 21.6 12.48H28.8C29.36 12.48 29.92 12.72 30.32 13.12C30.72 13.52 30.96 14.08 30.96 14.64V21.84C30.96 22.4 30.72 22.96 30.32 23.36C29.92 23.76 29.36 24 28.8 24ZM21.6 14.64V21.84H28.8V14.64H21.6Z" fill="currentColor" />
-                    <path d="M12.24 28.32C11.68 28.32 11.12 28.56 10.72 28.96C10.32 29.36 10.08 29.92 10.08 30.48C10.08 31.04 10.32 31.6 10.72 32C11.12 32.4 11.68 32.64 12.24 32.64H35.28C36.4 32.64 37.52 32.16 38.32 31.36C39.12 30.56 39.6 29.44 39.6 28.32V14.64C39.6 14.08 39.36 13.52 38.96 13.12C38.56 12.72 38 12.48 37.44 12.48H34.56C34 12.48 33.44 12.72 33.04 13.12C32.64 13.52 32.4 14.08 32.4 14.64C32.4 15.2 32.64 15.76 33.04 16.16C33.44 16.56 34 16.8 34.56 16.8H35.28V28.32H12.24Z" fill="currentColor" />
-                  </svg>
-                  
-                  <p className="text-lg lg:text-xl leading-relaxed mb-8 text-foreground/90">
-                    {testimonials[activeIndex].quote}
-                  </p>
-                </div>
-                
-                <div>
-                  <h4 className="text-sm uppercase text-foreground/70 mb-4 font-medium">Results Achieved</h4>
-                  <div className="grid grid-cols-3 gap-4">
-                    {testimonials[activeIndex].metrics.map((metric, index) => (
-                      <div key={index} className="text-center p-3 bg-white/5 rounded-lg border border-white/10">
-                        <p className="text-xl lg:text-2xl font-bold text-primary">{metric.value}</p>
-                        <p className="text-xs text-foreground/70">{metric.label}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-          
-          {/* Indicators */}
-          <div className="flex justify-center mt-6 space-x-2">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                className={`w-3 h-3 rounded-full transition-all ${
-                  index === activeIndex ? 'bg-primary w-6' : 'bg-primary/30'
-                }`}
-                onClick={() => setActiveIndex(index)}
-              />
-            ))}
+
+          {/* Right: Quote */}
+          <div style={{ padding: '3.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+            <div style={{ fontSize: '5rem', color: t.accent, lineHeight: 0.7, marginBottom: '1.5rem', fontFamily: 'Georgia,serif', opacity: 0.35 }}>"</div>
+            <p style={{ fontSize: 'clamp(1.1rem,2vw,1.4rem)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.72, fontStyle: 'italic', marginBottom: '2.5rem' }}>
+              {t.quote}
+            </p>
+            {/* Nav dots */}
+            <div style={{ display: 'flex', gap: '0.6rem' }}>
+              {TESTIMONIALS.map((_,i) => (
+                <button key={i} onClick={() => setActive(i)} style={{
+                  height: 4, borderRadius: 2, border: 'none', cursor: 'pointer',
+                  width: active === i ? 32 : 8,
+                  background: active === i ? t.accent : 'rgba(255,255,255,0.2)',
+                  transition: 'all 0.3s ease',
+                }} />
+              ))}
+            </div>
           </div>
+        </div>
+
+        {/* Bottom row: extra mini testimonials */}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.25rem', marginTop: '1.5rem' }} className="grid-cols-1 md:grid-cols-3">
+          {[
+            { text: '"Ava paid for herself in the first week."', name: 'Tom R., HVAC Pro' },
+            { text: '"Our no-show rate dropped from 28% to 4%. Unbelievable."', name: 'Dr. Kim C., Dentist' },
+            { text: '"Best investment we\'ve made in 10 years of business."', name: 'Carla M., Realtor' },
+          ].map((mini) => (
+            <div key={mini.name} style={{ background: 'rgba(255,255,255,0.025)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 16, padding: '1.5rem', opacity: inView ? 1 : 0, transition: 'opacity 0.6s ease 0.5s' }}>
+              <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.65, fontStyle: 'italic', marginBottom: '0.75rem' }}>{mini.text}</p>
+              <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)', fontWeight: 600 }}>{mini.name}</div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

@@ -1,141 +1,282 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 
-const RevenueSection = () => {
+const FEATURES = [
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+    ),
+    title: '24/7 Availability',
+    desc: 'Ava never sleeps, never calls in sick. Every call is answered and every opportunity captured regardless of time or day.',
+    accent: '#7C3AED',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+      </svg>
+    ),
+    title: 'Save $100K+ Annually',
+    desc: 'Replace expensive reception staff while delivering superior service and capturing dramatically more revenue every month.',
+    accent: '#3B82F6',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+      </svg>
+    ),
+    title: 'Smart Learning AI',
+    desc: 'Continuously adapts from every interaction—becoming more precise at converting leads and handling your specific business.',
+    accent: '#F472B6',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.58 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
+      </svg>
+    ),
+    title: 'Perfect Call Handling',
+    desc: 'Handle unlimited simultaneous calls with perfect consistency, professional tone, and zero hold times.',
+    accent: '#7C3AED',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+    ),
+    title: 'Seamless Scheduling',
+    desc: 'Auto-coordinate appointments, sync confirmations, and manage your calendar—zero manual intervention required.',
+    accent: '#3B82F6',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+      </svg>
+    ),
+    title: 'Lead Qualification',
+    desc: 'Intelligently assess caller intent, budget, and timeline. Only high-value prospects reach your sales team.',
+    accent: '#F472B6',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>
+      </svg>
+    ),
+    title: 'Revenue Growth +40%',
+    desc: 'Increase conversion rates with instant response times and professional, consistent interactions on every single call.',
+    accent: '#7C3AED',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+      </svg>
+    ),
+    title: 'Instant Deployment',
+    desc: 'Live in minutes, not months. Pre-configured with industry knowledge and conversational abilities from day one.',
+    accent: '#3B82F6',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+    ),
+    title: 'No Training Needed',
+    desc: 'Deploy instantly. Ava comes with pre-configured industry knowledge and improves autonomously over time.',
+    accent: '#F472B6',
+  },
+];
+
+const STATS = [
+  { value: '100%', label: 'Calls Captured', sub: 'Zero missed opportunities' },
+  { value: '$8.5K', label: 'Monthly Savings', sub: 'vs. traditional staff' },
+  { value: '40%', label: 'Higher Close Rate', sub: 'instant AI response' },
+  { value: '24/7', label: 'Always On', sub: 'no holidays or sick days' },
+];
+
+function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) { setInView(true); observer.disconnect(); }
+    }, { threshold });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [ref, threshold]);
+  return inView;
+}
+
+const RevenueSection: React.FC = () => {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(sectionRef);
+
   return (
-    <section className="revenue-section" id="features">
-      <div className="section-header">
-        <h2 className="section-title">Stop Losing Revenue to Missed Opportunities</h2>
-        <p className="section-subtitle">Transform every missed call into captured revenue with AI that works 24/7</p>
+    <section
+      ref={sectionRef}
+      id="features"
+      style={{
+        position: 'relative',
+        background: '#050507',
+        padding: '7rem 0',
+        overflow: 'hidden',
+      }}
+    >
+      {/* BG glows */}
+      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+        <div style={{
+          position: 'absolute', width: 700, height: 700, top: -200, right: -200,
+          background: 'radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 65%)',
+          borderRadius: '50%',
+        }} />
+        <div style={{
+          position: 'absolute', width: 500, height: 500, bottom: -100, left: -100,
+          background: 'radial-gradient(circle, rgba(59,130,246,0.05) 0%, transparent 65%)',
+          borderRadius: '50%',
+        }} />
       </div>
-      
-      <div className="features-grid">
-        
-        <div className="feature-box">
-          <div className="feature-icon availability-icon">
-            <div className="orbital-rings">
-              <div className="ring ring-1"></div>
-              <div className="ring ring-2"></div>
-              <div className="core"></div>
-            </div>
+
+      <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0 1.5rem', position: 'relative' }}>
+
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', marginBottom: '5rem' }}>
+          <div style={{
+            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
+            background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.22)',
+            borderRadius: 999, padding: '0.4rem 1rem', marginBottom: '1.5rem',
+            fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)',
+            letterSpacing: '0.06em', textTransform: 'uppercase',
+          }}>
+            Why SummitVoiceAI
           </div>
-          <h3 className="feature-title">24/7 Availability</h3>
-          <p className="feature-description">Your AI assistant never sleeps, ensuring every call is answered and every opportunity captured, regardless of time or day.</p>
+          <h2 style={{
+            fontWeight: 800, fontSize: 'clamp(2rem, 4vw, 3.2rem)',
+            lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff',
+            marginBottom: '1.2rem',
+          }}>
+            Stop Losing Revenue to<br />
+            <span style={{
+              background: 'linear-gradient(135deg,#7C3AED,#3B82F6)',
+              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+            }}>
+              Missed Opportunities
+            </span>
+          </h2>
+          <p style={{
+            fontSize: '1.1rem', color: 'rgba(255,255,255,0.52)', lineHeight: 1.65,
+            maxWidth: 560, margin: '0 auto',
+          }}>
+            Every unanswered call is a lead your competition just captured. Ava makes sure
+            that never happens again.
+          </p>
         </div>
 
-        <div className="feature-box">
-          <div className="feature-icon savings-icon">
-            <div className="holographic-currency">
-              <span className="currency-symbol">$</span>
-              <div className="floating-particles">
-                <div className="particle"></div>
-                <div className="particle"></div>
-                <div className="particle"></div>
+        {/* Stats Row */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(180px,1fr))',
+          gap: '1px',
+          background: 'rgba(255,255,255,0.06)',
+          borderRadius: 20,
+          overflow: 'hidden',
+          marginBottom: '5rem',
+          border: '1px solid rgba(255,255,255,0.06)',
+        }}>
+          {STATS.map((stat, i) => (
+            <div key={stat.label} style={{
+              padding: '2.5rem 2rem',
+              background: '#050507',
+              textAlign: 'center',
+              opacity: inView ? 1 : 0,
+              transform: inView ? 'none' : 'translateY(20px)',
+              transition: `opacity 0.5s ease ${i * 0.1}s, transform 0.5s ease ${i * 0.1}s`,
+            }}>
+              <div style={{
+                fontSize: 'clamp(2.2rem,4vw,3rem)',
+                fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1,
+                background: 'linear-gradient(135deg,#7C3AED,#3B82F6)',
+                WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+                marginBottom: '0.5rem',
+              }}>
+                {stat.value}
+              </div>
+              <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff', marginBottom: '0.25rem' }}>
+                {stat.label}
+              </div>
+              <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>
+                {stat.sub}
               </div>
             </div>
-          </div>
-          <h3 className="feature-title">Save $100K+ Annually</h3>
-          <p className="feature-description">Replace expensive reception staff while delivering superior service quality and capturing more revenue opportunities.</p>
+          ))}
         </div>
 
-        <div className="feature-box">
-          <div className="feature-icon learning-icon">
-            <div className="neural-network">
-              <div className="node node-1"></div>
-              <div className="node node-2"></div>
-              <div className="node node-3"></div>
-              <div className="connection con-1"></div>
-              <div className="connection con-2"></div>
-            </div>
-          </div>
-          <h3 className="feature-title">Smart Learning</h3>
-          <p className="feature-description">AI continuously adapts and improves from every interaction, becoming more effective at converting leads over time.</p>
-        </div>
-
-        <div className="feature-box">
-          <div className="feature-icon call-handling-icon">
-            <div className="soundwave-phone">
-              <div className="phone-silhouette">📞</div>
-              <div className="soundwaves">
-                <div className="wave wave-1"></div>
-                <div className="wave wave-2"></div>
-                <div className="wave wave-3"></div>
+        {/* Feature Grid */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px,1fr))',
+          gap: '1.25rem',
+        }}>
+          {FEATURES.map((feat, i) => (
+            <div
+              key={feat.title}
+              style={{
+                background: 'rgba(255,255,255,0.028)',
+                border: '1px solid rgba(255,255,255,0.07)',
+                borderRadius: 20,
+                padding: '2rem',
+                cursor: 'default',
+                transition: 'all 0.3s ease',
+                opacity: inView ? 1 : 0,
+                transform: inView ? 'none' : 'translateY(30px)',
+                transitionDelay: `${0.05 * i}s`,
+              }}
+              onMouseEnter={(e) => {
+                const el = e.currentTarget;
+                el.style.background = 'rgba(255,255,255,0.05)';
+                el.style.borderColor = `${feat.accent}44`;
+                el.style.transform = 'translateY(-3px)';
+                el.style.boxShadow = `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px ${feat.accent}22`;
+              }}
+              onMouseLeave={(e) => {
+                const el = e.currentTarget;
+                el.style.background = 'rgba(255,255,255,0.028)';
+                el.style.borderColor = 'rgba(255,255,255,0.07)';
+                el.style.transform = 'none';
+                el.style.boxShadow = 'none';
+              }}
+            >
+              {/* Icon */}
+              <div style={{
+                width: 46, height: 46, borderRadius: 14,
+                background: `${feat.accent}18`,
+                border: `1px solid ${feat.accent}30`,
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                color: feat.accent,
+                marginBottom: '1.25rem',
+              }}>
+                {feat.icon}
               </div>
+              <h3 style={{
+                fontWeight: 700, fontSize: '1rem', color: '#fff',
+                marginBottom: '0.6rem', letterSpacing: '-0.01em',
+              }}>
+                {feat.title}
+              </h3>
+              <p style={{
+                fontSize: '0.875rem', color: 'rgba(255,255,255,0.5)',
+                lineHeight: 1.6,
+              }}>
+                {feat.desc}
+              </p>
             </div>
-          </div>
-          <h3 className="feature-title">Perfect Call Handling</h3>
-          <p className="feature-description">Handle multiple calls simultaneously with perfect consistency, professional tone, and accurate information delivery.</p>
-        </div>
-
-        <div className="feature-box">
-          <div className="feature-icon scheduling-icon">
-            <div className="holographic-calendar">
-              <div className="calendar-base">📅</div>
-              <div className="floating-dates">
-                <div className="date-block">15</div>
-                <div className="date-block">23</div>
-                <div className="date-block">31</div>
-              </div>
-            </div>
-          </div>
-          <h3 className="feature-title">Seamless Scheduling</h3>
-          <p className="feature-description">Automatically coordinate appointments, send confirmations, and manage your calendar without any manual intervention.</p>
-        </div>
-
-        <div className="feature-box">
-          <div className="feature-icon qualification-icon">
-            <div className="scanning-user">
-              <div className="user-silhouette">👤</div>
-              <div className="scan-lines">
-                <div className="scan-beam"></div>
-                <div className="checkmarks">
-                  <div className="check">✓</div>
-                  <div className="check">✓</div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <h3 className="feature-title">Lead Qualification</h3>
-          <p className="feature-description">Intelligently assess caller intent, budget, and timeline to prioritize high-value prospects for your sales team.</p>
-        </div>
-
-        <div className="feature-box">
-          <div className="feature-icon growth-icon">
-            <div className="ascending-bars">
-              <div className="bar bar-1"></div>
-              <div className="bar bar-2"></div>
-              <div className="bar bar-3"></div>
-              <div className="energy-trail"></div>
-            </div>
-          </div>
-          <h3 className="feature-title">Revenue Growth</h3>
-          <p className="feature-description">Increase conversion rates by 40% with instant response times and professional, consistent customer interactions.</p>
-        </div>
-
-        <div className="feature-box">
-          <div className="feature-icon training-icon">
-            <div className="protected-shield">
-              <div className="shield-base">🛡️</div>
-              <div className="ai-chip">🔬</div>
-              <div className="protective-aura"></div>
-            </div>
-          </div>
-          <h3 className="feature-title">No Training Needed</h3>
-          <p className="feature-description">Deploy instantly with pre-configured industry knowledge and conversational abilities that work from day one.</p>
-        </div>
-
-        <div className="feature-box">
-          <div className="feature-icon deployment-icon">
-            <div className="rocket-launch">
-              <div className="rocket">🚀</div>
-              <div className="electric-trail">
-                <div className="spark spark-1"></div>
-                <div className="spark spark-2"></div>
-                <div className="spark spark-3"></div>
-              </div>
-            </div>
-          </div>
-          <h3 className="feature-title">Instant Deployment</h3>
-          <p className="feature-description">Get up and running in minutes, not months. Simple setup process with immediate impact on your business operations.</p>
+          ))}
         </div>
       </div>
     </section>
