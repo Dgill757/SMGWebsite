@@ -222,10 +222,16 @@ const AvaParticleScene: React.FC<AvaParticleSceneProps> = ({ scrollProgress, cla
     const camera   = new THREE.PerspectiveCamera(52, mount.clientWidth / mount.clientHeight, 0.1, 100);
     camera.position.set(0, 0, 5.5);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    } catch {
+      return;
+    }
+    renderer.setSize(mount.clientWidth || window.innerWidth, mount.clientHeight || window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
+    renderer.domElement.style.background = 'transparent';
     mount.appendChild(renderer.domElement);
 
     // ── Particles
