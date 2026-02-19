@@ -60,11 +60,11 @@ const FRAGMENT_SHADER = `
 
     if (dist > 0.5) discard;
 
-    float alpha = (1.0 - smoothstep(0.18, 0.5, dist)) * vAlpha;
+    float alpha = (1.0 - smoothstep(0.18, 0.5, dist)) * vAlpha * 0.55;
     float glow  = 1.0 - dist * 1.55;
 
-    vec3 color = vColor * vBrightness * (0.75 + glow * 0.65);
-    color = clamp(color, 0.0, 1.5);
+    vec3 color = vColor * vBrightness * (0.55 + glow * 0.40);
+    color = clamp(color, 0.0, 1.0);
 
     gl_FragColor = vec4(color, alpha);
   }
@@ -209,7 +209,7 @@ const AvaParticleScene: React.FC<AvaParticleSceneProps> = ({ scrollProgress, cla
   const mouseRef    = useRef({ smoothX: 0, smoothY: 0 });
 
   const particleCount = useMemo(
-    () => (typeof window !== 'undefined' && window.innerWidth < 768 ? 8000 : 20000),
+    () => (typeof window !== 'undefined' && window.innerWidth < 768 ? 8000 : 12000),
     []
   );
 
