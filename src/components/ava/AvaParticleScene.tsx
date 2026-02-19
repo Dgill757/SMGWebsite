@@ -37,7 +37,7 @@ const VERTEX_SHADER = `
     // Mouse-driven light simulation: brighten particles near virtual light
     vec3 lightPos = vec3(uMouse.x * 1.8, uMouse.y * 1.2 + 0.6, 2.2);
     float lightDist = distance(pos, lightPos);
-    vBrightness = 1.0 + (1.0 / (1.0 + lightDist * lightDist * 0.3)) * 0.9;
+    vBrightness = 1.0 + (1.0 / (1.0 + lightDist * lightDist * 0.25)) * 1.2;
 
     vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
 
@@ -63,10 +63,11 @@ const FRAGMENT_SHADER = `
     float alpha = (1.0 - smoothstep(0.18, 0.5, dist)) * vAlpha;
     float glow  = 1.0 - dist * 1.55;
 
-    vec3 color = vColor * vBrightness * (0.75 + glow * 0.65);
-    color = clamp(color, 0.0, 1.5);
+    vec3 color = vColor * vBrightness * (0.80 + glow * 0.55);
+    color = clamp(color, 0.0, 1.0);
 
-    gl_FragColor = vec4(color, alpha);
+    // Premultiplied alpha — required for NormalBlending to composite cleanly
+    gl_FragColor = vec4(color * alpha, alpha);
   }
 `;
 
@@ -116,14 +117,15 @@ function generateAvaGeometry(count: number) {
     const vy    = (y / d) * speed * 0.55 + (rng() - 0.5) * 1.0;
     const vz    = (rng() < 0.5 ? 1 : -1) * speed * 1.5 + (rng() - 0.5) * 0.8;
 
-    const bright     = 0.38 + rng() * 0.62;
+    const bright     = 0.48 + rng() * 0.52;
     const faceFactor = (z + 0.82) / 1.64;
-    const b          = bright * (0.78 + faceFactor * 0.22);
+    const lum        = bright * (0.82 + faceFactor * 0.18);
 
+    // Pure purple palette: high R, low G, high B
     add(x, y, z, vx, vy, vz,
-      b * (0.51 + rng() * 0.07),
-      b * (0.49 + rng() * 0.07),
-      b,
+      lum * (0.50 + rng() * 0.18),
+      lum * (0.16 + rng() * 0.08),
+      lum * (0.95 + rng() * 0.05),
       0.45 + rng() * 1.9);
   }
 
@@ -138,7 +140,7 @@ function generateAvaGeometry(count: number) {
 
     add(x, y, z,
       (rng() - 0.5) * 2.4, 1.4 + rng() * 2.0, (rng() - 0.5) * 2.0,
-      0.25 + rng() * 0.12, 0.23 + rng() * 0.12, 0.52 + rng() * 0.22,
+      0.38 + rng() * 0.14, 0.10 + rng() * 0.08, 0.70 + rng() * 0.22,
       0.28 + rng() * 0.95);
   }
 
@@ -153,7 +155,7 @@ function generateAvaGeometry(count: number) {
 
     add(x, y, z,
       (rng() - 0.5) * 2.6, -(1.0 + rng() * 2.0), (rng() - 0.5) * 2.0,
-      0.28 + rng() * 0.14, 0.26 + rng() * 0.14, 0.52 + rng() * 0.22,
+      0.40 + rng() * 0.14, 0.12 + rng() * 0.08, 0.75 + rng() * 0.22,
       0.28 + rng() * 0.75);
   }
 
@@ -167,7 +169,7 @@ function generateAvaGeometry(count: number) {
 
     add(x, y, z,
       x * 0.38 + (rng() - 0.5) * 2.5, -(1.2 + rng() * 1.5), (rng() - 0.5) * 2.6,
-      0.20 + rng() * 0.14, 0.18 + rng() * 0.14, 0.40 + rng() * 0.22,
+      0.32 + rng() * 0.14, 0.09 + rng() * 0.07, 0.60 + rng() * 0.22,
       0.28 + rng() * 1.05);
   }
 
@@ -181,7 +183,7 @@ function generateAvaGeometry(count: number) {
 
     add(x, y, z,
       x / d * (0.7 + rng() * 1.4), y / d * (0.7 + rng() * 1.4), (rng() - 0.5) * 2.0,
-      0.13 + rng() * 0.10, 0.12 + rng() * 0.10, 0.30 + rng() * 0.16,
+      0.22 + rng() * 0.10, 0.06 + rng() * 0.06, 0.42 + rng() * 0.16,
       0.18 + rng() * 0.50);
   }
 
@@ -209,7 +211,7 @@ const AvaParticleScene: React.FC<AvaParticleSceneProps> = ({ scrollProgress, cla
   const mouseRef    = useRef({ smoothX: 0, smoothY: 0 });
 
   const particleCount = useMemo(
-    () => (typeof window !== 'undefined' && window.innerWidth < 768 ? 8000 : 20000),
+    () => (typeof window !== 'undefined' && window.innerWidth < 768 ? 8000 : 14000),
     []
   );
 
@@ -222,10 +224,16 @@ const AvaParticleScene: React.FC<AvaParticleSceneProps> = ({ scrollProgress, cla
     const camera   = new THREE.PerspectiveCamera(52, mount.clientWidth / mount.clientHeight, 0.1, 100);
     camera.position.set(0, 0, 5.5);
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, powerPreference: 'high-performance' });
+    } catch {
+      return;
+    }
+    renderer.setSize(mount.clientWidth || window.innerWidth, mount.clientHeight || window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.setClearColor(0x000000, 0);
+    renderer.domElement.style.background = 'transparent';
     mount.appendChild(renderer.domElement);
 
     // ── Particles
@@ -248,9 +256,10 @@ const AvaParticleScene: React.FC<AvaParticleSceneProps> = ({ scrollProgress, cla
       vertexShader:   VERTEX_SHADER,
       fragmentShader: FRAGMENT_SHADER,
       uniforms,
-      transparent: true,
-      depthWrite:  false,
-      blending:    THREE.AdditiveBlending,
+      transparent:       true,
+      depthWrite:        false,
+      blending:          THREE.NormalBlending,
+      premultipliedAlpha: true,
     });
 
     const particles = new THREE.Points(geometry, material);
