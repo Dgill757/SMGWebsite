@@ -1,12 +1,14 @@
 /**
- * Ava — Holographic AI portrait (Jarvis-style)
+ * AvaParticleScene — True Canvas 2D dot-particle portrait
  *
- * Effects:
- * 1. Photo with mix-blend-mode:screen so black bg disappears
- * 2. Photo tilts in 3D to FOLLOW the mouse (parallax depth)
- * 3. Backlight moves OPPOSITE to the mouse (creates contrast drama)
- * 4. Scanlines + dot-pixel grid = digital screen / hologram feel
- * 5. Cyan HUD corner brackets frame the portrait
+ * No real photo is ever visible. The face emerges from ~12–18k tiny dots:
+ *
+ * 1. ava-face.png is sampled pixel-by-pixel at load time
+ * 2. Bright pixels → dot particles colored deep-purple → lavender → cyan
+ * 3. Mouse moves right → particle field parallax-follows (same direction)
+ * 4. Backlight glow moves OPPOSITE the mouse (drama / contrast)
+ * 5. Canvas container gets CSS 3D tilt (±8° / ±5°) to follow the cursor
+ * 6. HUD corner brackets, scanlines, data tag (Jarvis aesthetic)
  */
 
 import React, { useRef, useEffect } from 'react';
@@ -16,168 +18,308 @@ interface AvaParticleSceneProps {
   className?: string;
 }
 
+// ── Colour palette: 6 tiers, deep violet → cyan-white ───────────────────────
+const TIER_COLORS = [
+  'rgb(45,15,148)',    // 0 · deep violet
+  'rgb(80,28,188)',    // 1 · purple
+  'rgb(115,48,215)',   // 2 · medium purple
+  'rgb(152,105,248)',  // 3 · lavender
+  'rgb(185,160,255)',  // 4 · light lavender
+  'rgb(210,235,255)',  // 5 · cyan-white
+] as const;
+
+interface Dot {
+  nx: number;          // x / imgWidth  (0 … 1)
+  ny: number;          // y / imgHeight (0 … 1)
+  brightness: number;  // luminance 0 … 1
+  tier: number;        // 0 … 5
+  radius: number;      // render radius in px
+}
+
+/** Clamp + linear interpolation */
+function lerp(a: number, b: number, t: number): number {
+  return a + (b - a) * Math.max(0, Math.min(1, t));
+}
+
 export default function AvaParticleScene({ className }: AvaParticleSceneProps) {
-  const photoRef     = useRef<HTMLImageElement>(null);
+  const canvasRef    = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const lightRef     = useRef<HTMLDivElement>(null);
   const rimRef       = useRef<HTMLDivElement>(null);
-  const mouse        = useRef({ x: 50, y: 42, sx: 50, sy: 42 });
-  const raf          = useRef<number>(0);
 
+  const mouse     = useRef({ x: 50, y: 42, sx: 50, sy: 42 });
+  const raf       = useRef<number>(0);
+  const tiers     = useRef<Dot[][]>(Array.from({ length: 6 }, () => []));
+  const imgAspect = useRef<number>(0.72); // sensible portrait fallback
+  const loaded    = useRef(false);
+
+  // ── 1 · Load image, extract dot particles ─────────────────────────────────
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.src = '/ava-face.png';
+
+    img.onload = () => {
+      const iW = img.naturalWidth;
+      const iH = img.naturalHeight;
+      imgAspect.current = iW / iH;
+
+      // Render to off-screen canvas to read pixel data
+      const off  = document.createElement('canvas');
+      off.width  = iW;
+      off.height = iH;
+      const c2   = off.getContext('2d')!;
+      c2.drawImage(img, 0, 0);
+      const { data } = c2.getImageData(0, 0, iW, iH);
+
+      // Adaptive stride: target ≈ 15 k dots regardless of image resolution
+      const TARGET = 15_000;
+      const STRIDE = Math.max(2, Math.min(8,
+        Math.ceil(Math.sqrt((iW * iH) / TARGET))
+      ));
+
+      const newTiers: Dot[][] = Array.from({ length: 6 }, () => []);
+
+      for (let py = 0; py < iH; py += STRIDE) {
+        for (let px = 0; px < iW; px += STRIDE) {
+          const i  = (py * iW + px) * 4;
+          const nr = data[i]     / 255;
+          const ng = data[i + 1] / 255;
+          const nb = data[i + 2] / 255;
+          const na = data[i + 3] / 255;
+
+          // Perceived luminance × alpha
+          const lum = (nr * 0.299 + ng * 0.587 + nb * 0.114) * na;
+          if (lum < 0.06) continue; // skip near-black / fully transparent
+
+          const tier = Math.min(5, Math.floor(lum * 6));
+          newTiers[tier].push({
+            nx:         px / iW,
+            ny:         py / iH,
+            brightness: lum,
+            tier,
+            radius:     lerp(0.65, 1.75, lum), // dim → bright = tiny → fuller
+          });
+        }
+      }
+
+      tiers.current = newTiers;
+      loaded.current = true;
+    };
+  }, []);
+
+  // ── 2 · Canvas resize (ResizeObserver) ────────────────────────────────────
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const setSize = () => {
+      const p = canvas.parentElement;
+      if (!p) return;
+      const { width, height } = p.getBoundingClientRect();
+      canvas.width  = Math.max(1, Math.round(width));
+      canvas.height = Math.max(1, Math.round(height));
+    };
+
+    setSize();
+    const ro = new ResizeObserver(setSize);
+    if (canvas.parentElement) ro.observe(canvas.parentElement);
+    return () => ro.disconnect();
+  }, []);
+
+  // ── 3 · Mouse tracking + render loop ──────────────────────────────────────
   useEffect(() => {
     const onMove = (e: MouseEvent) => {
       mouse.current.x = (e.clientX / window.innerWidth)  * 100;
       mouse.current.y = (e.clientY / window.innerHeight) * 100;
     };
-    window.addEventListener('mousemove', onMove);
+    window.addEventListener('mousemove', onMove, { passive: true });
 
     const tick = () => {
+      // Smooth mouse (eased interpolation)
       const m = mouse.current;
-      m.sx += (m.x - m.sx) * 0.05;
-      m.sy += (m.y - m.sy) * 0.05;
+      m.sx += (m.x - m.sx) * 0.055;
+      m.sy += (m.y - m.sy) * 0.055;
 
-      // ── Photo: 3D tilt FOLLOWS mouse ─────────────────────────────
-      if (photoRef.current) {
-        const rotY = ((m.sx - 50) / 50) * 8;    // –8° … +8° horizontal
-        const rotX = ((m.sy - 50) / 50) * -5;   // –5° … +5° vertical
-        const tx   = ((m.sx - 50) / 50) * 14;   // subtle x drift px
-        const ty   = ((m.sy - 50) / 50) * 8;    // subtle y drift px
-        photoRef.current.style.transform =
-          `perspective(1400px) rotateY(${rotY}deg) rotateX(${rotX}deg) translate(${tx}px,${ty}px) scale(1.03)`;
+      // ── Canvas: render particle dot field ────────────────────────────────
+      const canvas = canvasRef.current;
+      const ctx    = canvas?.getContext('2d');
+
+      if (canvas && ctx) {
+        const W = canvas.width;
+        const H = canvas.height;
+
+        // Black background — particles emerge from darkness
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, W, H);
+
+        if (loaded.current) {
+          // objectFit: contain, top-aligned (same as original CSS)
+          const aspect  = imgAspect.current;
+          const cAspect = W / H;
+          let rW: number, rH: number, rX: number;
+
+          if (aspect < cAspect) {
+            // Portrait narrower than canvas → constrained by height
+            rH = H;
+            rW = H * aspect;
+            rX = (W - rW) / 2; // horizontally centered
+          } else {
+            // Portrait wider → constrained by width
+            rW = W;
+            rH = W / aspect;
+            rX = 0;
+          }
+          const rY = 0; // top-aligned
+
+          // Parallax: whole dot field drifts in the same direction as cursor
+          const pX = ((m.sx - 50) / 50) * 16; // ±16 px
+          const pY = ((m.sy - 50) / 50) *  9; // ±9 px
+
+          // Light source: always OPPOSITE to mouse
+          const lX = (1 - m.sx / 100) * W;
+          const lY = (1 - m.sy / 100) * H;
+          const lR = Math.max(W, H) * 0.65;   // falloff radius
+
+          // Batch by colour tier → only 6 fillStyle assignments per frame
+          for (let ti = 0; ti < 6; ti++) {
+            ctx.fillStyle = TIER_COLORS[ti];
+
+            for (const dot of tiers.current[ti]) {
+              const dx = rX + dot.nx * rW + pX;
+              const dy = rY + dot.ny * rH + pY;
+
+              // Glow: dots near the (opposite) light source are brighter
+              const dist  = Math.hypot(dx - lX, dy - lY);
+              const li    = Math.max(0, 1 - dist / lR);          // 0..1
+              const alpha = Math.min(1,
+                dot.brightness * 1.2 * (0.42 + li * 0.72)        // 0.42..1.2
+              );
+
+              ctx.globalAlpha = alpha;
+              ctx.beginPath();
+              ctx.arc(dx, dy, dot.radius, 0, 6.2832);
+              ctx.fill();
+            }
+          }
+          ctx.globalAlpha = 1;
+        }
       }
 
-      // ── Backlight: moves OPPOSITE mouse ─────────────────────────
+      // ── Container: 3-D CSS tilt follows mouse ────────────────────────────
+      if (containerRef.current) {
+        const rotY = ((m.sx - 50) / 50) *  8;   // –8° … +8°  horizontal
+        const rotX = ((m.sy - 50) / 50) * -5;   // –5° … +5°  vertical
+        containerRef.current.style.transform =
+          `perspective(1400px) rotateY(${rotY}deg) rotateX(${rotX}deg)`;
+      }
+
+      // ── Backlight div: moves OPPOSITE mouse ──────────────────────────────
       if (lightRef.current) {
         const lx = 100 - m.sx;
         const ly = 100 - m.sy;
         lightRef.current.style.background =
-          `radial-gradient(ellipse 58% 65% at ${lx}% ${ly}%,` +
-          ` rgba(0,200,255,0.26) 0%,` +
-          ` rgba(0,140,220,0.11) 42%,` +
+          `radial-gradient(ellipse 62% 72% at ${lx}% ${ly}%,` +
+          ` rgba(100,38,210,0.32) 0%,` +
+          ` rgba(58,18,148,0.15) 44%,` +
           ` transparent 72%)`;
       }
 
-      // ── Rim light: tight secondary glow, also opposite ─────────
+      // ── Rim light: tight accent, also opposite ────────────────────────────
       if (rimRef.current) {
-        const rx = 100 - m.sx * 0.7;
-        const ry = 100 - m.sy * 0.7;
+        const rx = 100 - m.sx * 0.70;
+        const ry = 100 - m.sy * 0.70;
         rimRef.current.style.background =
-          `radial-gradient(ellipse 28% 34% at ${rx}% ${ry}%,` +
-          ` rgba(0,230,255,0.18) 0%,` +
-          ` transparent 55%)`;
+          `radial-gradient(ellipse 30% 36% at ${rx}% ${ry}%,` +
+          ` rgba(0,210,255,0.17) 0%,` +
+          ` transparent 58%)`;
       }
 
       raf.current = requestAnimationFrame(tick);
     };
-    raf.current = requestAnimationFrame(tick);
 
+    raf.current = requestAnimationFrame(tick);
     return () => {
       window.removeEventListener('mousemove', onMove);
       cancelAnimationFrame(raf.current);
     };
   }, []);
 
+  // ─────────────────────────────────────────────────────────────────────────
   return (
     <div
       className={className}
       style={{ position: 'relative', width: '100%', height: '100%', overflow: 'hidden' }}
     >
-      {/* ── Ambient base — keeps it from being totally dark when mouse is centered ── */}
+      {/* Ambient base — keeps portrait from being totally dark at center */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
-        background: 'radial-gradient(ellipse 55% 65% at 68% 45%, rgba(0,170,255,0.07) 0%, transparent 65%)',
+        background: 'radial-gradient(ellipse 55% 65% at 60% 45%, rgba(70,18,170,0.10) 0%, transparent 65%)',
       }} />
 
-      {/* ── Main backlight — moves OPPOSITE mouse ── */}
+      {/* Main backlight — dynamic position updated each frame (OPPOSITE mouse) */}
       <div
         ref={lightRef}
         style={{
           position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
-          background: 'radial-gradient(ellipse 58% 65% at 50% 58%, rgba(0,200,255,0.26) 0%, rgba(0,140,220,0.11) 42%, transparent 72%)',
+          background: 'radial-gradient(ellipse 62% 72% at 50% 58%, rgba(100,38,210,0.32) 0%, rgba(58,18,148,0.15) 44%, transparent 72%)',
         }}
       />
 
-      {/* ── Rim light — also opposite ── */}
+      {/* Rim light — tight accent, also opposite */}
       <div
         ref={rimRef}
         style={{
           position: 'absolute', inset: 0, zIndex: 0, pointerEvents: 'none',
-          background: 'radial-gradient(ellipse 28% 34% at 65% 35%, rgba(0,230,255,0.18) 0%, transparent 55%)',
+          background: 'radial-gradient(ellipse 30% 36% at 65% 35%, rgba(0,210,255,0.17) 0%, transparent 58%)',
         }}
       />
 
-      {/* ── Ava photo — 3D tilt follows mouse ── */}
-      <img
-        ref={photoRef}
-        src="/ava-face.png"
-        alt="Ava"
+      {/* ── Canvas container: receives CSS 3-D tilt ── */}
+      <div
+        ref={containerRef}
         style={{
           position: 'absolute',
           right: 0,
           top: 0,
+          width: '62%',
           height: '100%',
-          width: '60%',
-          objectFit: 'contain',
-          objectPosition: 'center top',
-          zIndex: 1,
-          mixBlendMode: 'screen',
-          filter: [
-            'drop-shadow(0 0 28px rgba(0,200,255,0.60))',
-            'drop-shadow(0 0 65px rgba(0,160,225,0.30))',
-            'drop-shadow(0 0 120px rgba(0,100,180,0.15))',
-            'saturate(1.3)',
-            'contrast(1.06)',
-          ].join(' '),
-          transformOrigin: 'center top',
+          transformOrigin: 'center center',
           willChange: 'transform',
-          pointerEvents: 'none',
-          userSelect: 'none',
         }}
-      />
+      >
+        <canvas
+          ref={canvasRef}
+          style={{ display: 'block', width: '100%', height: '100%' }}
+        />
+      </div>
 
-      {/* ── Holographic cyan tint — very subtle color cast ── */}
-      <div style={{
-        position: 'absolute', right: 0, top: 0,
-        height: '100%', width: '60%',
-        zIndex: 2, pointerEvents: 'none',
-        background: 'rgba(0,180,255,0.05)',
-        mixBlendMode: 'screen',
-      }} />
-
-      {/* ── Scanlines — horizontal micro-lines for digital screen feel ── */}
+      {/* ── Scanlines — fine horizontal lines for digital-screen feel ── */}
       <div style={{
         position: 'absolute', inset: 0, zIndex: 3, pointerEvents: 'none',
-        backgroundImage: 'repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(0,200,255,0.022) 3px, rgba(0,200,255,0.022) 4px)',
+        backgroundImage: 'repeating-linear-gradient(0deg, transparent 0px, transparent 3px, rgba(0,200,255,0.018) 3px, rgba(0,200,255,0.018) 4px)',
       }} />
 
-      {/* ── Dot-pixel grid — gives hologram / digital display texture ── */}
-      <div style={{
-        position: 'absolute', right: 0, top: 0,
-        height: '100%', width: '60%',
-        zIndex: 3, pointerEvents: 'none',
-        backgroundImage: 'radial-gradient(circle, rgba(0,200,255,0.07) 1px, transparent 1px)',
-        backgroundSize: '6px 6px',
-      }} />
-
-      {/* ── HUD corner brackets — Jarvis frame ── */}
-      {/* Top-right corner */}
+      {/* ── HUD corner brackets (Jarvis frame) ── */}
+      {/* Top-right */}
       <div style={{ position: 'absolute', top: '7%', right: '3%', zIndex: 5, pointerEvents: 'none' }}>
-        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.7)', position: 'absolute', top: 0, right: 0 }} />
-        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.7)', position: 'absolute', top: 0, right: 0 }} />
+        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.70)', position: 'absolute', top: 0, right: 0 }} />
+        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.70)', position: 'absolute', top: 0, right: 0 }} />
       </div>
-      {/* Bottom-right corner */}
+      {/* Bottom-right */}
       <div style={{ position: 'absolute', bottom: '7%', right: '3%', zIndex: 5, pointerEvents: 'none' }}>
-        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.7)', position: 'absolute', bottom: 0, right: 0 }} />
-        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.7)', position: 'absolute', bottom: 0, right: 0 }} />
+        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.70)', position: 'absolute', bottom: 0, right: 0 }} />
+        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.70)', position: 'absolute', bottom: 0, right: 0 }} />
       </div>
-      {/* Top-left of portrait frame */}
-      <div style={{ position: 'absolute', top: '7%', right: '41%', zIndex: 5, pointerEvents: 'none' }}>
-        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.7)', position: 'absolute', top: 0, left: 0 }} />
-        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.7)', position: 'absolute', top: 0, left: 0 }} />
+      {/* Top-left of portrait frame (canvas left edge ≈ right: 38%) */}
+      <div style={{ position: 'absolute', top: '7%', right: '38%', zIndex: 5, pointerEvents: 'none' }}>
+        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.70)', position: 'absolute', top: 0, left: 0 }} />
+        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.70)', position: 'absolute', top: 0, left: 0 }} />
       </div>
       {/* Bottom-left of portrait frame */}
-      <div style={{ position: 'absolute', bottom: '7%', right: '41%', zIndex: 5, pointerEvents: 'none' }}>
-        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.7)', position: 'absolute', bottom: 0, left: 0 }} />
-        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.7)', position: 'absolute', bottom: 0, left: 0 }} />
+      <div style={{ position: 'absolute', bottom: '7%', right: '38%', zIndex: 5, pointerEvents: 'none' }}>
+        <div style={{ width: 20, height: 2, background: 'rgba(0,220,255,0.70)', position: 'absolute', bottom: 0, left: 0 }} />
+        <div style={{ width: 2, height: 20, background: 'rgba(0,220,255,0.70)', position: 'absolute', bottom: 0, left: 0 }} />
       </div>
 
       {/* ── HUD data tag ── */}
