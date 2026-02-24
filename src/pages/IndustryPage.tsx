@@ -1865,9 +1865,9 @@ const IndustryPage = () => {
                 </p>
                 
                 <div className="pt-4 flex flex-wrap gap-4">
-                  <button onClick={() => setCalendarOpen(true)} className="btn-primary">
+                  <a href="https://calendly.com/aivoice/call" target="_blank" rel="noreferrer noopener" className="btn-primary" style={{ textDecoration: 'none' }}>
                     Get Started
-                  </button>
+                  </a>
                   <button onClick={scrollToCalculator} className="btn-secondary">
                     Calculate ROI
                   </button>

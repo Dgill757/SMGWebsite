@@ -165,18 +165,24 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
                 </p>
 
                 {/* CTA */}
-                <button onClick={onOpenCalendar} style={{
-                  width: '100%', padding: '0.85rem', borderRadius: 12, cursor: 'pointer',
-                  fontSize: '0.9rem', fontWeight: 700, transition: 'all 0.3s ease', marginBottom: '2rem',
-                  background: tier.popular
-                    ? `linear-gradient(135deg,${tier.accent},#3B82F6)`
-                    : `${tier.accent}18`,
-                  color: tier.popular ? '#fff' : tier.accent,
-                  border: tier.popular ? 'none' : `1px solid ${tier.accent}35`,
-                  boxShadow: tier.popular ? `0 8px 30px ${tier.accent}40` : 'none',
-                }}>
+                <a
+                  href="https://calendly.com/aivoice/call"
+                  target="_blank"
+                  rel="noreferrer noopener"
+                  style={{
+                    display: 'block', width: '100%', padding: '0.85rem', borderRadius: 12, cursor: 'pointer',
+                    fontSize: '0.9rem', fontWeight: 700, transition: 'all 0.3s ease', marginBottom: '2rem',
+                    background: tier.popular
+                      ? `linear-gradient(135deg,${tier.accent},#3B82F6)`
+                      : `${tier.accent}18`,
+                    color: tier.popular ? '#fff' : tier.accent,
+                    border: tier.popular ? 'none' : `1px solid ${tier.accent}35`,
+                    boxShadow: tier.popular ? `0 8px 30px ${tier.accent}40` : 'none',
+                    textDecoration: 'none', textAlign: 'center',
+                  }}
+                >
                   {tier.cta}
-                </button>
+                </a>
 
                 {/* Divider */}
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: '1.5rem' }} />
@@ -208,9 +214,9 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
           <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)', marginBottom: '1rem' }}>
             Questions? We'll build you a custom ROI projection before you commit to anything.
           </p>
-          <button onClick={onOpenCalendar} className="btn-outline" style={{ padding: '0.75rem 2rem', fontSize: '0.875rem' }}>
+          <a href="https://calendly.com/aivoice/call" target="_blank" rel="noreferrer noopener" className="btn-outline" style={{ padding: '0.75rem 2rem', fontSize: '0.875rem', textDecoration: 'none', display: 'inline-flex' }}>
             Talk to Our Team
-          </button>
+          </a>
         </div>
       </div>
     </section>

@@ -134,7 +134,7 @@ const FAQSection: React.FC = () => {
           <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.45)', marginBottom: '1.5rem' }}>
             Our team will build you a custom demo and ROI projection — no commitment required.
           </p>
-          <a href="#pricing" className="btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', textDecoration: 'none' }}>
+          <a href="https://calendly.com/aivoice/call" target="_blank" rel="noreferrer noopener" className="btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', textDecoration: 'none' }}>
             <span>Book a Free Demo</span>
           </a>
         </div>

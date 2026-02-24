@@ -225,8 +225,8 @@ const MissedCallCalculator: React.FC = () => {
               <div style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.4)', margin: '0.5rem 0 1.25rem' }}>
                 {roiMultiple > 0 ? `${roiMultiple}× return on investment` : 'Adjust inputs above'}
               </div>
-              <a href="#pricing" className="btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', textDecoration: 'none', fontSize: '0.9rem' }}>
-                <span>Unlock This ROI — Get Started</span>
+              <a href="https://calendly.com/aivoice/call" target="_blank" rel="noreferrer noopener" className="btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', textDecoration: 'none', fontSize: '0.9rem' }}>
+                <span>Unlock This ROI — Book a Demo</span>
               </a>
             </div>
 
