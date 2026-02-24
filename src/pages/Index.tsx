@@ -5,6 +5,7 @@ import HowItWorks from '@/components/HowItWorks';
 import UseCases from '@/components/UseCases';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import MissedCallCalculator from '@/components/ROICalculator';
+import HowAvaWorks from '@/components/HowAvaWorks';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import { useLocation } from 'react-router-dom';
@@ -82,6 +83,7 @@ const Index = () => {
         <UseCases />
         <TestimonialsSection />
         <MissedCallCalculator />
+        <HowAvaWorks />
         <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
         <FAQSection />
 
