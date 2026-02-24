@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import AvaParticleScene from './ava/AvaParticleScene';
+import AvaParticleHero from './ava/AvaParticleHero';
 import CalendarDialog from './CalendarDialog';
 
 interface HeroSectionProps {
@@ -65,7 +65,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         transition: 'opacity 0.1s linear',
         pointerEvents: scrollProgress > 0.5 ? 'none' : 'auto',
       }}>
-        <AvaParticleScene
+        <AvaParticleHero
           scrollProgress={scrollProgress}
           className="w-full h-full"
         />
