@@ -68,6 +68,11 @@ html, body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 /* ─── Typography Scale ────────────────────────────────────────────────────────  */
@@ -258,6 +263,21 @@ html, body {
 @keyframes float-y {
   0%, 100% { transform: translateY(0px); }
   50%       { transform: translateY(-12px); }
+}
+
+@keyframes hero-breathe {
+  0%, 100% { opacity: 0.72; }
+  50%       { opacity: 1; }
+}
+
+@keyframes stat-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-5px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-glow-breathe { animation: none !important; }
+  .stat-drift { animation: none !important; }
 }
 
 @keyframes float-rotate {

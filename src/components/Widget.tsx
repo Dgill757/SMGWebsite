@@ -1,8 +1,10 @@
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import RawHtmlBlock from './RawHtmlBlock';
 
 const Widget: React.FC = () => {
+  const [hovered, setHovered] = useState(false);
+
   useEffect(() => {
     // Wait a short time to ensure the div is in the DOM
     setTimeout(() => {
@@ -16,13 +18,14 @@ const Widget: React.FC = () => {
   }, []); // Run after mount
 
   return (
-    <section style={{
+    <section id="experience-ava" style={{
       position: 'relative',
       background: '#050507',
       padding: '5rem 1.5rem',
       overflow: 'hidden',
+      scrollMarginTop: '80px',
     }}>
-      {/* Ambient glow */}
+      {/* Ambient radial glow — pulses subtly */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         <div style={{
           position: 'absolute',
@@ -30,7 +33,24 @@ const Widget: React.FC = () => {
           top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
           background: 'radial-gradient(ellipse, rgba(0,229,255,0.07) 0%, rgba(124,58,237,0.05) 40%, transparent 70%)',
+          animation: 'widgetGlowBreath 7s ease-in-out infinite',
         }} />
+      </div>
+
+      {/* Animated waveform accent */}
+      <div aria-hidden="true" style={{
+        position: 'absolute', bottom: '3rem', left: '50%', transform: 'translateX(-50%)',
+        display: 'flex', gap: 3, alignItems: 'center', pointerEvents: 'none', opacity: 0.18,
+      }}>
+        {[0.6, 1, 1.4, 1, 0.7, 1.2, 0.9, 1.5, 0.8, 1.1, 0.6, 1.3].map((h, i) => (
+          <div key={i} style={{
+            width: 3, borderRadius: 99,
+            height: `${h * 14}px`,
+            background: 'linear-gradient(to top, rgba(0,229,255,0.9), rgba(124,58,237,0.7))',
+            animation: `wave ${0.9 + i * 0.07}s ease-in-out infinite`,
+            animationDelay: `${i * 0.08}s`,
+          }} />
+        ))}
       </div>
 
       <div style={{ maxWidth: 760, margin: '0 auto', position: 'relative' }}>
@@ -73,14 +93,26 @@ const Widget: React.FC = () => {
           </p>
         </div>
 
-        {/* Glow border wrapper */}
-        <div style={{
-          position: 'relative',
-          borderRadius: 24,
-          padding: '0.15rem',
-          background: 'linear-gradient(135deg, rgba(0,229,255,0.4), rgba(124,58,237,0.35), rgba(59,130,246,0.3))',
-          boxShadow: '0 0 60px rgba(0,229,255,0.12), 0 0 120px rgba(124,58,237,0.08)',
-        }}>
+        {/* Glow border wrapper — hover elevation + focus ring */}
+        <div
+          tabIndex={0}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            position: 'relative',
+            borderRadius: 24,
+            padding: '0.15rem',
+            background: 'linear-gradient(135deg, rgba(0,229,255,0.4), rgba(124,58,237,0.35), rgba(59,130,246,0.3))',
+            boxShadow: hovered
+              ? '0 0 80px rgba(0,229,255,0.22), 0 0 160px rgba(124,58,237,0.14), 0 24px 60px rgba(0,0,0,0.5)'
+              : '0 0 60px rgba(0,229,255,0.12), 0 0 120px rgba(124,58,237,0.08)',
+            transform: hovered ? 'translateY(-3px)' : 'none',
+            transition: 'box-shadow 0.35s ease, transform 0.35s ease',
+            outline: 'none',
+          }}
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,229,255,0.5), 0 0 80px rgba(0,229,255,0.18)'; }}
+          onBlur={(e) => { e.currentTarget.style.boxShadow = '0 0 60px rgba(0,229,255,0.12), 0 0 120px rgba(124,58,237,0.08)'; }}
+        >
           {/* Inner surface */}
           <div style={{
             position: 'relative',
@@ -124,6 +156,13 @@ const Widget: React.FC = () => {
         @keyframes widgetPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.5; transform: scale(0.85); }
+        }
+        @keyframes widgetGlowBreath {
+          0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
+          50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .widget-waveform-bar { animation: none !important; }
         }
       `}</style>
     </section>

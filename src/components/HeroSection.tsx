@@ -29,7 +29,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
 
   const scrollToDemo = (e: React.MouseEvent) => {
     e.preventDefault();
-    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('experience-ava')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -46,18 +46,22 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         justifyContent: 'center',
       }}
     >
-      {/* Ambient glow behind Ava — stronger, repositioned to right-center where Ava sits */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 0,
-        background: [
-          'radial-gradient(ellipse 45% 65% at 68% 48%, rgba(0,220,255,0.10) 0%, transparent 70%)',
-          'radial-gradient(ellipse 26% 38% at 66% 45%, rgba(0,180,255,0.07) 0%, transparent 55%)',
-          'radial-gradient(ellipse 20% 30% at 70% 52%, rgba(0,220,255,0.05) 0%, transparent 60%)',
-        ].join(', '),
-        pointerEvents: 'none',
-      }} />
+      {/* Ambient glow behind Ava — breathing glow tied to hero-breathe animation */}
+      <div
+        className="hero-glow-breathe"
+        style={{
+          position: 'absolute',
+          inset: 0,
+          zIndex: 0,
+          background: [
+            'radial-gradient(ellipse 45% 65% at 68% 48%, rgba(0,220,255,0.13) 0%, transparent 70%)',
+            'radial-gradient(ellipse 26% 38% at 66% 45%, rgba(0,180,255,0.09) 0%, transparent 55%)',
+            'radial-gradient(ellipse 20% 30% at 70% 52%, rgba(0,220,255,0.07) 0%, transparent 60%)',
+          ].join(', '),
+          pointerEvents: 'none',
+          animation: 'hero-breathe 9s ease-in-out infinite',
+        }}
+      />
 
       {/* ── Ava Particle Canvas (full-section overlay, pointer-events none on canvas) ── */}
       <div style={{
@@ -218,7 +222,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         {/* Right: stats floating cards (desktop only) */}
         <div className="hidden lg:flex" style={{ flex: '0 0 auto', width: 320, position: 'relative', height: 420 }}>
           {/* Stat card 1 */}
-          <div style={{
+          <div className="stat-drift" style={{
             position: 'absolute', top: 0, right: 0,
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.09)',
@@ -226,7 +230,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             padding: '1.5rem',
             backdropFilter: 'blur(20px)',
             width: 240,
-            animation: 'float-y 7s ease-in-out infinite',
+            animation: 'stat-float 11s ease-in-out infinite',
           }}>
             <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.5rem', fontWeight: 500, letterSpacing: '0.06em' }}>
               MONTHLY SAVINGS
@@ -243,7 +247,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             </div>
           </div>
           {/* Stat card 2 */}
-          <div style={{
+          <div className="stat-drift" style={{
             position: 'absolute', bottom: 40, left: 0,
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid rgba(255,255,255,0.09)',
@@ -251,8 +255,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             padding: '1.5rem',
             backdropFilter: 'blur(20px)',
             width: 220,
-            animation: 'float-y 9s ease-in-out infinite',
-            animationDelay: '1.5s',
+            animation: 'stat-float 13s ease-in-out infinite',
+            animationDelay: '2.5s',
           }}>
             <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.5rem', fontWeight: 500, letterSpacing: '0.06em' }}>
               CALLS CAPTURED
@@ -269,15 +273,15 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             </div>
           </div>
           {/* Stat card 3 */}
-          <div style={{
+          <div className="stat-drift" style={{
             position: 'absolute', top: 140, right: 20,
             background: 'rgba(124,58,237,0.12)',
             border: '1px solid rgba(124,58,237,0.25)',
             borderRadius: 16,
             padding: '1rem 1.2rem',
             backdropFilter: 'blur(20px)',
-            animation: 'float-y 6s ease-in-out infinite',
-            animationDelay: '3s',
+            animation: 'stat-float 9s ease-in-out infinite',
+            animationDelay: '4.5s',
           }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <div style={{

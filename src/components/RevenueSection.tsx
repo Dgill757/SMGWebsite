@@ -276,6 +276,8 @@ const RevenueSection: React.FC = () => {
                 transform: inView ? 'none' : 'translateY(30px)',
                 transitionDelay: `${0.05 * i}s`,
                 willChange: 'transform',
+                display: 'flex',
+                flexDirection: 'column',
               }}
               onMouseMove={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -284,15 +286,16 @@ const RevenueSection: React.FC = () => {
                 const gx = Math.round(((e.clientX - rect.left) / rect.width)  * 100);
                 const gy = Math.round(((e.clientY - rect.top)  / rect.height) * 100);
                 e.currentTarget.style.transform =
-                  `perspective(700px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-6px)`;
+                  `perspective(700px) rotateX(${-y * 5}deg) rotateY(${x * 5}deg) translateY(-3px)`;
                 e.currentTarget.style.background =
                   `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.022) 65%)`;
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget;
+                el.style.transform   = 'translateY(-3px)';
                 el.style.borderColor = `${feat.accent}55`;
-                el.style.boxShadow   = `0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px ${feat.accent}28, 0 0 40px ${feat.accent}18`;
-                el.style.transition  = 'border-color 0.2s ease, box-shadow 0.2s ease';
+                el.style.boxShadow   = `0 20px 50px rgba(0,0,0,0.45), 0 0 0 1px ${feat.accent}28, 0 0 40px ${feat.accent}18`;
+                el.style.transition  = 'border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease';
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget;
@@ -323,6 +326,7 @@ const RevenueSection: React.FC = () => {
               <p style={{
                 fontSize: '0.875rem', color: 'rgba(255,255,255,0.5)',
                 lineHeight: 1.6,
+                flex: 1,
               }}>
                 {feat.desc}
               </p>

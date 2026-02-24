@@ -57,15 +57,16 @@ const VideoCard: React.FC<VideoCardProps> = ({ id, title, tag, accent, delay, in
       style={{
         borderRadius: 20,
         overflow: 'hidden',
-        border: `1px solid ${hovered ? accent + '55' : 'rgba(255,255,255,0.08)'}`,
+        border: `1px solid ${hovered ? accent + '66' : 'rgba(255,255,255,0.08)'}`,
         background: 'rgba(255,255,255,0.025)',
         boxShadow: hovered
-          ? `0 0 0 1px ${accent}22, 0 20px 50px rgba(0,0,0,0.5), 0 0 40px ${accent}18`
+          ? `0 0 0 1px ${accent}30, 0 28px 70px rgba(0,0,0,0.55), 0 0 60px ${accent}22, inset 0 1px 0 rgba(255,255,255,0.06)`
           : '0 4px 24px rgba(0,0,0,0.35)',
-        transition: 'all 0.3s ease',
-        transform: hovered ? 'translateY(-4px)' : 'none',
+        transition: 'all 0.32s ease',
+        transform: hovered ? 'translateY(-4px) scale(1.012)' : 'none',
         opacity: inView ? 1 : 0,
         animation: inView ? `fadeSlideUp 0.55s ease ${delay} both` : 'none',
+        willChange: 'transform',
       }}
     >
       {/* 16:9 Video Embed */}

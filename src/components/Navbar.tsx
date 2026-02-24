@@ -71,7 +71,7 @@ const Navbar: React.FC = () => {
           {navLinks.map(({ label, id }) => (
             <a key={id} href={`#${id}`} onClick={(e) => scrollTo(id, e)} className="nav-link">{label}</a>
           ))}
-          <Link to="/industries" className="nav-link" style={{ textDecoration: 'none' }}>Industries</Link>
+          <Link to="/industries" className="nav-link" style={{ textDecoration: 'none' }}>Who We Serve</Link>
           <Link to="/articles" className="nav-link" style={{ textDecoration: 'none' }}>Articles</Link>
         </div>
 
@@ -112,7 +112,7 @@ const Navbar: React.FC = () => {
                 className="nav-link" style={{ padding: '0.75rem 1rem', display: 'block' }}>{label}</a>
             ))}
             <Link to="/industries" className="nav-link" onClick={() => setMenuOpen(false)}
-              style={{ padding: '0.75rem 1rem', display: 'block', textDecoration: 'none' }}>Industries</Link>
+              style={{ padding: '0.75rem 1rem', display: 'block', textDecoration: 'none' }}>Who We Serve</Link>
             <Link to="/articles" className="nav-link" onClick={() => setMenuOpen(false)}
               style={{ padding: '0.75rem 1rem', display: 'block', textDecoration: 'none' }}>Articles</Link>
             <div style={{ paddingTop: '0.75rem' }}>
