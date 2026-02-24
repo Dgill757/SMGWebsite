@@ -230,6 +230,54 @@ const MissedCallCalculator: React.FC = () => {
               </a>
             </div>
 
+            {/* ── Reality Check ────────────────────────────────────────── */}
+            <div style={{
+              position: 'relative',
+              background: 'rgba(239,68,68,0.05)',
+              border: '1px solid rgba(239,68,68,0.22)',
+              borderRadius: 20,
+              padding: '2rem',
+              opacity: inView ? 1 : 0,
+              transform: inView ? 'none' : 'translateY(20px)',
+              transition: 'all 0.5s ease 0.55s',
+              overflow: 'hidden',
+            }}>
+              {/* Top accent line */}
+              <div style={{ position: 'absolute', top: 0, left: 0, right: 0, height: 2, background: 'linear-gradient(90deg, #EF4444, #7C3AED, transparent)' }} />
+
+              {/* Header with accent dot */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', marginBottom: '1.1rem' }}>
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: '#EF4444', boxShadow: '0 0 10px rgba(239,68,68,0.7)', flexShrink: 0 }} />
+                <div style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.5)' }}>
+                  Reality Check
+                </div>
+              </div>
+
+              <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.8 }}>
+                According to the information you provided, you are currently losing{' '}
+                <strong style={{ color: '#EF4444', fontWeight: 800 }}>
+                  ${recoveredRevenue.toLocaleString()}
+                </strong>{' '}
+                per month, which translates into{' '}
+                <strong style={{ color: '#EF4444', fontWeight: 800 }}>
+                  ${(recoveredRevenue * 12).toLocaleString()}
+                </strong>{' '}
+                annually — and this is likely on the low end.
+              </p>
+
+              <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.72)', lineHeight: 1.8, margin: '1rem 0' }}>
+                Even if we help you recover just 30% of that, we could add{' '}
+                <strong style={{ color: '#22C55E', fontWeight: 800 }}>
+                  ${Math.round(recoveredRevenue * 0.30).toLocaleString()}
+                </strong>{' '}
+                per month back to your bottom line.
+              </p>
+
+              <p style={{ fontSize: '0.92rem', color: 'rgba(255,255,255,0.55)', fontStyle: 'italic', lineHeight: 1.6 }}>
+                What would that do for your business?
+              </p>
+            </div>
+
             {/* Disclaimer */}
             <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.2)', lineHeight: 1.6, textAlign: 'center' }}>
               * Estimates based on average client performance data. Actual results vary by industry and implementation.
