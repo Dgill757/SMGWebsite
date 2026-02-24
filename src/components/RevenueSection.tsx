@@ -91,6 +91,42 @@ const FEATURES = [
     desc: 'Deploy instantly. Ava comes with pre-configured industry knowledge and improves autonomously over time.',
     accent: '#F472B6',
   },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <ellipse cx="12" cy="5" rx="9" ry="3"/>
+        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/>
+        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/>
+      </svg>
+    ),
+    title: 'Database Reactivation',
+    desc: 'Instantly revive old leads with automated SMS, calls, and follow-up sequences that book jobs from your existing list.',
+    accent: '#7C3AED',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="18" y1="20" x2="18" y2="10"/>
+        <line x1="12" y1="20" x2="12" y2="4"/>
+        <line x1="6" y1="20" x2="6" y2="14"/>
+      </svg>
+    ),
+    title: 'CRM + ROI Reporting',
+    desc: 'Track every lead, call, booking, and closed job in one pipeline, with clear attribution and ROI reporting.',
+    accent: '#3B82F6',
+  },
+  {
+    icon: (
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="2" y1="12" x2="22" y2="12"/>
+        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    ),
+    title: 'Smart Website',
+    desc: 'Turn your website into a 24/7 voice-enabled assistant. Visitors can talk to your site, ask questions, get instant answers, and book appointments on the spot. Combined with smart forms and automations, every lead gets an immediate response and the right follow-up — so static websites stop leaking revenue.',
+    accent: '#F472B6',
+  },
 ];
 
 const STATS = [
@@ -217,12 +253,15 @@ const RevenueSection: React.FC = () => {
           ))}
         </div>
 
-        {/* Feature Grid */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px,1fr))',
-          gap: '1.25rem',
-        }}>
+        {/* Feature Grid — 4 cols desktop / 2 tablet / 1 mobile */}
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(4, 1fr)',
+            gap: '1.25rem',
+          }}
+          className="revenue-feature-grid"
+        >
           {FEATURES.map((feat, i) => (
             <div
               key={feat.title}
@@ -279,6 +318,11 @@ const RevenueSection: React.FC = () => {
           ))}
         </div>
       </div>
+
+      <style>{`
+        @media (max-width: 1024px) { .revenue-feature-grid { grid-template-columns: repeat(2, 1fr) !important; } }
+        @media (max-width: 640px)  { .revenue-feature-grid { grid-template-columns: 1fr !important; } }
+      `}</style>
     </section>
   );
 };

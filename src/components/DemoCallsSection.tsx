@@ -3,27 +3,27 @@ import React, { useRef, useEffect, useState } from 'react';
 // ── Video data — swap YouTube IDs when real demos are ready ──────────────────
 const VIDEOS = [
   {
-    id: 'dQw4w9WgXcQ', // placeholder — replace with real YouTube video ID
-    title: 'AI Roofer Demo',
-    tag: 'Home Services',
+    id: 'j5c4RmZk7Pc',
+    title: 'AI Realtor Demo',
+    tag: 'Real Estate',
     accent: '#00E5FF',
   },
   {
-    id: 'dQw4w9WgXcQ', // placeholder
-    title: 'AI HVAC Demo',
+    id: 'p59_ZOmgodk',
+    title: 'AI Deck & Landscaping Demo',
     tag: 'Home Services',
     accent: '#7C3AED',
   },
   {
-    id: 'dQw4w9WgXcQ', // placeholder
-    title: 'AI Real Estate Demo',
-    tag: 'Real Estate',
+    id: 'ly-UhP_91H0',
+    title: 'AI Roofing Demo',
+    tag: 'Home Services',
     accent: '#F472B6',
   },
   {
-    id: 'dQw4w9WgXcQ', // placeholder
-    title: 'AI Legal Intake Demo',
-    tag: 'Legal',
+    id: 'Uu35W1wtAZA',
+    title: 'AI Pool Demo',
+    tag: 'Home Services',
     accent: '#FBBF24',
   },
 ];
@@ -155,7 +155,7 @@ const DemoCallsSection: React.FC = () => {
         >
           {VIDEOS.map((v, i) => (
             <VideoCard
-              key={v.id + i}
+              key={v.id}
               {...v}
               delay={`${i * 0.1 + 0.2}s`}
               inView={inView}
