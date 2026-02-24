@@ -18,7 +18,7 @@ const STEPS = [
         { from: 'caller', text: 'Hi, I need a plumber as soon as possible — my basement is flooding.' },
         { from: 'ava',    text: "I'm dispatching an emergency crew to your area right now. Can I get your address to confirm availability?" },
         { from: 'caller', text: '847 Maple Lane, Springfield.' },
-        { from: 'ava',    text: 'Got it. A tech will be there within 45 minutes. You'll receive a confirmation text shortly.' },
+        { from: 'ava',    text: "Got it. A tech will be there within 45 minutes. You'll receive a confirmation text shortly." },
       ],
     },
   },
