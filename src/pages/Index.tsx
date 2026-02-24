@@ -12,6 +12,7 @@ import FAQSection from '@/components/FAQSection';
 import { useLocation } from 'react-router-dom';
 import CalendarDialog from '@/components/CalendarDialog';
 import Widget from '@/components/Widget';
+import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 
 const Index = () => {
@@ -84,8 +85,12 @@ const Index = () => {
         <UseCases />
         <TestimonialsSection />
         <MissedCallCalculator />
-        <HowAvaWorks />
-        <DemoCallsSection />
+        <SectionErrorBoundary label="HowAvaWorks">
+          <HowAvaWorks />
+        </SectionErrorBoundary>
+        <SectionErrorBoundary label="DemoCallsSection">
+          <DemoCallsSection />
+        </SectionErrorBoundary>
         <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
         <FAQSection />
 
