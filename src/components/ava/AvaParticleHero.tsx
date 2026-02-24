@@ -1,16 +1,17 @@
+'use client'
 /**
- * AvaParticleHero v2 — Three.js / R3F 3D particle portrait
+ * AvaParticleHero v3 — crash-proof Three.js / R3F 3D particle portrait
  *
  * Primary mode  : /ava-face.glb → MeshSurfaceSampler → true 3D surface cloud
  * Fallback mode : /ava-face.png → luminance depth + two-pass pixel sampling
+ * Hard fallback : <img> static image when WebGL is unavailable
  *
- * Mouse   : global window pointermove → mouseRef → MathUtils.damp(speed=22)
- * Bloom   : 2-pass additive blending (glow aura + sharp core)
- * Camera  : CameraRig parallax — camera position tracks mouse subtly
- * Backlight: GLSL shader plane behind portrait, moves opposite mouse
- * Sprites : 64 × 64 radial-gradient canvas → round glowing dots
- * Entrance: opacity fade-in over 2.5 s
- * Breath  : group Z pulses gently at 0.55 Hz
+ * GLB detection : attempt load via useGLTF; GLBErrorBoundary catches 404/errors
+ *                 and flips to image mode — no fragile HEAD fetch required.
+ * WebGL guard   : CanvasErrorBoundary wraps Canvas; shows static image on failure.
+ * window/doc    : all access is inside useEffect, useFrame, or useMemo (client-only
+ *                 with 'use client'; also guarded by typeof window checks where used
+ *                 outside effects to be safe in any SSR context).
  *
  * ─── TWEAK KNOBS ─────────────────────────────────────────────────────────────
  */
@@ -35,7 +36,7 @@ export const Z_CLAMP               = 80      // hard limit prevents depth caves
 // ─────────────────────────────────────────────────────────────────────────────
 
 import React, {
-  useRef, useEffect, useMemo, useState, Suspense,
+  useRef, useEffect, useMemo, useState, Suspense, Component,
 } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF }                    from '@react-three/drei'
@@ -50,11 +51,62 @@ interface ParticleData {
 }
 type MouseRef = React.MutableRefObject<{ x: number; y: number }>
 
+// ── Error Boundaries ──────────────────────────────────────────────────────────
+
+/**
+ * GLBErrorBoundary — wraps GLBPortrait inside the R3F scene.
+ * When useGLTF throws (404, network error, parse failure) this catches it,
+ * renders nothing, and calls onError() so the parent can switch to image mode.
+ */
+interface EBProps { children: React.ReactNode; onError: () => void }
+interface EBState { failed: boolean }
+
+class GLBErrorBoundary extends Component<EBProps, EBState> {
+  state: EBState = { failed: false }
+
+  static getDerivedStateFromError(): EBState {
+    return { failed: true }
+  }
+
+  componentDidCatch(err: unknown) {
+    console.warn('[AvaParticleHero] GLB load failed, switching to image mode:', err)
+    this.props.onError()
+  }
+
+  render() {
+    return this.state.failed ? null : this.props.children
+  }
+}
+
+/**
+ * CanvasErrorBoundary — wraps the entire Canvas element.
+ * If WebGL context creation fails or Three.js throws during render,
+ * shows a static <img> fallback instead of a black screen.
+ */
+interface CBProps { children: React.ReactNode; fallback: React.ReactNode }
+interface CBState { failed: boolean }
+
+class CanvasErrorBoundary extends Component<CBProps, CBState> {
+  state: CBState = { failed: false }
+
+  static getDerivedStateFromError(): CBState {
+    return { failed: true }
+  }
+
+  componentDidCatch(err: unknown) {
+    console.warn('[AvaParticleHero] Canvas / WebGL error, showing static fallback:', err)
+  }
+
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children
+  }
+}
+
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 const ease  = (t: number) => { const c = clamp(t, 0, 1); return c * c * (3 - 2 * c) }
 
-/** 64×64 radial-gradient canvas texture for round, glowing point sprites */
+/** 64×64 radial-gradient canvas texture — produces round glowing point sprites */
 function makeCircleTexture(): THREE.CanvasTexture {
   const size = 64
   const cv   = document.createElement('canvas')
@@ -112,7 +164,6 @@ function BacklightPlane({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: M
     sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, 8, delta)
     sm.current.y = THREE.MathUtils.damp(sm.current.y, mouseRef.current.y, 8, delta)
     if (!meshRef.current) return
-    // Move OPPOSITE the mouse — creates 3D depth illusion
     meshRef.current.position.x = -sm.current.x * (isMobile ? 25 : 52)
     meshRef.current.position.y =  sm.current.y * (isMobile ? 16 : 36)
   })
@@ -127,7 +178,6 @@ function BacklightPlane({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: M
 }
 
 // ── CameraRig ──────────────────────────────────────────────────────────────────
-// Subtle camera parallax: camera position follows mouse, face stays centred.
 function CameraRig({ mouseRef }: { mouseRef: MouseRef }) {
   const { camera } = useThree()
   const sm         = useRef({ x: 0, y: 0 })
@@ -144,13 +194,16 @@ function CameraRig({ mouseRef }: { mouseRef: MouseRef }) {
 }
 
 // ── PortraitCloud ──────────────────────────────────────────────────────────────
-// Shared renderer for both GLB-sampled and image-derived particle data.
+// Shared renderer for GLB-sampled and image-derived particle data.
 function PortraitCloud({
   data, isMobile, mouseRef,
 }: { data: ParticleData; isMobile: boolean; mouseRef: MouseRef }) {
   const groupRef = useRef<THREE.Group>(null)
   const sm       = useRef({ x: 0, y: 0 })
   const t0       = useRef<number | null>(null)
+  // makeCircleTexture calls document.createElement — safe here because:
+  //   • Vite: always runs in browser
+  //   • Next.js: 'use client' ensures client-only execution
   const sprite   = useMemo(makeCircleTexture, [])
 
   const geo = useMemo(() => {
@@ -190,19 +243,16 @@ function PortraitCloud({
     const now = clock.getElapsedTime()
     if (t0.current === null) t0.current = now
 
-    // Entrance fade-in over 2.5 s
     const rev       = ease(Math.min(1, (now - t0.current) / 2.5))
     glowMat.opacity = GLOW_OPACITY * rev
     coreMat.opacity = CORE_OPACITY * rev
 
-    // High-speed damp: portrait instantly follows mouse anywhere on page
     sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, DAMP_SPEED, delta)
     sm.current.y = THREE.MathUtils.damp(sm.current.y, mouseRef.current.y, DAMP_SPEED, delta)
 
     if (groupRef.current) {
       groupRef.current.rotation.y = sm.current.x * PARALLAX_STRENGTH
       groupRef.current.rotation.x = -sm.current.y * PARALLAX_STRENGTH * 0.6
-      // Breathing: subtle Z pulse
       groupRef.current.position.z = Math.sin(now * 0.55) * 5.5
     }
   })
@@ -216,7 +266,7 @@ function PortraitCloud({
 }
 
 // ── GLBPortrait ────────────────────────────────────────────────────────────────
-// Loads /ava-face.glb, samples POINT_COUNT surface points, normalises to scene.
+// Must be rendered inside GLBErrorBoundary + Suspense so failures are caught.
 function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: MouseRef }) {
   const { scene } = useGLTF('/ava-face.glb')
 
@@ -230,11 +280,12 @@ function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: Mous
 
   const data = useMemo((): ParticleData | null => {
     if (!mesh) return null
+
     const count   = isMobile ? POINT_COUNT_MOBILE : POINT_COUNT_DESKTOP
     const sampler = new MeshSurfaceSampler(mesh).build()
     const tempPos = new THREE.Vector3()
 
-    // Pass 1 — collect raw positions + compute bounding box for normalisation
+    // Pass 1 — sample + find bounding box for normalisation
     const rawPos = new Float32Array(count * 3)
     let minX = Infinity, maxX = -Infinity
     let minY = Infinity, maxY = -Infinity
@@ -253,9 +304,11 @@ function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: Mous
       if (tempPos.z > maxZ) maxZ = tempPos.z
     }
 
-    // Target world dimensions (camera z=500, fov=50 → visH ≈ 466 units)
+    // Target world dimensions: camera z=500, fov=50 → visH ≈ 466 units
+    const W    = typeof window !== 'undefined' ? window.innerWidth  : 1280
+    const H    = typeof window !== 'undefined' ? window.innerHeight : 800
     const visH = 2 * 500 * Math.tan((50 * Math.PI / 180) / 2)
-    const visW = visH * (window.innerWidth / window.innerHeight)
+    const visW = visH * (W / H)
     const mAsp = (maxX - minX) / Math.max(0.001, maxY - minY)
     let   tgtH = visH * 0.92
     let   tgtW = tgtH * mAsp
@@ -263,12 +316,12 @@ function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: Mous
 
     const sX = tgtW / Math.max(0.001, maxX - minX)
     const sY = tgtH / Math.max(0.001, maxY - minY)
-    const s  = Math.min(sX, sY)   // uniform XY scale
+    const s  = Math.min(sX, sY)
     const cx = (minX + maxX) / 2
     const cy = (minY + maxY) / 2
     const cz = (minZ + maxZ) / 2
 
-    // Pass 2 — normalise to scene space + colour
+    // Pass 2 — normalise + colour
     const positions = new Float32Array(count * 3)
     const colors    = new Float32Array(count * 3)
     const cyanC     = new THREE.Color(CYAN_COLOR)
@@ -292,7 +345,7 @@ function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: Mous
 }
 
 // ── Image Fallback ─────────────────────────────────────────────────────────────
-// Two-pass grid sampling with Z_CLAMP prevents depth caves / inversion.
+// Two-pass grid sampling with Z_CLAMP; called only from within useEffect.
 function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
   return new Promise((resolve, reject) => {
     const img       = new Image()
@@ -305,6 +358,7 @@ function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
       const iH   = img.naturalHeight
       const step = isMobile ? PARTICLE_STEP_MOBILE : PARTICLE_STEP_DESKTOP
 
+      // document.createElement safe inside Promise callback (client-only)
       const off  = document.createElement('canvas')
       off.width  = iW
       off.height = iH
@@ -318,9 +372,10 @@ function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
         return (px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114) / 255
       }
 
-      // Scene scale from camera geometry
+      const W      = typeof window !== 'undefined' ? window.innerWidth  : 1280
+      const H      = typeof window !== 'undefined' ? window.innerHeight : 800
       const visH   = 2 * 500 * Math.tan((50 * Math.PI / 180) / 2)
-      const visW   = visH * (window.innerWidth / window.innerHeight)
+      const visW   = visH * (W / H)
       const imgAsp = iW / iH
       let   scaleY = visH * 0.92
       let   scaleX = scaleY * imgAsp
@@ -343,8 +398,6 @@ function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
 
             const sx = (x / iW - 0.5) * scaleX
             const sy = (0.5 - y / iH) * scaleY
-
-            // Luminance depth + Sobel edge push + jitter, hard-clamped
             const gx = lum(x + 1, y) - lum(x - 1, y)
             const gy = lum(x, y + 1) - lum(x, y - 1)
             let sz = (l - 0.45) * DEPTH_STRENGTH
@@ -370,22 +423,27 @@ function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
 
 // ── Scene ──────────────────────────────────────────────────────────────────────
 function Scene({
-  glbAvailable, imageData, isMobile, mouseRef,
+  useGLB, onGLBError, imageData, isMobile, mouseRef,
 }: {
-  glbAvailable : boolean
-  imageData    : ParticleData | null
-  isMobile     : boolean
-  mouseRef     : MouseRef
+  useGLB      : boolean
+  onGLBError  : () => void
+  imageData   : ParticleData | null
+  isMobile    : boolean
+  mouseRef    : MouseRef
 }) {
   return (
     <>
       <color attach="background" args={['#000000']} />
       <CameraRig mouseRef={mouseRef} />
       <BacklightPlane isMobile={isMobile} mouseRef={mouseRef} />
-      {glbAvailable ? (
-        <Suspense fallback={null}>
-          <GLBPortrait isMobile={isMobile} mouseRef={mouseRef} />
-        </Suspense>
+      {useGLB ? (
+        // GLBErrorBoundary catches useGLTF failures (404, parse error, etc.)
+        // and calls onGLBError() to switch the parent to image-fallback mode.
+        <GLBErrorBoundary onError={onGLBError}>
+          <Suspense fallback={null}>
+            <GLBPortrait isMobile={isMobile} mouseRef={mouseRef} />
+          </Suspense>
+        </GLBErrorBoundary>
       ) : (
         imageData && <PortraitCloud data={imageData} isMobile={isMobile} mouseRef={mouseRef} />
       )}
@@ -393,42 +451,56 @@ function Scene({
   )
 }
 
+// ── Static Image Fallback (shown when WebGL is unavailable) ───────────────────
+function StaticFallback({ className }: { className?: string }) {
+  return (
+    <div
+      className={className}
+      style={{
+        width: '100%', height: '100%',
+        background: '#000',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+      }}
+    >
+      <img
+        src="/ava-face.png"
+        alt="Ava"
+        style={{ height: '80%', width: 'auto', objectFit: 'contain', opacity: 0.5 }}
+      />
+    </div>
+  )
+}
+
 // ── Main Export ────────────────────────────────────────────────────────────────
 interface AvaParticleHeroProps {
   className?      : string
-  scrollProgress? : number   // accepted for API compat; not used
+  scrollProgress? : number   // accepted for API compat; not used internally
 }
 
 export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
-  const [glbAvailable, setGlbAvailable] = useState<boolean | null>(null)
-  const [imageData,    setImageData]    = useState<ParticleData | null>(null)
+  // useGLB starts true → always try GLB first (no HEAD fetch delay/flash)
+  // GLBErrorBoundary sets it to false if the file is missing or broken
+  const [useGLB,    setUseGLB]    = useState(true)
+  const [imageData, setImageData] = useState<ParticleData | null>(null)
   const mouseRef = useRef({ x: 0, y: 0 })
 
+  // Computed once on mount — window is available ('use client' / Vite client-only)
   const isMobile = useMemo(
     () => typeof window !== 'undefined' && window.innerWidth < 768,
     [],
   )
 
-  // ── Detect whether /ava-face.glb is available ───────────────────────────
+  // Build image particles when GLB mode is disabled (either at start or after error)
   useEffect(() => {
-    let cancelled = false
-    fetch('/ava-face.glb', { method: 'HEAD' })
-      .then(r  => { if (!cancelled) setGlbAvailable(r.ok) })
-      .catch(() => { if (!cancelled) setGlbAvailable(false) })
-    return () => { cancelled = true }
-  }, [])
-
-  // ── Build image-fallback particles when GLB is unavailable ──────────────
-  useEffect(() => {
-    if (glbAvailable !== false) return
+    if (useGLB) return
     let cancelled = false
     buildImageParticles(isMobile)
-      .then(d  => { if (!cancelled) setImageData(d) })
-      .catch(() => console.warn('[AvaParticleHero] ava-face.png load failed'))
+      .then(d => { if (!cancelled) setImageData(d) })
+      .catch((err) => console.warn('[AvaParticleHero] image fallback failed:', err))
     return () => { cancelled = true }
-  }, [glbAvailable, isMobile])
+  }, [useGLB, isMobile])
 
-  // ── Global pointer tracking → instant response anywhere on page ─────────
+  // Global pointer tracking — all window access safely inside useEffect
   useEffect(() => {
     const onMove = (e: PointerEvent) => {
       mouseRef.current.x =  (e.clientX / window.innerWidth)  * 2 - 1
@@ -438,30 +510,33 @@ export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
     return () => window.removeEventListener('pointermove', onMove)
   }, [])
 
-  // Black placeholder while detecting GLB availability (~1 round-trip)
-  if (glbAvailable === null) {
-    return <div className={className} style={{ width: '100%', height: '100%', background: '#000' }} />
-  }
+  const handleGLBError = () => setUseGLB(false)
 
   return (
-    <div className={className} style={{ width: '100%', height: '100%', background: '#000' }}>
-      <Canvas
-        camera={{ position: [0, 0, 500], fov: 50, near: 1, far: 2000 }}
-        dpr={[1, 1.75]}
-        gl={{
-          antialias       : false,
-          alpha           : false,
-          powerPreference : 'high-performance',
-        }}
-        style={{ width: '100%', height: '100%', display: 'block' }}
-      >
-        <Scene
-          glbAvailable={glbAvailable}
-          imageData={imageData}
-          isMobile={isMobile}
-          mouseRef={mouseRef}
-        />
-      </Canvas>
-    </div>
+    // CanvasErrorBoundary catches WebGL context failures and Three.js render errors.
+    // Falls back to a static <img> so the hero never shows a blank black screen.
+    <CanvasErrorBoundary fallback={<StaticFallback className={className} />}>
+      <div className={className} style={{ width: '100%', height: '100%', background: '#000' }}>
+        <Canvas
+          camera={{ position: [0, 0, 500], fov: 50, near: 1, far: 2000 }}
+          dpr={[1, 1.75]}
+          gl={{
+            antialias       : false,
+            alpha           : false,
+            powerPreference : 'high-performance',
+            failIfMajorPerformanceCaveat: false,
+          }}
+          style={{ width: '100%', height: '100%', display: 'block' }}
+        >
+          <Scene
+            useGLB={useGLB}
+            onGLBError={handleGLBError}
+            imageData={imageData}
+            isMobile={isMobile}
+            mouseRef={mouseRef}
+          />
+        </Canvas>
+      </div>
+    </CanvasErrorBoundary>
   )
 }

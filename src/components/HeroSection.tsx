@@ -1,6 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
-import AvaParticleHero from './ava/AvaParticleHero';
+import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import CalendarDialog from './CalendarDialog';
+
+// Lazy-loaded so the Three.js bundle is code-split and only evaluated in the
+// browser — the Vite equivalent of Next.js `dynamic(() => import(...), { ssr: false })`.
+const AvaParticleHero = lazy(() => import('./ava/AvaParticleHero'));
 
 interface HeroSectionProps {
   calendarOpen: boolean;
@@ -65,10 +68,12 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         transition: 'opacity 0.1s linear',
         pointerEvents: scrollProgress > 0.5 ? 'none' : 'auto',
       }}>
-        <AvaParticleHero
-          scrollProgress={scrollProgress}
-          className="w-full h-full"
-        />
+        <Suspense fallback={<div style={{ width: '100%', height: '100%', background: '#000' }} />}>
+          <AvaParticleHero
+            scrollProgress={scrollProgress}
+            className="w-full h-full"
+          />
+        </Suspense>
       </div>
 
       {/* Text protection gradient — dark-left fade so particles don't bleed into copy */}
