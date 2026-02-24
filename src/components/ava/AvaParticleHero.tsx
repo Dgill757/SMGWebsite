@@ -1,78 +1,104 @@
 /**
- * AvaParticleHero — Three.js / R3F interactive particle portrait
+ * AvaParticleHero v2 — Three.js / R3F 3D particle portrait
  *
- * Architecture:
- *   Canvas → Scene → BacklightPlane + AvaPointCloud (glow pass + core pass)
+ * Primary mode  : /ava-face.glb → MeshSurfaceSampler → true 3D surface cloud
+ * Fallback mode : /ava-face.png → luminance depth + two-pass pixel sampling
  *
- * How depth works:
- *   Each pixel's Z position = luminance-based depth + Sobel edge push + jitter
- *   → brighter pixels come forward, edges are emphasised → genuinely volumetric
+ * Mouse   : global window pointermove → mouseRef → MathUtils.damp(speed=22)
+ * Bloom   : 2-pass additive blending (glow aura + sharp core)
+ * Camera  : CameraRig parallax — camera position tracks mouse subtly
+ * Backlight: GLSL shader plane behind portrait, moves opposite mouse
+ * Sprites : 64 × 64 radial-gradient canvas → round glowing dots
+ * Entrance: opacity fade-in over 2.5 s
+ * Breath  : group Z pulses gently at 0.55 Hz
  *
- * Bloom without external postprocessing:
- *   Two <points> layers share the same BufferGeometry:
- *     1. Glow aura  — 4× larger points, ~9 % opacity, AdditiveBlending
- *     2. Core layer — normal size,      ~88 % opacity, AdditiveBlending
- *   The result looks identical to a postprocessing bloom pass.
- *
- * ─── TWEAK KNOBS ────────────────────────────────────────────────────────────
+ * ─── TWEAK KNOBS ─────────────────────────────────────────────────────────────
  */
-export const PARTICLE_STEP_DESKTOP = 3      // px stride (lower = more dots)
+export const POINT_COUNT_DESKTOP   = 50_000
+export const POINT_COUNT_MOBILE    = 12_000
+export const DAMP_SPEED            = 22      // MathUtils.damp lambda
+export const CYAN_COLOR            = '#00E5FF'
+export const PURPLE_COLOR          = '#A855FF'
+export const PURPLE_PERCENT        = 0.04    // fraction of dots that are purple
+export const CORE_SIZE             = 1.6     // world-unit dot radius (desktop)
+export const CORE_OPACITY          = 0.88
+export const GLOW_SIZE_MULT        = 4.0     // glow dot size = CORE_SIZE × mult
+export const GLOW_OPACITY          = 0.09
+export const PARALLAX_STRENGTH     = 0.30    // portrait rotation range (radians)
+export const BACKLIGHT_STRENGTH    = 0.22    // backlight plane peak opacity
+// Image-fallback only
+export const PARTICLE_STEP_DESKTOP = 3       // pixel stride
 export const PARTICLE_STEP_MOBILE  = 6
-export const DEPTH_STRENGTH        = 115    // Z range from luminance
-export const EDGE_DEPTH_BOOST      = 30     // extra Z for detected edges
-export const BLOOM_GLOW_MULT       = 4.2    // glow-pass size multiplier
-export const BLOOM_GLOW_OPACITY    = 0.09   // glow-pass alpha (0–1)
-export const PARALLAX_STRENGTH     = 0.40   // rotation strength (radians)
-export const BACKLIGHT_STRENGTH    = 0.20   // backlight plane opacity
-export const PARTICLE_SIZE_DESKTOP = 1.5    // world-unit dot radius (desktop)
-export const PARTICLE_SIZE_MOBILE  = 2.2    // world-unit dot radius (mobile)
-// ────────────────────────────────────────────────────────────────────────────
+export const DEPTH_STRENGTH        = 110     // Z range from luminance
+export const EDGE_DEPTH_BOOST      = 28      // extra Z for Sobel edges
+export const Z_CLAMP               = 80      // hard limit prevents depth caves
+// ─────────────────────────────────────────────────────────────────────────────
 
-import React, { useRef, useEffect, useMemo, useState } from 'react'
-import { Canvas, useFrame }                             from '@react-three/fiber'
-import * as THREE                                       from 'three'
+import React, {
+  useRef, useEffect, useMemo, useState, Suspense,
+} from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { useGLTF }                    from '@react-three/drei'
+import * as THREE                     from 'three'
+import { MeshSurfaceSampler }         from 'three/examples/jsm/math/MeshSurfaceSampler.js'
 
-// ── tiny helpers ──────────────────────────────────────────────────────────────
-const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
-const lerp  = (a: number, b: number, t: number)   => a + (b - a) * clamp(t, 0, 1)
-const ease  = (t: number) => { const c = clamp(t, 0, 1); return c * c * (3 - 2 * c) }
-
-// ── shared types ──────────────────────────────────────────────────────────────
+// ── Types ──────────────────────────────────────────────────────────────────────
 interface ParticleData {
-  positions : Float32Array   // x,y,z per particle
-  colors    : Float32Array   // r,g,b per particle
+  positions : Float32Array
+  colors    : Float32Array
   count     : number
 }
+type MouseRef = React.MutableRefObject<{ x: number; y: number }>
 
-// ── Backlight shader ──────────────────────────────────────────────────────────
-// A large plane behind the face with a radial cyan gradient.
-// Moves OPPOSITE to the mouse so the face reads as three-dimensional.
+// ── Helpers ────────────────────────────────────────────────────────────────────
+const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
+const ease  = (t: number) => { const c = clamp(t, 0, 1); return c * c * (3 - 2 * c) }
+
+/** 64×64 radial-gradient canvas texture for round, glowing point sprites */
+function makeCircleTexture(): THREE.CanvasTexture {
+  const size = 64
+  const cv   = document.createElement('canvas')
+  cv.width   = size
+  cv.height  = size
+  const ctx  = cv.getContext('2d')!
+  const r    = size / 2
+  const grad = ctx.createRadialGradient(r, r, 0, r, r, r)
+  grad.addColorStop(0,    'rgba(255,255,255,1)')
+  grad.addColorStop(0.35, 'rgba(255,255,255,0.8)')
+  grad.addColorStop(1,    'rgba(255,255,255,0)')
+  ctx.fillStyle = grad
+  ctx.fillRect(0, 0, size, size)
+  return new THREE.CanvasTexture(cv)
+}
+
+// ── Backlight Shader ───────────────────────────────────────────────────────────
 const BL_VERT = /* glsl */`
   varying vec2 vUv;
   void main() {
     vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
   }
 `
 const BL_FRAG = /* glsl */`
   varying vec2 vUv;
   uniform float uOp;
+  uniform float uTime;
   void main() {
-    float d = length(vUv - 0.5);
-    float g = pow(max(0.0, 1.0 - d * 2.0), 2.4);
-    // Dual-colour: centre white-cyan → rim deep-cyan
-    vec3 col = mix(vec3(0.5,0.95,1.0), vec3(0.0,0.65,1.0), clamp(d*3.0,0.0,1.0));
+    float d   = length(vUv - 0.5);
+    float br  = 1.0 + 0.06 * sin(uTime * 0.8);
+    float g   = pow(max(0.0, 1.0 - d * 2.0 * br), 2.4);
+    vec3  col = mix(vec3(0.5, 0.95, 1.0), vec3(0.0, 0.65, 1.0),
+                    clamp(d * 3.0, 0.0, 1.0));
     gl_FragColor = vec4(col, uOp * g);
   }
 `
 
-// ── BacklightPlane ────────────────────────────────────────────────────────────
-function BacklightPlane({ isMobile }: { isMobile: boolean }) {
+// ── BacklightPlane ─────────────────────────────────────────────────────────────
+function BacklightPlane({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: MouseRef }) {
   const meshRef = useRef<THREE.Mesh>(null)
   const sm      = useRef({ x: 0, y: 0 })
-
-  const mat = useMemo(() => new THREE.ShaderMaterial({
-    uniforms       : { uOp: { value: BACKLIGHT_STRENGTH } },
+  const mat     = useMemo(() => new THREE.ShaderMaterial({
+    uniforms       : { uOp: { value: BACKLIGHT_STRENGTH }, uTime: { value: 0 } },
     vertexShader   : BL_VERT,
     fragmentShader : BL_FRAG,
     transparent    : true,
@@ -81,17 +107,14 @@ function BacklightPlane({ isMobile }: { isMobile: boolean }) {
     side           : THREE.DoubleSide,
   }), [])
 
-  useFrame(({ mouse }) => {
-    sm.current.x += (mouse.x - sm.current.x) * 0.055
-    sm.current.y += (mouse.y - sm.current.y) * 0.055
+  useFrame(({ clock }, delta) => {
+    mat.uniforms.uTime.value = clock.getElapsedTime()
+    sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, 8, delta)
+    sm.current.y = THREE.MathUtils.damp(sm.current.y, mouseRef.current.y, 8, delta)
     if (!meshRef.current) return
-    // Opposite-mouse: light always behind the face on the far side
-    meshRef.current.position.x = lerp(
-      meshRef.current.position.x, -sm.current.x * (isMobile ? 25 : 52), 0.06
-    )
-    meshRef.current.position.y = lerp(
-      meshRef.current.position.y,  sm.current.y * (isMobile ? 16 : 36), 0.06
-    )
+    // Move OPPOSITE the mouse — creates 3D depth illusion
+    meshRef.current.position.x = -sm.current.x * (isMobile ? 25 : 52)
+    meshRef.current.position.y =  sm.current.y * (isMobile ? 16 : 36)
   })
 
   const sz = isMobile ? 300 : 520
@@ -103,23 +126,33 @@ function BacklightPlane({ isMobile }: { isMobile: boolean }) {
   )
 }
 
-// ── AvaPointCloud ─────────────────────────────────────────────────────────────
-// Two <points> layers sharing one geometry:
-//   layer 0 → wide soft glow  (simulates bloom)
-//   layer 1 → sharp core dots
-function AvaPointCloud({
-  data, isMobile, prefersReduced,
-}: {
-  data           : ParticleData
-  isMobile       : boolean
-  prefersReduced : boolean
-}) {
-  const glowRef = useRef<THREE.Points>(null)
-  const coreRef = useRef<THREE.Points>(null)
-  const sm      = useRef({ x: 0, y: 0 })
-  const t0      = useRef<number | null>(null)  // reveal start time
+// ── CameraRig ──────────────────────────────────────────────────────────────────
+// Subtle camera parallax: camera position follows mouse, face stays centred.
+function CameraRig({ mouseRef }: { mouseRef: MouseRef }) {
+  const { camera } = useThree()
+  const sm         = useRef({ x: 0, y: 0 })
 
-  // Shared geometry — built once, reused by both passes
+  useFrame((_, delta) => {
+    sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, 6, delta)
+    sm.current.y = THREE.MathUtils.damp(sm.current.y, mouseRef.current.y, 6, delta)
+    camera.position.x = sm.current.x * 12
+    camera.position.y = sm.current.y *  8
+    camera.lookAt(0, 0, 0)
+  })
+
+  return null
+}
+
+// ── PortraitCloud ──────────────────────────────────────────────────────────────
+// Shared renderer for both GLB-sampled and image-derived particle data.
+function PortraitCloud({
+  data, isMobile, mouseRef,
+}: { data: ParticleData; isMobile: boolean; mouseRef: MouseRef }) {
+  const groupRef = useRef<THREE.Group>(null)
+  const sm       = useRef({ x: 0, y: 0 })
+  const t0       = useRef<number | null>(null)
+  const sprite   = useMemo(makeCircleTexture, [])
+
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry()
     g.setAttribute('position', new THREE.BufferAttribute(data.positions, 3))
@@ -127,110 +160,151 @@ function AvaPointCloud({
     return g
   }, [data])
 
-  const pxBase  = isMobile ? PARTICLE_SIZE_MOBILE : PARTICLE_SIZE_DESKTOP
+  const baseSize = isMobile ? CORE_SIZE * 1.4 : CORE_SIZE
+
   const glowMat = useMemo(() => new THREE.PointsMaterial({
-    size             : pxBase * BLOOM_GLOW_MULT,
-    sizeAttenuation  : true,
-    vertexColors     : true,
-    blending         : THREE.AdditiveBlending,
-    depthWrite       : false,
-    transparent      : true,
-    opacity          : 0,   // animated in on reveal
-  }), [pxBase])
+    size            : baseSize * GLOW_SIZE_MULT,
+    sizeAttenuation : true,
+    vertexColors    : true,
+    blending        : THREE.AdditiveBlending,
+    depthWrite      : false,
+    transparent     : true,
+    opacity         : 0,
+    map             : sprite,
+    alphaTest       : 0.01,
+  }), [baseSize, sprite])
 
   const coreMat = useMemo(() => new THREE.PointsMaterial({
-    size             : pxBase,
-    sizeAttenuation  : true,
-    vertexColors     : true,
-    blending         : THREE.AdditiveBlending,
-    depthWrite       : false,
-    transparent      : true,
-    opacity          : 0,   // animated in on reveal
-  }), [pxBase])
+    size            : baseSize,
+    sizeAttenuation : true,
+    vertexColors    : true,
+    blending        : THREE.AdditiveBlending,
+    depthWrite      : false,
+    transparent     : true,
+    opacity         : 0,
+    map             : sprite,
+    alphaTest       : 0.01,
+  }), [baseSize, sprite])
 
-  useFrame(({ clock, mouse }) => {
+  useFrame(({ clock }, delta) => {
     const now = clock.getElapsedTime()
-
-    // ── Reveal fade-in ────────────────────────────────────────────────────
     if (t0.current === null) t0.current = now
-    const rev = ease(Math.min(1, (now - t0.current) / 2.5))
-    glowMat.opacity = BLOOM_GLOW_OPACITY * rev
-    coreMat.opacity = 0.88 * rev
 
-    if (prefersReduced) return
+    // Entrance fade-in over 2.5 s
+    const rev       = ease(Math.min(1, (now - t0.current) / 2.5))
+    glowMat.opacity = GLOW_OPACITY * rev
+    coreMat.opacity = CORE_OPACITY * rev
 
-    // ── Smooth mouse (R3F gives normalised –1…+1) ─────────────────────────
-    sm.current.x += (mouse.x - sm.current.x) * 0.055
-    sm.current.y += (mouse.y - sm.current.y) * 0.055
+    // High-speed damp: portrait instantly follows mouse anywhere on page
+    sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, DAMP_SPEED, delta)
+    sm.current.y = THREE.MathUtils.damp(sm.current.y, mouseRef.current.y, DAMP_SPEED, delta)
 
-    // ── Gaze-follow rotation ──────────────────────────────────────────────
-    const target = [glowRef.current, coreRef.current]
-    for (const obj of target) {
-      if (!obj) continue
-      obj.rotation.y = lerp(obj.rotation.y, sm.current.x * PARALLAX_STRENGTH,     0.07)
-      obj.rotation.x = lerp(obj.rotation.x, -sm.current.y * PARALLAX_STRENGTH * 0.6, 0.07)
-      // Breathing Z — subtle life even without cursor movement
-      obj.position.z = Math.sin(now * 0.55) * 5.5
+    if (groupRef.current) {
+      groupRef.current.rotation.y = sm.current.x * PARALLAX_STRENGTH
+      groupRef.current.rotation.x = -sm.current.y * PARALLAX_STRENGTH * 0.6
+      // Breathing: subtle Z pulse
+      groupRef.current.position.z = Math.sin(now * 0.55) * 5.5
     }
   })
 
   return (
-    <>
-      <points ref={glowRef} geometry={geo} material={glowMat} />
-      <points ref={coreRef} geometry={geo} material={coreMat} />
-    </>
+    <group ref={groupRef}>
+      <points geometry={geo} material={glowMat} />
+      <points geometry={geo} material={coreMat} />
+    </group>
   )
 }
 
-// ── Scene root ────────────────────────────────────────────────────────────────
-function Scene({
-  data, isMobile, prefersReduced,
-}: {
-  data           : ParticleData
-  isMobile       : boolean
-  prefersReduced : boolean
-}) {
-  return (
-    <>
-      <color attach="background" args={['#000000']} />
-      <BacklightPlane isMobile={isMobile} />
-      <AvaPointCloud data={data} isMobile={isMobile} prefersReduced={prefersReduced} />
-    </>
-  )
+// ── GLBPortrait ────────────────────────────────────────────────────────────────
+// Loads /ava-face.glb, samples POINT_COUNT surface points, normalises to scene.
+function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: MouseRef }) {
+  const { scene } = useGLTF('/ava-face.glb')
+
+  const mesh = useMemo((): THREE.Mesh | null => {
+    let found: THREE.Mesh | null = null
+    scene.traverse((child) => {
+      if (!found && child instanceof THREE.Mesh) found = child
+    })
+    return found
+  }, [scene])
+
+  const data = useMemo((): ParticleData | null => {
+    if (!mesh) return null
+    const count   = isMobile ? POINT_COUNT_MOBILE : POINT_COUNT_DESKTOP
+    const sampler = new MeshSurfaceSampler(mesh).build()
+    const tempPos = new THREE.Vector3()
+
+    // Pass 1 — collect raw positions + compute bounding box for normalisation
+    const rawPos = new Float32Array(count * 3)
+    let minX = Infinity, maxX = -Infinity
+    let minY = Infinity, maxY = -Infinity
+    let minZ = Infinity, maxZ = -Infinity
+
+    for (let i = 0; i < count; i++) {
+      sampler.sample(tempPos)
+      rawPos[i * 3]     = tempPos.x
+      rawPos[i * 3 + 1] = tempPos.y
+      rawPos[i * 3 + 2] = tempPos.z
+      if (tempPos.x < minX) minX = tempPos.x
+      if (tempPos.x > maxX) maxX = tempPos.x
+      if (tempPos.y < minY) minY = tempPos.y
+      if (tempPos.y > maxY) maxY = tempPos.y
+      if (tempPos.z < minZ) minZ = tempPos.z
+      if (tempPos.z > maxZ) maxZ = tempPos.z
+    }
+
+    // Target world dimensions (camera z=500, fov=50 → visH ≈ 466 units)
+    const visH = 2 * 500 * Math.tan((50 * Math.PI / 180) / 2)
+    const visW = visH * (window.innerWidth / window.innerHeight)
+    const mAsp = (maxX - minX) / Math.max(0.001, maxY - minY)
+    let   tgtH = visH * 0.92
+    let   tgtW = tgtH * mAsp
+    if (tgtW > visW * 0.94) { tgtW = visW * 0.94; tgtH = tgtW / mAsp }
+
+    const sX = tgtW / Math.max(0.001, maxX - minX)
+    const sY = tgtH / Math.max(0.001, maxY - minY)
+    const s  = Math.min(sX, sY)   // uniform XY scale
+    const cx = (minX + maxX) / 2
+    const cy = (minY + maxY) / 2
+    const cz = (minZ + maxZ) / 2
+
+    // Pass 2 — normalise to scene space + colour
+    const positions = new Float32Array(count * 3)
+    const colors    = new Float32Array(count * 3)
+    const cyanC     = new THREE.Color(CYAN_COLOR)
+    const purpleC   = new THREE.Color(PURPLE_COLOR)
+
+    for (let i = 0; i < count; i++) {
+      positions[i * 3]     = (rawPos[i * 3]     - cx) * s
+      positions[i * 3 + 1] = (rawPos[i * 3 + 1] - cy) * s
+      positions[i * 3 + 2] = (rawPos[i * 3 + 2] - cz) * s
+      const c = Math.random() < PURPLE_PERCENT ? purpleC : cyanC
+      colors[i * 3]     = c.r
+      colors[i * 3 + 1] = c.g
+      colors[i * 3 + 2] = c.b
+    }
+
+    return { positions, colors, count }
+  }, [mesh, isMobile])
+
+  if (!data) return null
+  return <PortraitCloud data={data} isMobile={isMobile} mouseRef={mouseRef} />
 }
 
-// ── Main export ───────────────────────────────────────────────────────────────
-interface AvaParticleHeroProps {
-  className?     : string
-  scrollProgress?: number     // accepted for API compatibility, not used
-}
-
-export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
-  const [data, setData] = useState<ParticleData | null>(null)
-
-  // Stable flags — detected once at mount
-  const isMobile = useMemo(
-    () => typeof window !== 'undefined' && window.innerWidth < 768,
-    [],
-  )
-  const prefersReduced = useMemo(
-    () => typeof window !== 'undefined' &&
-          window.matchMedia('(prefers-reduced-motion: reduce)').matches,
-    [],
-  )
-
-  // ── Build particle data from ava-face.png ─────────────────────────────────
-  useEffect(() => {
-    const img        = new Image()
-    img.crossOrigin  = 'anonymous'
-    img.src          = '/ava-face.png'
+// ── Image Fallback ─────────────────────────────────────────────────────────────
+// Two-pass grid sampling with Z_CLAMP prevents depth caves / inversion.
+function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
+  return new Promise((resolve, reject) => {
+    const img       = new Image()
+    img.crossOrigin = 'anonymous'
+    img.src         = '/ava-face.png'
+    img.onerror     = () => reject(new Error('Failed to load /ava-face.png'))
 
     img.onload = () => {
       const iW   = img.naturalWidth
       const iH   = img.naturalHeight
       const step = isMobile ? PARTICLE_STEP_MOBILE : PARTICLE_STEP_DESKTOP
 
-      // Read pixel data via offscreen canvas
       const off  = document.createElement('canvas')
       off.width  = iW
       off.height = iH
@@ -238,86 +312,135 @@ export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
       c2.drawImage(img, 0, 0)
       const px = c2.getImageData(0, 0, iW, iH).data
 
-      // Helper: perceived luminance at pixel coords
       const lum = (x: number, y: number): number => {
         if (x < 0 || x >= iW || y < 0 || y >= iH) return 0
         const i = (y * iW + x) * 4
         return (px[i] * 0.299 + px[i + 1] * 0.587 + px[i + 2] * 0.114) / 255
       }
 
-      // ── Scene scale ──────────────────────────────────────────────────────
-      // Camera is at z = 500, fov = 50.  Visible height at z = 0 ≈ 466 units.
-      const visH = 2 * 500 * Math.tan((50 * Math.PI / 180) / 2) // 466
-      const visW = visH * (window.innerWidth / window.innerHeight)
+      // Scene scale from camera geometry
+      const visH   = 2 * 500 * Math.tan((50 * Math.PI / 180) / 2)
+      const visW   = visH * (window.innerWidth / window.innerHeight)
+      const imgAsp = iW / iH
+      let   scaleY = visH * 0.92
+      let   scaleX = scaleY * imgAsp
+      if (scaleX > visW * 0.94) { scaleX = visW * 0.94; scaleY = scaleX / imgAsp }
 
-      const imgAspect = iW / iH
-      // Fill 92 % of the viewport height, constrain width so it fits on mobile
-      let scaleY = visH * 0.92
-      let scaleX = scaleY * imgAspect
-      if (scaleX > visW * 0.94) {
-        scaleX = visW * 0.94
-        scaleY = scaleX / imgAspect
-      }
-
-      // ── Sample pixels → positions + colours ──────────────────────────────
       const pos: number[] = []
       const col: number[] = []
+      const cyanC   = new THREE.Color(CYAN_COLOR)
+      const purpleC = new THREE.Color(PURPLE_COLOR)
 
-      for (let y = 0; y < iH; y += step) {
-        for (let x = 0; x < iW; x += step) {
-          const l = lum(x, y)
-          if (l < 0.055) continue         // skip background / transparent
+      // Two-pass: grid A at (0, 0) + grid B at (step/2, step/2) — fills gaps
+      const half = step >> 1
+      const offsets: [number, number][] = [[0, 0], [half, half]]
 
-          // ── Position ──────────────────────────────────────────────────
-          const sx = (x / iW - 0.5) * scaleX
-          const sy = (0.5 - y / iH) * scaleY
+      for (const [ox, oy] of offsets) {
+        for (let y = oy; y < iH; y += step) {
+          for (let x = ox; x < iW; x += step) {
+            const l = lum(x, y)
+            if (l < 0.055) continue
 
-          // Pseudo-depth: bright pixels come forward
-          let sz = (l - 0.45) * DEPTH_STRENGTH
+            const sx = (x / iW - 0.5) * scaleX
+            const sy = (0.5 - y / iH) * scaleY
 
-          // Sobel edge detection → push edges forward for facial-feature pop
-          const gx = lum(x + 1, y) - lum(x - 1, y)
-          const gy = lum(x, y + 1) - lum(x, y - 1)
-          sz += Math.sqrt(gx * gx + gy * gy) * EDGE_DEPTH_BOOST
+            // Luminance depth + Sobel edge push + jitter, hard-clamped
+            const gx = lum(x + 1, y) - lum(x - 1, y)
+            const gy = lum(x, y + 1) - lum(x, y - 1)
+            let sz = (l - 0.45) * DEPTH_STRENGTH
+                   + Math.sqrt(gx * gx + gy * gy) * EDGE_DEPTH_BOOST
+                   + (Math.random() - 0.5) * 10
+            sz = clamp(sz, -Z_CLAMP, Z_CLAMP)
 
-          // Organic Z jitter — prevents the flat "grid" look
-          sz += (Math.random() - 0.5) * 14
-
-          pos.push(sx, sy, sz)
-
-          // ── Colour: cyan palette ──────────────────────────────────────
-          const r = Math.random()
-          if (r < 0.05) {
-            // 5 % purple sparks for premium feel
-            col.push(0.66, 0.33, 1.0)
-          } else {
-            // Lerp from base cyan (#00E5FF) → light cyan (#66FCFF) by lum
-            const t = clamp(l * 1.25, 0, 1)
-            col.push(
-              lerp(0.0,   0.40,  t),   // R: 0 → 0.40
-              lerp(0.898, 0.988, t),   // G: 0.898 → 0.988
-              1.0,                      // B: always 1
-            )
+            pos.push(sx, sy, sz)
+            const c = Math.random() < PURPLE_PERCENT ? purpleC : cyanC
+            col.push(c.r, c.g, c.b)
           }
         }
       }
 
-      setData({
+      resolve({
         positions : new Float32Array(pos),
         colors    : new Float32Array(col),
         count     : pos.length / 3,
       })
     }
-  }, [isMobile])
+  })
+}
 
-  // Black placeholder while image loads
-  if (!data) {
-    return (
-      <div
-        className={className}
-        style={{ width: '100%', height: '100%', background: '#000' }}
-      />
-    )
+// ── Scene ──────────────────────────────────────────────────────────────────────
+function Scene({
+  glbAvailable, imageData, isMobile, mouseRef,
+}: {
+  glbAvailable : boolean
+  imageData    : ParticleData | null
+  isMobile     : boolean
+  mouseRef     : MouseRef
+}) {
+  return (
+    <>
+      <color attach="background" args={['#000000']} />
+      <CameraRig mouseRef={mouseRef} />
+      <BacklightPlane isMobile={isMobile} mouseRef={mouseRef} />
+      {glbAvailable ? (
+        <Suspense fallback={null}>
+          <GLBPortrait isMobile={isMobile} mouseRef={mouseRef} />
+        </Suspense>
+      ) : (
+        imageData && <PortraitCloud data={imageData} isMobile={isMobile} mouseRef={mouseRef} />
+      )}
+    </>
+  )
+}
+
+// ── Main Export ────────────────────────────────────────────────────────────────
+interface AvaParticleHeroProps {
+  className?      : string
+  scrollProgress? : number   // accepted for API compat; not used
+}
+
+export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
+  const [glbAvailable, setGlbAvailable] = useState<boolean | null>(null)
+  const [imageData,    setImageData]    = useState<ParticleData | null>(null)
+  const mouseRef = useRef({ x: 0, y: 0 })
+
+  const isMobile = useMemo(
+    () => typeof window !== 'undefined' && window.innerWidth < 768,
+    [],
+  )
+
+  // ── Detect whether /ava-face.glb is available ───────────────────────────
+  useEffect(() => {
+    let cancelled = false
+    fetch('/ava-face.glb', { method: 'HEAD' })
+      .then(r  => { if (!cancelled) setGlbAvailable(r.ok) })
+      .catch(() => { if (!cancelled) setGlbAvailable(false) })
+    return () => { cancelled = true }
+  }, [])
+
+  // ── Build image-fallback particles when GLB is unavailable ──────────────
+  useEffect(() => {
+    if (glbAvailable !== false) return
+    let cancelled = false
+    buildImageParticles(isMobile)
+      .then(d  => { if (!cancelled) setImageData(d) })
+      .catch(() => console.warn('[AvaParticleHero] ava-face.png load failed'))
+    return () => { cancelled = true }
+  }, [glbAvailable, isMobile])
+
+  // ── Global pointer tracking → instant response anywhere on page ─────────
+  useEffect(() => {
+    const onMove = (e: PointerEvent) => {
+      mouseRef.current.x =  (e.clientX / window.innerWidth)  * 2 - 1
+      mouseRef.current.y = -(e.clientY / window.innerHeight) * 2 + 1
+    }
+    window.addEventListener('pointermove', onMove, { passive: true })
+    return () => window.removeEventListener('pointermove', onMove)
+  }, [])
+
+  // Black placeholder while detecting GLB availability (~1 round-trip)
+  if (glbAvailable === null) {
+    return <div className={className} style={{ width: '100%', height: '100%', background: '#000' }} />
   }
 
   return (
@@ -332,7 +455,12 @@ export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
         }}
         style={{ width: '100%', height: '100%', display: 'block' }}
       >
-        <Scene data={data} isMobile={isMobile} prefersReduced={prefersReduced} />
+        <Scene
+          glbAvailable={glbAvailable}
+          imageData={imageData}
+          isMobile={isMobile}
+          mouseRef={mouseRef}
+        />
       </Canvas>
     </div>
   )
