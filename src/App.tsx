@@ -17,6 +17,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import GDPRCompliance from "./pages/GDPRCompliance";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import GlobalAtmosphere from "./components/ui/GlobalAtmosphere";
 
 // ScrollToTop component to ensure proper scrolling behavior
 const ScrollToTop = () => {
@@ -54,6 +55,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <GlobalAtmosphere />
           <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
             <ScrollToTop />
             <Navbar />

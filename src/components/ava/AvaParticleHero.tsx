@@ -147,8 +147,10 @@ const BL_FRAG = /* glsl */`
 
 // ── BacklightPlane ─────────────────────────────────────────────────────────────
 function BacklightPlane({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: MouseRef }) {
-  const meshRef = useRef<THREE.Mesh>(null)
-  const sm      = useRef({ x: 0, y: 0 })
+  const meshRef    = useRef<THREE.Mesh>(null)
+  const sm         = useRef({ x: 0, y: 0 })
+  const prevMouse  = useRef({ x: 0, y: 0 })
+  const speedSmooth = useRef(0)
   const mat     = useMemo(() => new THREE.ShaderMaterial({
     uniforms       : { uOp: { value: BACKLIGHT_STRENGTH }, uTime: { value: 0 } },
     vertexShader   : BL_VERT,
@@ -161,6 +163,17 @@ function BacklightPlane({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: M
 
   useFrame(({ clock }, delta) => {
     mat.uniforms.uTime.value = clock.getElapsedTime()
+    // Cursor velocity → backlight intensity boost
+    const rawSpeed = Math.hypot(
+      mouseRef.current.x - prevMouse.current.x,
+      mouseRef.current.y - prevMouse.current.y,
+    )
+    speedSmooth.current = THREE.MathUtils.damp(speedSmooth.current, rawSpeed, 5, delta)
+    prevMouse.current.x = mouseRef.current.x
+    prevMouse.current.y = mouseRef.current.y
+    const boost = Math.min(speedSmooth.current * 12, 0.55)
+    mat.uniforms.uOp.value = BACKLIGHT_STRENGTH * (1 + boost)
+
     sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, 8, delta)
     sm.current.y = THREE.MathUtils.damp(sm.current.y, mouseRef.current.y, 8, delta)
     if (!meshRef.current) return
@@ -244,7 +257,9 @@ function PortraitCloud({
     if (t0.current === null) t0.current = now
 
     const rev       = ease(Math.min(1, (now - t0.current) / 2.5))
-    glowMat.opacity = GLOW_OPACITY * rev
+    // Subtle sparkle: glow layer breathes gently at a prime-ish frequency
+    const sparkle   = 1 + 0.04 * Math.sin(now * 3.7 + 1.2)
+    glowMat.opacity = GLOW_OPACITY * rev * sparkle
     coreMat.opacity = CORE_OPACITY * rev
 
     sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, DAMP_SPEED, delta)

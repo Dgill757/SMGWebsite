@@ -275,20 +275,32 @@ const RevenueSection: React.FC = () => {
                 opacity: inView ? 1 : 0,
                 transform: inView ? 'none' : 'translateY(30px)',
                 transitionDelay: `${0.05 * i}s`,
+                willChange: 'transform',
+              }}
+              onMouseMove={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x  = (e.clientX - rect.left) / rect.width  - 0.5;
+                const y  = (e.clientY - rect.top)  / rect.height - 0.5;
+                const gx = Math.round(((e.clientX - rect.left) / rect.width)  * 100);
+                const gy = Math.round(((e.clientY - rect.top)  / rect.height) * 100);
+                e.currentTarget.style.transform =
+                  `perspective(700px) rotateX(${-y * 6}deg) rotateY(${x * 6}deg) translateY(-6px)`;
+                e.currentTarget.style.background =
+                  `radial-gradient(circle at ${gx}% ${gy}%, rgba(255,255,255,0.085) 0%, rgba(255,255,255,0.022) 65%)`;
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget;
-                el.style.background = 'rgba(255,255,255,0.05)';
-                el.style.borderColor = `${feat.accent}44`;
-                el.style.transform = 'translateY(-3px)';
-                el.style.boxShadow = `0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px ${feat.accent}22`;
+                el.style.borderColor = `${feat.accent}55`;
+                el.style.boxShadow   = `0 24px 60px rgba(0,0,0,0.45), 0 0 0 1px ${feat.accent}28, 0 0 40px ${feat.accent}18`;
+                el.style.transition  = 'border-color 0.2s ease, box-shadow 0.2s ease';
               }}
               onMouseLeave={(e) => {
                 const el = e.currentTarget;
-                el.style.background = 'rgba(255,255,255,0.028)';
+                el.style.background  = 'rgba(255,255,255,0.028)';
                 el.style.borderColor = 'rgba(255,255,255,0.07)';
-                el.style.transform = 'none';
-                el.style.boxShadow = 'none';
+                el.style.transform   = 'none';
+                el.style.boxShadow   = 'none';
+                el.style.transition  = 'all 0.45s ease';
               }}
             >
               {/* Icon */}
