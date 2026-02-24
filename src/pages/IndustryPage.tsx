@@ -12,6 +12,7 @@ import IndustryTestimonial from '@/components/industry/IndustryTestimonial';
 import IndustryFAQSection from '@/components/industry/IndustryFAQSection';
 import CtaSection from '@/components/industry/CtaSection';
 import IndustryStatsSection from '@/components/industry/IndustryStatsSection';
+import IndustryIntroCard from '@/components/industry/IndustryIntroCard';
 import { getIndustryStats, getIndustryName } from '@/data/industryStats';
 
 // Define the interface for use case steps
@@ -1878,11 +1879,10 @@ const IndustryPage = () => {
               </div>
             </div>
             
-            <div className="mt-16 p-6 bg-muted rounded-lg border border-border/50">
-              <p className="text-muted-foreground">
-                {industry.description}
-              </p>
-            </div>
+            <IndustryIntroCard
+              description={industry.description}
+              icon={industry.icon}
+            />
             
             <div className="mt-12 flex justify-center">
               <button 
