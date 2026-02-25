@@ -664,6 +664,32 @@ img, iframe, video, embed {
   }
 }
 
+/* ─── ROI Calculator: collapse 2-col layout on mobile ───────────────────── */
+@media (max-width: 768px) {
+  .roi-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+}
+
+/* ─── Footer: 4-col grid → responsive on tablet/mobile ─────────────────── */
+@media (max-width: 768px) {
+  .footer-grid {
+    grid-template-columns: 1fr 1fr !important;
+    gap: 2rem !important;
+  }
+}
+@media (max-width: 540px) {
+  .footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 1.5rem !important;
+  }
+  /* Contact form name+email: stack vertically on xs */
+  .footer-name-email-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
 /* ─── Testimonials: swipe cursor indicator on mobile ─────────────────────── */
 @media (max-width: 768px) {
   .testimonial-main-card {

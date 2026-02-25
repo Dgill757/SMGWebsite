@@ -231,7 +231,7 @@ const Footer: React.FC = () => {
               </div>
             ) : (
               <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }} className="footer-name-email-grid">
                   {[
                     { key: 'name', placeholder: 'Your name', type: 'text' },
                     { key: 'email', placeholder: 'Email address', type: 'email' },
