@@ -53,19 +53,18 @@ const Navbar: React.FC = () => {
           aria-label="SummitVoiceAI — back to home"
         >
           <img
-            src="/assets/summitvoiceai-logo.png"
+            src="/assets/summitvoiceai-logo-gradient.png"
             alt="SummitVoiceAI"
-            width={869}
-            height={200}
+            width={1070}
+            height={260}
             loading="eager"
             decoding="async"
-            className="logo-wordmark"
+            className="logo-gradient"
             style={{
               height: 'clamp(28px, 4vw, 38px)',
               width: 'auto',
               objectFit: 'contain',
               display: 'block',
-              transition: 'opacity 0.2s ease, transform 0.2s ease',
             }}
           />
         </Link>

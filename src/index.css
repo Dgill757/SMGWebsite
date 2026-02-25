@@ -430,18 +430,29 @@ html, body {
     radial-gradient(ellipse at 80% 60%, rgba(59,130,246,0.06) 0%, transparent 60%);
 }
 
-/* ─── Logo wordmark ───────────────────────────────────────────────────────────  */
-/* Subtle hover lift — desktop pointer only */
+/* ─── Logo gradient (current) + wordmark (legacy) ────────────────────────────  */
+.logo-gradient {
+  transition: transform 200ms ease, filter 200ms ease;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
+@media (hover: hover) {
+  .logo-gradient:hover {
+    transform: scale(1.02);
+    filter: brightness(1.08);
+  }
+}
+/* Legacy white wordmark */
+.logo-wordmark {
+  transition: opacity 200ms ease, transform 200ms ease;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
+}
 @media (hover: hover) and (pointer: fine) {
   .logo-wordmark:hover {
     opacity: 0.88;
     transform: scale(1.02);
   }
-}
-/* Ensure crisp on high-DPI displays */
-.logo-wordmark {
-  image-rendering: -webkit-optimize-contrast;
-  image-rendering: crisp-edges;
 }
 
 /* ─── Nav Styles ──────────────────────────────────────────────────────────────  */
