@@ -1,17 +1,16 @@
 'use client'
 /**
- * AvaParticleHero v3 — crash-proof Three.js / R3F 3D particle portrait
+ * AvaParticleHero v4 — adaptive density + hair fill pass + micro jitter
  *
  * Primary mode  : /ava-face.glb → MeshSurfaceSampler → true 3D surface cloud
- * Fallback mode : /ava-face.png → luminance depth + two-pass pixel sampling
+ * Fallback mode : /ava-face.png → adaptive luminance density + two-pass sampling
  * Hard fallback : <img> static image when WebGL is unavailable
  *
- * GLB detection : attempt load via useGLTF; GLBErrorBoundary catches 404/errors
- *                 and flips to image mode — no fragile HEAD fetch required.
- * WebGL guard   : CanvasErrorBoundary wraps Canvas; shows static image on failure.
- * window/doc    : all access is inside useEffect, useFrame, or useMemo (client-only
- *                 with 'use client'; also guarded by typeof window checks where used
- *                 outside effects to be safe in any SSR context).
+ * v4 changes (from v3):
+ *  - Adaptive density: dark areas retain ~40% base density (smoothstep 0.05–0.35)
+ *  - Hair fill pass: second particle layer for luminance < 0.35 regions
+ *    (GLB: extra sample pass at same surface; image: luminance-gated fill)
+ *  - Micro jitter: ±0.6 XY, ±0.8 Z offsets break grid feel + add volume
  *
  * ─── TWEAK KNOBS ─────────────────────────────────────────────────────────────
  */
@@ -49,6 +48,13 @@ interface ParticleData {
   colors    : Float32Array
   count     : number
 }
+
+/** Combined result from buildImageParticles — primary + hair fill layer */
+interface ImageParticleResult {
+  primary  : ParticleData
+  hairFill : ParticleData
+}
+
 type MouseRef = React.MutableRefObject<{ x: number; y: number }>
 
 // ── Error Boundaries ──────────────────────────────────────────────────────────
@@ -105,6 +111,12 @@ class CanvasErrorBoundary extends Component<CBProps, CBState> {
 // ── Helpers ────────────────────────────────────────────────────────────────────
 const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v))
 const ease  = (t: number) => { const c = clamp(t, 0, 1); return c * c * (3 - 2 * c) }
+
+/** Smooth-step interpolation — used for adaptive particle density */
+const ss = (lo: number, hi: number, v: number): number => {
+  const t = clamp((v - lo) / (hi - lo), 0, 1)
+  return t * t * (3 - 2 * t)
+}
 
 /** 64×64 radial-gradient canvas texture — produces round glowing point sprites */
 function makeCircleTexture(): THREE.CanvasTexture {
@@ -208,9 +220,15 @@ function CameraRig({ mouseRef }: { mouseRef: MouseRef }) {
 
 // ── PortraitCloud ──────────────────────────────────────────────────────────────
 // Shared renderer for GLB-sampled and image-derived particle data.
+// Accepts an optional hairFill layer for depth haze in dark regions.
 function PortraitCloud({
-  data, isMobile, mouseRef,
-}: { data: ParticleData; isMobile: boolean; mouseRef: MouseRef }) {
+  data, hairFill, isMobile, mouseRef,
+}: {
+  data     : ParticleData
+  hairFill ?: ParticleData
+  isMobile : boolean
+  mouseRef : MouseRef
+}) {
   const groupRef = useRef<THREE.Group>(null)
   const sm       = useRef({ x: 0, y: 0 })
   const t0       = useRef<number | null>(null)
@@ -219,6 +237,7 @@ function PortraitCloud({
   //   • Next.js: 'use client' ensures client-only execution
   const sprite   = useMemo(makeCircleTexture, [])
 
+  // ── Primary geometry ────────────────────────────────────────────────────────
   const geo = useMemo(() => {
     const g = new THREE.BufferGeometry()
     g.setAttribute('position', new THREE.BufferAttribute(data.positions, 3))
@@ -252,6 +271,29 @@ function PortraitCloud({
     alphaTest       : 0.01,
   }), [baseSize, sprite])
 
+  // ── Hair fill geometry + material ───────────────────────────────────────────
+  // Slightly larger size (×1.3), lower opacity (CORE_OPACITY × 0.45)
+  // Rendered behind the primary layers to add depth haze in dark/hair regions.
+  const hairGeo = useMemo(() => {
+    if (!hairFill || hairFill.count === 0) return null
+    const g = new THREE.BufferGeometry()
+    g.setAttribute('position', new THREE.BufferAttribute(hairFill.positions, 3))
+    g.setAttribute('color',    new THREE.BufferAttribute(hairFill.colors,    3))
+    return g
+  }, [hairFill])
+
+  const hairMat = useMemo(() => new THREE.PointsMaterial({
+    size            : baseSize * 1.3,   // slightly larger than core
+    sizeAttenuation : true,
+    vertexColors    : true,
+    blending        : THREE.AdditiveBlending,
+    depthWrite      : false,
+    transparent     : true,
+    opacity         : 0,
+    map             : sprite,
+    alphaTest       : 0.01,
+  }), [baseSize, sprite])
+
   useFrame(({ clock }, delta) => {
     const now = clock.getElapsedTime()
     if (t0.current === null) t0.current = now
@@ -261,6 +303,8 @@ function PortraitCloud({
     const sparkle   = 1 + 0.04 * Math.sin(now * 3.7 + 1.2)
     glowMat.opacity = GLOW_OPACITY * rev * sparkle
     coreMat.opacity = CORE_OPACITY * rev
+    // Hair fill fades in with same reveal curve, lower opacity
+    hairMat.opacity = CORE_OPACITY * 0.45 * rev
 
     sm.current.x = THREE.MathUtils.damp(sm.current.x, mouseRef.current.x, DAMP_SPEED, delta)
     sm.current.y = THREE.MathUtils.damp(sm.current.y, mouseRef.current.y, DAMP_SPEED, delta)
@@ -274,6 +318,8 @@ function PortraitCloud({
 
   return (
     <group ref={groupRef}>
+      {/* Hair fill rendered first (behind) for depth haze */}
+      {hairGeo && <points geometry={hairGeo} material={hairMat} />}
       <points geometry={geo} material={glowMat} />
       <points geometry={geo} material={coreMat} />
     </group>
@@ -293,8 +339,11 @@ function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: Mous
     return found
   }, [scene])
 
-  const data = useMemo((): ParticleData | null => {
-    if (!mesh) return null
+  const { primary, hairFill } = useMemo((): {
+    primary  : ParticleData | null
+    hairFill : ParticleData | null
+  } => {
+    if (!mesh) return { primary: null, hairFill: null }
 
     const count   = isMobile ? POINT_COUNT_MOBILE : POINT_COUNT_DESKTOP
     const sampler = new MeshSurfaceSampler(mesh).build()
@@ -336,32 +385,68 @@ function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: Mous
     const cy = (minY + maxY) / 2
     const cz = (minZ + maxZ) / 2
 
-    // Pass 2 — normalise + colour
+    // Pass 2 — normalise + colour + micro jitter (breaks grid feel, adds volume)
     const positions = new Float32Array(count * 3)
     const colors    = new Float32Array(count * 3)
     const cyanC     = new THREE.Color(CYAN_COLOR)
     const purpleC   = new THREE.Color(PURPLE_COLOR)
 
     for (let i = 0; i < count; i++) {
-      positions[i * 3]     = (rawPos[i * 3]     - cx) * s
-      positions[i * 3 + 1] = (rawPos[i * 3 + 1] - cy) * s
-      positions[i * 3 + 2] = (rawPos[i * 3 + 2] - cz) * s
+      // Micro jitter: ±0.6 XY, ±0.8 Z — subtle organic displacement
+      positions[i * 3]     = (rawPos[i * 3]     - cx) * s + (Math.random() - 0.5) * 1.2
+      positions[i * 3 + 1] = (rawPos[i * 3 + 1] - cy) * s + (Math.random() - 0.5) * 1.2
+      positions[i * 3 + 2] = (rawPos[i * 3 + 2] - cz) * s + (Math.random() - 0.5) * 1.6
       const c = Math.random() < PURPLE_PERCENT ? purpleC : cyanC
       colors[i * 3]     = c.r
       colors[i * 3 + 1] = c.g
       colors[i * 3 + 2] = c.b
     }
 
-    return { positions, colors, count }
+    const primary: ParticleData = { positions, colors, count }
+
+    // Hair fill pass — ~30% extra samples from same surface, pushed back in Z
+    // Creates depth haze and fills any sparse mesh regions without flattening.
+    const fillCount     = Math.floor(count * 0.30)
+    const fillPositions = new Float32Array(fillCount * 3)
+    const fillColors    = new Float32Array(fillCount * 3)
+
+    for (let i = 0; i < fillCount; i++) {
+      sampler.sample(tempPos)
+      fillPositions[i * 3]     = (tempPos.x - cx) * s + (Math.random() - 0.5) * 1.0
+      fillPositions[i * 3 + 1] = (tempPos.y - cy) * s + (Math.random() - 0.5) * 1.0
+      // Push back 3–8 world units for depth haze (behind primary layer)
+      fillPositions[i * 3 + 2] = (tempPos.z - cz) * s - (3 + Math.random() * 5)
+      // Slight cyan-purple tint variation — more purple for warmth in shadows
+      const c = Math.random() < 0.55 ? cyanC : purpleC
+      fillColors[i * 3]     = c.r
+      fillColors[i * 3 + 1] = c.g
+      fillColors[i * 3 + 2] = c.b
+    }
+
+    const hairFill: ParticleData = {
+      positions : fillPositions,
+      colors    : fillColors,
+      count     : fillCount,
+    }
+
+    return { primary, hairFill }
   }, [mesh, isMobile])
 
-  if (!data) return null
-  return <PortraitCloud data={data} isMobile={isMobile} mouseRef={mouseRef} />
+  if (!primary) return null
+  return (
+    <PortraitCloud
+      data={primary}
+      hairFill={hairFill ?? undefined}
+      isMobile={isMobile}
+      mouseRef={mouseRef}
+    />
+  )
 }
 
 // ── Image Fallback ─────────────────────────────────────────────────────────────
-// Two-pass grid sampling with Z_CLAMP; called only from within useEffect.
-function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
+// Adaptive density + two-pass grid + hair fill pass + micro jitter.
+// Called only from within useEffect (client-only).
+function buildImageParticles(isMobile: boolean): Promise<ImageParticleResult> {
   return new Promise((resolve, reject) => {
     const img       = new Image()
     img.crossOrigin = 'anonymous'
@@ -398,10 +483,12 @@ function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
 
       const pos: number[] = []
       const col: number[] = []
+      const hairPos: number[] = []
+      const hairCol: number[] = []
       const cyanC   = new THREE.Color(CYAN_COLOR)
       const purpleC = new THREE.Color(PURPLE_COLOR)
 
-      // Two-pass: grid A at (0, 0) + grid B at (step/2, step/2) — fills gaps
+      // Two-pass grid A at (0,0) + grid B at (step/2, step/2) — fills gaps
       const half = step >> 1
       const offsets: [number, number][] = [[0, 0], [half, half]]
 
@@ -409,28 +496,77 @@ function buildImageParticles(isMobile: boolean): Promise<ParticleData> {
         for (let y = oy; y < iH; y += step) {
           for (let x = ox; x < iW; x += step) {
             const l = lum(x, y)
-            if (l < 0.055) continue
 
-            const sx = (x / iW - 0.5) * scaleX
-            const sy = (0.5 - y / iH) * scaleY
-            const gx = lum(x + 1, y) - lum(x - 1, y)
-            const gy = lum(x, y + 1) - lum(x, y - 1)
+            // Task 1 — adaptive density instead of hard cutoff:
+            // Dark areas keep ~40% density; bright areas approach 100%.
+            // Only reject pixels that are truly transparent/background (< 1%).
+            if (l < 0.01) continue
+            const density = ss(0.05, 0.35, l) * 0.6 + 0.4
+            if (Math.random() > density) continue
+
+            const sx  = (x / iW - 0.5) * scaleX
+            const sy  = (0.5 - y / iH) * scaleY
+            const gxl = lum(x + 1, y) - lum(x - 1, y)
+            const gyl = lum(x, y + 1) - lum(x, y - 1)
             let sz = (l - 0.45) * DEPTH_STRENGTH
-                   + Math.sqrt(gx * gx + gy * gy) * EDGE_DEPTH_BOOST
-                   + (Math.random() - 0.5) * 10
+                   + Math.sqrt(gxl * gxl + gyl * gyl) * EDGE_DEPTH_BOOST
             sz = clamp(sz, -Z_CLAMP, Z_CLAMP)
 
-            pos.push(sx, sy, sz)
+            // Task 3 — micro jitter: ±0.6 XY, ±0.8 Z
+            pos.push(
+              sx + (Math.random() - 0.5) * 1.2,
+              sy + (Math.random() - 0.5) * 1.2,
+              sz + (Math.random() - 0.5) * 1.6,
+            )
             const c = Math.random() < PURPLE_PERCENT ? purpleC : cyanC
             col.push(c.r, c.g, c.b)
           }
         }
       }
 
+      // Task 2 — Hair fill pass: secondary subtle layer for dark regions.
+      // Only pixels with luminance < 0.35 (hair, shadows, eyebrows, lashes).
+      // Size ×1.3, opacity ×0.45, pushed 3–8 units behind primary layer.
+      for (let y = 0; y < iH; y += step) {
+        for (let x = 0; x < iW; x += step) {
+          const l = lum(x, y)
+          // Only process dark/mid-dark pixels in the hair/shadow range
+          if (l < 0.01 || l >= 0.35) continue
+          // Additional 50% thinning — fill layer is supplementary, not dominant
+          if (Math.random() > 0.5) continue
+
+          const sx  = (x / iW - 0.5) * scaleX
+          const sy  = (0.5 - y / iH) * scaleY
+          const gxl = lum(x + 1, y) - lum(x - 1, y)
+          const gyl = lum(x, y + 1) - lum(x, y - 1)
+          let sz = (l - 0.45) * DEPTH_STRENGTH
+                 + Math.sqrt(gxl * gxl + gyl * gyl) * EDGE_DEPTH_BOOST
+          sz = clamp(sz, -Z_CLAMP, Z_CLAMP)
+          // Push back 3–8 units — depth haze behind primary layer
+          sz -= 3 + Math.random() * 5
+
+          hairPos.push(
+            sx + (Math.random() - 0.5) * 1.2,
+            sy + (Math.random() - 0.5) * 1.2,
+            sz,
+          )
+          // Slight cyan-purple tint variation — shadows lean warmer (purple)
+          const c = Math.random() < 0.55 ? cyanC : purpleC
+          hairCol.push(c.r, c.g, c.b)
+        }
+      }
+
       resolve({
-        positions : new Float32Array(pos),
-        colors    : new Float32Array(col),
-        count     : pos.length / 3,
+        primary: {
+          positions : new Float32Array(pos),
+          colors    : new Float32Array(col),
+          count     : pos.length / 3,
+        },
+        hairFill: {
+          positions : new Float32Array(hairPos),
+          colors    : new Float32Array(hairCol),
+          count     : hairPos.length / 3,
+        },
       })
     }
   })
@@ -442,7 +578,7 @@ function Scene({
 }: {
   useGLB      : boolean
   onGLBError  : () => void
-  imageData   : ParticleData | null
+  imageData   : ImageParticleResult | null
   isMobile    : boolean
   mouseRef    : MouseRef
 }) {
@@ -460,7 +596,14 @@ function Scene({
           </Suspense>
         </GLBErrorBoundary>
       ) : (
-        imageData && <PortraitCloud data={imageData} isMobile={isMobile} mouseRef={mouseRef} />
+        imageData && (
+          <PortraitCloud
+            data={imageData.primary}
+            hairFill={imageData.hairFill}
+            isMobile={isMobile}
+            mouseRef={mouseRef}
+          />
+        )
       )}
     </>
   )
@@ -496,7 +639,7 @@ export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
   // useGLB starts true → always try GLB first (no HEAD fetch delay/flash)
   // GLBErrorBoundary sets it to false if the file is missing or broken
   const [useGLB,    setUseGLB]    = useState(true)
-  const [imageData, setImageData] = useState<ParticleData | null>(null)
+  const [imageData, setImageData] = useState<ImageParticleResult | null>(null)
   const mouseRef = useRef({ x: 0, y: 0 })
 
   // Computed once on mount — window is available ('use client' / Vite client-only)
@@ -510,7 +653,7 @@ export default function AvaParticleHero({ className }: AvaParticleHeroProps) {
     if (useGLB) return
     let cancelled = false
     buildImageParticles(isMobile)
-      .then(d => { if (!cancelled) setImageData(d) })
+      .then(result => { if (!cancelled) setImageData(result) })
       .catch((err) => console.warn('[AvaParticleHero] image fallback failed:', err))
     return () => { cancelled = true }
   }, [useGLB, isMobile])
