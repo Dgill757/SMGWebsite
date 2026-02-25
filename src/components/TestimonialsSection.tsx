@@ -231,6 +231,19 @@ const TestimonialsSection: React.FC = () => {
     setProgress(0);
   }, []);
 
+  const goPrev = useCallback(() => goTo((active - 1 + TESTIMONIALS.length) % TESTIMONIALS.length), [active, goTo]);
+  const goNext = useCallback(() => goTo((active + 1) % TESTIMONIALS.length), [active, goTo]);
+
+  // Keyboard left/right navigation
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft')  goPrev();
+      else if (e.key === 'ArrowRight') goNext();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [goPrev, goNext]);
+
   // Auto-rotation with progress bar
   useEffect(() => {
     if (reducedMotion || paused || !inView) return;
@@ -332,7 +345,7 @@ const TestimonialsSection: React.FC = () => {
               {t.quote}
             </p>
 
-            {/* Nav dots + progress bar */}
+            {/* Nav: progress bar + arrows + dots */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
               {/* Progress bar */}
               {!reducedMotion && (
@@ -345,16 +358,57 @@ const TestimonialsSection: React.FC = () => {
                   }} />
                 </div>
               )}
+              {/* Arrow + dots row */}
               <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+                {/* Prev arrow */}
+                <button
+                  onClick={goPrev}
+                  aria-label="Previous testimonial"
+                  style={{
+                    width: 36, height: 36, borderRadius: '50%', border: `1px solid ${t.accent}30`,
+                    background: `${t.accent}10`, cursor: 'pointer', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    transition: 'all 0.2s ease', padding: 0,
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${t.accent}28`; (e.currentTarget as HTMLButtonElement).style.borderColor = `${t.accent}60`; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${t.accent}10`; (e.currentTarget as HTMLButtonElement).style.borderColor = `${t.accent}30`; }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={t.accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="15 18 9 12 15 6"/>
+                  </svg>
+                </button>
+
+                {/* Dots */}
                 {TESTIMONIALS.map((_,i) => (
-                  <button key={i} onClick={() => goTo(i)} style={{
-                    height: 4, borderRadius: 2, border: 'none', cursor: 'pointer',
-                    width: active === i ? 28 : 6,
-                    background: active === i ? t.accent : 'rgba(255,255,255,0.2)',
-                    transition: 'all 0.3s ease',
-                    padding: 0,
-                  }} />
+                  <button key={i} onClick={() => goTo(i)}
+                    aria-label={`Go to testimonial ${i + 1}`}
+                    style={{
+                      height: 4, borderRadius: 2, border: 'none', cursor: 'pointer',
+                      width: active === i ? 28 : 6,
+                      background: active === i ? t.accent : 'rgba(255,255,255,0.2)',
+                      transition: 'all 0.3s ease', padding: 0, flexShrink: 0,
+                    }}
+                  />
                 ))}
+
+                {/* Next arrow */}
+                <button
+                  onClick={goNext}
+                  aria-label="Next testimonial"
+                  style={{
+                    width: 36, height: 36, borderRadius: '50%', border: `1px solid ${t.accent}30`,
+                    background: `${t.accent}10`, cursor: 'pointer', display: 'flex',
+                    alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+                    transition: 'all 0.2s ease', padding: 0,
+                  }}
+                  onMouseEnter={e => { (e.currentTarget as HTMLButtonElement).style.background = `${t.accent}28`; (e.currentTarget as HTMLButtonElement).style.borderColor = `${t.accent}60`; }}
+                  onMouseLeave={e => { (e.currentTarget as HTMLButtonElement).style.background = `${t.accent}10`; (e.currentTarget as HTMLButtonElement).style.borderColor = `${t.accent}30`; }}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={t.accent} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="9 18 15 12 9 6"/>
+                  </svg>
+                </button>
+
                 {/* Pause indicator */}
                 {paused && (
                   <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.3)', marginLeft: 'auto', fontWeight: 500 }}>
