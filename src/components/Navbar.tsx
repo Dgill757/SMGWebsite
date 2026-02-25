@@ -45,25 +45,29 @@ const Navbar: React.FC = () => {
       >
 
         {/* Logo */}
-        <Link to="/" onClick={() => window.scrollTo(0,0)} className="flex items-center gap-3 group" style={{ textDecoration: 'none' }}>
-          <div className="relative flex-shrink-0">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{ background: 'linear-gradient(135deg,#7C3AED,#3B82F6)' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="22"/>
-              </svg>
-            </div>
-          </div>
-          <span className="font-bold text-xl tracking-tight" style={{
-            background: 'linear-gradient(135deg,#fff 0%,rgba(255,255,255,0.85) 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>
-            SummitVoiceAI
-          </span>
+        <Link
+          to="/"
+          onClick={() => window.scrollTo(0, 0)}
+          className="flex items-center flex-shrink-0"
+          style={{ textDecoration: 'none' }}
+          aria-label="SummitVoiceAI — back to home"
+        >
+          <img
+            src="/assets/summitvoiceai-logo.png"
+            alt="SummitVoiceAI"
+            width={869}
+            height={200}
+            loading="eager"
+            decoding="async"
+            className="logo-wordmark"
+            style={{
+              height: 'clamp(28px, 4vw, 38px)',
+              width: 'auto',
+              objectFit: 'contain',
+              display: 'block',
+              transition: 'opacity 0.2s ease, transform 0.2s ease',
+            }}
+          />
         </Link>
 
         {/* Desktop Nav */}
