@@ -496,3 +496,70 @@ body::after {
   .bg-drift-layer { animation: none !important; }
   body::after     { display: none; }
 }
+
+/* ─── Mobile & Tablet Responsive Overhaul ────────────────────────────────── */
+
+/* 1. Section vertical padding: 7rem → 4rem on phones/tablets */
+@media (max-width: 768px) {
+  #experience-ava,
+  #revenue,
+  #how-it-works,
+  #use-cases,
+  #testimonials,
+  #roi-calculator,
+  #how-ava-works,
+  #demo-calls,
+  #pricing,
+  #faq {
+    padding-top: 4rem !important;
+    padding-bottom: 4rem !important;
+  }
+}
+
+/* 2. Hero content: let Tailwind flex-col lg:flex-row handle direction */
+@media (max-width: 1023px) {
+  .hero-content {
+    flex-direction: column !important;
+    padding-top: 5.5rem !important;
+    padding-bottom: 3rem !important;
+    gap: 1.5rem !important;
+    align-items: flex-start !important;
+  }
+}
+
+/* 3. Testimonials: stack left/right panels vertically on mobile */
+@media (max-width: 768px) {
+  .testimonial-main-card {
+    grid-template-columns: 1fr !important;
+  }
+  .testimonial-person-panel {
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255,255,255,0.06) !important;
+    padding: 2rem 1.5rem !important;
+  }
+  .testimonial-mini-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* 4. Very small screens: tighter horizontal padding */
+@media (max-width: 390px) {
+  .hero-content {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+}
+
+/* 5. iOS safe-area insets (notch + home indicator) */
+@supports (padding: max(0px)) {
+  footer {
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  }
+}
+
+/* 6. Section helper classes: reduce padding at small sizes */
+@media (max-width: 480px) {
+  .section-padding    { padding: 3rem 0; }
+  .section-padding-sm { padding: 2.5rem 0; }
+  .container          { padding: 0 1rem; }
+}

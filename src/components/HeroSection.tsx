@@ -156,11 +156,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         paddingTop: '7rem',
         paddingBottom: '6rem',
         display: 'flex',
-        flexDirection: 'row',
         alignItems: 'center',
         gap: '3rem',
       }}
-        className="flex-col lg:flex-row"
+        className="hero-content flex-col lg:flex-row"
       >
         {/* Left: Text */}
         <div style={{ flex: '1', minWidth: 0, maxWidth: 640 }}>

@@ -299,10 +299,10 @@ const TestimonialsSection: React.FC = () => {
             transition: 'all 0.6s ease 0.2s, border-color 0.4s',
             display: 'grid', gridTemplateColumns: '1fr 1.8fr',
           }}
-          className="grid-cols-1 md:grid-cols-testimonial"
+          className="testimonial-main-card"
         >
           {/* Left: Person */}
-          <div style={{ padding: '3rem 2.5rem', background: `linear-gradient(160deg, ${t.accent}18, rgba(0,0,0,0.3))`, borderRight: `1px solid ${t.accent}15`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+          <div className="testimonial-person-panel" style={{ padding: '3rem 2.5rem', background: `linear-gradient(160deg, ${t.accent}18, rgba(0,0,0,0.3))`, borderRight: `1px solid ${t.accent}15`, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
             <div style={{
               width: 96, height: 96, borderRadius: '50%', marginBottom: '1.5rem',
               background: `linear-gradient(135deg,${t.accent},#3B82F6)`,
@@ -421,7 +421,7 @@ const TestimonialsSection: React.FC = () => {
         </div>
 
         {/* Bottom row: mini testimonials (static quick hits) */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.25rem', marginTop: '1.5rem' }} className="grid-cols-1 md:grid-cols-3">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.25rem', marginTop: '1.5rem' }} className="testimonial-mini-grid">
           {[
             { text: '"Ava paid for herself in the first week. Best money we\'ve ever spent."', name: 'Tom R., HVAC Pro' },
             { text: '"Our no-show rate dropped from 28% to 4%. Absolutely unbelievable."', name: 'Dr. Kim C., Dentist' },
