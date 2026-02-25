@@ -1,9 +1,14 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import RawHtmlBlock from './RawHtmlBlock';
 
 const Widget: React.FC = () => {
   const [hovered, setHovered] = useState(false);
+  const sectionRef   = useRef<HTMLElement>(null);
+  const mouseGlowRef = useRef<HTMLDivElement>(null);
+  const rafRef       = useRef<number>(0);
+  const target       = useRef({ x: 0.5, y: 0.5 });
+  const current      = useRef({ x: 0.5, y: 0.5 });
 
   useEffect(() => {
     // Wait a short time to ensure the div is in the DOM
@@ -17,30 +22,85 @@ const Widget: React.FC = () => {
     }, 150);
   }, []); // Run after mount
 
+  // Pointer-follow ambient glow — desktop + non-reduced-motion only
+  useEffect(() => {
+    const reduced    = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const hasPointer = window.matchMedia('(pointer: fine)').matches;
+    if (reduced || !hasPointer) return;
+
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const onMove = (e: MouseEvent) => {
+      const rect = section.getBoundingClientRect();
+      target.current = {
+        x: (e.clientX - rect.left) / rect.width,
+        y: (e.clientY - rect.top)  / rect.height,
+      };
+    };
+
+    const tick = () => {
+      const lerp = 0.055;
+      current.current.x += (target.current.x - current.current.x) * lerp;
+      current.current.y += (target.current.y - current.current.y) * lerp;
+
+      if (mouseGlowRef.current) {
+        const px = current.current.x * 100;
+        const py = current.current.y * 100;
+        mouseGlowRef.current.style.background =
+          `radial-gradient(ellipse 55% 45% at ${px}% ${py}%, rgba(0,217,255,0.10) 0%, rgba(124,58,237,0.06) 45%, transparent 70%)`;
+      }
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    section.addEventListener('mousemove', onMove, { passive: true });
+    rafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafRef.current);
+      section.removeEventListener('mousemove', onMove);
+    };
+  }, []);
+
   return (
-    <section id="experience-ava" style={{
+    <section ref={sectionRef} id="experience-ava" style={{
       position: 'relative',
       background: '#050507',
       padding: '5rem 1.5rem',
       overflow: 'hidden',
       scrollMarginTop: '80px',
     }}>
-      {/* Ambient radial glow — pulses subtly */}
-      <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
+      {/* Mouse-follow glow layer — desktop only, pointer: fine */}
+      <div
+        ref={mouseGlowRef}
+        aria-hidden="true"
+        style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
+      />
+
+      {/* Static ambient glow — center breathe */}
+      <div aria-hidden="true" style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         <div style={{
           position: 'absolute',
-          width: 700, height: 500,
+          width: 800, height: 560,
           top: '50%', left: '50%',
           transform: 'translate(-50%, -50%)',
-          background: 'radial-gradient(ellipse, rgba(0,217,255,0.07) 0%, rgba(124,58,237,0.05) 40%, transparent 70%)',
+          background: 'radial-gradient(ellipse, rgba(0,217,255,0.09) 0%, rgba(124,58,237,0.06) 40%, transparent 70%)',
           animation: 'widgetGlowBreath 7s ease-in-out infinite',
+        }} />
+        {/* Secondary purple bloom — lower-left */}
+        <div style={{
+          position: 'absolute',
+          width: 420, height: 300,
+          bottom: '-4rem', left: '-2rem',
+          background: 'radial-gradient(ellipse, rgba(124,58,237,0.08) 0%, transparent 65%)',
+          animation: 'widgetGlowBreath 11s ease-in-out infinite reverse',
         }} />
       </div>
 
       {/* Animated waveform accent */}
       <div aria-hidden="true" style={{
         position: 'absolute', bottom: '3rem', left: '50%', transform: 'translateX(-50%)',
-        display: 'flex', gap: 3, alignItems: 'center', pointerEvents: 'none', opacity: 0.18,
+        display: 'flex', gap: 3, alignItems: 'center', pointerEvents: 'none', opacity: 0.22,
       }}>
         {[0.6, 1, 1.4, 1, 0.7, 1.2, 0.9, 1.5, 0.8, 1.1, 0.6, 1.3].map((h, i) => (
           <div key={i} style={{
@@ -58,13 +118,13 @@ const Widget: React.FC = () => {
         <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-            background: 'rgba(0,217,255,0.08)', border: '1px solid rgba(0,217,255,0.2)',
+            background: 'rgba(0,217,255,0.08)', border: '1px solid rgba(0,217,255,0.22)',
             borderRadius: 999, padding: '0.4rem 1.1rem', marginBottom: '1.25rem',
           }}>
             <span style={{
               display: 'inline-block', width: 7, height: 7, borderRadius: '50%',
               background: '#00D9FF',
-              boxShadow: '0 0 8px #00D9FF',
+              boxShadow: '0 0 10px #00D9FF, 0 0 20px rgba(0,217,255,0.4)',
               animation: 'widgetPulse 2s ease-in-out infinite',
             }} />
             <span style={{ fontSize: '0.72rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.65)' }}>
@@ -74,10 +134,11 @@ const Widget: React.FC = () => {
           <h2 style={{
             fontWeight: 800,
             fontSize: 'clamp(1.6rem, 3.5vw, 2.6rem)',
-            lineHeight: 1.1,
+            lineHeight: 1.15,
             letterSpacing: '-0.025em',
             color: '#fff',
             marginBottom: '0.85rem',
+            overflowWrap: 'break-word',
           }}>
             Experience Ava{' '}
             <span style={{
@@ -103,35 +164,41 @@ const Widget: React.FC = () => {
             position: 'relative',
             borderRadius: 24,
             padding: '0.15rem',
-            background: 'linear-gradient(135deg, rgba(0,217,255,0.4), rgba(124,58,237,0.35), rgba(59,130,246,0.3))',
+            background: 'linear-gradient(135deg, rgba(0,217,255,0.5), rgba(124,58,237,0.4), rgba(59,130,246,0.35))',
             boxShadow: hovered
-              ? '0 0 80px rgba(0,217,255,0.22), 0 0 160px rgba(124,58,237,0.14), 0 24px 60px rgba(0,0,0,0.5)'
-              : '0 0 60px rgba(0,217,255,0.12), 0 0 120px rgba(124,58,237,0.08)',
-            transform: hovered ? 'translateY(-3px)' : 'none',
+              ? '0 0 100px rgba(0,217,255,0.28), 0 0 180px rgba(124,58,237,0.18), 0 24px 60px rgba(0,0,0,0.55)'
+              : '0 0 70px rgba(0,217,255,0.15), 0 0 140px rgba(124,58,237,0.10)',
+            transform: hovered ? 'translateY(-4px)' : 'none',
             transition: 'box-shadow 0.35s ease, transform 0.35s ease',
             outline: 'none',
           }}
-          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,217,255,0.5), 0 0 80px rgba(0,217,255,0.18)'; }}
-          onBlur={(e) => { e.currentTarget.style.boxShadow = '0 0 60px rgba(0,217,255,0.12), 0 0 120px rgba(124,58,237,0.08)'; }}
+          onFocus={(e) => { e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,217,255,0.55), 0 0 90px rgba(0,217,255,0.22)'; }}
+          onBlur={(e)  => { e.currentTarget.style.boxShadow = '0 0 70px rgba(0,217,255,0.15), 0 0 140px rgba(124,58,237,0.10)'; }}
         >
           {/* Inner surface */}
           <div className="widget-inner" style={{
             position: 'relative',
             borderRadius: 21,
-            background: 'rgba(8,8,14,0.97)',
+            background: 'rgba(6,6,12,0.98)',
             overflow: 'hidden',
             padding: '2.5rem 2rem',
           }}>
-            {/* Cyan top accent line */}
+            {/* Cyan top accent line — brighter */}
             <div style={{
-              position: 'absolute', top: 0, left: '10%', right: '10%', height: 1,
-              background: 'linear-gradient(90deg, transparent, rgba(0,217,255,0.6), transparent)',
+              position: 'absolute', top: 0, left: '8%', right: '8%', height: 1,
+              background: 'linear-gradient(90deg, transparent, rgba(0,217,255,0.75), transparent)',
             }} />
 
-            {/* Corner radial glow */}
+            {/* Corner radial glow — top-right */}
             <div style={{
-              position: 'absolute', top: -60, right: -60, width: 200, height: 200,
-              background: 'radial-gradient(circle, rgba(0,217,255,0.06) 0%, transparent 70%)',
+              position: 'absolute', top: -80, right: -80, width: 260, height: 260,
+              background: 'radial-gradient(circle, rgba(0,217,255,0.08) 0%, transparent 65%)',
+              pointerEvents: 'none',
+            }} />
+            {/* Corner glow — bottom-left */}
+            <div style={{
+              position: 'absolute', bottom: -60, left: -60, width: 200, height: 200,
+              background: 'radial-gradient(circle, rgba(124,58,237,0.07) 0%, transparent 65%)',
               pointerEvents: 'none',
             }} />
 
@@ -156,19 +223,19 @@ const Widget: React.FC = () => {
       <style>{`
         @keyframes widgetPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(0.85); }
+          50% { opacity: 0.45; transform: scale(0.82); }
         }
         @keyframes widgetGlowBreath {
           0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
-          50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
+          50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.07); }
         }
         @keyframes widgetBorderShimmer {
-          0%   { opacity: 0.65; }
+          0%   { opacity: 0.6; }
           50%  { opacity: 1; }
-          100% { opacity: 0.65; }
+          100% { opacity: 0.6; }
         }
         .widget-border-wrap {
-          animation: widgetBorderShimmer 4s ease-in-out infinite;
+          animation: widgetBorderShimmer 3.5s ease-in-out infinite;
         }
         @media (prefers-reduced-motion: reduce) {
           .widget-waveform-bar,
