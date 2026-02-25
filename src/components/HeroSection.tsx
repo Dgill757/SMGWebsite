@@ -12,7 +12,45 @@ interface HeroSectionProps {
 
 const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen }) => {
   const [scrollProgress, setScrollProgress] = useState(0);
-  const heroRef = useRef<HTMLDivElement>(null);
+  const heroRef      = useRef<HTMLDivElement>(null);
+  const highlightRef = useRef<HTMLDivElement>(null);
+  const cursorRef    = useRef({ x: 0.5, y: 0.5 });
+  const lerpRef      = useRef({ x: 0.5, y: 0.5 });
+  const rafCursorRef = useRef(0);
+
+  // Cursor-follow parallax highlight over Ava face region
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) return;
+
+    const onMove = (e: MouseEvent) => {
+      cursorRef.current = {
+        x: e.clientX / window.innerWidth,
+        y: e.clientY / window.innerHeight,
+      };
+    };
+    window.addEventListener('mousemove', onMove, { passive: true });
+
+    const tick = () => {
+      const LERP = 0.055;
+      lerpRef.current.x += (cursorRef.current.x - lerpRef.current.x) * LERP;
+      lerpRef.current.y += (cursorRef.current.y - lerpRef.current.y) * LERP;
+      if (highlightRef.current) {
+        const MAX = 9; // max px translate
+        const tx = (lerpRef.current.x - 0.5) * MAX * 2;
+        const ty = (lerpRef.current.y - 0.5) * MAX * 2;
+        highlightRef.current.style.transform =
+          `translate(calc(-50% + ${tx.toFixed(2)}px), calc(-50% + ${ty.toFixed(2)}px))`;
+      }
+      rafCursorRef.current = requestAnimationFrame(tick);
+    };
+    rafCursorRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      cancelAnimationFrame(rafCursorRef.current);
+      window.removeEventListener('mousemove', onMove);
+    };
+  }, []);
 
   // Track scroll to dissolve Ava as section leaves viewport
   useEffect(() => {
@@ -78,6 +116,24 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             className="w-full h-full"
           />
         </Suspense>
+
+        {/* Cursor-follow highlight — radial glow that lerps toward mouse over Ava face */}
+        <div
+          ref={highlightRef}
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            top: '44%',
+            left: '67%',
+            width: 340,
+            height: 340,
+            borderRadius: '50%',
+            background: 'radial-gradient(circle, rgba(0,217,255,0.10) 0%, rgba(0,217,255,0.03) 45%, transparent 68%)',
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            willChange: 'transform',
+          }}
+        />
       </div>
 
       {/* Text protection gradient — dark-left fade so particles don't bleed into copy */}
