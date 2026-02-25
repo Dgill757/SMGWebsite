@@ -96,6 +96,7 @@ const Widget: React.FC = () => {
         {/* Glow border wrapper — hover elevation + focus ring */}
         <div
           tabIndex={0}
+          className="widget-border-wrap"
           onMouseEnter={() => setHovered(true)}
           onMouseLeave={() => setHovered(false)}
           style={{
@@ -114,7 +115,7 @@ const Widget: React.FC = () => {
           onBlur={(e) => { e.currentTarget.style.boxShadow = '0 0 60px rgba(0,217,255,0.12), 0 0 120px rgba(124,58,237,0.08)'; }}
         >
           {/* Inner surface */}
-          <div style={{
+          <div className="widget-inner" style={{
             position: 'relative',
             borderRadius: 21,
             background: 'rgba(8,8,14,0.97)',
@@ -161,8 +162,20 @@ const Widget: React.FC = () => {
           0%, 100% { opacity: 0.7; transform: translate(-50%, -50%) scale(1); }
           50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
         }
+        @keyframes widgetBorderShimmer {
+          0%   { opacity: 0.65; }
+          50%  { opacity: 1; }
+          100% { opacity: 0.65; }
+        }
+        .widget-border-wrap {
+          animation: widgetBorderShimmer 4s ease-in-out infinite;
+        }
         @media (prefers-reduced-motion: reduce) {
-          .widget-waveform-bar { animation: none !important; }
+          .widget-waveform-bar,
+          .widget-border-wrap { animation: none !important; }
+        }
+        @media (max-width: 480px) {
+          .widget-inner { padding: 1.5rem 1rem !important; }
         }
       `}</style>
     </section>

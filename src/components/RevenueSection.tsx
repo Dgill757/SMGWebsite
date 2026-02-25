@@ -124,7 +124,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Smart Website',
-    desc: 'Turn your website into a 24/7 voice-enabled assistant. Visitors can talk to your site, ask questions, get instant answers, and book appointments on the spot. Combined with smart forms and automations, every lead gets an immediate response and the right follow-up — so static websites stop leaking revenue.',
+    desc: 'Turn your website into a 24/7 voice-enabled assistant. Visitors can talk to your site, ask questions, get instant answers, and book appointments on the spot.',
     accent: '#F472B6',
   },
 ];
@@ -215,7 +215,7 @@ const RevenueSection: React.FC = () => {
         </div>
 
         {/* Stats Row */}
-        <div style={{
+        <div className="revenue-stats-row" style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(180px,1fr))',
           gap: '1px',

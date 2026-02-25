@@ -217,7 +217,8 @@ const TestimonialsSection: React.FC = () => {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const [progress, setProgress] = useState(0);
-  const sectionRef = useRef<HTMLDivElement>(null);
+  const sectionRef  = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef<number | null>(null);
   const inView = useInView(sectionRef);
   const t = TESTIMONIALS[active];
 
@@ -233,6 +234,20 @@ const TestimonialsSection: React.FC = () => {
 
   const goPrev = useCallback(() => goTo((active - 1 + TESTIMONIALS.length) % TESTIMONIALS.length), [active, goTo]);
   const goNext = useCallback(() => goTo((active + 1) % TESTIMONIALS.length), [active, goTo]);
+
+  // Touch swipe handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  }, []);
+
+  const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const delta = e.changedTouches[0].clientX - touchStartX.current;
+    if (Math.abs(delta) > 50) {
+      delta < 0 ? goNext() : goPrev();
+    }
+    touchStartX.current = null;
+  }, [goNext, goPrev]);
 
   // Keyboard left/right navigation
   useEffect(() => {
@@ -292,6 +307,8 @@ const TestimonialsSection: React.FC = () => {
         <div
           onMouseEnter={() => setPaused(true)}
           onMouseLeave={() => setPaused(false)}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
           style={{
             background: 'rgba(255,255,255,0.025)', border: `1px solid ${t.accent}25`,
             borderRadius: 28, overflow: 'hidden',
@@ -339,7 +356,7 @@ const TestimonialsSection: React.FC = () => {
           </div>
 
           {/* Right: Quote */}
-          <div style={{ padding: '3.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+          <div className="testimonial-quote-panel" style={{ padding: '3.5rem', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div style={{ fontSize: '5rem', color: t.accent, lineHeight: 0.7, marginBottom: '1.5rem', fontFamily: 'Georgia,serif', opacity: 0.35 }}>"</div>
             <p style={{ fontSize: 'clamp(1.1rem,2vw,1.35rem)', color: 'rgba(255,255,255,0.85)', lineHeight: 1.72, fontStyle: 'italic', marginBottom: '2.5rem', flex: 1 }}>
               {t.quote}
@@ -364,6 +381,7 @@ const TestimonialsSection: React.FC = () => {
                 <button
                   onClick={goPrev}
                   aria-label="Previous testimonial"
+                  className="testimonial-nav-arrow"
                   style={{
                     width: 36, height: 36, borderRadius: '50%', border: `1px solid ${t.accent}30`,
                     background: `${t.accent}10`, cursor: 'pointer', display: 'flex',
@@ -395,6 +413,7 @@ const TestimonialsSection: React.FC = () => {
                 <button
                   onClick={goNext}
                   aria-label="Next testimonial"
+                  className="testimonial-nav-arrow"
                   style={{
                     width: 36, height: 36, borderRadius: '50%', border: `1px solid ${t.accent}30`,
                     background: `${t.accent}10`, cursor: 'pointer', display: 'flex',

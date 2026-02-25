@@ -130,7 +130,7 @@ const UseCases: React.FC = () => {
         </div>
 
         {/* Content Grid */}
-        <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(3,1fr)' }} className="grid-cols-1 md:grid-cols-3">
+        <div style={{ display: 'grid', gap: '1.5rem', gridTemplateColumns: 'repeat(3,1fr)' }} className="use-cases-content-grid">
           {/* Description */}
           <div style={{ background: `${ind.accent}0D`, border: `1px solid ${ind.accent}25`, borderRadius: 24, padding: '2rem', opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(20px)', transition: 'all 0.5s ease 0.1s' }}>
             <div style={{ fontSize: '2.5rem', marginBottom: '1rem' }}>{ind.icon}</div>

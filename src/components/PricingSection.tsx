@@ -112,7 +112,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
         </div>
 
         {/* Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.5rem', alignItems: 'start' }} className="grid-cols-1 md:grid-cols-3">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: '1.5rem', alignItems: 'start' }} className="pricing-cards-grid">
           {TIERS.map((tier, i) => (
             <div key={tier.name} style={{
               position: 'relative', borderRadius: 24, overflow: 'hidden',

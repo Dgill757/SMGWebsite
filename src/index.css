@@ -502,7 +502,7 @@ body::after {
 /* 1. Section vertical padding: 7rem → 4rem on phones/tablets */
 @media (max-width: 768px) {
   #experience-ava,
-  #revenue,
+  #features,
   #how-it-works,
   #use-cases,
   #testimonials,
@@ -562,4 +562,115 @@ body::after {
   .section-padding    { padding: 3rem 0; }
   .section-padding-sm { padding: 2.5rem 0; }
   .container          { padding: 0 1rem; }
+}
+
+/* ─── Card Hover Polish — consistent lift + glow across site ──────────────── */
+.card-hover-lift {
+  transition: transform 0.28s ease, box-shadow 0.28s ease, border-color 0.28s ease;
+}
+.card-hover-lift:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 0 0 1px rgba(124,58,237,0.25),
+    0 16px 48px rgba(124,58,237,0.12),
+    0 4px 16px rgba(0,0,0,0.4);
+  border-color: rgba(124,58,237,0.3) !important;
+}
+
+/* ─── Additional Mobile Fixes ─────────────────────────────────────────────── */
+
+/* Stats row in RevenueSection: switch to 2-col on mobile to prevent tiny cells */
+@media (max-width: 520px) {
+  .revenue-stats-row {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+/* PricingSection cards + UseCases content grid: collapse on mobile */
+@media (max-width: 768px) {
+  .pricing-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .use-cases-content-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+@media (min-width: 769px) and (max-width: 1024px) {
+  .pricing-cards-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .use-cases-content-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+}
+
+/* Widget: ensure container never overflows on small screens */
+@media (max-width: 480px) {
+  #experience-ava {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
+  #experience-ava .widget-inner {
+    padding: 1.5rem 1rem !important;
+  }
+}
+
+/* UseCases pill tabs: allow horizontal scroll on xs screens instead of stacking oddly */
+@media (max-width: 480px) {
+  .use-cases-pills {
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+  }
+}
+
+/* ROI Calculator: slider label text - prevent orphan words */
+@media (max-width: 480px) {
+  .roi-slider-label {
+    font-size: 0.75rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 140px;
+  }
+}
+
+/* HowItWorks: section header margin reduction on mobile */
+@media (max-width: 768px) {
+  #how-it-works > div > div:first-child {
+    margin-bottom: 2.5rem !important;
+  }
+}
+
+/* Hero: reduce top padding further on xs to fit content above fold */
+@media (max-width: 480px) {
+  .hero-content {
+    padding-top: 4.5rem !important;
+    padding-bottom: 2.5rem !important;
+  }
+}
+
+/* Global: prevent images and embeds from overflowing */
+img, iframe, video, embed {
+  max-width: 100%;
+}
+
+/* ─── Testimonials: swipe cursor indicator on mobile ─────────────────────── */
+@media (max-width: 768px) {
+  .testimonial-main-card {
+    cursor: grab;
+    touch-action: pan-y;
+    user-select: none;
+  }
+  .testimonial-main-card:active {
+    cursor: grabbing;
+  }
+  /* Quote panel: reduce padding on mobile */
+  .testimonial-quote-panel {
+    padding: 2rem 1.5rem !important;
+  }
+  /* Make arrow buttons bigger touch targets on mobile */
+  .testimonial-nav-arrow {
+    width: 44px !important;
+    height: 44px !important;
+  }
 }
