@@ -93,6 +93,8 @@ const Navbar: React.FC = () => {
           className="md:hidden p-2 rounded-lg transition-colors"
           style={{ color: 'rgba(255,255,255,0.75)', background: 'transparent', border: 'none', cursor: 'pointer' }}
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
         >
           {menuOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
