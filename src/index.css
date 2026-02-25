@@ -43,10 +43,11 @@
     --chart-5: 27 87% 67%;
 
     /* Brand tokens */
-    --purple: #7C3AED;
-    --blue:   #3B82F6;
-    --pink:   #F472B6;
-    --dark:   #050507;
+    --ai-cyan: #00D9FF;
+    --purple:  #7C3AED;
+    --blue:    #3B82F6;
+    --pink:    #F472B6;
+    --dark:    #050507;
   }
 }
 

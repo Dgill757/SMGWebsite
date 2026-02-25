@@ -16,7 +16,7 @@ interface IndustryIntroCardProps {
 const IndustryIntroCard: React.FC<IndustryIntroCardProps> = ({
   description,
   icon,
-  accent = '#00E5FF',
+  accent = '#00D9FF',
 }) => {
   return (
     <div

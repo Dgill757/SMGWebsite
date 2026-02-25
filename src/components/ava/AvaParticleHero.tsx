@@ -17,7 +17,7 @@
 export const POINT_COUNT_DESKTOP   = 50_000
 export const POINT_COUNT_MOBILE    = 12_000
 export const DAMP_SPEED            = 22      // MathUtils.damp lambda
-export const CYAN_COLOR            = '#00E5FF'
+export const CYAN_COLOR            = '#00D9FF'
 export const PURPLE_COLOR          = '#A855FF'
 export const PURPLE_PERCENT        = 0.04    // fraction of dots that are purple
 export const CORE_SIZE             = 1.6     // world-unit dot radius (desktop)

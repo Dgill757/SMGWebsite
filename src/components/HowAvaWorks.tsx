@@ -10,7 +10,7 @@ const STEPS = [
       </svg>
     ),
     label: 'Handles Calls',
-    accent: '#00E5FF',
+    accent: '#00D9FF',
     demo: {
       tag: 'Live Call',
       title: 'Ava Answers Instantly',
@@ -166,12 +166,12 @@ const HowAvaWorks: React.FC = () => {
 
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '4rem', opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(24px)', transition: 'all 0.6s ease' }}>
-          <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(0,229,255,0.08)', border: '1px solid rgba(0,229,255,0.2)', borderRadius: 999, padding: '0.4rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
+          <div style={{ display: 'inline-flex', alignItems: 'center', background: 'rgba(0,217,255,0.08)', border: '1px solid rgba(0,217,255,0.2)', borderRadius: 999, padding: '0.4rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
             How Your Smart AI Works
           </div>
           <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,4vw,3.2rem)', lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff', marginBottom: '1.2rem' }}>
             From First Ring to{' '}
-            <span style={{ background: 'linear-gradient(135deg,#00E5FF,#7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Closed Deal</span>
+            <span style={{ background: 'linear-gradient(135deg,#00D9FF,#7C3AED)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Closed Deal</span>
             {' '}— Automatically
           </h2>
           <p style={{ fontSize: '1.05rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 560, margin: '0 auto' }}>

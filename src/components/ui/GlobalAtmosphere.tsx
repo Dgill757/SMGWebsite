@@ -7,7 +7,7 @@ interface Dot {
   color: string; pf: number; // parallax factor
 }
 
-const PALETTE = ['#00E5FF', '#A855FF', '#3B82F6'];
+const PALETTE = ['#00D9FF', '#A855FF', '#3B82F6'];
 
 /**
  * GlobalAtmosphere — fixed full-screen layer that adds:
@@ -134,7 +134,7 @@ const GlobalAtmosphere: React.FC = () => {
         <div style={{
           position: 'absolute', top: '8%', left: '4%',
           width: 580, height: 580, borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(0,229,255,0.065) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(0,217,255,0.065) 0%, transparent 65%)',
           filter: 'blur(85px)',
           animation: 'atm-b1 22s ease-in-out infinite',
         }} />

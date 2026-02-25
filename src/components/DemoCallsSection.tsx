@@ -6,7 +6,7 @@ const VIDEOS = [
     id: 'j5c4RmZk7Pc',
     title: 'AI Realtor Demo',
     tag: 'Real Estate',
-    accent: '#00E5FF',
+    accent: '#00D9FF',
   },
   {
     id: 'p59_ZOmgodk',
@@ -129,7 +129,7 @@ const DemoCallsSection: React.FC = () => {
     >
       {/* BG glows */}
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-        <div style={{ position: 'absolute', width: 600, height: 400, top: '40%', left: '25%', transform: 'translate(-50%,-50%)', background: 'radial-gradient(ellipse, rgba(0,229,255,0.05) 0%, transparent 65%)' }} />
+        <div style={{ position: 'absolute', width: 600, height: 400, top: '40%', left: '25%', transform: 'translate(-50%,-50%)', background: 'radial-gradient(ellipse, rgba(0,217,255,0.05) 0%, transparent 65%)' }} />
         <div style={{ position: 'absolute', width: 500, height: 350, top: '60%', left: '75%', transform: 'translate(-50%,-50%)', background: 'radial-gradient(ellipse, rgba(124,58,237,0.06) 0%, transparent 65%)' }} />
       </div>
 

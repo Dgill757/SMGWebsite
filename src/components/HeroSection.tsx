@@ -121,8 +121,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           }}>
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
-              background: '#00D4E0',
-              boxShadow: '0 0 12px rgba(0,212,224,0.95)',
+              background: '#00D9FF',
+              boxShadow: '0 0 12px rgba(0,217,255,0.95)',
               animation: 'pulse-glow 2.5s ease-in-out infinite',
               display: 'inline-block',
             }} />
@@ -142,7 +142,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           }}>
             Meet{' '}
             <span style={{
-              background: 'linear-gradient(135deg, #00DCDC 0%, #00A8FF 55%, #7C3AED 100%)',
+              background: 'linear-gradient(135deg, #00D9FF 0%, #00A8FF 55%, #7C3AED 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -210,7 +210,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
                 color: 'rgba(255,255,255,0.75)',
                 fontWeight: 500,
               }}>
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00D4E0" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#00D9FF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                   <polyline points="20 6 9 17 4 12"/>
                 </svg>
                 {feat}
