@@ -206,7 +206,7 @@ const HowItWorks: React.FC = () => {
           <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(124,58,237,0.1)', border: '1px solid rgba(124,58,237,0.22)', borderRadius: 999, padding: '0.4rem 1rem', marginBottom: '1.5rem', fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '0.06em', textTransform: 'uppercase' as const }}>
             The Journey
           </div>
-          <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,4vw,3.2rem)', lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff', marginBottom: '1.2rem' }}>
+          <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,4vw,3.2rem)', lineHeight: 1.15, letterSpacing: '-0.025em', color: '#fff', marginBottom: '1.2rem', overflowWrap: 'break-word' }}>
             How Ava Turns Calls Into{' '}
             <span style={{ background: 'linear-gradient(135deg,#7C3AED,#F472B6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Closed Revenue</span>
           </h2>
@@ -216,7 +216,7 @@ const HowItWorks: React.FC = () => {
         </div>
 
         {/* Step Tabs */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="block md:grid">
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }} className="how-it-works-grid">
 
           {/* Left: Step List */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>

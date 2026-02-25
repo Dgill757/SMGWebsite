@@ -654,6 +654,16 @@ img, iframe, video, embed {
   max-width: 100%;
 }
 
+/* ─── HowItWorks Journey: 2-col grid → stacked column on mobile ─────────── */
+/* The inline style display:grid is overridden by !important here             */
+@media (max-width: 767px) {
+  .how-it-works-grid {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1.25rem !important;
+  }
+}
+
 /* ─── Testimonials: swipe cursor indicator on mobile ─────────────────────── */
 @media (max-width: 768px) {
   .testimonial-main-card {
