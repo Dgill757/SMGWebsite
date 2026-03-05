@@ -3,25 +3,25 @@ import React, { useRef, useEffect, useState } from 'react';
 // ── Video data — swap YouTube IDs when real demos are ready ──────────────────
 const VIDEOS = [
   {
-    id: 'j5c4RmZk7Pc',
+    src: '/Demo-videos/Real-Estate-Demo.mp4',
     title: 'AI Realtor Demo',
     tag: 'Real Estate',
     accent: '#00D9FF',
   },
   {
-    id: 'p59_ZOmgodk',
+    src: '/Demo-videos/Deck-Landscaping-demo.mp4',
     title: 'AI Deck & Landscaping Demo',
     tag: 'Home Services',
     accent: '#7C3AED',
   },
   {
-    id: 'ly-UhP_91H0',
+    src: '/Demo-videos/Roofing-Demo.mp4',
     title: 'AI Roofing Demo',
     tag: 'Home Services',
     accent: '#F472B6',
   },
   {
-    id: 'Uu35W1wtAZA',
+    src: '/Demo-videos/Pool-Demo.mp4',
     title: 'AI Pool Demo',
     tag: 'Home Services',
     accent: '#FBBF24',
@@ -39,7 +39,7 @@ function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
 }
 
 interface VideoCardProps {
-  id: string;
+  src: string;
   title: string;
   tag: string;
   accent: string;
@@ -47,7 +47,7 @@ interface VideoCardProps {
   inView: boolean;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ id, title, tag, accent, delay, inView }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ src, title, tag, accent, delay, inView }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -69,17 +69,18 @@ const VideoCard: React.FC<VideoCardProps> = ({ id, title, tag, accent, delay, in
         willChange: 'transform',
       }}
     >
-      {/* 16:9 Video Embed */}
+      {/* 16:9 Local Video */}
       <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#000' }}>
-        <iframe
-          src={`https://www.youtube.com/embed/${id}?rel=0&modestbranding=1`}
+        <video
+          src={src}
           title={title}
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+          controls
+          preload="metadata"
+          playsInline
           style={{
             position: 'absolute', top: 0, left: 0,
             width: '100%', height: '100%',
-            border: 'none',
+            objectFit: 'cover',
           }}
         />
       </div>
@@ -156,7 +157,7 @@ const DemoCallsSection: React.FC = () => {
         >
           {VIDEOS.map((v, i) => (
             <VideoCard
-              key={v.id}
+              key={v.title}
               {...v}
               delay={`${i * 0.1 + 0.2}s`}
               inView={inView}
