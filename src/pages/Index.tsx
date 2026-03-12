@@ -16,6 +16,7 @@ import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 import { IntegrationMarquee } from '@/components/IntegrationMarquee';
 import { AvaComparison } from '@/components/AvaComparison';
+import { SocialProofBar } from '@/components/SocialProofBar';
 
 const Index = () => {
   const location = useLocation();
@@ -96,10 +97,10 @@ const Index = () => {
 
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         <IntegrationMarquee />
-
-        <RevenueSection />
+        <SocialProofBar />
         <AvaComparison />
         <Widget />
+        <RevenueSection />
         <HowItWorks />
         <UseCases />
         <SectionErrorBoundary label="HowAvaWorks">

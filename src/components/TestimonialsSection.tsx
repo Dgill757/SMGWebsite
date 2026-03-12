@@ -296,10 +296,11 @@ const TestimonialsSection: React.FC = () => {
             Social Proof
           </div>
           <h2 style={{ fontWeight: 800, fontSize: 'clamp(2rem,4vw,3.2rem)', lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff', marginBottom: '1.2rem' }}>
-            What Our <span style={{ background: 'linear-gradient(135deg,#7C3AED,#F472B6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Clients</span> Say
+            What Roofing Business Owners Are Saying
           </h2>
           <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, margin: '0 auto' }}>
-            Real results from real businesses that made the switch to Voice AI.
+            11 roofing and home service companies are capturing leads they used
+            to lose. Here's what changed for them.
           </p>
         </div>
 

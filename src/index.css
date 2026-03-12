@@ -1119,3 +1119,8 @@ header::after, header::before {
   color: rgba(255, 255, 255, 0.75);
   letter-spacing: 0.02em;
 }
+
+/* ── Social Proof Bar ── */
+.social-proof-grid {
+  align-items: start;
+}
