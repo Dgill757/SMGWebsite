@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+ï»¿import { useState, useEffect, useRef, useCallback } from "react";
 
 type OrbState = "idle" | "listening" | "speaking";
 
@@ -13,11 +13,7 @@ interface OrbitItem {
   size: number;
 }
 
-// --- 6 Orbiting Icons: 3 inner, 3 outer --------------------------------------
-// Inner orbit: daily workflow tools (faster, smaller radius)
-// Outer orbit: industry CRM tools (slower, larger radius)
 const getOrbits = (scale: number): OrbitItem[] => [
-  // INNER ORBIT
   {
     id: "ghl",
     src: "/logos/GHL-logo-cropped.png",
@@ -48,7 +44,6 @@ const getOrbits = (scale: number): OrbitItem[] => [
     glowColor: "#0078D4",
     size: 42 * scale,
   },
-  // OUTER ORBIT
   {
     id: "acculynx",
     src: "/logos/Acculynx-logo-cropped.png",
@@ -81,7 +76,6 @@ const getOrbits = (scale: number): OrbitItem[] => [
   },
 ];
 
-// --- Additional integrations shown as text badges only -----------------------
 const ADDITIONAL_BADGES = [
   "ServiceTitan",
   "Jobber",
@@ -91,12 +85,11 @@ const ADDITIONAL_BADGES = [
   "Make.com",
 ];
 
-// --- Siri Orb -----------------------------------------------------------------
 function SiriOrb({ state, size = 110 }: { state: OrbState; size?: number }) {
   const colors: Record<OrbState, { c1: string; c2: string; c3: string }> = {
-    idle:      { c1: "oklch(72% 0.18 200)", c2: "oklch(68% 0.22 260)", c3: "oklch(74% 0.20 230)" },
+    idle: { c1: "oklch(72% 0.18 200)", c2: "oklch(68% 0.22 260)", c3: "oklch(74% 0.20 230)" },
     listening: { c1: "oklch(78% 0.24 180)", c2: "oklch(72% 0.28 200)", c3: "oklch(70% 0.20 160)" },
-    speaking:  { c1: "oklch(78% 0.22 320)", c2: "oklch(72% 0.25 350)", c3: "oklch(68% 0.28 280)" },
+    speaking: { c1: "oklch(78% 0.22 320)", c2: "oklch(72% 0.25 350)", c3: "oklch(68% 0.28 280)" },
   };
   const c = colors[state];
   const blur = Math.round(size * 0.09);
@@ -109,7 +102,6 @@ function SiriOrb({ state, size = 110 }: { state: OrbState; size?: number }) {
         height: size,
         position: "relative",
         borderRadius: "50%",
-        // GPU compositing — prevents tracer artifacts
         transform: "translateZ(0)",
         backfaceVisibility: "hidden",
         isolation: "isolate",
@@ -167,7 +159,58 @@ function SiriOrb({ state, size = 110 }: { state: OrbState; size?: number }) {
   );
 }
 
-// --- Single Orbiting Icon -----------------------------------------------------
+function StateIndicator({ state }: { state: OrbState }) {
+  const config = {
+    idle: { label: "CLICK TO TALK Â· AVA IS READY", color: "#22D3EE", dot: "#22D3EE" },
+    listening: { label: "LISTENING...", color: "#34D399", dot: "#34D399" },
+    speaking: { label: "AVA IS SPEAKING...", color: "#C084FC", dot: "#C084FC" },
+  };
+  const { label, color, dot } = config[state];
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        gap: 7,
+        marginTop: 16,
+        fontSize: 11,
+        letterSpacing: "0.18em",
+        fontFamily: "monospace",
+        color,
+        transition: "color 0.6s ease",
+      }}
+    >
+      <span
+        style={{
+          width: 7,
+          height: 7,
+          borderRadius: "50%",
+          background: dot,
+          boxShadow: `0 0 8px ${dot}, 0 0 16px ${dot}60`,
+          animation:
+            state !== "idle"
+              ? "summit-dot-blink 0.9s ease-in-out infinite"
+              : "summit-dot-pulse 3s ease-in-out infinite",
+          flexShrink: 0,
+        }}
+      />
+      <style>{`
+        @keyframes summit-dot-blink {
+          0%,100% { opacity: 1; }
+          50%      { opacity: 0.2; }
+        }
+        @keyframes summit-dot-pulse {
+          0%,100% { opacity: 0.7; transform: scale(1); }
+          50%      { opacity: 1;   transform: scale(1.3); }
+        }
+      `}</style>
+      {label}
+    </div>
+  );
+}
+
 function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
   const [hovered, setHovered] = useState(false);
   const angle = time * item.speed + item.phase;
@@ -182,13 +225,11 @@ function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
         left: "50%",
         width: item.size,
         height: item.size,
-        // GPU-accelerated positioning — no top/left animation, only transform
         transform: `translate(calc(${x}px - 50%), calc(${y}px - 50%)) translateZ(0)`,
         zIndex: hovered ? 30 : 10,
         cursor: "default",
         willChange: "transform",
         backfaceVisibility: "hidden",
-        // Glow via filter — isolated so it doesn't bleed
         filter: hovered
           ? `drop-shadow(0 0 12px ${item.glowColor}) drop-shadow(0 0 4px ${item.glowColor})`
           : `drop-shadow(0 0 5px ${item.glowColor}90)`,
@@ -199,7 +240,6 @@ function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
       onTouchStart={() => setHovered(true)}
       onTouchEnd={() => setHovered(false)}
     >
-      {/* Icon image in a circular container */}
       <div
         style={{
           width: "100%",
@@ -224,7 +264,6 @@ function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
             height: "100%",
             objectFit: "contain",
             display: "block",
-            // Prevent img from causing repaint artifacts
             transform: "translateZ(0)",
             backfaceVisibility: "hidden",
           }}
@@ -232,7 +271,6 @@ function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
         />
       </div>
 
-      {/* Hover tooltip */}
       {hovered && (
         <div
           style={{
@@ -260,7 +298,6 @@ function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
   );
 }
 
-// --- Orbit Ring ---------------------------------------------------------------
 function OrbitRing({ radius, color }: { radius: number; color: string }) {
   return (
     <div
@@ -272,8 +309,8 @@ function OrbitRing({ radius, color }: { radius: number; color: string }) {
         height: radius * 2,
         transform: "translate(-50%, -50%) translateZ(0)",
         borderRadius: "50%",
-        border: `1px solid ${color}30`,
-        boxShadow: `0 0 20px ${color}15, inset 0 0 20px ${color}08`,
+        border: `1px solid ${color}40`,
+        boxShadow: `0 0 30px ${color}25, inset 0 0 30px ${color}12`,
         pointerEvents: "none",
         backfaceVisibility: "hidden",
       }}
@@ -281,14 +318,16 @@ function OrbitRing({ radius, color }: { radius: number; color: string }) {
   );
 }
 
-// --- Main Widget --------------------------------------------------------------
 export default function SummitWidget() {
   const [time, setTime] = useState(0);
   const [orbState, setOrbState] = useState<OrbState>("idle");
   const [paused, setPaused] = useState(false);
-
-  // Responsive scale based on viewport
   const [scale, setScale] = useState(1);
+
+  const speakTimerRef = useRef<number | null>(null);
+  const idleTimerRef = useRef<number | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const lastRef = useRef<number | null>(null);
 
   useEffect(() => {
     const updateScale = () => {
@@ -304,14 +343,11 @@ export default function SummitWidget() {
     return () => window.removeEventListener("resize", updateScale);
   }, []);
 
-  const rafRef = useRef<number | null>(null);
-  const lastRef = useRef<number | null>(null);
-
   useEffect(() => {
     if (paused) return;
     const loop = (now: number) => {
       if (lastRef.current !== null) {
-        setTime(t => t + (now - lastRef.current!) / 1000);
+        setTime((t) => t + (now - lastRef.current!) / 1000);
       }
       lastRef.current = now;
       rafRef.current = requestAnimationFrame(loop);
@@ -323,8 +359,14 @@ export default function SummitWidget() {
     };
   }, [paused]);
 
+  useEffect(() => {
+    return () => {
+      if (speakTimerRef.current) window.clearTimeout(speakTimerRef.current);
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    };
+  }, []);
+
   const handleOrbClick = useCallback(() => {
-    // Try every known Thinkrr activation method
     const win = window as any;
     if (win.ThinkrrWidget?.open) win.ThinkrrWidget.open();
     if (win.ThinkrrWidget?.start) win.ThinkrrWidget.start();
@@ -338,29 +380,31 @@ export default function SummitWidget() {
     ) as HTMLElement | null;
 
     if (container) {
-      // Shadow DOM
       if (container.shadowRoot) {
         const btn = container.shadowRoot.querySelector("button") as HTMLElement | null;
         if (btn) btn.click();
       }
-      // Direct children
       const btn = container.querySelector("button") as HTMLElement | null;
       if (btn) btn.click();
-      // Container itself
       container.click();
       container.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     }
 
-    // Broadcast to any iframes
-    document.querySelectorAll("iframe").forEach(iframe => {
+    document.querySelectorAll("iframe").forEach((iframe) => {
       try {
         iframe.contentWindow?.postMessage({ type: "open" }, "*");
         iframe.contentWindow?.postMessage({ action: "open" }, "*");
         iframe.contentWindow?.postMessage({ type: "start" }, "*");
-      } catch (_) {}
+      } catch (_) {
+        // ignore cross-origin postMessage issues
+      }
     });
 
-    setOrbState(s => s === "idle" ? "listening" : "idle");
+    if (speakTimerRef.current) window.clearTimeout(speakTimerRef.current);
+    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
+    setOrbState("listening");
+    speakTimerRef.current = window.setTimeout(() => setOrbState("speaking"), 2600);
+    idleTimerRef.current = window.setTimeout(() => setOrbState("idle"), 5200);
   }, []);
 
   const orbits = getOrbits(scale);
@@ -369,7 +413,6 @@ export default function SummitWidget() {
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-      {/* Orbit container */}
       <div
         style={{
           position: "relative",
@@ -379,7 +422,6 @@ export default function SummitWidget() {
           alignItems: "center",
           justifyContent: "center",
           cursor: "pointer",
-          // Contain all GPU layers
           transform: "translateZ(0)",
           willChange: "transform",
         }}
@@ -387,11 +429,9 @@ export default function SummitWidget() {
         onMouseLeave={() => setPaused(false)}
         onClick={handleOrbClick}
       >
-        {/* Rings */}
         <OrbitRing radius={115 * scale} color="#06B6D4" />
         <OrbitRing radius={190 * scale} color="#9333EA" />
 
-        {/* Ambient glow behind orb */}
         <div
           style={{
             position: "absolute",
@@ -413,12 +453,10 @@ export default function SummitWidget() {
           }
         `}</style>
 
-        {/* Orbiting icons */}
-        {orbits.map(item => (
+        {orbits.map((item) => (
           <OrbitIcon key={item.id} item={item} time={time} />
         ))}
 
-        {/* Center orb + mic icon */}
         <div style={{ position: "relative", zIndex: 20, pointerEvents: "none" }}>
           <SiriOrb state={orbState} size={orbSize} />
           <div
@@ -433,12 +471,7 @@ export default function SummitWidget() {
             }}
           >
             {orbState === "speaking" ? (
-              <svg
-                width={Math.round(28 * scale)}
-                height={Math.round(28 * scale)}
-                viewBox="0 0 28 28"
-                fill="white"
-              >
+              <svg width={Math.round(28 * scale)} height={Math.round(28 * scale)} viewBox="0 0 28 28" fill="white">
                 <rect x="2" y="9" width="4" height="10" rx="2" />
                 <rect x="8" y="5" width="4" height="18" rx="2" />
                 <rect x="14" y="7" width="4" height="14" rx="2" />
@@ -463,9 +496,22 @@ export default function SummitWidget() {
             )}
           </div>
         </div>
+
+        <div
+          style={{
+            position: "absolute",
+            bottom: Math.round(containerSize * 0.12),
+            left: "50%",
+            transform: "translateX(-50%)",
+            zIndex: 25,
+            pointerEvents: "none",
+            whiteSpace: "nowrap",
+          }}
+        >
+          <StateIndicator state={orbState} />
+        </div>
       </div>
 
-      {/* Integration badges */}
       <div
         style={{
           textAlign: "center",
@@ -496,8 +542,7 @@ export default function SummitWidget() {
             margin: "0 auto",
           }}
         >
-          {/* Orbiting ones listed first */}
-          {["GoHighLevel", "Google Calendar", "Outlook Calendar", "Acculynx", "HouseCall Pro", "Salesforce"].map(name => (
+          {["GoHighLevel", "Google Calendar", "Outlook Calendar", "Acculynx", "HouseCall Pro", "Salesforce"].map((name) => (
             <span
               key={name}
               style={{
@@ -515,8 +560,7 @@ export default function SummitWidget() {
               {name}
             </span>
           ))}
-          {/* Additional badges */}
-          {ADDITIONAL_BADGES.map(name => (
+          {ADDITIONAL_BADGES.map((name) => (
             <span
               key={name}
               style={{
@@ -534,7 +578,6 @@ export default function SummitWidget() {
               {name}
             </span>
           ))}
-          {/* And More pill */}
           <span
             style={{
               fontSize: Math.max(9, Math.round(10 * scale)),
