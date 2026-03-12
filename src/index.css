@@ -735,3 +735,32 @@ img, iframe, video, embed {
     height: 44px !important;
   }
 }
+
+/* Summit Widget — GPU compositing fix for mobile */
+.summit-orb-wrap,
+.summit-orb-core-idle,
+.summit-orb-core-listening,
+.summit-orb-core-speaking {
+  -webkit-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  -webkit-perspective: 1000;
+  perspective: 1000;
+}
+
+/* Hide Thinkrr default button — keep widget in DOM */
+[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] > * {
+  display: none !important;
+  pointer-events: none !important;
+}
+
+/* General mobile touch improvements */
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    overflow-x: hidden;
+  }
+}
