@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback, forwardRef } from "react";
 
 type OrbState = "idle" | "listening" | "speaking";
 
@@ -22,7 +22,7 @@ const getOrbits = (scale: number): OrbitItem[] => [
     phase: 0,
     speed: 0.38,
     glowColor: "#FF6B35",
-    size: 42 * scale,
+    size: 58 * scale,
   },
   {
     id: "gcal",
@@ -32,7 +32,7 @@ const getOrbits = (scale: number): OrbitItem[] => [
     phase: (Math.PI * 2) / 3,
     speed: 0.38,
     glowColor: "#4285F4",
-    size: 42 * scale,
+    size: 58 * scale,
   },
   {
     id: "outlook",
@@ -42,7 +42,7 @@ const getOrbits = (scale: number): OrbitItem[] => [
     phase: (Math.PI * 4) / 3,
     speed: 0.38,
     glowColor: "#0078D4",
-    size: 42 * scale,
+    size: 58 * scale,
   },
   {
     id: "acculynx",
@@ -52,7 +52,7 @@ const getOrbits = (scale: number): OrbitItem[] => [
     phase: Math.PI / 4,
     speed: -0.22,
     glowColor: "#00C9E4",
-    size: 40 * scale,
+    size: 54 * scale,
   },
   {
     id: "housecall",
@@ -62,7 +62,7 @@ const getOrbits = (scale: number): OrbitItem[] => [
     phase: Math.PI / 4 + (Math.PI * 2) / 3,
     speed: -0.22,
     glowColor: "#00B14F",
-    size: 40 * scale,
+    size: 54 * scale,
   },
   {
     id: "salesforce",
@@ -72,17 +72,8 @@ const getOrbits = (scale: number): OrbitItem[] => [
     phase: Math.PI / 4 + (Math.PI * 4) / 3,
     speed: -0.22,
     glowColor: "#00A1E0",
-    size: 40 * scale,
+    size: 54 * scale,
   },
-];
-
-const ADDITIONAL_BADGES = [
-  "ServiceTitan",
-  "Jobber",
-  "Roof Link",
-  "HubSpot",
-  "Zapier",
-  "Make.com",
 ];
 
 function SiriOrb({ state, size = 110 }: { state: OrbState; size?: number }) {
@@ -211,94 +202,6 @@ function StateIndicator({ state }: { state: OrbState }) {
   );
 }
 
-function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
-  const [hovered, setHovered] = useState(false);
-  const angle = time * item.speed + item.phase;
-  const x = Math.cos(angle) * item.orbitR;
-  const y = Math.sin(angle) * item.orbitR;
-
-  return (
-    <div
-      style={{
-        position: "absolute",
-        top: "50%",
-        left: "50%",
-        width: item.size,
-        height: item.size,
-        transform: `translate(calc(${x}px - 50%), calc(${y}px - 50%)) translateZ(0)`,
-        zIndex: hovered ? 30 : 10,
-        cursor: "default",
-        willChange: "transform",
-        backfaceVisibility: "hidden",
-        filter: hovered
-          ? `drop-shadow(0 0 12px ${item.glowColor}) drop-shadow(0 0 4px ${item.glowColor})`
-          : `drop-shadow(0 0 5px ${item.glowColor}90)`,
-        transition: "filter 0.25s ease",
-      }}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      onTouchStart={() => setHovered(true)}
-      onTouchEnd={() => setHovered(false)}
-    >
-      <div
-        style={{
-          width: item.size,
-          height: item.size,
-          borderRadius: "10px",
-          background: "rgba(10, 15, 35, 0.80)",
-          border: `1.5px solid ${item.glowColor}50`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: "7px",
-          boxSizing: "border-box",
-          overflow: "hidden",
-        }}
-      >
-        <img
-          src={item.src}
-          alt={item.label}
-          onLoad={() => console.log("Loaded:", item.src)}
-          onError={() => console.error("FAILED TO LOAD:", item.src)}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            display: "block",
-            transform: "translateZ(0)",
-            backfaceVisibility: "hidden",
-          }}
-          draggable={false}
-        />
-      </div>
-
-      {hovered && (
-        <div
-          style={{
-            position: "absolute",
-            bottom: item.size + 6,
-            left: "50%",
-            transform: "translateX(-50%)",
-            background: "rgba(6, 10, 24, 0.97)",
-            border: "1px solid rgba(100, 180, 255, 0.2)",
-            borderRadius: "6px",
-            padding: "4px 10px",
-            fontSize: "11px",
-            color: "#CBD5E1",
-            whiteSpace: "nowrap",
-            fontFamily: "monospace",
-            letterSpacing: "0.06em",
-            pointerEvents: "none",
-            zIndex: 50,
-          }}
-        >
-          {item.label}
-        </div>
-      )}
-    </div>
-  );
-}
-
 function OrbitRing({ radius, color }: { radius: number; color: string }) {
   return (
     <div
@@ -319,16 +222,112 @@ function OrbitRing({ radius, color }: { radius: number; color: string }) {
   );
 }
 
-export default function SummitWidget() {
-  const [time, setTime] = useState(0);
-  const [orbState, setOrbState] = useState<OrbState>("idle");
-  const [paused, setPaused] = useState(false);
-  const [scale, setScale] = useState(1);
+interface OrbitIconStaticProps {
+  item: OrbitItem;
+  onPause: () => void;
+  onResume: () => void;
+}
 
-  const speakTimerRef = useRef<number | null>(null);
-  const idleTimerRef = useRef<number | null>(null);
+const OrbitIconStatic = forwardRef<HTMLDivElement, OrbitIconStaticProps>(
+  ({ item, onPause, onResume }, ref) => {
+    const [hovered, setHovered] = useState(false);
+
+    return (
+      <div
+        ref={ref}
+        style={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          width: item.size,
+          height: item.size,
+          transform: "translate(-50%, -50%) translateZ(0)",
+          zIndex: hovered ? 30 : 10,
+          willChange: "transform",
+          backfaceVisibility: "hidden",
+          filter: hovered
+            ? `drop-shadow(0 0 14px ${item.glowColor}) drop-shadow(0 0 5px ${item.glowColor})`
+            : `drop-shadow(0 0 6px ${item.glowColor}90)`,
+          transition: "filter 0.25s ease, z-index 0s",
+        }}
+        onMouseEnter={() => {
+          setHovered(true);
+          onPause();
+        }}
+        onMouseLeave={() => {
+          setHovered(false);
+          onResume();
+        }}
+      >
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            borderRadius: "10px",
+            background: "rgba(10, 15, 35, 0.82)",
+            border: `1.5px solid ${item.glowColor}50`,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "5px",
+            boxSizing: "border-box",
+            overflow: "hidden",
+          }}
+        >
+          <img
+            src={item.src}
+            alt={item.label}
+            onError={(e) => console.error("Logo failed:", item.src, e)}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              display: "block",
+              transform: "translateZ(0)",
+              backfaceVisibility: "hidden",
+            }}
+            draggable={false}
+          />
+        </div>
+
+        {hovered && (
+          <div
+            style={{
+              position: "absolute",
+              bottom: item.size + 6,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "rgba(6,10,24,0.97)",
+              border: "1px solid rgba(100,180,255,0.2)",
+              borderRadius: "6px",
+              padding: "4px 10px",
+              fontSize: "11px",
+              color: "#CBD5E1",
+              whiteSpace: "nowrap",
+              fontFamily: "monospace",
+              letterSpacing: "0.06em",
+              pointerEvents: "none",
+              zIndex: 50,
+            }}
+          >
+            {item.label}
+          </div>
+        )}
+      </div>
+    );
+  }
+);
+OrbitIconStatic.displayName = "OrbitIconStatic";
+
+export default function SummitWidget() {
+  const [orbState, setOrbState] = useState<OrbState>("idle");
+  const [scale, setScale] = useState(1);
+  const isPausedRef = useRef(false);
+  const timeRef = useRef(0);
   const rafRef = useRef<number | null>(null);
-  const lastRef = useRef<number | null>(null);
+  const lastTimeRef = useRef<number | null>(null);
+
+  const iconRefs = useRef<(HTMLDivElement | null)[]>([]);
 
   useEffect(() => {
     const updateScale = () => {
@@ -344,26 +343,35 @@ export default function SummitWidget() {
     return () => window.removeEventListener("resize", updateScale);
   }, []);
 
+  const orbitsRef = useRef(getOrbits(1));
   useEffect(() => {
-    if (paused) return;
+    orbitsRef.current = getOrbits(scale);
+  }, [scale]);
+
+  useEffect(() => {
     const loop = (now: number) => {
-      if (lastRef.current !== null) {
-        setTime((t) => t + (now - lastRef.current!) / 1000);
+      if (!isPausedRef.current) {
+        if (lastTimeRef.current !== null) {
+          timeRef.current += (now - lastTimeRef.current) / 1000;
+        }
+        lastTimeRef.current = now;
+
+        orbitsRef.current.forEach((item, i) => {
+          const el = iconRefs.current[i];
+          if (!el) return;
+          const angle = timeRef.current * item.speed + item.phase;
+          const x = Math.cos(angle) * item.orbitR;
+          const y = Math.sin(angle) * item.orbitR;
+          el.style.transform = `translate(calc(${x}px - 50%), calc(${y}px - 50%)) translateZ(0)`;
+        });
+      } else {
+        lastTimeRef.current = null;
       }
-      lastRef.current = now;
       rafRef.current = requestAnimationFrame(loop);
     };
     rafRef.current = requestAnimationFrame(loop);
     return () => {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
-      lastRef.current = null;
-    };
-  }, [paused]);
-
-  useEffect(() => {
-    return () => {
-      if (speakTimerRef.current) window.clearTimeout(speakTimerRef.current);
-      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
     };
   }, []);
 
@@ -374,38 +382,28 @@ export default function SummitWidget() {
     if (win.ThinkrrWidget?.toggle) win.ThinkrrWidget.toggle();
     if (win.thinkrr?.open) win.thinkrr.open();
     if (win.thinkrr?.start) win.thinkrr.start();
-    if (win.openWidget) win.openWidget();
 
     const container = document.querySelector(
       '[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]'
     ) as HTMLElement | null;
-
     if (container) {
       if (container.shadowRoot) {
-        const btn = container.shadowRoot.querySelector("button") as HTMLElement | null;
-        if (btn) btn.click();
+        (container.shadowRoot.querySelector("button") as HTMLElement | null)?.click();
       }
-      const btn = container.querySelector("button") as HTMLElement | null;
-      if (btn) btn.click();
+      (container.querySelector("button") as HTMLElement | null)?.click();
       container.click();
       container.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
     }
-
     document.querySelectorAll("iframe").forEach((iframe) => {
       try {
         iframe.contentWindow?.postMessage({ type: "open" }, "*");
         iframe.contentWindow?.postMessage({ action: "open" }, "*");
-        iframe.contentWindow?.postMessage({ type: "start" }, "*");
       } catch (_) {
-        // ignore cross-origin postMessage issues
+        // no-op
       }
     });
 
-    if (speakTimerRef.current) window.clearTimeout(speakTimerRef.current);
-    if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
-    setOrbState("listening");
-    speakTimerRef.current = window.setTimeout(() => setOrbState("speaking"), 2600);
-    idleTimerRef.current = window.setTimeout(() => setOrbState("idle"), 5200);
+    setOrbState((s) => (s === "idle" ? "listening" : "idle"));
   }, []);
 
   const orbits = getOrbits(scale);
@@ -424,10 +422,7 @@ export default function SummitWidget() {
           justifyContent: "center",
           cursor: "pointer",
           transform: "translateZ(0)",
-          willChange: "transform",
         }}
-        onMouseEnter={() => setPaused(true)}
-        onMouseLeave={() => setPaused(false)}
         onClick={handleOrbClick}
       >
         <OrbitRing radius={115 * scale} color="#06B6D4" />
@@ -454,8 +449,21 @@ export default function SummitWidget() {
           }
         `}</style>
 
-        {orbits.map((item) => (
-          <OrbitIcon key={item.id} item={item} time={time} />
+        {orbits.map((item, i) => (
+          <OrbitIconStatic
+            key={item.id}
+            item={item}
+            ref={(el) => {
+              iconRefs.current[i] = el;
+            }}
+            onPause={() => {
+              isPausedRef.current = true;
+            }}
+            onResume={() => {
+              isPausedRef.current = false;
+              lastTimeRef.current = null;
+            }}
+          />
         ))}
 
         <div style={{ position: "relative", zIndex: 20, pointerEvents: "none" }}>
@@ -472,7 +480,7 @@ export default function SummitWidget() {
             }}
           >
             {orbState === "speaking" ? (
-              <svg width={Math.round(28 * scale)} height={Math.round(28 * scale)} viewBox="0 0 28 28" fill="white">
+              <svg width={28 * scale} height={28 * scale} viewBox="0 0 28 28" fill="white">
                 <rect x="2" y="9" width="4" height="10" rx="2" />
                 <rect x="8" y="5" width="4" height="18" rx="2" />
                 <rect x="14" y="7" width="4" height="14" rx="2" />
@@ -480,8 +488,8 @@ export default function SummitWidget() {
               </svg>
             ) : (
               <svg
-                width={Math.round(26 * scale)}
-                height={Math.round(26 * scale)}
+                width={26 * scale}
+                height={26 * scale}
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="white"
@@ -501,7 +509,7 @@ export default function SummitWidget() {
         <div
           style={{
             position: "absolute",
-            bottom: Math.round(containerSize * 0.12),
+            bottom: Math.round(containerSize * 0.11),
             left: "50%",
             transform: "translateX(-50%)",
             zIndex: 25,
@@ -513,14 +521,7 @@ export default function SummitWidget() {
         </div>
       </div>
 
-      <div
-        style={{
-          textAlign: "center",
-          marginTop: Math.round(-8 * scale),
-          padding: "0 16px",
-          maxWidth: "100%",
-        }}
-      >
+      <div style={{ textAlign: "center", marginTop: -8 * scale, padding: "0 16px", maxWidth: "100%" }}>
         <div
           style={{
             fontSize: Math.max(9, Math.round(11 * scale)),
@@ -543,18 +544,18 @@ export default function SummitWidget() {
             margin: "0 auto",
           }}
         >
-          {ADDITIONAL_BADGES.map((name) => (
+          {["ServiceTitan", "Jobber", "Roof Link", "HubSpot", "Zapier", "Make.com"].map((name) => (
             <span
               key={name}
               style={{
                 fontSize: Math.max(9, Math.round(10 * scale)),
                 padding: "3px 10px",
-                border: "1px solid rgba(100,160,255,0.12)",
+                border: "1px solid rgba(100,160,255,0.15)",
                 borderRadius: 20,
                 color: "#64748B",
                 letterSpacing: "0.07em",
                 fontFamily: "monospace",
-                background: "rgba(100,160,255,0.02)",
+                background: "rgba(100,160,255,0.03)",
                 whiteSpace: "nowrap",
               }}
             >
