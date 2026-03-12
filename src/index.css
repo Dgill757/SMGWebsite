@@ -773,3 +773,24 @@ img, iframe, video, embed {
     overflow-x: hidden;
   }
 }
+
+:root {
+  --mouse-x: 50vw;
+  --mouse-y: 50vh;
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background: radial-gradient(
+    900px circle at var(--mouse-x) var(--mouse-y),
+    rgba(6, 182, 212, 0.045),
+    rgba(139, 92, 246, 0.025) 45%,
+    transparent 70%
+  );
+  will-change: background;
+  transition: background 0.05s ease;
+}
