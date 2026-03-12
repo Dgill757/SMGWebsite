@@ -68,7 +68,7 @@ const App = () => {
         <BrowserRouter>
           <GlobalAtmosphere />
           <div className="bg-drift-layer" aria-hidden="true" />
-          <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+          <div className="min-h-screen text-foreground overflow-x-hidden">
             <ScrollToTop />
             <Navbar />
             <Routes>

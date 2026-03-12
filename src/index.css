@@ -779,7 +779,7 @@ img, iframe, video, embed {
   --mouse-y: 50vh;
 }
 
-body::after {
+body::before {
   content: '';
   position: fixed;
   inset: 0;
@@ -927,7 +927,4 @@ header::after, header::before {
 [class*="Widget"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  background: revert !important;
-  border: revert !important;
-  box-shadow: revert !important;
 }
