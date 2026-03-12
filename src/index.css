@@ -424,7 +424,7 @@ html, body {
 
 /* ─── Wavy BG ─────────────────────────────────────────────────────────────────  */
 .wavy-bg {
-  background-color: #050507;
+  background-color: transparent;
   background-image:
     radial-gradient(ellipse at 20% 40%, rgba(124,58,237,0.08) 0%, transparent 60%),
     radial-gradient(ellipse at 80% 60%, rgba(59,130,246,0.06) 0%, transparent 60%);
@@ -793,4 +793,44 @@ body::after {
   );
   will-change: background;
   transition: background 0.05s ease;
+}
+
+/* Section-level wrappers: keep atmospheric effects, remove flat box backgrounds */
+.bg-voiceai-dark {
+  background-color: transparent;
+}
+
+.min-h-screen.bg-background,
+#experience-ava,
+#features,
+#how-it-works,
+#use-cases,
+#testimonials,
+#roi-calculator,
+#how-ava-works,
+#demo-calls,
+#pricing,
+#faq {
+  background: transparent;
+  background-color: transparent;
+}
+
+/* ── Unified deep-space background ── */
+html {
+  background: #000913;
+}
+
+body {
+  background:
+    linear-gradient(
+      180deg,
+      #000d1a 0%,
+      #010f1e 15%,
+      #020c1a 35%,
+      #010e1c 60%,
+      #000b17 80%,
+      #000810 100%
+    );
+  background-attachment: fixed;
+  min-height: 100vh;
 }
