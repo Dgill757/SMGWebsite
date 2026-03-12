@@ -14,6 +14,8 @@ import CalendarDialog from '@/components/CalendarDialog';
 import Widget from '@/components/Widget';
 import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
+import { IntegrationMarquee } from '@/components/IntegrationMarquee';
+import { AvaComparison } from '@/components/AvaComparison';
 
 const Index = () => {
   const location = useLocation();
@@ -93,8 +95,10 @@ const Index = () => {
         </div>
 
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
+        <IntegrationMarquee />
 
         <RevenueSection />
+        <AvaComparison />
         <Widget />
         <HowItWorks />
         <UseCases />
