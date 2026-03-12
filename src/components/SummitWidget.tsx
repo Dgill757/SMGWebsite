@@ -323,6 +323,7 @@ export default function SummitWidget() {
   const [orbState, setOrbState] = useState<OrbState>("idle");
   const [scale, setScale] = useState(1);
   const isPausedRef = useRef(false);
+  const thinkrrReadyRef = useRef(false);
   const timeRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
@@ -347,6 +348,40 @@ export default function SummitWidget() {
   useEffect(() => {
     orbitsRef.current = getOrbits(scale);
   }, [scale]);
+
+  useEffect(() => {
+    let attempts = 0;
+    const maxAttempts = 20;
+    const poll = setInterval(() => {
+      attempts++;
+      const win = window as any;
+      const container = document.querySelector(
+        '[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]'
+      );
+      const iframes = document.querySelectorAll('iframe');
+
+      if (
+        win.ThinkrrWidget ||
+        win.thinkrr ||
+        iframes.length > 0 ||
+        (container && container.children.length > 0)
+      ) {
+        thinkrrReadyRef.current = true;
+        console.log("Thinkrr widget detected as ready:", {
+          ThinkrrWidget: !!win.ThinkrrWidget,
+          thinkrr: !!win.thinkrr,
+          iframes: iframes.length,
+          containerChildren: container?.children.length
+        });
+        clearInterval(poll);
+      }
+      if (attempts >= maxAttempts) {
+        console.warn("Thinkrr widget not detected after", maxAttempts, "attempts");
+        clearInterval(poll);
+      }
+    }, 500);
+    return () => clearInterval(poll);
+  }, []);
 
   useEffect(() => {
     const loop = (now: number) => {
@@ -376,34 +411,118 @@ export default function SummitWidget() {
   }, []);
 
   const handleOrbClick = useCallback(() => {
-    const win = window as any;
-    if (win.ThinkrrWidget?.open) win.ThinkrrWidget.open();
-    if (win.ThinkrrWidget?.start) win.ThinkrrWidget.start();
-    if (win.ThinkrrWidget?.toggle) win.ThinkrrWidget.toggle();
-    if (win.thinkrr?.open) win.thinkrr.open();
-    if (win.thinkrr?.start) win.thinkrr.start();
+    /*
+     * DAN — AFTER THIS DEPLOYS:
+     * 1. Go to summitvoiceai.com
+     * 2. Open Chrome DevTools (F12)
+     * 3. Click the Console tab
+     * 4. Click the orb once
+     * 5. Copy ALL console output that appears
+     * 6. Send screenshot of console to Claude
+     * The logs will show exactly how Thinkrr loads and
+     * which method will trigger it.
+     */
+    console.log("=== ORB CLICKED - THINKRR DIAGNOSTIC ===");
 
+    // Log 1: Check window object for Thinkrr API
+    const win = window as any;
+    const windowKeys = Object.keys(win).filter((k) =>
+      k.toLowerCase().includes('thinkrr') ||
+      k.toLowerCase().includes('widget') ||
+      k.toLowerCase().includes('voice') ||
+      k.toLowerCase().includes('retell') ||
+      k.toLowerCase().includes('vapi')
+    );
+    console.log("Window keys matching widget/thinkrr/voice:", windowKeys);
+
+    // Log 2: Find the widget container
     const container = document.querySelector(
       '[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]'
     ) as HTMLElement | null;
-    if (container) {
-      if (container.shadowRoot) {
-        (container.shadowRoot.querySelector("button") as HTMLElement | null)?.click();
-      }
-      (container.querySelector("button") as HTMLElement | null)?.click();
-      container.click();
-      container.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
-    }
-    document.querySelectorAll("iframe").forEach((iframe) => {
-      try {
-        iframe.contentWindow?.postMessage({ type: "open" }, "*");
-        iframe.contentWindow?.postMessage({ action: "open" }, "*");
-      } catch (_) {
-        // no-op
+    console.log("Widget container:", container);
+    console.log("Widget container outerHTML:", container?.outerHTML);
+    console.log("Widget container innerHTML:", container?.innerHTML);
+    console.log("Widget container shadowRoot:", container?.shadowRoot);
+    console.log("Widget container children count:", container?.children?.length);
+
+    // Log 3: Find ALL iframes
+    const iframes = Array.from(document.querySelectorAll('iframe'));
+    console.log("Total iframes on page:", iframes.length);
+    iframes.forEach((iframe, i) => {
+      console.log(`iframe[${i}]:`, {
+        src: iframe.src,
+        id: iframe.id,
+        className: iframe.className,
+        name: iframe.name,
+        style: iframe.getAttribute('style'),
+      });
+    });
+
+    // Log 4: Scan body for any injected elements from Thinkrr
+    const bodyChildren = Array.from(document.body.children);
+    console.log("Body direct children count:", bodyChildren.length);
+    bodyChildren.forEach((el, i) => {
+      const tag = el.tagName;
+      const id = el.id;
+      const cls = (el as HTMLElement).className as string;
+      if (tag === 'IFRAME' || tag === 'SCRIPT' ||
+        id?.toLowerCase().includes('widget') ||
+        cls?.toLowerCase?.()?.includes('widget') ||
+        el.getAttribute('data-widget-key')) {
+        console.log(`Body child [${i}]:`, tag, id, cls, el.outerHTML?.slice(0, 200));
       }
     });
 
+    // Log 5: Try every possible Thinkrr window API
+    const apisToTry = [
+      'ThinkrrWidget', 'thinkrr', 'ThinkrrVoice', 'thinkrrVoice',
+      'openWidget', 'startWidget', 'voiceWidget', 'RetellWebClient',
+      'Retell', 'VAPI', 'vapi', 'Bland', 'bland'
+    ];
+    apisToTry.forEach((api) => {
+      if (win[api]) {
+        console.log(`FOUND window.${api}:`, win[api]);
+        console.log(`window.${api} methods:`, Object.keys(win[api]));
+      }
+    });
+
+    // Still try all click methods
+    if (win.ThinkrrWidget?.open) { win.ThinkrrWidget.open(); console.log("Tried ThinkrrWidget.open"); }
+    if (win.ThinkrrWidget?.start) { win.ThinkrrWidget.start(); console.log("Tried ThinkrrWidget.start"); }
+    if (win.ThinkrrWidget?.toggle) { win.ThinkrrWidget.toggle(); console.log("Tried ThinkrrWidget.toggle"); }
+    if (win.thinkrr?.open) { win.thinkrr.open(); console.log("Tried thinkrr.open"); }
+    if (win.thinkrr?.start) { win.thinkrr.start(); console.log("Tried thinkrr.start"); }
+
+    if (container) {
+      if (container.shadowRoot) {
+        const shadowBtn = container.shadowRoot.querySelector('button, [role="button"], div[class*="btn"]') as HTMLElement | null;
+        console.log("Shadow DOM button:", shadowBtn);
+        shadowBtn?.click();
+      }
+      const directBtn = container.querySelector('button') as HTMLElement | null;
+      console.log("Direct button:", directBtn);
+      directBtn?.click();
+      container.click();
+    }
+
+    // Click every iframe we find
+    iframes.forEach((iframe, i) => {
+      try {
+        console.log(`Posting message to iframe[${i}]`);
+        iframe.contentWindow?.postMessage({ type: 'open' }, '*');
+        iframe.contentWindow?.postMessage({ type: 'start' }, '*');
+        iframe.contentWindow?.postMessage({ action: 'open' }, '*');
+        iframe.contentWindow?.postMessage({ action: 'start' }, '*');
+        iframe.contentWindow?.postMessage({ event: 'open' }, '*');
+        (iframe as HTMLElement).click();
+      } catch (e) {
+        console.log(`iframe[${i}] postMessage error:`, e);
+      }
+    });
+
+    // Toggle visual state
     setOrbState((s) => (s === "idle" ? "listening" : "idle"));
+    console.log("=== END DIAGNOSTIC ===");
   }, []);
 
   const orbits = getOrbits(scale);
