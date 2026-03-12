@@ -142,7 +142,7 @@ const Widget: React.FC = () => {
           gap: 3,
           alignItems: 'center',
           pointerEvents: 'none',
-          opacity: 0.22,
+          opacity: 1,
           zIndex: 2,
         }}
       >
@@ -153,7 +153,7 @@ const Widget: React.FC = () => {
               width: 3,
               borderRadius: 99,
               height: `${h * 14}px`,
-              background: 'linear-gradient(to top, rgba(0,217,255,0.9), rgba(124,58,237,0.7))',
+              background: '#00D9FF',
               animation: `wave ${0.9 + i * 0.07}s ease-in-out infinite`,
               animationDelay: `${i * 0.08}s`,
             }}
