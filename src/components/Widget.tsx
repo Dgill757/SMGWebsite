@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import RawHtmlBlock from './RawHtmlBlock';
-import SummitWidget from '@/components/SummitWidget';
+import SummitWidget from './SummitWidget';
 
 const Widget: React.FC = () => {
   const [hovered, setHovered] = useState(false);
