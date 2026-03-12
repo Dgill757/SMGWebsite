@@ -220,42 +220,90 @@ export default function SummitWidget() {
   }, [paused]);
 
   const handleOrbClick = useCallback(() => {
-    // Strategy 1: direct child click
-    const container = document.querySelector('[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]') as HTMLElement | null;
-    if (container) {
-      // Try multiple selectors to find Thinkrr's actual button
-      const selectors = [
-        'button',
-        '[role="button"]',
-        'div[class*="trigger"]',
-        'div[class*="button"]',
-        'div[class*="widget"]',
-        'div[class*="mic"]',
-        'div[class*="orb"]',
-        '.widget-trigger',
-        '#widget-trigger',
-      ];
-      
-      // Try shadow DOM first
-      if (container.shadowRoot) {
-        for (const sel of selectors) {
-          const btn = container.shadowRoot.querySelector(sel) as HTMLElement | null;
-          if (btn) { btn.click(); break; }
-        }
-      }
-      
-      // Try direct DOM
-      for (const sel of selectors) {
-        const btn = container.querySelector(sel) as HTMLElement | null;
-        if (btn) { btn.click(); break; }
-      }
+    // NEXT STEP FOR DAN:
+    // 1. Open summitvoiceai.com in Chrome
+    // 2. Click the orb once
+    // 3. Open DevTools (F12) -> Console tab
+    // 4. Copy everything that says "=== THINKRR DEBUG ===" and share with Claude
+    // This will tell us exactly how to click their button programmatically.
+    let activated = false;
 
-      // Fallback: click the container itself
+    // Debug: log everything Thinkrr injected
+    console.log("=== THINKRR DEBUG ===");
+
+    // Method 1: Window API (most common for voice widgets)
+    const win = window as any;
+    if (win.ThinkrrWidget?.open) { win.ThinkrrWidget.open(); activated = true; }
+    if (win.thinkrr?.open) { win.thinkrr.open(); activated = true; }
+    if (win.thinkrr?.start) { win.thinkrr.start(); activated = true; }
+    if (win.ThinkrrWidget?.start) { win.ThinkrrWidget.start(); activated = true; }
+    if (win.ThinkrrWidget?.toggle) { win.ThinkrrWidget.toggle(); activated = true; }
+    if (win.openWidget) { win.openWidget(); activated = true; }
+
+    const container = document.querySelector(
+      '[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]'
+    ) as HTMLElement | null;
+
+    console.log("Container found:", container);
+    console.log("Container innerHTML:", container?.innerHTML);
+    console.log("Container children:", container?.children);
+    console.log("Container shadowRoot:", container?.shadowRoot);
+
+    // Method 2: Direct container click
+    if (container && !activated) {
       container.click();
+      activated = true;
     }
 
-    // Toggle visual state regardless
-    setOrbState(s => s === "idle" ? "listening" : "idle");
+    // Log ALL iframes on the page
+    const iframes = document.querySelectorAll('iframe');
+    console.log("All iframes on page:", iframes.length);
+    iframes.forEach((iframe, i) => {
+      console.log(`iframe[${i}] src:`, iframe.src);
+      console.log(`iframe[${i}] id:`, iframe.id);
+      console.log(`iframe[${i}] class:`, iframe.className);
+    });
+
+    // Method 3: Find any iframe Thinkrr injected and post a message to it
+    iframes.forEach((iframe) => {
+      iframe.contentWindow?.postMessage({ type: 'open' }, '*');
+      iframe.contentWindow?.postMessage({ type: 'start' }, '*');
+      iframe.contentWindow?.postMessage({ action: 'open' }, '*');
+      iframe.contentWindow?.postMessage({ action: 'start' }, '*');
+    });
+
+    // Method 4: Dispatch a custom event on the container
+    if (container) {
+      container.dispatchEvent(new MouseEvent('click', { bubbles: true, cancelable: true }));
+      container.dispatchEvent(new CustomEvent('open', { bubbles: true }));
+      container.dispatchEvent(new CustomEvent('start', { bubbles: true }));
+    }
+
+    // Method 5: Look for any button/div Thinkrr injected ANYWHERE in the body
+    // (not just inside the container — some widgets append to document.body)
+    const bodyButtons = document.querySelectorAll(
+      'button[class*="widget"], div[class*="widget-btn"], div[id*="widget"], button[id*="widget"], div[class*="voice"], button[class*="voice"]'
+    );
+    bodyButtons.forEach((btn) => (btn as HTMLElement).click());
+
+    // Log all elements injected by Thinkrr (they often use a fixed/absolute div)
+    const allFixed = document.querySelectorAll('*');
+    allFixed.forEach((el) => {
+      const tag = el.tagName.toLowerCase();
+      if (
+        tag === 'iframe' ||
+        (el.id && el.id.toLowerCase().includes('thinkrr')) ||
+        (el.className && typeof el.className === 'string' && el.className.toLowerCase().includes('thinkrr'))
+      ) {
+        console.log("Possible Thinkrr element:", el.tagName, el.id, el.className, el.getAttribute('src'));
+      }
+    });
+
+    // Always toggle visual state
+    setOrbState((s) => (s === "idle" ? "listening" : "idle"));
+
+    // Log result
+    console.log("Thinkrr activation attempted. Methods tried: window API, container click, iframe postMessage, custom events, body scan");
   }, []);
 
   const allItems = [...INNER_ORBIT, ...OUTER_ORBIT];
