@@ -164,12 +164,14 @@ const Widget: React.FC = () => {
       <div style={{ maxWidth: 980, margin: '0 auto', position: 'relative', zIndex: 3 }}>
         <div style={{ textAlign: 'center', marginBottom: '2.75rem' }}>
           <div
+            className="badge-live-pulse"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
-              background: 'rgba(0,217,255,0.08)',
-              border: '1px solid rgba(0,217,255,0.22)',
+              border: '1px solid rgba(0, 217, 255, 0.5)',
+              background: 'rgba(0, 217, 255, 0.08)',
+              boxShadow: '0 0 16px rgba(0, 217, 255, 0.2), inset 0 0 8px rgba(0, 217, 255, 0.05)',
               borderRadius: 999,
               padding: '0.4rem 1.1rem',
               marginBottom: '1.25rem',
@@ -182,17 +184,18 @@ const Widget: React.FC = () => {
                 height: 7,
                 borderRadius: '50%',
                 background: '#00D9FF',
-                boxShadow: '0 0 10px #00D9FF, 0 0 20px rgba(0,217,255,0.4)',
-                animation: 'widgetPulse 2s ease-in-out infinite',
+                boxShadow: '0 0 6px #00D9FF, 0 0 12px rgba(0,217,255,0.6)',
+                animation: 'ping-slow 2s cubic-bezier(0,0,0.2,1) infinite',
               }}
             />
             <span
               style={{
                 fontSize: '0.72rem',
-                fontWeight: 700,
-                letterSpacing: '0.08em',
+                color: '#ffffff',
+                textShadow: '0 0 12px rgba(0, 217, 255, 0.7)',
+                fontWeight: 600,
+                letterSpacing: '0.05em',
                 textTransform: 'uppercase',
-                color: 'rgba(255,255,255,0.65)',
               }}
             >
               LIVE DEMO — TALK TO AVA NOW
