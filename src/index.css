@@ -880,3 +880,54 @@ footer::after, footer::before,
 header::after, header::before {
   display: none !important;
 }
+
+/* ── Glassmorphism card upgrades ── */
+
+/* Target stat cards, feature cards, and any card-style containers */
+[class*="stat"],
+[class*="Stat"],
+[class*="card"],
+[class*="Card"],
+[class*="feature"],
+[class*="Feature"],
+[class*="metric"],
+[class*="Metric"] {
+  background: rgba(255, 255, 255, 0.028) !important;
+  border: 1px solid rgba(255, 255, 255, 0.065) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.06),
+    0 8px 32px rgba(0, 0, 0, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05) !important;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover state — subtle glow lift */
+[class*="stat"]:hover,
+[class*="Stat"]:hover,
+[class*="card"]:hover,
+[class*="Card"]:hover,
+[class*="feature"]:hover,
+[class*="Feature"]:hover {
+  border-color: rgba(6, 182, 212, 0.18) !important;
+  box-shadow:
+    0 0 0 1px rgba(6, 182, 212, 0.12),
+    0 12px 40px rgba(0, 0, 0, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Make sure the orb widget container is NOT affected */
+[class*="summit"],
+[class*="Summit"],
+[class*="orb"],
+[class*="Orb"],
+[class*="widget"],
+[class*="Widget"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  background: revert !important;
+  border: revert !important;
+  box-shadow: revert !important;
+}
