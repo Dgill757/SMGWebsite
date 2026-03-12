@@ -18,6 +18,7 @@ import GDPRCompliance from "./pages/GDPRCompliance";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import GlobalAtmosphere from "./components/ui/GlobalAtmosphere";
+import AmbientBackground from "./components/AmbientBackground";
 
 // ScrollToTop component to ensure proper scrolling behavior
 const ScrollToTop = () => {
@@ -60,6 +61,7 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
+      <AmbientBackground />
       <TooltipProvider>
         <Toaster />
         <Sonner />
