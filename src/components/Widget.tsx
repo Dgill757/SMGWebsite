@@ -273,9 +273,21 @@ const Widget: React.FC = () => {
       </div>
 
       <style>{`
-        [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] > * {
-          display: none !important;
+        [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] {
+          position: fixed !important;
+          bottom: -9999px !important;
+          left: -9999px !important;
+          width: 1px !important;
+          height: 1px !important;
+          overflow: hidden !important;
+          opacity: 0 !important;
           pointer-events: none !important;
+        }
+        [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] > * {
+          pointer-events: auto !important;
+          display: flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
         }
         @keyframes widgetPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
