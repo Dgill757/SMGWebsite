@@ -947,3 +947,74 @@ header::after, header::before {
 .badge-live-pulse {
   animation: badge-pulse 2s ease-in-out infinite;
 }
+
+/* ── Integration badge pills ── */
+.integration-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.9);
+  background: rgba(0, 217, 255, 0.07);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.1);
+  cursor: default;
+  transition: all 0.25s ease;
+  white-space: nowrap;
+}
+
+.integration-badge::before {
+  content: '';
+  display: inline-block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #00D9FF;
+  box-shadow: 0 0 6px #00D9FF;
+  flex-shrink: 0;
+}
+
+.integration-badge:hover {
+  background: rgba(0, 217, 255, 0.15);
+  border-color: rgba(0, 217, 255, 0.7);
+  box-shadow: 0 0 18px rgba(0, 217, 255, 0.3), 0 0 6px rgba(0, 217, 255, 0.15);
+  color: #ffffff;
+  transform: translateY(-1px);
+}
+
+/* Tooltip on hover */
+.integration-badge::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  background: rgba(0, 10, 20, 0.95);
+  border: 1px solid rgba(0, 217, 255, 0.3);
+  color: #00D9FF;
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5);
+}
+
+.integration-badge:hover::after {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Hide tooltips on touch devices */
+@media (hover: none) {
+  .integration-badge::after { display: none; }
+}

@@ -437,6 +437,14 @@ export default function SummitWidget() {
   const orbits = getOrbits(scale);
   const containerSize = 470 * scale;
   const orbSize = 110 * scale;
+  const badgeTooltips: Record<string, string> = {
+    ServiceTitan: "✓ Native Integration",
+    Jobber: "✓ Native Integration",
+    "Roof Link": "✓ Native Integration",
+    HubSpot: "✓ CRM Sync Ready",
+    Zapier: "✓ 5,000+ Apps",
+    "Make.com": "✓ Workflow Automation",
+  };
 
   return (
     <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
@@ -553,8 +561,10 @@ export default function SummitWidget() {
         <div
           style={{
             fontSize: Math.max(9, Math.round(11 * scale)),
-            letterSpacing: "0.22em",
-            color: "#64748B",
+            color: "#00D9FF",
+            textShadow: "0 0 20px rgba(0, 217, 255, 0.4)",
+            letterSpacing: "0.1em",
+            fontWeight: 700,
             textTransform: "uppercase",
             marginBottom: 10,
             fontFamily: "monospace",
@@ -575,15 +585,14 @@ export default function SummitWidget() {
           {["ServiceTitan", "Jobber", "Roof Link", "HubSpot", "Zapier", "Make.com"].map((name) => (
             <span
               key={name}
+              className="integration-badge"
+              data-tooltip={badgeTooltips[name]}
               style={{
                 fontSize: Math.max(9, Math.round(10 * scale)),
                 padding: "3px 10px",
-                border: "1px solid rgba(100,160,255,0.15)",
                 borderRadius: 20,
-                color: "#64748B",
                 letterSpacing: "0.07em",
                 fontFamily: "monospace",
-                background: "rgba(100,160,255,0.03)",
                 whiteSpace: "nowrap",
               }}
             >
@@ -591,15 +600,14 @@ export default function SummitWidget() {
             </span>
           ))}
           <span
+            className="integration-badge"
+            data-tooltip="Ask us about your CRM"
             style={{
               fontSize: Math.max(9, Math.round(10 * scale)),
               padding: "3px 12px",
-              border: "1px solid rgba(168,85,247,0.4)",
               borderRadius: 20,
-              color: "#C084FC",
               letterSpacing: "0.07em",
               fontFamily: "monospace",
-              background: "rgba(168,85,247,0.08)",
               fontWeight: 600,
               whiteSpace: "nowrap",
             }}
