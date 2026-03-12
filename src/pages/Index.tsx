@@ -75,22 +75,36 @@ const Index = () => {
       />
 
       <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden' }}>
+        <div style={{
+          background: 'rgba(239, 68, 68, 0.08)',
+          borderBottom: '1px solid rgba(239, 68, 68, 0.2)',
+          padding: '10px 24px',
+          textAlign: 'center',
+          fontSize: '0.8rem',
+          letterSpacing: '0.06em',
+          fontWeight: 600,
+          color: 'rgba(252, 165, 165, 0.9)',
+          position: 'relative',
+          zIndex: 50,
+        }}>
+          ⚠ &nbsp; THE AVERAGE ROOFING COMPANY MISSES 7 OUT OF 10 AFTER-HOURS CALLS.
+          THOSE LEADS DON'T CALL BACK. &nbsp;⚠
+        </div>
+
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
 
-        {/* Widget kept right after hero */}
-        <Widget />
-
         <RevenueSection />
+        <Widget />
         <HowItWorks />
         <UseCases />
-        <TestimonialsSection />
-        <MissedCallCalculator />
         <SectionErrorBoundary label="HowAvaWorks">
           <HowAvaWorks />
         </SectionErrorBoundary>
         <SectionErrorBoundary label="DemoCallsSection">
           <DemoCallsSection />
         </SectionErrorBoundary>
+        <TestimonialsSection />
+        <MissedCallCalculator />
         <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
         <FAQSection />
 

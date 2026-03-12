@@ -1,8 +1,8 @@
-import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
+﻿import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
 import CalendarDialog from './CalendarDialog';
 
 // Lazy-loaded so the Three.js bundle is code-split and only evaluated in the
-// browser — the Vite equivalent of Next.js `dynamic(() => import(...), { ssr: false })`.
+// browser Ã¢â‚¬â€ the Vite equivalent of Next.js `dynamic(() => import(...), { ssr: false })`.
 const AvaParticleHero = lazy(() => import('./ava/AvaParticleHero'));
 
 interface HeroSectionProps {
@@ -84,7 +84,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         justifyContent: 'center',
       }}
     >
-      {/* Ambient glow behind Ava — breathing glow tied to hero-breathe animation */}
+      {/* Ambient glow behind Ava Ã¢â‚¬â€ breathing glow tied to hero-breathe animation */}
       <div
         className="hero-glow-breathe"
         style={{
@@ -101,7 +101,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         }}
       />
 
-      {/* ── Ava Particle Canvas (full-section overlay, pointer-events none on canvas) ── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Ava Particle Canvas (full-section overlay, pointer-events none on canvas) Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -117,7 +117,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           />
         </Suspense>
 
-        {/* Cursor-follow highlight — radial glow that lerps toward mouse over Ava face */}
+        {/* Cursor-follow highlight Ã¢â‚¬â€ radial glow that lerps toward mouse over Ava face */}
         <div
           ref={highlightRef}
           aria-hidden="true"
@@ -136,7 +136,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         />
       </div>
 
-      {/* Text protection gradient — dark-left fade so particles don't bleed into copy */}
+      {/* Text protection gradient Ã¢â‚¬â€ dark-left fade so particles don't bleed into copy */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -145,7 +145,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         pointerEvents: 'none',
       }} />
 
-      {/* ── Hero Content ── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Hero Content Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div style={{
         position: 'relative',
         zIndex: 2,
@@ -182,7 +182,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               display: 'inline-block',
             }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.04em' }}>
-              LIVE AI VOICE AGENT
+              Trusted by 11+ Roofing Companies Across the US
             </span>
           </div>
 
@@ -195,20 +195,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             marginBottom: '1.5rem',
             color: '#fff',
           }}>
-            Meet{' '}
-            <span style={{
-              background: 'linear-gradient(135deg, #00D9FF 0%, #00A8FF 55%, #7C3AED 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}>
-              Ava
-            </span>
-            {' '}—{' '}
-            <br />
-            Your AI Voice{' '}
-            <br className="hidden sm:block" />
-            Agent
+            Every Missed Call Is a Job Going to Your Competitor
           </h1>
 
           {/* Sub-headline */}
@@ -220,8 +207,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             maxWidth: 520,
             fontWeight: 400,
           }}>
-            Stop losing revenue to missed calls and static forms. Ava answers every call, qualifies
-            leads, books appointments, and follows up—24/7, while you sleep.
+            Ava answers every call, books appointments, and syncs with your CRM
+            {' '}&mdash; 24/7, at a fraction of the cost of a receptionist.
           </p>
 
           {/* CTAs */}
@@ -231,7 +218,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               className="btn-primary"
               style={{ padding: '1rem 2.2rem', fontSize: '1rem' }}
             >
-              <span>Book a Free Demo</span>
+              <span>Talk to Ava Now &mdash; It's Free</span>
             </button>
             <button
               onClick={scrollToDemo}
@@ -239,11 +226,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               style={{ padding: '1rem 2.2rem', fontSize: '1rem' }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <polygon points="5 3 19 12 5 21 5 3"/>
-                </svg>
-                Hear Ava
-              </span>
+                See How It Works &rarr;</span>
             </button>
           </div>
 
@@ -353,7 +336,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         </div>
       </div>
 
-      {/* ── Scroll Indicator ── */}
+      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Scroll Indicator Ã¢â€â‚¬Ã¢â€â‚¬ */}
       <div style={{
         position: 'absolute',
         bottom: '2.5rem',
@@ -388,3 +371,4 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
 };
 
 export default HeroSection;
+
