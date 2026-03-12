@@ -242,23 +242,24 @@ function OrbitIcon({ item, time }: { item: OrbitItem; time: number }) {
     >
       <div
         style={{
-          width: "100%",
-          height: "100%",
-          borderRadius: "12px",
-          background: "rgba(15, 20, 40, 0.85)",
-          backdropFilter: "blur(4px)",
-          border: `1px solid ${item.glowColor}30`,
+          width: item.size,
+          height: item.size,
+          borderRadius: "10px",
+          background: "rgba(10, 15, 35, 0.80)",
+          border: `1.5px solid ${item.glowColor}50`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          overflow: "hidden",
+          padding: "7px",
           boxSizing: "border-box",
-          padding: "6px",
+          overflow: "hidden",
         }}
       >
         <img
           src={item.src}
           alt={item.label}
+          onLoad={() => console.log("Loaded:", item.src)}
+          onError={() => console.error("FAILED TO LOAD:", item.src)}
           style={{
             width: "100%",
             height: "100%",
@@ -542,24 +543,6 @@ export default function SummitWidget() {
             margin: "0 auto",
           }}
         >
-          {["GoHighLevel", "Google Calendar", "Outlook Calendar", "Acculynx", "HouseCall Pro", "Salesforce"].map((name) => (
-            <span
-              key={name}
-              style={{
-                fontSize: Math.max(9, Math.round(10 * scale)),
-                padding: "3px 10px",
-                border: "1px solid rgba(100,160,255,0.2)",
-                borderRadius: 20,
-                color: "#94A3B8",
-                letterSpacing: "0.07em",
-                fontFamily: "monospace",
-                background: "rgba(100,160,255,0.04)",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {name}
-            </span>
-          ))}
           {ADDITIONAL_BADGES.map((name) => (
             <span
               key={name}
