@@ -323,7 +323,7 @@ export default function SummitWidget() {
   const [orbState, setOrbState] = useState<OrbState>("idle");
   const [scale, setScale] = useState(1);
   const isPausedRef = useRef(false);
-  const thinkrrReadyRef = useRef(false);
+  const isWidgetActiveRef = useRef(false);
   const timeRef = useRef(0);
   const rafRef = useRef<number | null>(null);
   const lastTimeRef = useRef<number | null>(null);
@@ -348,40 +348,6 @@ export default function SummitWidget() {
   useEffect(() => {
     orbitsRef.current = getOrbits(scale);
   }, [scale]);
-
-  useEffect(() => {
-    let attempts = 0;
-    const maxAttempts = 20;
-    const poll = setInterval(() => {
-      attempts++;
-      const win = window as any;
-      const container = document.querySelector(
-        '[data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"]'
-      );
-      const iframes = document.querySelectorAll('iframe');
-
-      if (
-        win.ThinkrrWidget ||
-        win.thinkrr ||
-        iframes.length > 0 ||
-        (container && container.children.length > 0)
-      ) {
-        thinkrrReadyRef.current = true;
-        console.log("Thinkrr widget detected as ready:", {
-          ThinkrrWidget: !!win.ThinkrrWidget,
-          thinkrr: !!win.thinkrr,
-          iframes: iframes.length,
-          containerChildren: container?.children.length
-        });
-        clearInterval(poll);
-      }
-      if (attempts >= maxAttempts) {
-        console.warn("Thinkrr widget not detected after", maxAttempts, "attempts");
-        clearInterval(poll);
-      }
-    }, 500);
-    return () => clearInterval(poll);
-  }, []);
 
   useEffect(() => {
     const loop = (now: number) => {
@@ -411,45 +377,61 @@ export default function SummitWidget() {
   }, []);
 
   const handleOrbClick = useCallback(() => {
-    // Method 1: Click the exact Thinkrr state container div
-    // This is the clickable element confirmed by DOM inspection
+    // Find the ONE clickable element — confirmed by DOM inspection
+    // wcw-state-container is the single interactive div Thinkrr uses
     const stateContainer = document.querySelector(
       '.wcw-state-container'
     ) as HTMLElement | null;
-    if (stateContainer) {
-      stateContainer.click();
-      stateContainer.dispatchEvent(
-        new MouseEvent('click', { bubbles: true, cancelable: true, view: window })
-      );
+
+    if (!stateContainer) {
+      console.warn("Thinkrr state container not found");
+      return;
     }
 
-    // Method 2: Click the widget container div directly
-    const widgetContainer = document.querySelector(
-      '#web-widget-container'
-    ) as HTMLElement | null;
-    if (widgetContainer) {
-      widgetContainer.click();
-    }
+    // Single precise click — no duplicates, no extra methods
+    stateContainer.click();
 
-    // Method 3: Try window.widgetLib API
-    const win = window as any;
-    if (win.widgetLib) {
-      console.log("widgetLib found, methods:", Object.keys(win.widgetLib));
-      if (typeof win.widgetLib.open === 'function') win.widgetLib.open();
-      if (typeof win.widgetLib.start === 'function') win.widgetLib.start();
-      if (typeof win.widgetLib.toggle === 'function') win.widgetLib.toggle();
-      if (typeof win.widgetLib.call === 'function') win.widgetLib.call();
-      if (typeof win.widgetLib.connect === 'function') win.widgetLib.connect();
-      // Try calling widgetLib itself if it's a function
-      if (typeof win.widgetLib === 'function') win.widgetLib();
-    }
+    // Toggle our visual state based on tracked active state
+    isWidgetActiveRef.current = !isWidgetActiveRef.current;
+    setOrbState(isWidgetActiveRef.current ? 'listening' : 'idle');
+  }, []);
 
-    // Method 4: Click the parent wrapper too
-    const wrapper = document.querySelector('.wcw-widget-wrapper') as HTMLElement | null;
-    if (wrapper) wrapper.click();
+  useEffect(() => {
+    // Listen for Thinkrr ending the call naturally
+    // Their widget fires a click on wcw-state-container to toggle off
+    // We observe class changes on the container to detect state
+    const stateContainer = document.querySelector('.wcw-state-container');
+    if (!stateContainer) return;
 
-    // Toggle our visual state
-    setOrbState((s) => (s === 'idle' ? 'listening' : 'idle'));
+    const observer = new MutationObserver(() => {
+      // When wcw-loading disappears and wcw-quiet reappears,
+      // the call has ended
+      const loadingEl = stateContainer.querySelector('.wcw-loading') as HTMLElement | null;
+      const agentEl = stateContainer.querySelector('.wcw-agent-talking') as HTMLElement | null;
+
+      const isIdle =
+        loadingEl?.style.display === 'none' &&
+        agentEl?.style.display === 'none';
+
+      if (isIdle && isWidgetActiveRef.current) {
+        // Widget returned to idle — sync our state
+        isWidgetActiveRef.current = false;
+        setOrbState('idle');
+      } else if (!isIdle && !isWidgetActiveRef.current) {
+        // Widget became active
+        isWidgetActiveRef.current = true;
+        setOrbState('listening');
+      }
+    });
+
+    observer.observe(stateContainer, {
+      attributes: true,
+      childList: true,
+      subtree: true,
+      attributeFilter: ['style', 'class']
+    });
+
+    return () => observer.disconnect();
   }, []);
 
   const orbits = getOrbits(scale);
