@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from 'react';
+import { useCountUp } from '@/hooks/useCountUp';
 
 const FEATURES = [
   {
@@ -153,6 +154,11 @@ function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
 const RevenueSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef);
+  const calls = useCountUp({ end: 100, suffix: '%', duration: 2200 });
+  const savings = useCountUp({ end: 8.5, decimals: 1, prefix: '$', suffix: 'K', duration: 2400 });
+  const closeRate = useCountUp({ end: 40, suffix: '%', duration: 2000 });
+  const alwaysOn = useCountUp({ end: 24, suffix: '/7', duration: 2000 });
+  const statCounters = [calls, savings, closeRate, alwaysOn];
 
   return (
     <section
@@ -241,7 +247,7 @@ const RevenueSection: React.FC = () => {
                 WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
                 marginBottom: '0.5rem',
               }}>
-                {stat.value}
+                <span ref={statCounters[i].ref}>{statCounters[i].displayValue}</span>
               </div>
               <div style={{ fontSize: '0.95rem', fontWeight: 600, color: '#fff', marginBottom: '0.25rem' }}>
                 {stat.label}

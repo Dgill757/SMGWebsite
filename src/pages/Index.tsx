@@ -18,6 +18,7 @@ import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 const Index = () => {
   const location = useLocation();
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [ctaDismissed, setCtaDismissed] = React.useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -107,6 +108,28 @@ const Index = () => {
         <MissedCallCalculator />
         <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
         <FAQSection />
+
+        {!ctaDismissed && (
+          <div className="sticky-mobile-cta">
+            <a
+              href="#experience-ava"
+              className="sticky-mobile-cta-btn"
+              onClick={() => {
+                const container = document.querySelector('.wcw-state-container') as HTMLElement;
+                if (container) container.click();
+              }}
+            >
+              🎙 Talk to Ava — Free Demo
+            </a>
+            <button
+              className="sticky-mobile-cta-dismiss"
+              onClick={() => setCtaDismissed(true)}
+              aria-label="Dismiss"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         <CalendarDialog open={calendarOpen} setOpen={setCalendarOpen} />
       </div>
