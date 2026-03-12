@@ -834,3 +834,49 @@ body {
   background-attachment: fixed;
   min-height: 100vh;
 }
+
+/* ── Section transition fades ── */
+
+/* Every direct section or major page section gets soft edge fades */
+section,
+[class*="section"],
+[class*="Section"] {
+  position: relative;
+}
+
+/* Fade out at bottom of each section */
+section::after,
+[class*="section"]::after,
+[class*="Section"]::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: linear-gradient(to bottom, transparent 0%, rgba(1, 10, 20, 0.5) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Fade in from top of each section */
+section::before,
+[class*="section"]::before,
+[class*="Section"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 80px;
+  background: linear-gradient(to top, transparent 0%, rgba(1, 10, 20, 0.4) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Safety: make sure pseudo-elements do not appear on nav or footer */
+nav::after, nav::before,
+footer::after, footer::before,
+header::after, header::before {
+  display: none !important;
+}
