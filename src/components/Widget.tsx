@@ -221,12 +221,16 @@ const Widget: React.FC = () => {
             </span>
           </h2>
           <p
+            className="font-semibold"
             style={{
               fontSize: '0.95rem',
-              color: 'rgba(255,255,255,0.45)',
               lineHeight: 1.65,
               maxWidth: 440,
               margin: '0 auto',
+              background: 'linear-gradient(135deg, #ffffff 0%, #00D9FF 60%, #a78bfa 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
             }}
           >
             Click below and have a real conversation with our AI voice agent. No sign-up required.
