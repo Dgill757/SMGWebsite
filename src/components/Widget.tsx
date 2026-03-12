@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState, useRef } from 'react';
 import RawHtmlBlock from './RawHtmlBlock';
+import SummitWidget from '@/components/SummitWidget';
 
 const Widget: React.FC = () => {
   const [hovered, setHovered] = useState(false);
@@ -206,6 +207,7 @@ const Widget: React.FC = () => {
               id="widget-container"
               style={{ position: 'relative', zIndex: 1 }}
             >
+              <SummitWidget />
               <RawHtmlBlock
                 html='<div data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"></div>'
                 id="pure-widget-container"
@@ -221,6 +223,10 @@ const Widget: React.FC = () => {
       </div>
 
       <style>{`
+        [data-widget-key="8ba094ef-bcf2-4aec-bcef-ee65c95b0492"] > * {
+          display: none !important;
+          pointer-events: none !important;
+        }
         @keyframes widgetPulse {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.45; transform: scale(0.82); }
