@@ -104,22 +104,23 @@ const Index = () => {
 
         {!ctaDismissed && (
           <div className="sticky-mobile-cta">
-            <a
-              href="#experience-ava"
-              className="sticky-mobile-cta-btn"
+            <button
+              className="sticky-cta-btn"
               onClick={() => {
                 const container = document.querySelector('.wcw-state-container') as HTMLElement | null;
                 if (container) container.click();
+                const section = document.getElementById('experience-ava');
+                if (section) section.scrollIntoView({ behavior: 'smooth' });
               }}
             >
-              Talk to Ava - Free Demo
-            </a>
+              🎙️ Talk to Ava — Free Demo
+            </button>
             <button
-              className="sticky-mobile-cta-dismiss"
+              className="sticky-dismiss-btn"
               onClick={() => setCtaDismissed(true)}
               aria-label="Dismiss"
             >
-              x
+              ×
             </button>
           </div>
         )}
