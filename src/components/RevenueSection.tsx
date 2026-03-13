@@ -131,10 +131,10 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: '7', label: 'Calls Answered Per Day', sub: 'Average per active client' },
-  { value: '2', label: 'Appointments Booked Daily', sub: 'Automated - no human required' },
-  { value: '$22K', label: 'Avg. Job Value Captured', sub: 'Per roofing appointment booked' },
-  { value: '<$10/day', label: 'Total Cost of Ava', sub: 'vs. $180+/day for a receptionist' },
+  { value: '7', label: 'Calls Answered Per Day', sub: 'Per active client - every call, every time' },
+  { value: '3', label: 'Appointments Booked Daily', sub: '~45% of answered calls convert to bookings' },
+  { value: '$11,500', label: 'Avg. Job Value Captured', sub: 'Based on roofing industry averages' },
+  { value: 'As little as $16/day', label: 'Total Cost of Ava', sub: 'Less than your morning coffee run - cancel anytime' },
 ];
 
 function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
@@ -155,9 +155,9 @@ const RevenueSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef);
   const calls = useCountUp({ end: 7, duration: 2200 });
-  const appointments = useCountUp({ end: 2, duration: 2000 });
-  const revenue = useCountUp({ end: 22, prefix: '$', suffix: 'K', duration: 2200 });
-  const cost = useCountUp({ end: 10, prefix: '<$', suffix: '/day', duration: 2000 });
+  const appointments = useCountUp({ end: 3, duration: 2000 });
+  const revenue = useCountUp({ end: 11500, prefix: '$', duration: 2200 });
+  const cost = useCountUp({ end: 16, prefix: 'As little as $', suffix: '/day', duration: 2000 });
   const statCounters = [calls, appointments, revenue, cost];
 
   return (
@@ -203,20 +203,20 @@ const RevenueSection: React.FC = () => {
             lineHeight: 1.1, letterSpacing: '-0.025em', color: '#fff',
             marginBottom: '1.2rem',
           }}>
-            Stop Losing Revenue to<br />
+            What Ava Does For Each Client,<br />
             <span style={{
               background: 'linear-gradient(135deg,#7C3AED,#3B82F6)',
               WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
             }}>
-              Missed Opportunities
+              Every Day
             </span>
           </h2>
           <p style={{
             fontSize: '1.1rem', color: 'rgba(255,255,255,0.52)', lineHeight: 1.65,
             maxWidth: 560, margin: '0 auto',
           }}>
-            Every unanswered call is a lead your competition just captured. Ava makes sure
-            that never happens again.
+            These are per-client daily averages across our 42+ active deployments.
+            Not totals - what each individual company experiences.
           </p>
         </div>
 

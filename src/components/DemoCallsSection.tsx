@@ -3,10 +3,10 @@ import React, { useRef, useEffect, useState } from 'react';
 // ── Video data — swap YouTube IDs when real demos are ready ──────────────────
 const VIDEOS = [
   {
-    src: '/Demo-videos/Real-Estate-Demo.mp4',
-    title: 'AI Realtor Demo',
-    tag: 'Real Estate',
-    accent: '#00D9FF',
+    src: '/Demo-videos/Roofing-Demo.mp4',
+    title: 'AI Roofing Demo',
+    tag: 'Home Services',
+    accent: '#F472B6',
   },
   {
     src: '/Demo-videos/Deck-Landscaping-demo.mp4',
@@ -15,16 +15,16 @@ const VIDEOS = [
     accent: '#7C3AED',
   },
   {
-    src: '/Demo-videos/Roofing-Demo.mp4',
-    title: 'AI Roofing Demo',
-    tag: 'Home Services',
-    accent: '#F472B6',
-  },
-  {
     src: '/Demo-videos/Pool-Demo.mp4',
     title: 'AI Pool Demo',
     tag: 'Home Services',
     accent: '#FBBF24',
+  },
+  {
+    src: '/Demo-videos/Real-Estate-Demo.mp4',
+    title: 'AI Realtor Demo',
+    tag: 'Real Estate',
+    accent: '#00D9FF',
   },
 ];
 
@@ -72,7 +72,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, tag, accent, delay, i
       {/* 16:9 Local Video */}
       <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#000' }}>
         <video
-          src={src}
+          src={`${src}#t=0.1`}
           title={title}
           controls
           preload="metadata"
