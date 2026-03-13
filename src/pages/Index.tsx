@@ -17,6 +17,7 @@ import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 import { IntegrationMarquee } from '@/components/IntegrationMarquee';
 import { AvaComparison } from '@/components/AvaComparison';
 import { AnimatedStats } from '@/components/AnimatedStats';
+import { RoofingTestimonials } from '@/components/RoofingTestimonials';
 import { SocialProofBar } from '@/components/SocialProofBar';
 
 const Index = () => {
@@ -95,6 +96,7 @@ const Index = () => {
         <SectionErrorBoundary label="DemoCallsSection">
           <DemoCallsSection />
         </SectionErrorBoundary>
+        <RoofingTestimonials />
         <TestimonialsSection />
         <MissedCallCalculator />
         <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />
