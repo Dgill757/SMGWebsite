@@ -131,10 +131,10 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: '100%', label: 'Of Calls Answered - Every Time', sub: 'No voicemails, no missed leads' },
-  { value: '582', label: 'Appointments Booked for 1 Client in 12 Months', sub: 'Booked by Ava for Teo Roofing' },
-  { value: '$84M+', label: 'In Client Revenue Recovered', sub: 'Attributed across live deployments' },
-  { value: '42+', label: 'Businesses Currently Running Ava', sub: 'Roofing and home service companies' },
+  { value: '7', label: 'Calls Answered Per Day', sub: 'Average per active client' },
+  { value: '2', label: 'Appointments Booked Daily', sub: 'Automated - no human required' },
+  { value: '$22K', label: 'Avg. Job Value Captured', sub: 'Per roofing appointment booked' },
+  { value: '<$10/day', label: 'Total Cost of Ava', sub: 'vs. $180+/day for a receptionist' },
 ];
 
 function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
@@ -154,11 +154,11 @@ function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
 const RevenueSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const inView = useInView(sectionRef);
-  const calls = useCountUp({ end: 100, suffix: '%', duration: 2200 });
-  const appointments = useCountUp({ end: 582, duration: 2400 });
-  const revenue = useCountUp({ end: 84, prefix: '$', suffix: 'M+', duration: 2200 });
-  const businesses = useCountUp({ end: 42, suffix: '+', duration: 2000 });
-  const statCounters = [calls, appointments, revenue, businesses];
+  const calls = useCountUp({ end: 7, duration: 2200 });
+  const appointments = useCountUp({ end: 2, duration: 2000 });
+  const revenue = useCountUp({ end: 22, prefix: '$', suffix: 'K', duration: 2200 });
+  const cost = useCountUp({ end: 10, prefix: '<$', suffix: '/day', duration: 2000 });
+  const statCounters = [calls, appointments, revenue, cost];
 
   return (
     <section

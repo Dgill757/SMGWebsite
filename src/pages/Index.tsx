@@ -18,7 +18,7 @@ import { IntegrationMarquee } from '@/components/IntegrationMarquee';
 import { AvaComparison } from '@/components/AvaComparison';
 import { AnimatedStats } from '@/components/AnimatedStats';
 import { RoofingTestimonials } from '@/components/RoofingTestimonials';
-import { SocialProofBar } from '@/components/SocialProofBar';
+import { TrackRecord } from '@/components/TrackRecord';
 
 const Index = () => {
   const location = useLocation();
@@ -85,7 +85,7 @@ const Index = () => {
         <IntegrationMarquee />
         <AvaComparison />
         <AnimatedStats />
-        <SocialProofBar />
+        <TrackRecord />
         <Widget />
         <RevenueSection />
         <HowItWorks />

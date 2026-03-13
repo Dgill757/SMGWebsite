@@ -15,7 +15,7 @@ const stats: StatItem[] = [
     prefix: '$',
     suffix: 'M+',
     label: 'Client Revenue Recovered',
-    subLabel: 'Across 42+ businesses nationwide',
+    subLabel: 'In client revenue recovered annually',
   },
   {
     end: 582,
@@ -27,7 +27,7 @@ const stats: StatItem[] = [
     end: 100,
     suffix: '%',
     label: 'Call Answer Rate',
-    subLabel: '24/7/365 - Ava never misses',
+    subLabel: '24/7/365 — Ava never misses',
   },
   {
     end: 42,
