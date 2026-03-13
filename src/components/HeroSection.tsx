@@ -193,7 +193,10 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             lineHeight: 1.06,
             letterSpacing: '-0.035em',
             marginBottom: '1.5rem',
-            color: '#fff',
+            background: 'linear-gradient(135deg, #ffffff 0%, #ffffff 40%, #00D9FF 100%)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
           }}>
             Every Missed Call Is a Job Going to Your Competitor
           </h1>

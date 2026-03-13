@@ -4,6 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
+:root { --page-top: 112px; }
+@media (max-width: 768px) { :root { --page-top: 90px; } }
+
 /* ─── CSS Custom Properties ──────────────────────────────────────────────────── */
 @layer base {
   :root {

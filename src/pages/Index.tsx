@@ -80,7 +80,7 @@ const Index = () => {
         schema={[getOrganizationSchema(), getFAQSchema(faqs)]}
       />
 
-      <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden', paddingTop: '112px' }}>
+      <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden', paddingTop: 'var(--page-top)' }}>
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         <IntegrationMarquee />
         <AvaComparison />
