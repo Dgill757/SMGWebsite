@@ -130,7 +130,7 @@ export function TrackRecord() {
         </div>
 
         <p style={{ marginTop: '20px', fontSize: '0.7rem', color: 'rgba(255,255,255,0.2)', letterSpacing: '0.03em' }}>
-          Revenue figures based on client-reported close rates and average job values across live deployments.
+          Revenue figures based on client-reported close rates and average job values across live deployments since 2022.
         </p>
       </div>
       <style>{`@media(max-width:640px){.tr-grid{grid-template-columns:1fr 1fr!important;}}`}</style>

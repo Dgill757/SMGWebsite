@@ -151,7 +151,7 @@ export function AnimatedStats() {
             lineHeight: 1.2,
           }}
         >
-          The Numbers Don&apos;t Lie
+          What Happens When Roofing Companies Add Ava
         </h2>
 
         <div

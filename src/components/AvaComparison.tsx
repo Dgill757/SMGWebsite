@@ -70,8 +70,8 @@ export function AvaComparison() {
             margin: '18px auto 0',
           }}
         >
-          One client (Teo Roofing) booked 582 appointments in 12 months. That's $4.1M+ in
-          recovered revenue. From one AI receptionist.
+          Teo Roofing booked 582 appointments in 12 months - that's $4.1M+ in
+          revenue they would have left on the table. Now replicated across 42+ companies.
         </p>
       </div>
 

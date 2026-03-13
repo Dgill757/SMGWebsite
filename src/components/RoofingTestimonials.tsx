@@ -160,7 +160,7 @@ export function RoofingTestimonials() {
             textTransform: 'uppercase',
           }}
         >
-          What Roofing Business Owners Are Saying
+          WHAT ROOFING BUSINESS OWNERS ARE SAYING
         </p>
         <h2
           style={{
