@@ -182,7 +182,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               display: 'inline-block',
             }} />
             <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'rgba(255,255,255,0.85)', letterSpacing: '0.04em' }}>
-              Trusted by 11+ Roofing Companies Across the US
+              Trusted by 42+ Roofing Companies Across the US
             </span>
           </div>
 

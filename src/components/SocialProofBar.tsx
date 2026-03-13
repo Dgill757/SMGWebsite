@@ -1,10 +1,10 @@
 import React from 'react';
 
 const stats = [
-  { value: '11+', label: 'Roofing Companies Active' },
-  { value: '$127K', label: 'Revenue Recovered This Month' },
-  { value: '98.7%', label: 'Calls Answered Rate' },
-  { value: '<1s', label: 'Average Answer Time' },
+  { value: '$84M+', label: 'Client Revenue Recovered' },
+  { value: '42+', label: 'Active Roofing & Service Companies' },
+  { value: '582', label: 'Appointments Booked - 1 Client, 1 Year' },
+  { value: '100%', label: 'Call Answer Rate, 24/7/365' },
 ];
 
 export function SocialProofBar() {

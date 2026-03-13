@@ -47,6 +47,33 @@ const ScrollToTop = () => {
   return null;
 };
 
+const HomeAlertBar = () => {
+  const { pathname } = useLocation();
+
+  if (pathname !== "/") {
+    return null;
+  }
+
+  return (
+    <div
+      style={{
+        position: 'relative',
+        zIndex: 60,
+        background: 'rgba(239, 68, 68, 0.1)',
+        borderBottom: '1px solid rgba(239, 68, 68, 0.25)',
+        padding: '8px 24px',
+        textAlign: 'center',
+        fontSize: '0.72rem',
+        letterSpacing: '0.07em',
+        fontWeight: 700,
+        color: 'rgba(252, 165, 165, 0.95)',
+      }}
+    >
+      THE AVERAGE ROOFING COMPANY MISSES 7 OUT OF 10 AFTER-HOURS CALLS. THOSE LEADS DON'T CALL BACK.
+    </div>
+  );
+};
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -70,6 +97,7 @@ const App = () => {
           <div className="bg-drift-layer" aria-hidden="true" />
           <div className="min-h-screen text-foreground overflow-x-hidden">
             <ScrollToTop />
+            <HomeAlertBar />
             <Navbar />
             <Routes>
               <Route path="/" element={<Index />} />

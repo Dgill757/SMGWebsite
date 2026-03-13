@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import HeroSection from '@/components/HeroSection';
 import RevenueSection from '@/components/RevenueSection';
 import HowItWorks from '@/components/HowItWorks';
@@ -9,7 +10,6 @@ import HowAvaWorks from '@/components/HowAvaWorks';
 import DemoCallsSection from '@/components/DemoCallsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
-import { useLocation } from 'react-router-dom';
 import CalendarDialog from '@/components/CalendarDialog';
 import Widget from '@/components/Widget';
 import SectionErrorBoundary from '@/components/SectionErrorBoundary';
@@ -42,7 +42,7 @@ const Index = () => {
     },
     {
       question: 'How much can my business save with SummitVoiceAI?',
-      answer: 'Most businesses save 60–80% compared to traditional receptionist costs. Our clients typically see ROI within the first month and savings of $30,000–$50,000 annually.',
+      answer: 'Most businesses save 60-80% compared to traditional receptionist costs. Our clients typically see ROI within the first month and savings of $30,000-$50,000 annually.',
     },
     {
       question: 'Does SummitVoiceAI integrate with my existing systems?',
@@ -79,22 +79,6 @@ const Index = () => {
       />
 
       <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden' }}>
-        <div style={{
-          background: 'rgba(239, 68, 68, 0.08)',
-          borderBottom: '1px solid rgba(239, 68, 68, 0.2)',
-          padding: '10px 24px',
-          textAlign: 'center',
-          fontSize: '0.8rem',
-          letterSpacing: '0.06em',
-          fontWeight: 600,
-          color: 'rgba(252, 165, 165, 0.9)',
-          position: 'relative',
-          zIndex: 50,
-        }}>
-          ⚠ &nbsp; THE AVERAGE ROOFING COMPANY MISSES 7 OUT OF 10 AFTER-HOURS CALLS.
-          THOSE LEADS DON'T CALL BACK. &nbsp;⚠
-        </div>
-
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         <IntegrationMarquee />
         <SocialProofBar />
@@ -120,18 +104,18 @@ const Index = () => {
               href="#experience-ava"
               className="sticky-mobile-cta-btn"
               onClick={() => {
-                const container = document.querySelector('.wcw-state-container') as HTMLElement;
+                const container = document.querySelector('.wcw-state-container') as HTMLElement | null;
                 if (container) container.click();
               }}
             >
-              🎙 Talk to Ava — Free Demo
+              Talk to Ava - Free Demo
             </a>
             <button
               className="sticky-mobile-cta-dismiss"
               onClick={() => setCtaDismissed(true)}
               aria-label="Dismiss"
             >
-              ×
+              x
             </button>
           </div>
         )}

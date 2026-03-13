@@ -299,7 +299,7 @@ const TestimonialsSection: React.FC = () => {
             What Roofing Business Owners Are Saying
           </h2>
           <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.5)', lineHeight: 1.65, maxWidth: 480, margin: '0 auto' }}>
-            11 roofing and home service companies are capturing leads they used
+            42 roofing and home service companies are capturing leads they used
             to lose. Here's what changed for them.
           </p>
         </div>
