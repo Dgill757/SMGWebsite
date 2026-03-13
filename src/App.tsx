@@ -17,6 +17,7 @@ import CookiePolicy from "./pages/CookiePolicy";
 import GDPRCompliance from "./pages/GDPRCompliance";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
+import { FinalCTA } from "./components/FinalCTA";
 import GlobalAtmosphere from "./components/ui/GlobalAtmosphere";
 import AmbientBackground from "./components/AmbientBackground";
 
@@ -94,6 +95,16 @@ const HomeAlertBar = () => {
   );
 };
 
+const HomeFinalCTA = () => {
+  const { pathname } = useLocation();
+
+  if (pathname !== "/") {
+    return null;
+  }
+
+  return <FinalCTA />;
+};
+
 const queryClient = new QueryClient();
 
 const App = () => {
@@ -132,6 +143,7 @@ const App = () => {
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
+            <HomeFinalCTA />
             <Footer />
           </div>
         </BrowserRouter>
