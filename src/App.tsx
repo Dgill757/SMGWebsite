@@ -67,30 +67,25 @@ const HomeAlertBar = () => {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'rgba(20, 0, 0, 0.95)',
-        borderBottom: '1px solid rgba(239,68,68,0.25)',
-        padding: '0 16px',
-        gap: '10px',
+        background: 'rgba(18, 0, 0, 0.97)',
+        borderBottom: '1px solid rgba(239,68,68,0.22)',
+        padding: '0 12px',
         backdropFilter: 'blur(8px)',
       }}
     >
-      <span style={{ color: 'rgba(239,68,68,0.8)', fontSize: '0.8rem', flexShrink: 0 }}>⚠</span>
       <span
         style={{
-          fontSize: '0.68rem',
-          letterSpacing: '0.07em',
+          fontSize: 'clamp(0.58rem, 2.4vw, 0.72rem)',
+          letterSpacing: 'clamp(0.03em, 0.5vw, 0.09em)',
           fontWeight: 700,
-          color: 'rgba(252,165,165,0.92)',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          maxWidth: '700px',
+          color: 'rgba(252,165,165,0.95)',
           textAlign: 'center',
+          whiteSpace: 'nowrap',
+          lineHeight: 1,
         }}
       >
-        THE AVERAGE ROOFING COMPANY MISSES 7 OUT OF 10 AFTER-HOURS CALLS — THOSE LEADS DON&apos;T CALL BACK
+        THE AVERAGE ROOFING COMPANY MISSES 67% OF THEIR CALLS
       </span>
-      <span style={{ color: 'rgba(239,68,68,0.8)', fontSize: '0.8rem', flexShrink: 0 }}>⚠</span>
     </div>
   );
 };

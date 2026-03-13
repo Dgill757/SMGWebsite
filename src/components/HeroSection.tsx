@@ -73,6 +73,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
   return (
     <section
       ref={heroRef}
+      className="hero-section-wrapper"
       style={{
         position: 'relative',
         minHeight: '100vh',
@@ -82,6 +83,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
+        paddingTop: 0,
+        paddingBottom: 0,
       }}
     >
       {/* Ambient glow behind Ava Ã¢â‚¬â€ breathing glow tied to hero-breathe animation */}
