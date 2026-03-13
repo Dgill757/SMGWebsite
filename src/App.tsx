@@ -57,19 +57,39 @@ const HomeAlertBar = () => {
   return (
     <div
       style={{
-        position: 'relative',
-        zIndex: 60,
-        background: 'rgba(239, 68, 68, 0.1)',
-        borderBottom: '1px solid rgba(239, 68, 68, 0.25)',
-        padding: '8px 24px',
-        textAlign: 'center',
-        fontSize: '0.72rem',
-        letterSpacing: '0.07em',
-        fontWeight: 700,
-        color: 'rgba(252, 165, 165, 0.95)',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '40px',
+        zIndex: 200,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(20, 0, 0, 0.95)',
+        borderBottom: '1px solid rgba(239,68,68,0.25)',
+        padding: '0 16px',
+        gap: '10px',
+        backdropFilter: 'blur(8px)',
       }}
     >
-      THE AVERAGE ROOFING COMPANY MISSES 7 OUT OF 10 AFTER-HOURS CALLS. THOSE LEADS DON'T CALL BACK.
+      <span style={{ color: 'rgba(239,68,68,0.8)', fontSize: '0.8rem', flexShrink: 0 }}>⚠</span>
+      <span
+        style={{
+          fontSize: '0.68rem',
+          letterSpacing: '0.07em',
+          fontWeight: 700,
+          color: 'rgba(252,165,165,0.92)',
+          whiteSpace: 'nowrap',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          maxWidth: '700px',
+          textAlign: 'center',
+        }}
+      >
+        THE AVERAGE ROOFING COMPANY MISSES 7 OUT OF 10 AFTER-HOURS CALLS — THOSE LEADS DON&apos;T CALL BACK
+      </span>
+      <span style={{ color: 'rgba(239,68,68,0.8)', fontSize: '0.8rem', flexShrink: 0 }}>⚠</span>
     </div>
   );
 };

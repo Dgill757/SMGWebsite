@@ -31,8 +31,9 @@ const Navbar: React.FC = () => {
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 transition-all duration-500"
+      className="fixed left-0 right-0 z-50 transition-all duration-500"
       style={{
+        top: '40px',
         background: scrolled ? 'rgba(5,5,7,0.88)' : 'transparent',
         backdropFilter: scrolled ? 'blur(24px)' : 'none',
         WebkitBackdropFilter: scrolled ? 'blur(24px)' : 'none',
