@@ -16,6 +16,7 @@ import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 import { IntegrationMarquee } from '@/components/IntegrationMarquee';
 import { AvaComparison } from '@/components/AvaComparison';
+import { AnimatedStats } from '@/components/AnimatedStats';
 import { SocialProofBar } from '@/components/SocialProofBar';
 
 const Index = () => {
@@ -81,8 +82,9 @@ const Index = () => {
       <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden' }}>
         <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
         <IntegrationMarquee />
-        <SocialProofBar />
         <AvaComparison />
+        <AnimatedStats />
+        <SocialProofBar />
         <Widget />
         <RevenueSection />
         <HowItWorks />
