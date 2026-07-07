@@ -41,13 +41,18 @@ demo_store: dict = {}
 
 # â”€â”€ Auth helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Dashboard logins send the access code as x-api-key; scripts send AVA_API_KEY.
-# Change codes anytime via Railway variable DASHBOARD_PASSWORDS (comma-separated).
-DASHBOARD_PASSWORDS = [p.strip() for p in os.getenv("DASHBOARD_PASSWORDS", "ava2026,summit2026").split(",") if p.strip()]
+# Codes live ONLY in the Railway variable DASHBOARD_PASSWORDS (comma-separated).
+# No default on purpose: if neither that variable nor AVA_API_KEY is set, auth
+# fails closed instead of falling back to a guessable built-in code.
+_pw = os.getenv("DASHBOARD_PASSWORDS", "")
+DASHBOARD_PASSWORDS = [p.strip() for p in _pw.split(",") if p.strip()]
 
 
 def verify_api_key(x_api_key: str):
     allowed = ([AVA_API_KEY] if AVA_API_KEY else []) + DASHBOARD_PASSWORDS
-    if allowed and x_api_key not in allowed:
+    if not allowed:
+        raise HTTPException(status_code=503, detail="Auth not configured")
+    if x_api_key not in allowed:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
 

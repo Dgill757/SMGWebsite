@@ -35,3 +35,4 @@ BLOCKER 3: SEMGREP GUARDIAN PLUGIN NOT LOGGED IN  [BLOCKS CLAUDE FILE TOOLS]
 -----------------------------------------------------------------------------
 Still present. Run /mcp in an interactive Claude Code session to log in, or
 disable the plugin. Sessions work around it via PowerShell, but slower.
+
