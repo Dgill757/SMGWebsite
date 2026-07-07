@@ -5,7 +5,7 @@ import asyncio, httpx, json, time
 
 GHL_TOKEN = __import__("os").getenv("GHL_PRIVATE_TOKEN", "")
 SUPA_URL  = "https://omdpkeaqgtizakdfughq.supabase.co"
-SUPA_KEY  = __import__("os").getenv("SUPABASE_ANON_KEY", "")
+SUPA_KEY  = __import__("os").getenv("SUPABASE_KEY", "")
 
 supa_h = {"apikey": SUPA_KEY, "Authorization": f"Bearer {SUPA_KEY}", "Content-Type": "application/json"}
 ghl_h  = {"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-07-28"}

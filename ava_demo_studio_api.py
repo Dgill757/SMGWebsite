@@ -40,8 +40,14 @@ demo_store: dict = {}
 
 
 # â”€â”€ Auth helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# Dashboard logins send the access code as x-api-key; scripts send AVA_API_KEY.
+# Change codes anytime via Railway variable DASHBOARD_PASSWORDS (comma-separated).
+DASHBOARD_PASSWORDS = [p.strip() for p in os.getenv("DASHBOARD_PASSWORDS", "ava2026,summit2026").split(",") if p.strip()]
+
+
 def verify_api_key(x_api_key: str):
-    if AVA_API_KEY and x_api_key != AVA_API_KEY:
+    allowed = ([AVA_API_KEY] if AVA_API_KEY else []) + DASHBOARD_PASSWORDS
+    if allowed and x_api_key not in allowed:
         raise HTTPException(status_code=401, detail="Invalid API key")
 
 
@@ -1600,3 +1606,104 @@ async def ghl_social_post(payload: dict, x_api_key: str = Header(default="")):
         if r.status_code in (200, 201):
             return {"ok": True, "postId": d.get("id") or d.get("postId") or "queued"}
         return {"ok": False, "reason": d.get("message") or f"HTTP {r.status_code}"}
+
+
+# -- Dashboard DB proxy -------------------------------------------------------
+# The dashboard has NO Supabase key anymore; these endpoints proxy its reads/
+# writes using the server-side service key, gated by verify_api_key and a
+# strict table allowlist. RLS blocks the (formerly public) anon key entirely.
+DASHBOARD_DB_TABLES = {
+    "free_sites", "demos_built", "demos", "clients", "expenses",
+    "scraped_businesses", "website_build_queue", "content_library",
+}
+
+
+def _db_creds():
+    return os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_KEY", "")
+
+
+def _db_check(table: str, x_api_key: str):
+    verify_api_key(x_api_key)
+    if table not in DASHBOARD_DB_TABLES:
+        raise HTTPException(status_code=403, detail="Table not allowed")
+
+
+@app.get("/db/{table}")
+async def db_select(table: str, request: Request, x_api_key: str = Header(default="")):
+    _db_check(table, x_api_key)
+    supa_url, supa_key = _db_creds()
+    if not supa_url:
+        return []
+    qs = str(request.url.query)
+    async with httpx.AsyncClient(timeout=15) as client:
+        r = await client.get(
+            f"{supa_url}/rest/v1/{table}" + (f"?{qs}" if qs else ""),
+            headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}"},
+        )
+        try:
+            return r.json() if r.status_code == 200 and r.content else []
+        except Exception:
+            return []
+
+
+@app.post("/db/{table}")
+async def db_insert(table: str, request: Request, x_api_key: str = Header(default="")):
+    _db_check(table, x_api_key)
+    supa_url, supa_key = _db_creds()
+    if not supa_url:
+        return None
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+    async with httpx.AsyncClient(timeout=15) as client:
+        r = await client.post(
+            f"{supa_url}/rest/v1/{table}",
+            headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}",
+                     "Content-Type": "application/json", "Prefer": "return=representation"},
+            json=body,
+        )
+        try:
+            return r.json() if r.status_code in (200, 201) and r.content else None
+        except Exception:
+            return None
+
+
+@app.patch("/db/{table}")
+async def db_update(table: str, request: Request, x_api_key: str = Header(default="")):
+    _db_check(table, x_api_key)
+    supa_url, supa_key = _db_creds()
+    if not supa_url:
+        return {"ok": False}
+    qs = str(request.url.query)
+    if not qs:
+        raise HTTPException(status_code=400, detail="Filter query required")
+    try:
+        body = await request.json()
+    except Exception:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+    async with httpx.AsyncClient(timeout=15) as client:
+        r = await client.patch(
+            f"{supa_url}/rest/v1/{table}?{qs}",
+            headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}",
+                     "Content-Type": "application/json", "Prefer": "return=minimal"},
+            json=body,
+        )
+        return {"ok": r.status_code in (200, 204)}
+
+
+@app.delete("/db/{table}")
+async def db_delete(table: str, request: Request, x_api_key: str = Header(default="")):
+    _db_check(table, x_api_key)
+    supa_url, supa_key = _db_creds()
+    if not supa_url:
+        return {"ok": False}
+    qs = str(request.url.query)
+    if not qs:
+        raise HTTPException(status_code=400, detail="Filter query required")
+    async with httpx.AsyncClient(timeout=15) as client:
+        r = await client.delete(
+            f"{supa_url}/rest/v1/{table}?{qs}",
+            headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}"},
+        )
+        return {"ok": r.status_code in (200, 204)}
