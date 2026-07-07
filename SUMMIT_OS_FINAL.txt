@@ -1,0 +1,63 @@
+SUMMIT OS — FINAL STATUS REPORT
+Generated: 2026-06-22
+==================================================
+
+DASHBOARD
+---------
+URL:      https://dashboard.summitvoiceai.com
+URL:      https://avastudio.summitvoiceai.com
+Password: ava2026
+Status:   LIVE — auth fixed (DOMContentLoaded), password updated
+
+RAILWAY API
+-----------
+URL:      https://ava-studio-api-production.up.railway.app
+Health:   /health → {"status":"ok"}
+Version:  2.0.0
+Status:   LIVE — updated with premium_website_generator_v2
+
+WEBSITE GENERATOR
+-----------------
+File:     premium_website_generator_v2.py
+Quality:  Roof EZ / D&L Roofing level
+Fonts:    Barlow Condensed + Inter (Google Fonts)
+Anim:     GSAP 3.12 + ScrollTrigger + Lenis smooth scroll
+3D:       Three.js particle hero
+Theme:    Navy #0D1F3C / Orange #F97316
+HTML:     ~28KB per site
+
+DEMO MACHINE
+------------
+Status:   BLOCKED — Anthropic API credits depleted
+Error:    "Your credit balance is too low to access the Anthropic API"
+Fix:      Add credits at console.anthropic.com
+          OR update ANTHROPIC_API_KEY in Railway env vars
+Demo URL: https://ava-studio-api-production.up.railway.app/demos/create
+
+ANALYTICS ENDPOINTS (NEW)
+--------------------------
+GET /analytics/scraper-runs?days=1   → scraper_runs table
+GET /analytics/outreach-runs?days=1  → outreach_runs table
+GET /analytics/demos?days=7          → in-memory demo store
+
+SCHEDULED TASKS (11 TOTAL — ALL READY)
+---------------------------------------
+1.  daily_outreach.py       — Apify scraper → GHL → email
+2.  ghl_daily_outreach.py   — GHL 100/day Mon-Fri 9am
+3.  ghl_followup.py         — Day 3/7/14 follow-up Mon-Fri 9:15am
+4.  ghl_reply_monitor.py    — Polls GHL every 15 min
+5-11. Additional Railway + Vercel automation tasks
+
+WHAT DAN DOES NEXT
+------------------
+1. Add Anthropic API credits → console.anthropic.com
+2. Test demo machine: POST /demos/create with any roofing website URL
+3. Access dashboard at dashboard.summitvoiceai.com (password: ava2026)
+4. Continue GHL workflow build (14 workflows pending)
+5. Close 3-4 clients/week using demo machine output
+
+MRR STATUS
+----------
+Current: ~$4,466 (9 clients)
+Target:  $50,000 by Dec 31, 2026
+Gap:     ~45 clients at $997 or ~91 at $497

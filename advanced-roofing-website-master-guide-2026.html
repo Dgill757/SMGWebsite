@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advanced Roofing Website Master Guide 2026 — 3D, Animations, Skills & Full Workflow</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #060910;
+  --surface: #0d1117;
+  --surface2: #161b22;
+  --border: #21262d;
+  --orange: #f97316;
+  --orange-dim: rgba(249,115,22,0.1);
+  --cyan: #22d3ee;
+  --cyan-dim: rgba(34,211,238,0.1);
+  --green: #4ade80;
+  --green-dim: rgba(74,222,128,0.1);
+  --purple: #c084fc;
+  --purple-dim: rgba(192,132,252,0.1);
+  --yellow: #fbbf24;
+  --yellow-dim: rgba(251,191,36,0.1);
+  --red: #f87171;
+  --red-dim: rgba(248,113,113,0.1);
+  --pink: #f472b6;
+  --pink-dim: rgba(244,114,182,0.1);
+  --text: #e6edf3;
+  --text-muted: #7d8590;
+  --text-dim: #484f58;
+  --font-display: 'Syne', sans-serif;
+  --font-body: 'Inter', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* ── NAV ── */
+.sidenav {
+  position: fixed;
+  top: 0; left: 0;
+  width: 240px;
+  height: 100vh;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  overflow-y: auto;
+  z-index: 100;
+  padding: 24px 0;
+}
+.sidenav-logo {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--orange);
+  padding: 0 20px 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+.nav-section-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding: 12px 20px 4px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 20px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: all .15s;
+  border-left: 2px solid transparent;
+}
+.nav-link:hover { color: var(--text); background: rgba(255,255,255,.04); border-left-color: var(--orange); }
+.nav-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); flex-shrink: 0; }
+
+/* ── MAIN ── */
+.main {
+  margin-left: 240px;
+  padding: 0 60px 120px;
+  max-width: 1000px;
+}
+
+/* ── HERO ── */
+.hero {
+  padding: 80px 0 60px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 60px;
+}
+.hero-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .15em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 16px;
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.02em;
+  margin-bottom: 20px;
+}
+.hero-title span { color: var(--orange); }
+.hero-title span.cyan { color: var(--cyan); }
+.hero-subtitle { font-size: 16px; color: var(--text-muted); max-width: 620px; line-height: 1.7; margin-bottom: 32px; }
+.hero-badges { display: flex; gap: 10px; flex-wrap: wrap; }
+.badge {
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+.badge-orange { background: var(--orange-dim); color: var(--orange); border: 1px solid rgba(249,115,22,.25); }
+.badge-cyan { background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(34,211,238,.25); }
+.badge-green { background: var(--green-dim); color: var(--green); border: 1px solid rgba(74,222,128,.25); }
+.badge-purple { background: var(--purple-dim); color: var(--purple); border: 1px solid rgba(192,132,252,.25); }
+.badge-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(251,191,36,.25); }
+
+/* ── SECTIONS ── */
+.section { margin-bottom: 72px; scroll-margin-top: 32px; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+.section-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.icon-orange { background: var(--orange-dim); }
+.icon-cyan { background: var(--cyan-dim); }
+.icon-green { background: var(--green-dim); }
+.icon-purple { background: var(--purple-dim); }
+.icon-yellow { background: var(--yellow-dim); }
+.icon-pink { background: var(--pink-dim); }
+.section-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 32px 0 12px;
+  letter-spacing: -.01em;
+}
+
+p { color: var(--text-muted); margin-bottom: 14px; font-size: 14px; }
+p strong { color: var(--text); }
+
+/* ── CARDS ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-orange { border-color: rgba(249,115,22,.3); background: linear-gradient(135deg, rgba(249,115,22,.05) 0%, var(--surface) 50%); }
+.card-cyan { border-color: rgba(34,211,238,.3); background: linear-gradient(135deg, rgba(34,211,238,.05) 0%, var(--surface) 50%); }
+.card-green { border-color: rgba(74,222,128,.3); background: linear-gradient(135deg, rgba(74,222,128,.05) 0%, var(--surface) 50%); }
+.card-purple { border-color: rgba(192,132,252,.3); background: linear-gradient(135deg, rgba(192,132,252,.05) 0%, var(--surface) 50%); }
+.card-yellow { border-color: rgba(251,191,36,.3); background: linear-gradient(135deg, rgba(251,191,36,.05) 0%, var(--surface) 50%); }
+.card-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.card-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+.card-desc { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+/* ── CODE BLOCKS ── */
+.code-block {
+  background: #010409;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 12px 0;
+}
+.code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+}
+.copy-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  transition: all .15s;
+}
+.copy-btn:hover { color: var(--text); border-color: var(--orange); }
+.code-body {
+  padding: 16px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  color: #c9d1d9;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+.code-body .c-orange { color: var(--orange); }
+.code-body .c-cyan { color: var(--cyan); }
+.code-body .c-green { color: var(--green); }
+.code-body .c-comment { color: var(--text-dim); font-style: italic; }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; margin: 16px 0; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+th {
+  background: var(--surface2);
+  padding: 10px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+td {
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  vertical-align: top;
+  font-size: 13px;
+}
+tr:hover td { background: rgba(255,255,255,.02); }
+td strong { color: var(--text); }
+
+/* ── TAGS ── */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.tag-orange { background: var(--orange-dim); color: var(--orange); }
+.tag-cyan { background: var(--cyan-dim); color: var(--cyan); }
+.tag-green { background: var(--green-dim); color: var(--green); }
+.tag-purple { background: var(--purple-dim); color: var(--purple); }
+.tag-yellow { background: var(--yellow-dim); color: var(--yellow); }
+.tag-red { background: var(--red-dim); color: var(--red); }
+
+/* ── GRID ── */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+
+/* ── STEPS ── */
+.steps { display: flex; flex-direction: column; gap: 0; margin: 16px 0; }
+.step { display: flex; gap: 16px; }
+.step-left { display: flex; flex-direction: column; align-items: center; }
+.step-num {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--orange-dim);
+  border: 1px solid rgba(249,115,22,.4);
+  color: var(--orange);
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.step-line { width: 1px; flex: 1; background: var(--border); margin: 4px 0; min-height: 20px; }
+.step-content { padding-bottom: 24px; flex: 1; }
+.step-title { font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 6px; padding-top: 3px; }
+.step-text { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+
+/* ── CALLOUT ── */
+.callout {
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  display: flex;
+  gap: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.callout-orange { background: var(--orange-dim); border: 1px solid rgba(249,115,22,.25); color: var(--text-muted); }
+.callout-cyan { background: var(--cyan-dim); border: 1px solid rgba(34,211,238,.25); color: var(--text-muted); }
+.callout-green { background: var(--green-dim); border: 1px solid rgba(74,222,128,.25); color: var(--text-muted); }
+.callout-yellow { background: var(--yellow-dim); border: 1px solid rgba(251,191,36,.25); color: var(--text-muted); }
+.callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+.callout strong { color: var(--text); }
+
+/* ── REPO CARD ── */
+.repo-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  transition: border-color .15s;
+}
+.repo-card:hover { border-color: var(--orange); }
+.repo-icon { font-size: 20px; flex-shrink: 0; }
+.repo-body { flex: 1; }
+.repo-name { font-family: var(--font-mono); font-size: 12.5px; font-weight: 600; color: var(--cyan); margin-bottom: 4px; }
+.repo-desc { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+.repo-meta { display: flex; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+
+/* ── MODEL COMPARE ── */
+.model-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.model-name { font-family: var(--font-display); font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+.model-price { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-bottom: 12px; }
+.model-use { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+.model-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+
+/* ── PROMPT LEVEL ── */
+.level-dots { display: flex; gap: 3px; margin-bottom: 8px; }
+.dot-filled { width: 8px; height: 8px; border-radius: 50%; background: var(--orange); }
+.dot-empty { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+
+/* ── ANIMATION LIBRARY TABLE ── */
+.anim-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 10px;
+}
+.anim-name { font-family: var(--font-display); font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+.anim-meta { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+.anim-desc { font-size: 12.5px; color: var(--text-muted); }
+.anim-use { font-size: 11px; font-weight: 600; color: var(--green); margin-top: 6px; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* ── DIVIDER ── */
+.divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .sidenav { display: none; }
+  .main { margin-left: 0; padding: 0 20px 80px; }
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .hero-title { font-size: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── SIDENAV ── -->
+<nav class="sidenav">
+  <div class="sidenav-logo">🏠 Advanced Roofing<br>Website System 2026</div>
+  <div class="nav-section-title">Overview</div>
+  <a href="#models" class="nav-link"><span class="nav-dot"></span>Model Selection</a>
+  <a href="#skills" class="nav-link"><span class="nav-dot"></span>Skills to Install</a>
+  <a href="#repos" class="nav-link"><span class="nav-dot"></span>Key Repos</a>
+  <div class="nav-section-title">Animation Stack</div>
+  <a href="#animation-libs" class="nav-link"><span class="nav-dot"></span>Animation Libraries</a>
+  <a href="#3d-effects" class="nav-link"><span class="nav-dot"></span>3D Effects Guide</a>
+  <a href="#scroll-effects" class="nav-link"><span class="nav-dot"></span>Scroll Effects</a>
+  <div class="nav-section-title">Build Workflow</div>
+  <a href="#start-project" class="nav-link"><span class="nav-dot"></span>Starting a Project</a>
+  <a href="#clone-workflow" class="nav-link"><span class="nav-dot"></span>Site Cloning Workflow</a>
+  <a href="#from-scratch" class="nav-link"><span class="nav-dot"></span>Build From Scratch</a>
+  <div class="nav-section-title">Prompts</div>
+  <a href="#foundation-prompt" class="nav-link"><span class="nav-dot"></span>Foundation Prompt</a>
+  <a href="#animation-prompts" class="nav-link"><span class="nav-dot"></span>Animation Prompts</a>
+  <a href="#3d-prompts" class="nav-link"><span class="nav-dot"></span>3D Effect Prompts</a>
+  <a href="#upgrade-prompt" class="nav-link"><span class="nav-dot"></span>Client Upgrade Prompt</a>
+  <div class="nav-section-title">Reference</div>
+  <a href="#components" class="nav-link"><span class="nav-dot"></span>21st.dev Components</a>
+  <a href="#bash-commands" class="nav-link"><span class="nav-dot"></span>All Bash Commands</a>
+  <a href="#checklist" class="nav-link"><span class="nav-dot"></span>Pre-Deploy Checklist</a>
+</nav>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-kicker">🔥 Summit Marketing Group — 2026 Competitive Edge</div>
+  <h1 class="hero-title">Build <span>$30,000</span> Roofing Websites<br>Faster Than <span class="cyan">Anyone</span> On The Market</h1>
+  <p class="hero-subtitle">The complete 2026 system: 3D animations, scroll effects, site cloning, model selection, skill installs, bash commands, prompts, and full workflow — everything to dominate the roofing web design market.</p>
+  <div class="hero-badges">
+    <span class="badge badge-orange">3D + WebGL</span>
+    <span class="badge badge-cyan">GSAP ScrollTrigger</span>
+    <span class="badge badge-green">Site Cloner v2</span>
+    <span class="badge badge-purple">UI/UX Pro Max Skill</span>
+    <span class="badge badge-yellow">Framer Motion</span>
+  </div>
+</div>
+
+<!-- ── MODEL SELECTION ── -->
+<section class="section" id="models">
+  <div class="section-header">
+    <div class="section-icon icon-orange">🤖</div>
+    <h2 class="section-title">Model Selection — Which Claude to Use When</h2>
+  </div>
+
+  <p>There is <strong>no "Fable" model</strong> — that doesn't exist. The TikTok was misinformed. Here's the real 2026 lineup and exactly when to use each model for roofing sites:</p>
+
+  <div class="callout callout-yellow">
+    <span class="callout-icon">⚠️</span>
+    <div><strong>No "Claude Fable" exists.</strong> The video you saw was either from a fake account or confused about model names. The current models as of June 2026 are: Opus 4.8, Sonnet 4.6, and Haiku 4.5. Stick to Sonnet 4.6 or Opus 4.8 for website builds.</div>
+  </div>
+
+  <div class="grid-2">
+    <div class="model-card" style="border-color: rgba(249,115,22,.4);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div class="model-name" style="color:var(--orange)">Claude Sonnet 4.6</div>
+        <span class="model-badge badge-green">✅ Daily Driver</span>
+      </div>
+      <div class="model-price">$3/1M input · $15/1M output · claude-sonnet-4-6</div>
+      <div class="model-use">
+        <strong style="color:var(--text);">Use for:</strong><br>
+        • 90% of your roofing website builds<br>
+        • Section-by-section component builds<br>
+        • Lovable, v0, and Cursor daily work<br>
+        • Fast iteration and previews<br>
+        • Claude Code for cloning sites<br>
+        • Most vibe coding sessions in VS Code<br><br>
+        <em>Performance gap vs Opus is minimal for UI work. Saves ~67% in API cost.</em>
+      </div>
+    </div>
+    <div class="model-card" style="border-color: rgba(34,211,238,.4);">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;">
+        <div class="model-name" style="color:var(--cyan)">Claude Opus 4.8</div>
+        <span class="model-badge badge-orange">🔥 Heavy Lifts</span>
+      </div>
+      <div class="model-price">$5/1M input · $25/1M output · claude-opus-4-8</div>
+      <div class="model-use">
+        <strong style="color:var(--text);">Use for:</strong><br>
+        • Full Three.js / WebGL implementations<br>
+        • Complex GSAP timeline sequences<br>
+        • Multi-file architectural decisions<br>
+        • When Sonnet produces broken 3D code<br>
+        • The initial foundation mega-prompt<br>
+        • Complex debugging sessions<br><br>
+        <em>9 pts higher on SWE-bench. Use when complexity demands it. Site cloning with Opus costs $20-30/clone on complex sites.</em>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-green">
+    <span class="callout-icon">💡</span>
+    <div><strong>Pro Strategy:</strong> Start with Sonnet 4.6 in Cursor. If a section requires complex 3D or the code keeps breaking after 3 attempts, switch to Opus 4.8 for that specific section, then drop back to Sonnet. Site cloning with JCodesMore's tool costs $4–9 on Sonnet vs $20–30 on Opus — use Sonnet for cloning unless the site is extremely complex.</div>
+  </div>
+</section>
+
+<!-- ── SKILLS TO INSTALL ── -->
+<section class="section" id="skills">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🧰</div>
+    <h2 class="section-title">Skills to Install — One-Time Setup</h2>
+  </div>
+
+  <p>Skills install <strong>once per project folder</strong> (in .claude/skills/). They persist — you do NOT reinstall every session. The skill is loaded from the project directory each time Claude Code starts.</p>
+
+  <div class="callout callout-cyan">
+    <span class="callout-icon">📌</span>
+    <div><strong>Install location:</strong> Project-level = <code style="color:var(--cyan)">.claude/skills/</code> (shared with team). Personal = <code style="color:var(--cyan)">~/.claude/skills/</code> (all your projects). For roofing sites, install in the project folder so your GitHub repo carries the skills.</div>
+  </div>
+
+  <h3>🥇 Tier 1 — Must Have (Install These First)</h3>
+
+  <div class="repo-card">
+    <div class="repo-icon">🎨</div>
+    <div class="repo-body">
+      <div class="repo-name">nextlevelbuilder/ui-ux-pro-max-skill</div>
+      <div class="repo-desc">Design intelligence engine with 91,800+ GitHub stars. Gives Claude access to searchable databases of UI styles, color palettes, font pairings, chart types, and UX guidelines. The most-installed Claude Code skill in 2026. Auto-triggers on "Build landing page", "Design dashboard", "Create UI component".</div>
+      <div class="repo-meta">
+        <span class="tag tag-orange">91.8k Stars</span>
+        <span class="tag tag-green">Security Verified</span>
+        <span class="tag tag-cyan">247k Installs</span>
+      </div>
+    </div>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span>install — ui-ux-pro-max (recommended CLI method)</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body"><span class="c-comment"># Method 1: CLI (fastest)</span>
+npm install -g uipro-cli
+uipro init --ai claude
+
+<span class="c-comment"># Method 2: Claude marketplace (inside Claude Code)</span>
+/plugin marketplace add nextlevelbuilder/ui-ux-pro-max-skill
+
+<span class="c-comment"># Method 3: npx (no global install needed)</span>
+npx -y skills add nextlevelbuilder/ui-ux-pro-max-skill --agent claude-code</div>
+  </div>
+
+  <div class="repo-card">
+    <div class="repo-icon">🌐</div>
+    <div class="repo-body">
+      <div class="repo-name">JCodesMore/ai-website-cloner-template</div>
+      <div class="repo-desc">The #1 site cloning skill — 13,000+ stars in 6 weeks. Clones any website with a single /clone-website command. Launches parallel agents, extracts colors/components/animations, detects lazy-loaded assets, WebGL/3D files, fonts, video — reconstructs everything into editable React/Next.js code. This is your secret weapon for giving clients a "2026 version" of their competitors' sites.</div>
+      <div class="repo-meta">
+        <span class="tag tag-orange">13k Stars</span>
+        <span class="tag tag-yellow">Requires Chrome MCP</span>
+        <span class="tag tag-cyan">$4–9/clone (Sonnet)</span>
+      </div>
+    </div>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span>install — ai-website-cloner</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body"><span class="c-comment"># Clone the template to start a new project</span>
+git clone https://github.com/JCodesMore/ai-website-cloner-template.git my-roofing-clone
+cd my-roofing-clone
+npm install
+
+<span class="c-comment"># CRITICAL: Launch with Chrome flag — required for Playwright browser control</span>
+claude --chrome
+
+<span class="c-comment"># Then inside Claude Code, run:</span>
+/clone-website https://targetsite.com
+
+<span class="c-comment"># Clone multiple at once (space-separated):</span>
+/clone-website https://site1.com https://site2.com https://site3.com
+
+<span class="c-comment"># Windows fix: python3 command doesn't exist by default</span>
+<span class="c-comment"># Run in admin PowerShell:</span>
+Copy-Item "C:\Python314\python.exe" "C:\Python314\python3.exe"</div>
+  </div>
+
+  <div class="repo-card">
+    <div class="repo-icon">✨</div>
+    <div class="repo-body">
+      <div class="repo-name">21st-dev/magic MCP</div>
+      <div class="repo-desc">1,300+ production-ready React components + 700+ blocks. Magic MCP integrates 21st.dev directly into Cursor — type /ui and get instant premium components. This is how you get Awwwards-level UI without building from scratch. The animation components here are exceptional.</div>
+      <div class="repo-meta">
+        <span class="tag tag-purple">MCP Server</span>
+        <span class="tag tag-green">1,300+ Components</span>
+        <span class="tag tag-cyan">Cursor Native</span>
+      </div>
+    </div>
+  </div>
+  <div class="code-block">
+    <div class="code-header"><span>install — 21st.dev Magic MCP in Cursor</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body"><span class="c-comment"># Add to Cursor MCP settings (Settings → MCP → Add Server)</span>
+claude mcp add magic -npx -y @21st-dev/magic@latest
+
+<span class="c-comment"># Or install via npx directly:</span>
+npx @21st-dev/magic@latest
+
+<span class="c-comment"># Then in Cursor, just type:</span>
+/ui animated hero section with particle background
+/ui glass morphism testimonial cards with hover effects
+/ui parallax before/after image slider</div>
+  </div>
+
+  <h3>🥈 Tier 2 — High Value (Install When Doing 3D/Animation Work)</h3>
+
+  <div class="grid-2">
+    <div class="card card-cyan">
+      <div class="card-title">Firecrawl Skill <span class="tag tag-cyan">Web Research</span></div>
+      <div class="card-desc">Gives Claude web scraping superpowers. Crawl competitor roofing sites, extract their section structures, color systems, and copy. Essential for research-driven builds.</div>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-header"><span>install</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-body">npx -y firecrawl-cli@latest init --all --browser</div>
+      </div>
+    </div>
+    <div class="card card-purple">
+      <div class="card-title">Clone Repo Skill <span class="tag tag-purple">Pattern Mining</span></div>
+      <div class="card-desc">Shallow-clones external GitHub repos for architectural reference. Use to study how premium roofing sites or agency portfolio sites structure their Three.js/GSAP code before building.</div>
+      <div class="code-block" style="margin-top:10px">
+        <div class="code-header"><span>install</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+        <div class="code-body">npx -y skills add clone-repo --agent claude-code</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange">
+    <span class="callout-icon">🔁</span>
+    <div><strong>Do you reinstall every time?</strong> No. Once installed in .claude/skills/ or ~/.claude/skills/, skills persist across sessions. You only reinstall if you start a brand new project folder or after a system wipe. The skills are referenced at Claude Code startup automatically.</div>
+  </div>
+</section>
+
+<!-- ── ANIMATION LIBRARIES ── -->
+<section class="section" id="animation-libs">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">🎬</div>
+    <h2 class="section-title">2026 Animation Library Stack — Your Arsenal</h2>
+  </div>
+
+  <p>This is your complete 2026 animation toolkit for roofing websites. Each library has a specific job — use the right one for the right effect.</p>
+
+  <div class="anim-card" style="border-color:rgba(249,115,22,.35)">
+    <div class="anim-name">GSAP + ScrollTrigger</div>
+    <div class="anim-meta">
+      <span class="tag tag-orange">King of Scroll Animations</span>
+      <span class="tag tag-green">60fps Guaranteed</span>
+      <span class="tag tag-yellow">Free for most projects</span>
+    </div>
+    <div class="anim-desc">The undisputed #1 for scroll-driven, timeline-sequenced animations. ScrollTrigger pins sections as you scroll, creates parallax layers, staggered element reveals, and cinematic scroll stories. Works with Three.js objects, SVG, CSS, and canvas. 23KB core + 7KB ScrollTrigger.</div>
+    <div class="anim-use">✅ ROOFING USE: Hero text reveals, before/after gallery scroll pins, service card stagger animations, scroll-triggered number counters, pinned "Our Process" sections</div>
+  </div>
+
+  <div class="anim-card" style="border-color:rgba(192,132,252,.35)">
+    <div class="anim-name">Framer Motion</div>
+    <div class="anim-meta">
+      <span class="tag tag-purple">React Native</span>
+      <span class="tag tag-cyan">Layout Animations</span>
+      <span class="tag tag-green">Exit Animations</span>
+    </div>
+    <div class="anim-desc">Built for React — handles component mounting/unmounting animations, shared layout transitions, drag interactions, and gesture-based animations. Simpler API than GSAP for React projects. Best for UI-level micro-interactions: modals, dropdowns, tabs, card hovers.</div>
+    <div class="anim-use">✅ ROOFING USE: Quote form modal animations, service tab transitions, mobile nav open/close, testimonial card interactions, before/after slider drag gesture</div>
+  </div>
+
+  <div class="anim-card" style="border-color:rgba(34,211,238,.35)">
+    <div class="anim-name">Three.js</div>
+    <div class="anim-meta">
+      <span class="tag tag-cyan">WebGL / 3D</span>
+      <span class="tag tag-red">High Complexity</span>
+      <span class="tag tag-orange">Max Impact</span>
+    </div>
+    <div class="anim-desc">Full 3D WebGL renderer. Creates floating 3D roofing material models, interactive particle systems, animated building cross-sections, spinning shingle displays. Combine with GSAP ScrollTrigger to sync 3D camera movement to scroll position — this is what creates $30K-looking sites.</div>
+    <div class="anim-use">✅ ROOFING USE: Hero background particle storm, 3D roof cross-section reveal on scroll, floating material samples (shingles, metal panels), animated before/after 3D transition</div>
+  </div>
+
+  <div class="anim-card" style="border-color:rgba(74,222,128,.35)">
+    <div class="anim-name">Spline</div>
+    <div class="anim-meta">
+      <span class="tag tag-green">No-Code 3D</span>
+      <span class="tag tag-cyan">React Embed</span>
+      <span class="tag tag-yellow">Free tier available</span>
+    </div>
+    <div class="anim-desc">Design 3D scenes in a visual editor, then embed with @splinetool/react-spline. No WebGL code required. Perfect for creating a realistic spinning roof or house model for the hero. The client sees a 3D house rotating in the background — built in Spline in 20 minutes, embedded in 5.</div>
+    <div class="anim-use">✅ ROOFING USE: Hero rotating 3D house model, interactive 3D roof section for the "Our Process" page, animated logo reveal, material type selector in 3D</div>
+  </div>
+
+  <div class="anim-card" style="border-color:rgba(251,191,36,.35)">
+    <div class="anim-name">Lenis (Smooth Scroll)</div>
+    <div class="anim-meta">
+      <span class="tag tag-yellow">Smooth Scroll</span>
+      <span class="tag tag-green">Pairs with GSAP</span>
+      <span class="tag tag-cyan">2KB</span>
+    </div>
+    <div class="anim-desc">Replaces native browser scroll with buttery-smooth momentum scroll. Combine with GSAP ScrollTrigger for the "premium agency" feel. The difference is immediately noticeable — your site feels like a $30K site the moment someone starts scrolling.</div>
+    <div class="anim-use">✅ ROOFING USE: Every site. Install by default. Instant premium feel upgrade with 4 lines of code.</div>
+  </div>
+
+  <div class="anim-card" style="border-color:rgba(244,114,182,.35)">
+    <div class="anim-name">React Three Fiber (R3F)</div>
+    <div class="anim-meta">
+      <span class="tag tag-pink">Three.js for React</span>
+      <span class="tag tag-cyan">Declarative 3D</span>
+      <span class="tag tag-orange">Production Ready</span>
+    </div>
+    <div class="anim-desc">React wrapper for Three.js. Write 3D scenes as JSX components instead of imperative Three.js code. Dramatically reduces complexity. Pair with Drei (helper components) for instant access to orbit controls, environment maps, shadow maps, and 3D text.</div>
+    <div class="anim-use">✅ ROOFING USE: When building in React/Next.js and want 3D without raw Three.js complexity. Use Spline for simple scenes, R3F for custom interactive 3D.</div>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Library</th><th>Best For</th><th>Difficulty</th><th>Install</th></tr></thead>
+      <tbody>
+        <tr><td><strong>GSAP + ScrollTrigger</strong></td><td>Scroll animations, text reveals, parallax</td><td><span class="tag tag-yellow">Medium</span></td><td><code>npm i gsap</code></td></tr>
+        <tr><td><strong>Framer Motion</strong></td><td>React UI micro-interactions, transitions</td><td><span class="tag tag-green">Easy</span></td><td><code>npm i framer-motion</code></td></tr>
+        <tr><td><strong>Three.js</strong></td><td>3D WebGL, particle systems</td><td><span class="tag tag-red">Hard</span></td><td><code>npm i three</code></td></tr>
+        <tr><td><strong>Spline</strong></td><td>3D hero scenes, no-code 3D</td><td><span class="tag tag-green">Easy</span></td><td><code>npm i @splinetool/react-spline</code></td></tr>
+        <tr><td><strong>Lenis</strong></td><td>Smooth scroll feel</td><td><span class="tag tag-green">Easy</span></td><td><code>npm i lenis</code></td></tr>
+        <tr><td><strong>React Three Fiber</strong></td><td>3D in React apps</td><td><span class="tag tag-yellow">Medium</span></td><td><code>npm i @react-three/fiber @react-three/drei</code></td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── 3D EFFECTS GUIDE ── -->
+<section class="section" id="3d-effects">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">🌀</div>
+    <h2 class="section-title">3D Effects — Exactly What to Build for Roofing</h2>
+  </div>
+
+  <p>These are the specific 3D effects that will make your roofing sites look like $30K builds. Ranked by impact vs implementation complexity.</p>
+
+  <div class="card card-orange">
+    <div class="card-title">🏆 Effect #1: Particle Storm Hero <span class="tag tag-orange">Highest Impact</span></div>
+    <div class="card-desc">Floating particles that form a roof silhouette or rain down like shingles in the hero background. Pure Three.js — no 3D modeling needed. Syncs with mouse movement. This single effect transforms any site from template → premium.</div>
+    <div class="code-block">
+      <div class="code-header"><span>Cursor/Claude Code Prompt — Particle Hero</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">Add a Three.js particle system to the hero section background.
+
+Requirements:
+- 800-1200 floating particles, subtle gray-white tones matching our color scheme
+- Particles drift upward slowly, random speeds (0.1-0.5)
+- Mouse proximity creates a gentle repulsion effect (within 120px radius)
+- On mobile: reduce to 300 particles, disable mouse effect
+- Canvas positioned absolute, z-index: -1, full hero coverage
+- Use requestAnimationFrame, NOT setInterval
+- NO external 3D models or textures — geometry only
+- Performance: target 60fps, use BufferGeometry not Geometry (deprecated)
+- Add a subtle vignette overlay so hero text remains readable
+- TypeScript, React functional component, useRef for canvas</div>
+    </div>
+  </div>
+
+  <div class="card card-cyan">
+    <div class="card-title">🥈 Effect #2: Scroll-Synced 3D Roof Section <span class="tag tag-cyan">Ultra Premium</span></div>
+    <div class="card-desc">A Three.js or Spline 3D cross-section of a roof that rotates/reveals as the user scrolls through the "Our Process" section. Each layer (sheathing, underlayment, shingles) appears as they scroll. This is what Awwwards-winning construction sites do.</div>
+    <div class="code-block">
+      <div class="code-header"><span>GSAP + Three.js scroll sync prompt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">Create a scroll-driven Three.js scene for the "Our Process" section:
+
+- Fixed canvas in the right half of a split-layout section
+- Three.js scene: simplified roof cross-section built from BoxGeometry layers
+  Layer 1 (bottom): roof deck — brown/wood color
+  Layer 2: synthetic underlayment — gray
+  Layer 3: ice/water shield — darker gray
+  Layer 4 (top): architectural shingles — charcoal/slate
+- GSAP ScrollTrigger: as user scrolls through 4 scroll "pages" pinned to this section,
+  each layer rises up into position with a y-axis animation
+- Camera: isometric angle, slight rotation on enter
+- Layers start at y: -200, animate to y: 0 with stagger: 0.3
+- Lighting: 1 directional, 1 ambient, subtle shadows
+- Text label for each layer fades in alongside it (DOM overlay, not Three.js text)
+- Mobile: replace 3D scene with a static SVG cross-section diagram
+- Stack: React 18, TypeScript, Three.js r128, GSAP 3.12</div>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <div class="card-title">🥉 Effect #3: Smooth Parallax Photo Stack <span class="tag tag-green">High Impact / Easy</span></div>
+    <div class="card-desc">Multiple photos layered at different scroll depths using GSAP ScrollTrigger. The background moves slower than the text, giving a 3D depth illusion. No WebGL needed — pure CSS + GSAP. This is the fastest premium upgrade.</div>
+    <div class="code-block">
+      <div class="code-header"><span>GSAP Parallax Prompt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">Create a GSAP ScrollTrigger parallax hero section:
+
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+gsap.registerPlugin(ScrollTrigger);
+
+Layers (back to front):
+1. Full-bleed roof project photo — scrolls at 0.4x speed
+2. Dark overlay gradient — fixed
+3. Headline text — scrolls at 1.0x (normal)
+4. Subheadline + CTA — scrolls at 1.1x (slightly faster, creates depth)
+
+Implementation:
+- gsap.to('.hero-bg', { yPercent: -30, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true }})
+- gsap.to('.hero-text', { yPercent: -10, scrollTrigger: { trigger: '.hero', scrub: 0.5 }})
+- Add Lenis smooth scroll wrapper around the entire app first
+- Ensure will-change: transform on parallax elements
+- Test on iPhone Safari — add -webkit-overflow-scrolling: touch if needed</div>
+    </div>
+  </div>
+
+  <div class="card card-purple">
+    <div class="card-title">⚡ Effect #4: Magnetic CTA Buttons <span class="tag tag-purple">Micro-Interaction</span></div>
+    <div class="card-desc">CTA buttons that magnetically attract the cursor as it gets close, then snap back. Framer Motion implementation. This micro-interaction alone makes the site feel like it costs 10x more than it does.</div>
+    <div class="code-block">
+      <div class="code-header"><span>Framer Motion Magnetic Button Prompt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">Create a MagneticButton React component using Framer Motion:
+
+- useMotionValue for x and y tracking
+- useTransform to map mouse position to button offset (max 20px pull)
+- On mouseenter: track mouse position relative to button center
+- On mouseleave: spring back to x:0, y:0 with spring stiffness:150, damping:15
+- Inner text also moves, but at 40% of button movement (deeper 3D feel)
+- Slight scale(1.05) on hover
+- Add to all primary CTAs: "Get Free Inspection", "Call Now" buttons
+- Must work on desktop only — disable on touch devices via useMediaQuery
+- TypeScript, Framer Motion 11+</div>
+    </div>
+  </div>
+
+  <div class="card card-yellow">
+    <div class="card-title">⚡ Effect #5: Spline 3D House Hero <span class="tag tag-yellow">No-Code 3D</span></div>
+    <div class="card-desc">Build a 3D house model in Spline (spline.design — free), export the embed URL, drop it into React with @splinetool/react-spline. The house slowly rotates in the hero background. Takes 20 minutes in Spline, 5 minutes to embed.</div>
+    <div class="code-block">
+      <div class="code-header"><span>Spline embed prompt for Claude</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">Embed a Spline 3D scene as the hero background:
+
+import Spline from '@splinetool/react-spline';
+
+<div style="position: relative; height: 100vh; overflow: hidden;">
+  <Spline 
+    scene="[PASTE YOUR SPLINE SCENE URL HERE]"
+    style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 0 }}
+  />
+  {/* Hero content on top */}
+  <div style={{ position: 'relative', zIndex: 1 }}>
+    [HERO CONTENT]
+  </div>
+</div>
+
+Also add:
+- Lazy load the Spline component with React.Suspense
+- Fallback: a high-quality full-bleed roof photo during load
+- On mobile: skip Spline entirely, use the static photo fallback
+- Add loading="lazy" and check window.innerWidth before mounting</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SCROLL EFFECTS ── -->
+<section class="section" id="scroll-effects">
+  <div class="section-header">
+    <div class="section-icon icon-green">📜</div>
+    <h2 class="section-title">Scroll Effects — The Signature of Premium Sites</h2>
+  </div>
+
+  <div class="card card-cyan">
+    <div class="card-title">Lenis + GSAP Setup (Copy This Into Every Project)</div>
+    <div class="code-block">
+      <div class="code-header"><span>src/lib/scroll-setup.ts — paste this into every roofing project</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">import Lenis from 'lenis';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { SplitText } from 'gsap/SplitText'; // Premium plugin
+
+gsap.registerPlugin(ScrollTrigger, SplitText);
+
+// Initialize Lenis smooth scroll
+const lenis = new Lenis({
+  duration: 1.2,
+  easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+  orientation: 'vertical',
+  smoothWheel: true,
+});
+
+// Sync Lenis with GSAP ticker
+gsap.ticker.add((time) => { lenis.raf(time * 1000); });
+gsap.ticker.lagSmoothing(0);
+
+// Connect Lenis to ScrollTrigger
+lenis.on('scroll', ScrollTrigger.update);
+
+export { lenis };</div>
+    </div>
+  </div>
+
+  <div class="card card-orange">
+    <div class="card-title">Scroll-Triggered Text Reveal (SplitText)</div>
+    <div class="code-block">
+      <div class="code-header"><span>Headline reveal — GSAP SplitText</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">// Splits headlines into individual chars and stagger-animates them in
+// This is the effect you see on every Awwwards site
+const heroHeadline = document.querySelector('.hero-headline');
+const split = new SplitText(heroHeadline, { type: 'chars,words' });
+
+gsap.from(split.chars, {
+  opacity: 0,
+  y: 80,
+  rotationX: -90,
+  stagger: 0.02,
+  duration: 0.8,
+  ease: 'back.out(1.5)',
+  scrollTrigger: {
+    trigger: heroHeadline,
+    start: 'top 80%',
+  }
+});
+
+// For section headings — word-by-word reveal
+gsap.from(split.words, {
+  opacity: 0,
+  y: 40,
+  stagger: 0.08,
+  duration: 0.6,
+  ease: 'expo.out',
+  scrollTrigger: { trigger: heroHeadline, start: 'top 85%' }
+});</div>
+    </div>
+  </div>
+
+  <div class="card card-green">
+    <div class="card-title">Pinned "Before/After" Scroll Section</div>
+    <div class="code-block">
+      <div class="code-header"><span>GSAP pinned section with image transition</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">// Pin the section while clip-path reveals the "after" image
+// Creates cinematic before/after reveal tied to scroll
+gsap.to('.after-image', {
+  clipPath: 'inset(0 0% 0 0)',   // Reveals left to right
+  ease: 'none',
+  scrollTrigger: {
+    trigger: '.before-after-section',
+    start: 'top top',
+    end: '+=800',
+    scrub: 1,
+    pin: true,
+    anticipatePin: 1,
+  }
+});
+
+// Simultaneously move the divider line
+gsap.to('.divider-line', {
+  left: '100%',
+  ease: 'none',
+  scrollTrigger: {
+    trigger: '.before-after-section',
+    start: 'top top',
+    end: '+=800',
+    scrub: 1,
+  }
+});</div>
+    </div>
+  </div>
+
+  <div class="card card-purple">
+    <div class="card-title">Horizontal Scroll Project Gallery</div>
+    <div class="card-desc">Projects gallery that scrolls horizontally as the user scrolls vertically. Used by premium agency sites to showcase work without making users scroll forever.</div>
+    <div class="code-block">
+      <div class="code-header"><span>GSAP horizontal scroll prompt for Claude</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+      <div class="code-body">Build a horizontally-scrolling projects gallery using GSAP ScrollTrigger:
+
+- Container: full-width, overflow hidden, height: 100vh
+- Inner track: flex row of project cards, width: (card_width * count)
+- Cards: 380px wide, 520px tall, project photo + overlay with name/type/city
+- GSAP: translate the inner track from x:0 to x:-totalScrollWidth as user scrolls
+- ScrollTrigger: pin: true, scrub: 1, start: 'top top', end: '+=3000'
+- On mobile: switch to normal vertical scroll grid (2 columns)
+- Add subtle scale(0.95) on cards outside center viewport
+- Add a scroll progress indicator (thin line that fills as gallery scrolls)
+- 6-8 sample project cards with placeholder images from /images/projects/</div>
+    </div>
+  </div>
+</section>
+
+<!-- ── START A PROJECT ── -->
+<section class="section" id="start-project">
+  <div class="section-header">
+    <div class="section-icon icon-orange">🚀</div>
+    <h2 class="section-title">Starting a New Project — The Exact Workflow</h2>
+  </div>
+
+  <div class="callout callout-orange">
+    <span class="callout-icon">🎯</span>
+    <div><strong>Always start in VS Code with Claude Code — not in claude.ai.</strong> Claude Code has file system access, can run bash commands, install packages, and deploy. Claude.ai is for conversations, not builds. Use Cursor (VS Code + Claude Code) as your primary IDE.</div>
+  </div>
+
+  <h3>Decision Tree: Which Build Path?</h3>
+
+  <div class="grid-2">
+    <div class="card card-orange">
+      <div class="card-title">Path A: Clone + Customize <span class="tag tag-orange">Fastest (45 min)</span></div>
+      <div class="card-desc">Client has a good reference site they like, or you found a premium roofing site to clone and rebrand. Uses JCodesMore cloner.</div>
+      <div style="margin-top:10px;font-size:12.5px;color:var(--text-muted)">Best for: "Make it look like THIS but for our company"</div>
+    </div>
+    <div class="card card-cyan">
+      <div class="card-title">Path B: Build from Foundation <span class="tag tag-cyan">Best Quality (90 min)</span></div>
+      <div class="card-desc">Use the master foundation prompt + section-by-section build. Maximum control, best animations, most customizable result.</div>
+      <div style="margin-top:10px;font-size:12.5px;color:var(--text-muted)">Best for: Premium builds, new clients, custom 3D effects</div>
+    </div>
+  </div>
+
+  <h3>Step-by-Step: Path A (Clone + Customize)</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Research (10 min)</div>
+        <div class="step-text">Find 2-3 premium reference sites. Check: roofez.net (your Template #1), therivaldgroup.com, strongholdroofing.com, topnotchroofing.com. Screenshot hero sections. Note their colors, font vibes, and what makes them look premium. You want the $30K AESTHETIC — not to copy their content.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Launch Clone Session (5 min)</div>
+        <div class="step-text">
+          <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">cd C:\Users\DanGi\</code> → create project folder → <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">git clone https://github.com/JCodesMore/ai-website-cloner-template.git [CLIENT-NAME]-site</code> → <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">cd [CLIENT-NAME]-site && npm install</code> → open VS Code → <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">claude --chrome</code>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Clone the Reference Site (5-10 min)</div>
+        <div class="step-text">Inside Claude Code terminal: <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">/clone-website https://[REFERENCE_SITE].com</code> — Claude opens Chrome, screenshots every section, extracts components, and generates your editable React codebase. Use Sonnet 4.6 to keep cost at $4-9.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Client-Swap Variables (5 min)</div>
+        <div class="step-text">Open constants.ts (or wherever company info is stored). Replace: company name, phone, city, service areas, certifications, colors if different. The JCodesMore cloner usually creates a central config — find it with <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">grep -r "COMPANY" src/</code></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">5</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Layer in Animations (20-30 min)</div>
+        <div class="step-text">Now prompt Claude section by section: "Add GSAP ScrollTrigger reveal animations to all section headings." / "Add Lenis smooth scroll." / "Add the magnetic button effect to all CTAs." Use the prompts from the Animation Prompts section of this guide.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">6</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Deploy Preview to Vercel (2 min)</div>
+        <div class="step-text"><code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">git add . && git commit -m "initial build" && git push</code> → Vercel auto-deploys via GitHub. Share <code>https://[client-name]-preview.vercel.app</code> before they've paid a dime.</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Step-by-Step: Path B (Build From Scratch)</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-left"><div class="step-num">1</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Create Project with Vite</div>
+        <div class="step-text">
+          <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">cd C:\Users\DanGi\ && npm create vite@latest [client]-roofing -- --template react-ts && cd [client]-roofing && npm install</code><br><br>
+          Then install the animation stack: <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">npm i gsap framer-motion lenis three @react-three/fiber @react-three/drei @splinetool/react-spline tailwindcss react-router-dom</code>
+        </div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">2</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Install Skills</div>
+        <div class="step-text"><code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">uipro init --ai claude</code> (if not already installed globally) → open VS Code → <code style="font-size:12px;background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--cyan)">claude</code> (NOT claude --chrome for this path)</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">3</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Run the Foundation Mega-Prompt</div>
+        <div class="step-text">Paste the Foundation Prompt from the next section. Include the reference site URL. Use Opus 4.8 for this step only — worth the extra cost for the initial architecture. This creates all files, pages, constants.ts, and the routing structure.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">4</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Build Section by Section</div>
+        <div class="step-text">Hero → Proof Strip → Services → Before/After → Testimonials → Quote Calculator → Service Areas → Contact. One prompt per section. Switch back to Sonnet 4.6. Test each before moving to next.</div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-left"><div class="step-num">5</div><div class="step-line"></div></div>
+      <div class="step-content">
+        <div class="step-title">Animation Polish Pass</div>
+        <div class="step-text">After all sections are built and content is correct, do a full animation pass. Never add complex animations to unfinished sections — finish content first, animate second.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOUNDATION PROMPT ── -->
+<section class="section" id="foundation-prompt">
+  <div class="section-header">
+    <div class="section-icon icon-orange">📋</div>
+    <h2 class="section-title">The $30K Foundation Prompt — With 3D & Animations Baked In</h2>
+  </div>
+
+  <div class="callout callout-orange">
+    <span class="callout-icon">🔥</span>
+    <div><strong>This is the full prompt.</strong> Replace all [BRACKETED] variables with your client's info. Run this in Cursor with Claude Code (Opus 4.8 recommended for this step). This generates the entire project scaffold — pages, routing, constants, and animation setup.</div>
+  </div>
+
+  <div class="code-block">
+    <div class="code-header"><span>foundation-prompt.md — $30K roofing site with 3D + animations</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body">You are a Senior Full-Stack Developer building a $30,000-level premium roofing 
+contractor website. This must look Awwwards-quality — not a template.
+
+TARGET: [COMPANY_NAME] — [CITY, STATE] roofing contractor
+REFERENCE INSPIRATION: [PASTE URL — optional but strongly recommended]
+
+═══════════════════════════════════════
+TECH STACK
+═══════════════════════════════════════
+React 18, Vite, TypeScript, Tailwind CSS
+Routing: React Router DOM v6
+Animations: GSAP + ScrollTrigger + SplitText, Framer Motion
+Smooth Scroll: Lenis (initialize on app mount, sync with GSAP ticker)
+3D: Three.js (particle hero), Spline for decorative 3D if applicable
+Components: shadcn/ui for UI primitives
+Icons: Lucide React
+SEO: React Helmet Async
+
+═══════════════════════════════════════
+BRAND
+═══════════════════════════════════════
+Primary: [HEX — e.g., #1a1a2e dark navy]
+Accent: [HEX — e.g., #e63946 red or #f97316 orange]
+Background: Dark theme recommended (dark converts better for roofing)
+Fonts: Syne or Barlow Condensed (display), Inter (body)
+Vibe: Premium, authoritative, trust-inspiring. Think luxury contractor 
+not cookie-cutter template.
+
+═══════════════════════════════════════
+STEP 1: CREATE src/lib/constants.ts
+═══════════════════════════════════════
+Single source of truth. Export:
+- COMPANY: name, phone, email, address, license, rating, reviewCount, 
+  yearsInBusiness, certifications[], socialLinks{}
+- SERVICES: array of { id, title, slug, shortDesc, longDesc, icon, benefits[], 
+  process[], materials[], faqs[] }
+- SERVICE_AREAS: array of { city, state, slug, county, population }
+- NAV_LINKS, FINANCING_OPTIONS, TESTIMONIALS (5-8 samples)
+
+═══════════════════════════════════════
+STEP 2: CREATE ALL PAGES
+═══════════════════════════════════════
+/ — Home (hero + all sections)
+/about — Company story, team, values, certifications
+/services — Services overview grid
+/services/:slug — Individual service page (generated from SERVICES array)
+/projects — Gallery with horizontal scroll + lightbox
+/service-areas — Areas overview map
+/service-areas/:slug — City landing pages (SEO — unique content per city)
+/reviews — All testimonials + Google embed
+/contact — Full contact page + map + form
+/get-quote — Dedicated quote calculator page
+/blog — Blog index (even if empty — good for SEO structure)
+
+═══════════════════════════════════════
+STEP 3: HOME PAGE SECTIONS (build in this order)
+═══════════════════════════════════════
+
+HERO:
+- Full viewport height
+- Three.js particle system background (800 particles, mouse repulsion)
+- Large bold headline with GSAP SplitText character-by-character reveal
+- Subheadline + 2 CTAs: "Get Free Inspection" (primary) + "View Our Work" (ghost)
+- Scroll indicator arrow (bouncing animation)
+- Lenis smooth scroll initialized here
+
+PROOF STRIP:
+- Immediately below hero (no padding gap — visual flow)
+- Items: ⭐ 4.9/5 rating (N reviews) | Licensed & Insured | [CERT] Certified | [N] Years | [CITY] Based
+- Subtle border top/bottom separating from hero
+- Counter animation: review count counts up when scrolled into view
+
+SERVICES GRID:
+- 6-card grid: Roof Replacement, Roof Repair, Storm Damage, Gutters, Skylights, Emergency
+- Each card: icon, title, short desc, "Learn More" arrow link
+- Framer Motion: staggered card entrance (0.1s delay each) on scroll entry
+- Hover: card lifts (translateY: -6px), subtle glow border
+
+BEFORE/AFTER GALLERY:
+- Scroll-pinned section — GSAP ScrollTrigger pin: true
+- Clip-path reveal: before photo → after photo as user scrolls
+- 3 project sets minimum
+- Company branding overlay on "after" side
+
+TESTIMONIALS:
+- Auto-playing carousel (no autoplay without reduced-motion check)
+- 5-6 testimonials with name, city, service type, star rating
+- Framer Motion AnimatePresence for slide transitions
+- Trust signals: "1,200+ Happy Homeowners" counter
+
+INSURANCE/STORM DAMAGE SECTION:
+- Critical for roofing: "We Work Directly With Your Insurance"
+- Step-by-step process: Inspection → File Claim → We Handle Adjuster → Installation → Done
+- GSAP: steps animate in sequence as user scrolls
+
+QUOTE CALCULATOR (inline):
+- Simple: select service type, property size, select urgency
+- Shows "Estimated Investment: $X,XXX – $X,XXX" 
+- Primary CTA: "Get Exact Quote — Free"
+- Framer Motion for the range reveal
+
+SERVICE AREAS:
+- Auto-generated from SERVICE_AREAS constant
+- City cards with county + link to /:slug landing page
+- Include [COUNTY] map illustration or simple SVG map
+
+FOOTER:
+- Dark, premium
+- Columns: Company info + hours | Services | Service Areas | Contact
+- License numbers, insurance badge, certifications
+- Copyright + privacy/terms links
+
+═══════════════════════════════════════
+STEP 4: ANIMATION LAYER
+═══════════════════════════════════════
+After all sections build successfully, add:
+1. Lenis smooth scroll (src/lib/scroll.ts — use the standard Lenis+GSAP setup)
+2. GSAP ScrollTrigger reveals on ALL section headings (SplitText words)
+3. Staggered entrance on all card grids (Framer Motion)
+4. Magnetic button effect on primary CTAs (Framer Motion useMotionValue)
+5. Parallax depth on hero background (GSAP ScrollTrigger scrub)
+6. Page transition: Framer Motion AnimatePresence with fade+slide on route change
+
+═══════════════════════════════════════
+STEP 5: SEO INFRASTRUCTURE
+═══════════════════════════════════════
+- React Helmet Async on every page (unique title/description/OG tags)
+- City pages: "Roofing Contractor in [CITY], [STATE] | [COMPANY_NAME]"
+- Schema markup: LocalBusiness + RoofingContractor type on homepage
+- Sitemap: src/sitemap.ts that generates XML from routes
+- robots.txt
+
+═══════════════════════════════════════
+CODING STANDARDS
+═══════════════════════════════════════
+- All text content in constants.ts — zero hardcoded strings in components
+- Mobile-first: all animations have reduced-motion media query fallbacks
+- Performance: lazy load all pages with React.lazy, images with loading="lazy"
+- Accessibility: all interactive elements have aria-labels
+- NO placeholder lorem ipsum — use realistic roofing copy throughout
+- Build must pass: npm run build with zero TypeScript errors before done
+
+IMPORTANT: Ask me any clarifying questions about [COMPANY_NAME] before starting.
+What's their phone number, primary service, and main city?</div>
+  </div>
+</section>
+
+<!-- ── ANIMATION PROMPTS ── -->
+<section class="section" id="animation-prompts">
+  <div class="section-header">
+    <div class="section-icon icon-cyan">⚡</div>
+    <h2 class="section-title">Copy-Paste Animation Prompts</h2>
+  </div>
+
+  <h3>Add Lenis + GSAP to Existing Project</h3>
+  <div class="code-block">
+    <div class="code-header"><span>drop-in animation setup prompt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body">Add premium smooth scroll and scroll-triggered animations to this project:
+
+1. Install: npm i gsap lenis @types/gsap
+2. Create src/lib/scroll.ts with Lenis initialized and synced to GSAP ticker
+3. Import and initialize in App.tsx on mount
+4. Add GSAP ScrollTrigger fade+slide-up (y:40, opacity:0 → y:0, opacity:1) 
+   to ALL elements with class "reveal" — stagger 0.1s for groups
+5. Add class="reveal" to: all h2, h3, .card, .service-item, .testimonial-card
+6. For the hero h1: use SplitText character-by-character reveal on page load
+7. Respect prefers-reduced-motion: wrap all GSAP animations in 
+   if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+8. Test: npm run dev — scroll speed should feel buttery, not sluggish</div>
+  </div>
+
+  <h3>Add Counter Animations to Stats</h3>
+  <div class="code-block">
+    <div class="code-header"><span>animated number counters prompt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body">Add GSAP counter animations to all stat numbers on the page:
+
+Targets: ".stat-number" elements showing things like "4.9", "1,200+", "15+"
+Implementation:
+- gsap.from('.stat-number', { textContent: 0, duration: 2, ease: 'power1.out', 
+  snap: { textContent: 1 }, stagger: 0.3, 
+  scrollTrigger: { trigger: '.stats-section', start: 'top 80%', once: true }})
+- For decimal (4.9): start from 0, increment by 0.1
+- For "1,200+": count to 1200 then append "+"
+- For years "15+": count to 15 then append "+"
+- Add comma formatting for large numbers</div>
+  </div>
+
+  <h3>Glassmorphism Cards (Premium Look)</h3>
+  <div class="code-block">
+    <div class="code-header"><span>glassmorphism service cards prompt</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body">Upgrade all service cards to use glassmorphism styling with hover animations:
+
+CSS upgrade for .service-card:
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+Hover state:
+  background: rgba(255, 255, 255, 0.08);
+  border-color: [ACCENT_COLOR_WITH_0.4_OPACITY];
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3), 0 0 0 1px [ACCENT_COLOR_0.2];
+
+Add gradient border effect on hover using ::before pseudo-element with 
+background: linear-gradient(135deg, [ACCENT], transparent) — clip to border-box
+
+Ensure parent sections have a subtle gradient background to make 
+backdrop-filter visible (works best on non-white backgrounds)</div>
+  </div>
+</section>
+
+<!-- ── CLIENT UPGRADE PROMPT ── -->
+<section class="section" id="upgrade-prompt">
+  <div class="section-header">
+    <div class="section-icon icon-yellow">✨</div>
+    <h2 class="section-title">The "2026 Upgrade" Prompt — Take Any Old Site & Make It Premium</h2>
+  </div>
+
+  <p>This is your sales weapon. Client shows you their existing site (or a competitor's). You run this prompt in Claude Code and deliver a preview that looks 10x better.</p>
+
+  <div class="code-block">
+    <div class="code-header"><span>client-upgrade-prompt.md</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body">I am going to give you a roofing company website that looks dated and generic.
+Your job: give it a complete 2026 visual overhaul that looks like a $30,000 website.
+Keep ALL the same information and business content, but completely transform the design.
+
+EXISTING SITE: [URL or paste HTML structure]
+COMPANY: [COMPANY_NAME], [CITY, STATE]
+
+TRANSFORMATION REQUIREMENTS:
+
+DESIGN DIRECTION: Dark, premium, authoritative. Inspired by luxury real estate 
+and high-end contractor brands. NOT corporate or generic.
+
+1. COLOR SYSTEM UPGRADE
+   - Dark base: #0d0d14 or similar deep navy/charcoal
+   - Single strong accent: [keep their brand color if strong, or upgrade to vibrant option]
+   - All grays: cool-toned (blue-gray, not warm gray)
+   - CTAs: accent color, high contrast, never gray
+
+2. TYPOGRAPHY UPGRADE  
+   - Replace all Times New Roman / Arial / generic fonts
+   - Headings: Syne 700 or Barlow Condensed 800 (bold, modern, construction-appropriate)
+   - Body: Inter 400 (clean, readable)
+   - Remove ALL text shadows, ALL letter-spacing on body copy
+
+3. HERO SECTION COMPLETE REBUILD
+   - Full viewport height (was probably 60vh or less)
+   - Add Three.js particle background OR high-quality full-bleed project photo
+   - Headline: larger (clamp(40px, 6vw, 80px)), bold, clear value proposition
+   - Remove: stock photos of hammers, generic contractors
+   - Add: GSAP SplitText reveal on headline
+
+4. ADD THESE MISSING SECTIONS (most old sites lack all of these):
+   - Proof strip below hero (ratings, license, years, certifications)
+   - Before/after gallery (scroll-pinned with clip-path reveal)
+   - Insurance/storm damage section with step-by-step process
+   - Quote calculator section
+   - Video testimonial or written testimonials carousel
+
+5. ANIMATION LAYER
+   - Lenis smooth scroll
+   - GSAP ScrollTrigger reveals on all sections
+   - Framer Motion card hovers
+   - Counter animations on all stats
+   - Magnetic CTAs
+
+6. MOBILE OVERHAUL
+   - Sticky bottom bar: phone icon + "Call Now" on mobile only
+   - Hamburger menu with full-screen animated overlay
+   - All touch targets minimum 44px
+   - Mobile hero: stack headline on top, photo on bottom
+
+7. TECHNICAL UPGRADES
+   - Add schema markup (LocalBusiness + RoofingContractor)
+   - Add proper meta tags with city-specific titles
+   - Add Open Graph image
+   - Lazy load all images
+
+DO NOT:
+- Change the company's name, phone, address, or service areas
+- Remove certifications or years in business claims
+- Use generic stock photos (prompt me for real photos if needed)
+- Add features they didn't have (chatbots, booking systems) without asking
+
+DELIVERABLE: Full React + Vite + TypeScript project, deployable to Vercel.
+Build the home page first. Ask me for approval before building additional pages.</div>
+  </div>
+</section>
+
+<!-- ── 21ST.DEV COMPONENTS ── -->
+<section class="section" id="components">
+  <div class="section-header">
+    <div class="section-icon icon-purple">🧩</div>
+    <h2 class="section-title">21st.dev — The Components to Use for Roofing Sites</h2>
+  </div>
+
+  <p>21st.dev has 1,300+ components. You don't need all of them. These are the specific components that make roofing sites look $30K. Provide these to Claude in your prompts for reference.</p>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">High-Priority Components</div>
+      <div class="card-desc">
+        • <strong>Animated Hero</strong> — particle/gradient backgrounds with text reveal<br>
+        • <strong>Bento Grid</strong> — services showcase layout<br>
+        • <strong>Glassmorphism Cards</strong> — service cards, testimonial cards<br>
+        • <strong>Scroll Progress Bar</strong> — thin top bar showing page scroll %<br>
+        • <strong>Magnetic Button</strong> — cursor-attracted CTA buttons<br>
+        • <strong>Before/After Slider</strong> — project gallery component<br>
+        • <strong>Stat Counter</strong> — animated number counters<br>
+        • <strong>Testimonial Carousel</strong> — auto-playing review slider<br>
+        • <strong>Sticky CTA Bar</strong> — mobile bottom bar with call button
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">How to Use in Cursor with Magic MCP</div>
+      <div class="card-desc">
+        After installing Magic MCP, in any Cursor chat:<br><br>
+        <code style="font-size:11px;color:var(--cyan);display:block;margin:6px 0">/ui animated hero section roofing dark theme particles</code>
+        <code style="font-size:11px;color:var(--cyan);display:block;margin:6px 0">/ui glass card grid services hover effects</code>
+        <code style="font-size:11px;color:var(--cyan);display:block;margin:6px 0">/ui testimonial carousel dark auto-play</code>
+        <code style="font-size:11px;color:var(--cyan);display:block;margin:6px 0">/ui before after image comparison slider</code>
+        <code style="font-size:11px;color:var(--cyan);display:block;margin:6px 0">/ui magnetic button primary CTA orange</code>
+        <br>
+        Claude will pull the matching component from 21st.dev and adapt it to your project's color system automatically.
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-cyan">
+    <span class="callout-icon">💡</span>
+    <div><strong>21st.dev component reference prompt:</strong> When building without Magic MCP, add this to your section prompts: <em>"Use a component pattern similar to 21st.dev's glassmorphism card — backdrop-filter: blur(12px), semi-transparent background, gradient border on hover, subtle shadow lift."</em> This primes Claude to build in that aesthetic without needing to pull the actual component.</div>
+  </div>
+</section>
+
+<!-- ── ALL BASH COMMANDS ── -->
+<section class="section" id="bash-commands">
+  <div class="section-header">
+    <div class="section-icon icon-green">⌨️</div>
+    <h2 class="section-title">Complete Bash Command Reference</h2>
+  </div>
+
+  <h3>Project Setup (Run Once Per New Project)</h3>
+  <div class="code-block">
+    <div class="code-header"><span>new-project-setup.sh</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body"><span class="c-comment"># Navigate to projects root</span>
+cd C:\Users\DanGi\
+
+<span class="c-comment"># Create new Vite + React + TypeScript project</span>
+npm create vite@latest [CLIENT-NAME]-roofing -- --template react-ts
+cd [CLIENT-NAME]-roofing
+
+<span class="c-comment"># Install core dependencies</span>
+npm install
+
+<span class="c-comment"># Install animation + 3D stack</span>
+npm install gsap framer-motion lenis three @react-three/fiber @react-three/drei @splinetool/react-spline
+
+<span class="c-comment"># Install UI + routing</span>
+npm install tailwindcss postcss autoprefixer react-router-dom react-helmet-async lucide-react
+
+<span class="c-comment"># Install Tailwind + shadcn setup</span>
+npx tailwindcss init -p
+npx shadcn-ui@latest init
+
+<span class="c-comment"># Install UI/UX Pro Max skill (if not already global)</span>
+npm install -g uipro-cli
+uipro init --ai claude
+
+<span class="c-comment"># Initialize Git + connect to GitHub</span>
+git init
+git add .
+git commit -m "initial project scaffold"
+git remote add origin https://github.com/Dgill757/[CLIENT-NAME]-roofing.git
+git push -u origin main
+
+<span class="c-comment"># Open in VS Code + launch Claude Code</span>
+code .
+claude</div>
+  </div>
+
+  <h3>Site Cloning Session</h3>
+  <div class="code-block">
+    <div class="code-header"><span>clone-session.sh</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body"><span class="c-comment"># Clone the JCodesMore template</span>
+cd C:\Users\DanGi\
+git clone https://github.com/JCodesMore/ai-website-cloner-template.git [CLIENT]-clone
+cd [CLIENT]-clone
+npm install
+
+<span class="c-comment"># MUST use --chrome flag for Playwright browser access</span>
+claude --chrome
+
+<span class="c-comment"># Inside Claude Code — clone the target site</span>
+/clone-website https://[TARGET_SITE].com
+
+<span class="c-comment"># Clone multiple reference sites (style research)</span>
+/clone-website https://site1.com https://site2.com
+
+<span class="c-comment"># Windows python3 fix (run once in admin PowerShell)</span>
+Copy-Item "C:\Python314\python.exe" "C:\Python314\python3.exe"</div>
+  </div>
+
+  <h3>Deploy to Vercel</h3>
+  <div class="code-block">
+    <div class="code-header"><span>deploy.sh</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body"><span class="c-comment"># Verify build passes before pushing (ALWAYS run this)</span>
+npm run build
+
+<span class="c-comment"># Commit and push (triggers auto-deploy via GitHub → Vercel)</span>
+git add .
+git commit -m "client build: [CLIENT-NAME] roofing"
+git push
+
+<span class="c-comment"># Manual Vercel deploy (if not connected to GitHub)</span>
+npx vercel --prod
+
+<span class="c-comment"># Set custom domain for client preview</span>
+npx vercel alias [deployment-url] [client-name]-preview.vercel.app</div>
+  </div>
+
+  <h3>Animation Package Commands</h3>
+  <div class="code-block">
+    <div class="code-header"><span>animation-installs.sh</span><button class="copy-btn" onclick="copyCode(this)">Copy</button></div>
+    <div class="code-body"><span class="c-comment"># Full animation stack in one command</span>
+npm install gsap framer-motion lenis three @react-three/fiber @react-three/drei @splinetool/react-spline
+
+<span class="c-comment"># Individual packages</span>
+npm install gsap              <span class="c-comment"># GSAP core + ScrollTrigger + SplitText</span>
+npm install framer-motion     <span class="c-comment"># React component animations</span>
+npm install lenis             <span class="c-comment"># Smooth scroll</span>
+npm install three             <span class="c-comment"># Three.js (raw WebGL)</span>
+npm install @react-three/fiber @react-three/drei  <span class="c-comment"># React Three Fiber</span>
+npm install @splinetool/react-spline  <span class="c-comment"># Spline 3D embeds</span>
+
+<span class="c-comment"># Check for package vulnerabilities</span>
+npm audit
+
+<span class="c-comment"># Update all packages to latest</span>
+npm update</div>
+  </div>
+</section>
+
+<!-- ── CHECKLIST ── -->
+<section class="section" id="checklist">
+  <div class="section-header">
+    <div class="section-icon icon-green">✅</div>
+    <h2 class="section-title">Pre-Deploy Checklist — Before Sending the Preview Link</h2>
+  </div>
+
+  <div class="grid-2">
+    <div class="card card-green">
+      <div class="card-title">🔧 Technical</div>
+      <div class="card-desc">
+        ☐ <code>npm run build</code> passes with zero errors<br>
+        ☐ All images load (no 404s in console)<br>
+        ☐ All routes work (test every page link)<br>
+        ☐ Phone number is clickable (tel: link)<br>
+        ☐ Contact form doesn't submit to nowhere<br>
+        ☐ Google Analytics or tracking added<br>
+        ☐ robots.txt + sitemap.xml present<br>
+        ☐ Schema markup in homepage head<br>
+        ☐ OG tags (share preview looks good)
+      </div>
+    </div>
+    <div class="card card-cyan">
+      <div class="card-title">🎨 Design</div>
+      <div class="card-desc">
+        ☐ Mobile tested at 375px and 430px<br>
+        ☐ No text overflow or cut-off sections<br>
+        ☐ All animations have reduced-motion fallback<br>
+        ☐ CTA buttons visible above fold on mobile<br>
+        ☐ Sticky mobile bottom bar present<br>
+        ☐ Lenis smooth scroll feels good on desktop<br>
+        ☐ Three.js/3D loads without layout shift<br>
+        ☐ Fonts loaded (not flashing serif fallback)<br>
+        ☐ Dark mode consistent throughout
+      </div>
+    </div>
+    <div class="card card-orange">
+      <div class="card-title">📋 Content</div>
+      <div class="card-desc">
+        ☐ Company name correct everywhere<br>
+        ☐ Phone number correct<br>
+        ☐ Address and service areas accurate<br>
+        ☐ No lorem ipsum anywhere<br>
+        ☐ Certifications accurate (GAF, CertainTeed, etc.)<br>
+        ☐ Review count/rating matches Google Business<br>
+        ☐ Service descriptions are realistic<br>
+        ☐ All city/service area pages linked
+      </div>
+    </div>
+    <div class="card card-purple">
+      <div class="card-title">⚡ Performance</div>
+      <div class="card-desc">
+        ☐ Lighthouse score ≥ 85 (mobile)<br>
+        ☐ Three.js lazy loaded (not on initial bundle)<br>
+        ☐ Images compressed (use WebP where possible)<br>
+        ☐ All pages code-split (React.lazy)<br>
+        ☐ Hero image loads in < 2 seconds<br>
+        ☐ No layout shift on animation init<br>
+        ☐ Video files on CDN (not local /public)<br>
+        ☐ Vercel Edge Network confirmed active
+      </div>
+    </div>
+  </div>
+
+  <div class="callout callout-orange" style="margin-top:24px">
+    <span class="callout-icon">💰</span>
+    <div><strong>The Sales Close:</strong> Pull up the client's current site on your phone. Pull up their new preview link on yours. Hand them both phones simultaneously. The silence before "holy sh*t" is the moment you've already closed. Your Vercel preview link IS your proposal. No deck needed.</div>
+  </div>
+</section>
+
+<!-- ── KEY REPOS REFERENCE ── -->
+<section class="section" id="repos">
+  <div class="section-header">
+    <div class="section-icon icon-yellow">📦</div>
+    <h2 class="section-title">Key Repos — Your Permanent Toolbox</h2>
+  </div>
+
+  <div class="repo-card">
+    <div class="repo-icon">⭐</div>
+    <div class="repo-body">
+      <div class="repo-name">github.com/JCodesMore/ai-website-cloner-template</div>
+      <div class="repo-desc">The website cloning engine. Clone any site into editable React code with /clone-website command. Your #1 competitive weapon.</div>
+      <div class="repo-meta"><span class="tag tag-orange">13k Stars</span><span class="tag tag-cyan">Claude Code</span><span class="tag tag-green">Requires --chrome</span></div>
+    </div>
+  </div>
+
+  <div class="repo-card">
+    <div class="repo-icon">🎨</div>
+    <div class="repo-body">
+      <div class="repo-name">github.com/nextlevelbuilder/ui-ux-pro-max-skill</div>
+      <div class="repo-desc">91k star design intelligence skill. Gives Claude searchable UI style, color, and typography databases. Install once per project.</div>
+      <div class="repo-meta"><span class="tag tag-purple">91.8k Stars</span><span class="tag tag-green">Security Verified</span></div>
+    </div>
+  </div>
+
+  <div class="repo-card">
+    <div class="repo-icon">✨</div>
+    <div class="repo-body">
+      <div class="repo-name">21st.dev (MCP via npx @21st-dev/magic@latest)</div>
+      <div class="repo-desc">1,300+ production React components. Integrates into Cursor via MCP. Use /ui to pull any component type instantly.</div>
+      <div class="repo-meta"><span class="tag tag-cyan">MCP Server</span><span class="tag tag-orange">1,300+ Components</span></div>
+    </div>
+  </div>
+
+  <div class="repo-card">
+    <div class="repo-icon">🏠</div>
+    <div class="repo-body">
+      <div class="repo-name">github.com/Dgill757/roofing-template-roofez</div>
+      <div class="repo-desc">YOUR live Template #1 (roofez.net clone). Live at roofing-template-roofez.vercel.app. Starting point for all new roofing client builds.</div>
+      <div class="repo-meta"><span class="tag tag-yellow">Your Repo</span><span class="tag tag-green">Live on Vercel</span></div>
+    </div>
+  </div>
+
+  <div class="repo-card">
+    <div class="repo-icon">🌊</div>
+    <div class="repo-body">
+      <div class="repo-name">github.com/darkroomengineering/lenis</div>
+      <div class="repo-desc">The smooth scroll library. The single fastest upgrade to make any site feel premium. 2KB, drop-in.</div>
+      <div class="repo-meta"><span class="tag tag-cyan">Official Repo</span><span class="tag tag-green">2KB</span></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<script>
+function copyCode(btn) {
+  const block = btn.closest('.code-block').querySelector('.code-body');
+  navigator.clipboard.writeText(block.textContent.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+    setTimeout(() => {
+      btn.textContent = 'Copy';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>

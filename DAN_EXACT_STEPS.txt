@@ -1,0 +1,342 @@
+DAN'S EXACT MANUAL STEPS — EVERYTHING YOU DO
+=============================================
+Total time: ~60 minutes
+After this: 100% done. Show up to meetings. That's all.
+
+Password for dashboard: summit2026
+(Change it anytime: open ava_studio_FINAL.html → find CORRECT_PASSWORD → change it → vercel --prod)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1 — GHL WEBHOOK (5 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Open GoHighLevel
+2. Click Settings (gear icon, bottom left)
+3. Click "Integrations" in the left sidebar
+4. Click "Webhooks"
+5. Click "+ Add Webhook" or "+ New Webhook"
+6. Fill in:
+     Name:  Ava Studio Real-Time Sync
+     URL:   https://ava-studio-api-production.up.railway.app/webhooks/ghl
+7. Check these boxes (check ALL of them):
+     ☑ Contact Tag Added
+     ☑ Inbound Message
+     ☑ Appointment Booked
+     ☑ Opportunity Stage Changed
+     ☑ Contact Created
+8. Click Save
+
+Done. Every GHL event now pushes to your dashboard in real time.
+When someone replies, you'll see it in the dashboard Reply Feed within seconds.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2 — PUBLISH 8 DRAFT WORKFLOWS (10 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Go to GHL → Automation → Workflows
+2. Look for workflows with "Draft" status badge
+3. For EACH draft workflow, do this:
+   a. Click to open it
+   b. Find the toggle at the top right of the screen
+      (It says "Draft" or shows a toggle switch)
+   c. Toggle it ON (to Active/Published)
+   d. Click "Save" button
+   e. Confirm the badge now says "Active" or "Published"
+   f. Go back to the list
+4. Repeat for all 8 drafts
+
+The 8 drafts should be some of these (check your list):
+- SVA Positive Reply Handler
+- SVA Marketing Audit + Demo Delivery  
+- SVA Demo Follow-Up (48hr)
+- SVA Lead Enrichment Agent
+- SVA Pre-Meeting Brief
+- SVA Post-Call Follow-Up
+- SVA Won Client Onboarding
+- SVA 90-Day Reactivation
+- SVA No Website — Auto Build
+- SVA Dispatch Trigger
+- SVA Content Autopilot
+
+(Some may already be published — only do the ones showing Draft)
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3 — PASTE AI AGENT PROMPTS INTO 6 WORKFLOWS (10 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+First, open this file:
+C:\Users\DanGi\Downloads\SummitVoiceAiWorkflowsandDemoMachine\workflow_ai_agent_prompts.txt
+
+It has 6 sections, one per workflow.
+
+For each workflow in GHL:
+1. Go to GHL → Automation → Workflows → [open the workflow]
+2. Find the step where it sends a static email/SMS reply
+3. Click on that action
+4. Look for "AI Agent" in the action types OR click "+ Add Action"
+5. Search for "AI Agent" and add it
+6. In the Instructions field: paste the prompt from workflow_ai_agent_prompts.txt
+   (the section that matches this workflow name)
+7. Under "Tools": enable these:
+   ☑ Send SMS
+   ☑ Send Email
+   ☑ Add Tag
+   ☑ Update Contact Field
+8. Model: select "GPT-5.2 Low Thinking" (default)
+9. Click Save
+
+The 6 workflows to update:
+1. SVA Reply Router
+2. SVA Main Outreach — Segment A
+3. SVA Positive Reply Handler
+4. SVA Marketing Audit + Demo Delivery
+5. SVA Demo Follow-Up
+6. SVA No Website — Auto Build
+
+This makes GHL write personalized responses using AI instead of static templates.
+It reads message history, pipeline stage, and demo status automatically.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4 — SLACK APP (10 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+(Full detail in SLACK_SETUP_STEPS.txt — here's the condensed version)
+
+Part A — Create the channel:
+1. Open Slack
+2. Click + next to "Channels" in left sidebar
+3. Create Channel
+4. Name: ava-dispatch
+5. Create Channel
+
+Part B — Create the Slack app:
+1. Go to: https://api.slack.com/apps
+2. Click "Create New App" → "From scratch"
+3. Name: "Ava Studio"
+4. Pick your workspace
+5. Click "Create App"
+
+Part C — Incoming Webhook (Ava → Slack):
+6. Click "Incoming Webhooks" (left sidebar)
+7. Toggle ON
+8. "Add New Webhook to Workspace"
+9. Select: #ava-dispatch
+10. Click Allow
+11. COPY the Webhook URL (long URL starting with https://hooks.slack.com/...)
+12. In your terminal: railway variables set SLACK_WEBHOOK_URL="[paste it]"
+    Also add to: C:\Users\DanGi\outreach\.env → SLACK_WEBHOOK_URL=[paste it]
+    And:         C:\Users\DanGi\scripts\.env → SLACK_WEBHOOK_URL=[paste it]
+
+Part D — Bot token (Slack → Ava commands):
+13. Click "OAuth & Permissions" (left sidebar)
+14. Scroll to "Bot Token Scopes" → "Add an OAuth Scope"
+15. Add each of these one by one:
+    channels:history
+    channels:read
+    chat:write
+    commands
+    users:read
+16. Scroll to top → Click "Install to Workspace" → Allow
+17. COPY the Bot User OAuth Token (starts with xoxb-)
+18. In terminal: railway variables set SLACK_BOT_TOKEN="[paste it]"
+
+Part E — Slash commands:
+19. Click "Slash Commands" (left sidebar)
+20. Create New Command:
+    Command: /demo
+    Request URL: https://ava-studio-api-production.up.railway.app/slack/command
+    Description: Build a demo for any roofing company
+    Usage Hint: [website url]
+    → Save
+21. Repeat for:
+    /audit → same Request URL → "Run marketing audit"
+    /status → same Request URL → "System status"
+    /scrape → same Request URL → "Trigger lead scraper"
+
+Part F — Events:
+22. Click "Event Subscriptions" (left sidebar)
+23. Toggle Enable Events: ON
+24. Request URL: https://ava-studio-api-production.up.railway.app/slack/events
+    (green checkmark should appear — means Railway is responding)
+25. "Subscribe to bot events" → Add Bot User Event: message.channels
+26. Click Save Changes
+
+Part G — Invite bot to channel:
+27. In Slack → #ava-dispatch channel
+28. Type: /invite @Ava Studio
+29. Hit Enter
+
+Part H — Test:
+30. In #ava-dispatch type: /status
+31. Should respond: "System: 🟢 Online"
+32. Type: /demo peakroofingdallas.com
+33. Should respond in 3 seconds with "✦ Demo build started..."
+34. 9 minutes later: "✅ Demo live: https://summit-demo-..."
+
+Part I — Redeploy Railway with new variables:
+35. In terminal: railway redeploy
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5 — ADD DNS RECORD FOR dashboard.summitvoiceai.com (5 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The exact record is in DNS_RECORDS_FINAL.txt.
+Here's the summary:
+
+First, find where summitvoiceai.com is registered:
+- Check your email for "domain registration" or "domain purchase"
+- Common registrars: GoDaddy, Namecheap, Cloudflare, Google Domains
+
+Then add ONE DNS record:
+
+FOR NAMECHEAP:
+1. namecheap.com → Sign In → Domain List
+2. Click "Manage" next to summitvoiceai.com
+3. Click "Advanced DNS" tab
+4. "Add New Record"
+5. Type: CNAME Record
+   Host: dashboard
+   Value: cname.vercel-dns.com
+   TTL: Automatic
+6. Save
+
+FOR GODADDY:
+1. godaddy.com → My Products → Domains
+2. Click summitvoiceai.com → DNS
+3. Add → CNAME
+4. Name: dashboard
+5. Value: cname.vercel-dns.com
+6. Save
+
+FOR CLOUDFLARE:
+1. cloudflare.com → Websites → summitvoiceai.com → DNS
+2. Add record → CNAME
+3. Name: dashboard
+4. Target: cname.vercel-dns.com
+5. Proxy status: DNS only (gray cloud)
+6. Save
+
+After saving: wait 5-30 minutes, then open https://dashboard.summitvoiceai.com
+It will ask for password: summit2026
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6 — THINKER LEARN SESSION (15 minutes — most important)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+This teaches Claude Desktop to automate your THINKRR.ai platform.
+After this, every demo automatically creates a voice AI agent with Marissa or Susan voice.
+Never manual again.
+
+Before you start:
+- Claude Desktop must be open with Computer Use enabled
+- Have your THINKRR.ai login credentials ready
+- Have a test company URL ready (use peakroofingdallas.com)
+
+Paste this EXACT prompt into Claude Desktop:
+
+--- COPY EVERYTHING BELOW THIS LINE ---
+Watch me create a Voice AI agent in my THINKRR.ai platform.
+My platform URL is: [PUT YOUR THINKRR LOGIN URL HERE]
+
+Learn every selector, URL, button, form field, and wait time.
+After I complete the full flow, update the SELECTORS dict in:
+C:\Users\DanGi\Downloads\SummitVoiceAiWorkflowsandDemoMachine\voice_ai_automation_v2.py
+
+Replace every "# UPDATE AFTER LEARN" selector with the real CSS selector you observe.
+
+I'm going to do these steps while you watch:
+1. Navigate to my THINKRR.ai login page and log in
+2. Click "Add Agent" 
+3. Select "Web and Phone" agent type
+4. Type the agent name: "Peak Roofing Dallas"
+5. Enter the website URL: https://peakroofingdallas.com
+6. Select the voice — I will pick either Marissa or Susan (note which one and where I click)
+7. Click "Select Agent"
+8. Fill in identity fields: name, title (AI Receptionist), company name
+9. Navigate to Agent Training tab
+10. Click Web Agent tab
+11. Enter website URL
+12. Click Save
+13. Find the embed code — I'll point to the data-widget-key value
+14. Copy the widget key
+
+After observing, give me:
+1. The exact updated SELECTORS dict for voice_ai_automation_v2.py
+2. Any timing issues (pages that need longer wait)
+3. Confirmation that you've updated the file
+
+Then run: python voice_ai_automation_v2.py
+Verify it creates a real agent and returns a widget key.
+--- COPY EVERYTHING ABOVE THIS LINE ---
+
+Then:
+1. Go to https://[your THINKRR.ai URL] and log in
+2. Perform every step while Claude Desktop watches
+3. When done, Claude Desktop writes the selectors to the file
+4. Confirm it worked by running the script
+
+After this, every demo build auto-creates a voice AI agent. Done forever.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 7 — CHECK THE DEMO QUALITY (5 minutes)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Claude Code is building test demos right now.
+Open QUALITY_TEST_RESULT.txt when it's done.
+Click both demo URLs and check:
+
+Does it look like your GitHub roofing template?
+  YES → template cloner is working perfectly
+  NO  → it used the fallback generator — still good, just not using your template
+
+If you want the template to be used:
+1. Go to: github.com → Settings → Developer settings → Personal access tokens → Classic
+2. "Generate new token (classic)"
+3. Name: railway-ava
+4. Scopes: check "repo"
+5. Generate → copy the token
+6. Run: railway variables set GITHUB_TOKEN=[paste token]
+7. Run: railway redeploy
+Templates will now be fetched successfully.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 8 — CHANGE DASHBOARD PASSWORD (optional, 1 minute)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Current password: summit2026
+
+To change it:
+1. Open: C:\Users\DanGi\Downloads\SummitVoiceAiWorkflowsandDemoMachine\ava_studio_FINAL.html
+2. Find this line (near the top of the script section):
+   const CORRECT_PASSWORD = 'summit2026';
+3. Change 'summit2026' to whatever you want
+4. Save the file
+5. Run: vercel --prod
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+YOUR DAILY ROUTINE AFTER EVERYTHING IS SET UP
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Morning (5 min):
+1. Check Slack #ava-dispatch — daily briefing arrives at 7am
+2. Open dashboard.summitvoiceai.com
+3. Check Reply Feed — any hot leads overnight?
+   If yes: tap "Build Demo →" for positive replies
+   (or let GHL Workflow 4 do it automatically)
+4. Check calendar — any calls booked?
+
+That's it. Everything else is automated:
+- Outreach: 100 contacts/day, Mon-Fri, 9am
+- Follow-up: Day 3/7/14 sequences auto-fire
+- Replies: AI classifies and responds
+- Demos: build and deliver without you
+- Content: generates Monday, schedules to GHL
+
+On Monday (5 min):
+- Review content calendar from #ava-dispatch
+- Approve/edit posts before they go out in GHL Social Planner
+
+After meetings:
+- Mark outcome in GHL pipeline (Won/Lost/Follow-up needed)
+- Post-call follow-up fires automatically 30 min later
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

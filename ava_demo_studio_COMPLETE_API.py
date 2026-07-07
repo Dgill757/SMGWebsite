@@ -1,0 +1,1017 @@
+"""
+Ava Demo Studio - Backend API
+Summit Voice AI | FastAPI + Firecrawl + Claude + Vercel
+Deploy to Railway.
+"""
+
+import os, json, re, time, base64, httpx, asyncio
+from datetime import datetime, timedelta
+from typing import Set
+from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from dotenv import load_dotenv
+import anthropic
+from premium_website_generator_v2 import generate_world_class_roofing_site
+
+load_dotenv()
+
+app = FastAPI(title="Ava Demo Studio API", version="3.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# â”€â”€ Clients â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+ai = anthropic.Anthropic(api_key=os.getenv("ANTHROPIC_API_KEY"))
+
+FIRECRAWL_KEY  = os.getenv("FIRECRAWL_API_KEY")
+GHL_TOKEN      = os.getenv("GHL_PRIVATE_TOKEN")
+GHL_LOCATION   = os.getenv("GHL_LOCATION_ID", "u1lprxdJy1vmuaHEVJRM")
+GHL_BASE       = "https://services.leadconnectorhq.com"
+VERCEL_TOKEN   = os.getenv("VERCEL_TOKEN")
+VERCEL_PROJECT = os.getenv("VERCEL_PROJECT_NAME", "ava-demo-studio")
+AVA_API_KEY    = os.getenv("AVA_API_KEY", "")
+
+demo_store: dict = {}
+
+
+# â”€â”€ Auth helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+def verify_api_key(x_api_key: str):
+    if AVA_API_KEY and x_api_key != AVA_API_KEY:
+        raise HTTPException(status_code=401, detail="Invalid API key")
+
+
+# â”€â”€ Schemas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+class CreateDemoRequest(BaseModel):
+    contact_id: str | None = None
+    website_url: str
+    client_name: str
+    widget_key: str | None = None
+    send_delivery: bool = True
+
+class DemoStatusResponse(BaseModel):
+    demo_id: str
+    status: str
+    step: int
+    total_steps: int
+    demo_url: str | None = None
+    message: str
+
+class ScraperRunPayload(BaseModel):
+    date: str | None = None
+    city: str | None = None
+    scraped: int = 0
+    contacts_created: int = 0
+    emails_sent: int = 0
+    found_via_apollo: int = 0
+    found_via_website: int = 0
+    phone_only: int = 0
+    duplicates_skipped: int = 0
+    errors: int = 0
+    city_index: int | None = None
+
+class OutreachRunPayload(BaseModel):
+    date: str | None = None
+    contacts_processed: int = 0
+    emails_sent: int = 0
+    sms_sent: int = 0
+    skipped: int = 0
+    errors: int = 0
+
+class HotLeadItem(BaseModel):
+    contact_id: str
+    name: str | None = None
+    company: str | None = None
+    snippet: str | None = None
+    timestamp: str | None = None
+
+class RepliesPayload(BaseModel):
+    replies: list[HotLeadItem]
+
+
+# â”€â”€ WebSocket connection manager â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+class ConnectionManager:
+    def __init__(self):
+        self.active: Set[WebSocket] = set()
+
+    async def connect(self, ws: WebSocket):
+        await ws.accept()
+        self.active.add(ws)
+
+    def disconnect(self, ws: WebSocket):
+        self.active.discard(ws)
+
+    async def broadcast(self, event: str, data: dict):
+        msg = json.dumps({"event": event, "data": data})
+        dead = set()
+        for ws in self.active:
+            try:
+                await ws.send_text(msg)
+            except Exception:
+                dead.add(ws)
+        self.active -= dead
+
+ws_manager = ConnectionManager()
+
+
+# â”€â”€ Step 1: Scrape with Firecrawl â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def scrape_website(url: str) -> dict:
+    async with httpx.AsyncClient(timeout=30) as client:
+        r = await client.post(
+            "https://api.firecrawl.dev/v1/scrape",
+            headers={"Authorization": f"Bearer {FIRECRAWL_KEY}"},
+            json={
+                "url": url,
+                "formats": ["markdown", "html"],
+                "onlyMainContent": False,
+                "waitFor": 2000,
+            }
+        )
+        try:
+            data = r.json()
+        except Exception:
+            data = {}
+        return {
+            "markdown": data.get("data", {}).get("markdown", "") or "",
+            "html":     data.get("data", {}).get("html", "") or "",
+            "metadata": data.get("data", {}).get("metadata", {}) or {},
+        }
+
+
+# â”€â”€ Step 2: Extract brand identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def extract_brand(markdown: str, company_name: str) -> dict:
+    prompt = f"""Analyze this roofing company website and return ONLY valid JSON (no markdown fences):
+{{
+  "company_name": "{company_name}",
+  "tagline": "their best tagline or main value statement",
+  "primary_color": "#hex (dominant brand color)",
+  "secondary_color": "#hex (accent or secondary color)",
+  "services": ["up to 6 service names"],
+  "city": "primary city served",
+  "state": "state abbreviation",
+  "phone": "phone number or empty string",
+  "logo_url": "full logo image URL or empty string",
+  "about": "2 sentence description of the company",
+  "review_count": 0,
+  "years_in_business": 0,
+  "has_website": true
+}}
+
+Website content (first 3000 chars):
+{markdown[:3000]}
+"""
+    msg = ai.messages.create(
+        model="claude-haiku-4-5-20251001",
+        max_tokens=500,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    raw = msg.content[0].text.strip()
+    raw = raw.replace("```json", "").replace("```", "").strip()
+    # Extract just the JSON object in case Claude adds trailing text
+    m = re.search(r'\{.*\}', raw, re.DOTALL)
+    if m:
+        raw = m.group(0)
+    try:
+        return json.loads(raw)
+    except Exception:
+        # Fallback: return sensible defaults so the demo build continues
+        return {
+            "company_name": company_name,
+            "tagline": "Quality Roofing You Can Trust",
+            "primary_color": "#1A1A2E",
+            "secondary_color": "#E8B84B",
+            "services": ["Roof Replacement", "Storm Damage Repair", "Gutters", "Inspections"],
+            "city": "Your City",
+            "state": "",
+            "phone": "",
+            "logo_url": "",
+            "about": f"{company_name} is a trusted roofing contractor delivering quality work and honest service.",
+            "review_count": 0,
+            "years_in_business": 0,
+            "has_website": True,
+        }
+
+
+# â”€â”€ Step 3: Generate marketing audit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def generate_audit(brand: dict, contact: dict) -> str:
+    first    = contact.get("firstName", "there")
+    company  = brand.get("company_name", "your company")
+    city     = brand.get("city", "your area")
+    services = ", ".join(brand.get("services", []))
+    reviews  = contact.get("customFields", {}).get("google_reviews", "unknown")
+
+    prompt = f"""Write a professional marketing audit for {company} in {city}.
+Owner's first name: {first}
+Services: {services}
+Google reviews: {reviews}
+
+Include ALL of these sections:
+1. CALL CAPTURE SCORE (X/10) with brief explanation
+2. SPEED-TO-LEAD SCORE (X/10) with brief explanation
+3. REVIEW VELOCITY SCORE (X/10) with brief explanation
+4. WEBSITE CONVERSION SCORE (X/10) with brief explanation
+5. AFTER-HOURS COVERAGE: Yes or No with explanation
+6. REVENUE AT RISK:
+   - Missed calls per day: 3-5 (industry average)
+   - Annual missed calls: 1,095-1,825
+   - Average job value: $9,500
+   - At 15-50% close rate: $1,560,375 to $8,668,750/year at risk
+   - State this clearly for {company} specifically
+7. TOP 3 REVENUE LEAKS (specific to what you found)
+8. 90-DAY FIX PLAN (what Summit Voice AI's system solves)
+
+ADDRESS: Write directly to {first}. Use "your company" not the business name after first mention.
+TONE: Confident, specific, like a consultant who did real research. Not salesy.
+LENGTH: 450-550 words. Every sentence earns its place.
+END WITH: "Your personalized demo is ready. We rebuilt your homepage with a live AI voice receptionist already installed."
+DO NOT: Mention pricing. Do not say "we offer" or use any sales language."""
+
+    msg = ai.messages.create(
+        model="claude-sonnet-4-6",
+        max_tokens=1200,
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return msg.content[0].text
+
+
+# â”€â”€ Step 4: Build homepage HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+def build_homepage(brand: dict, _demo_url: str, widget_key: str | None) -> str:
+    color    = brand.get("primary_color", "#1A1A2E")
+    color2   = brand.get("secondary_color", "#E8B84B")
+    company  = brand.get("company_name", "Roofing Company")
+    tagline  = brand.get("tagline", "Quality Roofing You Can Trust")
+    services = brand.get("services", ["Roof Replacement", "Storm Damage", "Gutters"])[:6]
+    city     = brand.get("city", "")
+    phone    = brand.get("phone", "")
+    about    = brand.get("about", f"{company} is a trusted roofing contractor serving {city}.")
+
+    services_html = "".join(f'<div class="svc">{s}</div>' for s in services)
+    phone_html    = f'<a href="tel:{phone}" class="phone">{phone}</a>' if phone else ""
+
+    widget_html = ""
+    if widget_key:
+        widget_html = f'<script src="https://d2cqc7yqzf8c8f.cloudfront.net/web-widget-v1.js"></script>\n<div data-widget-key="{widget_key}"></div>'
+
+    parts = company.split()
+    logo_rest = ' '.join(parts[1:]) if len(parts) > 1 else ''
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{company} | Roofing - {city}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *{{margin:0;padding:0;box-sizing:border-box}}
+    body{{font-family:'DM Sans',sans-serif;background:#0f0f17;color:#fff;overflow-x:hidden}}
+    nav{{position:fixed;top:0;left:0;right:0;z-index:99;background:rgba(15,15,23,.92);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.06);padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between}}
+    .logo{{font-family:'Syne',sans-serif;font-weight:800;font-size:1.15rem;letter-spacing:-.02em;color:#fff}}
+    .logo span{{color:{color2}}}
+    .nav-links{{display:flex;gap:32px;align-items:center}}
+    .nav-links a{{color:rgba(255,255,255,.6);text-decoration:none;font-size:.875rem;transition:color .2s}}
+    .cta-btn{{background:{color};color:#fff;padding:9px 22px;border-radius:8px;font-weight:600;font-size:.875rem;text-decoration:none}}
+    .hero{{min-height:100vh;display:flex;align-items:center;padding:80px 40px 60px;position:relative;overflow:hidden}}
+    .hero::before{{content:'';position:absolute;top:-20%;right:-10%;width:600px;height:600px;background:radial-gradient(circle,{color}30 0%,transparent 70%);pointer-events:none}}
+    .hero-inner{{max-width:1100px;margin:0 auto;width:100%;position:relative;z-index:1}}
+    .hero-badge{{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:5px 14px;font-size:.75rem;color:rgba(255,255,255,.7);margin-bottom:24px}}
+    .hero h1{{font-family:'Syne',sans-serif;font-size:clamp(2.5rem,5vw,4rem);font-weight:800;line-height:1.08;letter-spacing:-.03em;max-width:680px;margin-bottom:20px}}
+    .hero h1 em{{color:{color2};font-style:normal}}
+    .hero p{{font-size:1.1rem;color:rgba(255,255,255,.65);max-width:520px;line-height:1.75;margin-bottom:36px}}
+    .hero-actions{{display:flex;gap:14px;flex-wrap:wrap;align-items:center}}
+    .phone{{color:rgba(255,255,255,.5);font-size:.9rem;text-decoration:none}}
+    .services{{padding:80px 40px;background:#13131f}}
+    .services-inner{{max-width:1100px;margin:0 auto}}
+    .section-label{{font-size:.75rem;letter-spacing:2px;text-transform:uppercase;color:{color2};font-weight:600;margin-bottom:12px}}
+    .section-title{{font-family:'Syne',sans-serif;font-size:2rem;font-weight:700;margin-bottom:48px;letter-spacing:-.02em}}
+    .svc-grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px}}
+    .svc{{background:#1a1a2e;border:1px solid rgba(255,255,255,.07);border-top:2px solid {color};border-radius:10px;padding:20px;font-weight:600;font-size:.9rem}}
+    .about{{padding:80px 40px}}
+    .about-inner{{max-width:1100px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center}}
+    .about-text p{{color:rgba(255,255,255,.7);line-height:1.8;font-size:1rem;margin-bottom:16px}}
+    .stats{{display:grid;grid-template-columns:1fr 1fr;gap:20px}}
+    .stat{{background:#13131f;border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:20px}}
+    .stat-num{{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:{color2};line-height:1}}
+    .stat-label{{font-size:.8rem;color:rgba(255,255,255,.5);margin-top:4px}}
+    .cta-strip{{background:linear-gradient(135deg,{color} 0%,{color}cc 100%);padding:60px 40px;text-align:center}}
+    .cta-strip h2{{font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;margin-bottom:12px}}
+    .cta-strip p{{opacity:.85;margin-bottom:28px;font-size:1rem}}
+    .cta-strip .cta-btn{{background:#fff;color:{color};font-size:1rem;padding:14px 36px;border-radius:10px}}
+    footer{{background:#0a0a12;padding:30px 40px;text-align:center;font-size:.8rem;color:rgba(255,255,255,.3)}}
+    @media(max-width:768px){{
+      .hero{{padding:100px 24px 60px}}
+      .services,.about,.cta-strip{{padding:60px 24px}}
+      .about-inner{{grid-template-columns:1fr;gap:32px}}
+      .nav-links{{display:none}}
+    }}
+  </style>
+</head>
+<body>
+<nav>
+  <span class="logo">{parts[0]}<span>{logo_rest}</span></span>
+  <div class="nav-links">
+    <a href="#services">Services</a>
+    <a href="#about">About</a>
+    <a href="#contact" class="cta-btn">Free Estimate</a>
+  </div>
+</nav>
+<section class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">Serving {city} &amp; Surrounding Areas</div>
+    <h1>{tagline or f"The Roofers <em>{city}</em> Trusts Most"}</h1>
+    <p>Licensed, insured, and trusted by hundreds of homeowners. We answer every call and back every job with our written guarantee.</p>
+    <div class="hero-actions">
+      <a href="#contact" class="cta-btn">Get Free Estimate</a>
+      {phone_html}
+    </div>
+  </div>
+</section>
+<section class="services" id="services">
+  <div class="services-inner">
+    <p class="section-label">What We Do</p>
+    <h2 class="section-title">Our Services</h2>
+    <div class="svc-grid">{services_html}</div>
+  </div>
+</section>
+<section class="about" id="about">
+  <div class="about-inner">
+    <div class="about-text">
+      <p class="section-label">About Us</p>
+      <h2 class="section-title" style="font-family:'Syne',sans-serif;font-size:1.75rem;font-weight:700;letter-spacing:-.02em;margin-bottom:20px">Built on trust. Proven by results.</h2>
+      <p>{about}</p>
+      <p>Every job comes with a written workmanship guarantee. We don't leave until you're 100% satisfied.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num">500+</div><div class="stat-label">Roofs Installed</div></div>
+      <div class="stat"><div class="stat-num">24/7</div><div class="stat-label">Available</div></div>
+      <div class="stat"><div class="stat-num">48hr</div><div class="stat-label">Avg Response</div></div>
+      <div class="stat"><div class="stat-num">5 Star</div><div class="stat-label">Avg Rating</div></div>
+    </div>
+  </div>
+</section>
+<section class="cta-strip" id="contact">
+  <h2>Ready to Get Started?</h2>
+  <p>Free estimates. Fast response. We answer every call.</p>
+  <a href="tel:{phone}" class="cta-btn">Call Now - It's Free</a>
+</section>
+<footer>
+  <p>Â© {datetime.now().year} {company}. All rights reserved.</p>
+</footer>
+{widget_html}
+</body>
+</html>"""
+
+
+# â”€â”€ Step 5: Deploy to Vercel â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def deploy_to_vercel(slug: str, html: str) -> str:
+    encoded = base64.b64encode(html.encode()).decode()
+    headers = {
+        "Authorization": f"Bearer {VERCEL_TOKEN}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "name": f"summit-demo-{slug}",
+        "files": [{"file": "index.html", "data": encoded, "encoding": "base64"}],
+        "projectSettings": {"framework": None},
+        "target": "production",
+    }
+    async with httpx.AsyncClient(timeout=60) as client:
+        r = await client.post("https://api.vercel.com/v13/deployments", headers=headers, json=payload)
+        data = r.json()
+        url = data.get("url", f"summit-demo-{slug}.vercel.app")
+        return f"https://{url}"
+
+
+# â”€â”€ Step 6: Update GHL contact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def update_ghl_contact(contact_id: str, demo_url: str):
+    headers = {
+        "Authorization": f"Bearer {GHL_TOKEN}",
+        "Version": "2021-04-15",
+        "Content-Type": "application/json",
+    }
+    async with httpx.AsyncClient() as client:
+        await client.put(
+            f"{GHL_BASE}/contacts/{contact_id}",
+            headers=headers,
+            json={"customFields": [
+                {"key": "demo_url", "field_value": demo_url},
+                {"key": "demo_generated_date", "field_value": datetime.now().isoformat()},
+            ]}
+        )
+
+
+# â”€â”€ Step 7: Send delivery email + SMS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def send_delivery(contact: dict, demo_url: str, audit: str):
+    first   = contact.get("firstName", "there")
+    company = contact.get("companyName", "your company")
+    cid     = contact.get("id")
+    headers = {
+        "Authorization": f"Bearer {GHL_TOKEN}",
+        "Version": "2021-04-15",
+        "Content-Type": "application/json",
+    }
+    email_body = (
+        f"hey {first},\n\n"
+        f"I rebuilt {company}'s homepage.\n\n"
+        f"It now has a live AI voice receptionist built right into the site. "
+        f"Your customers can call, ask questions, or book an estimate directly through the page, 24/7.\n\n"
+        f"I also ran a full marketing audit. Short version: there's real recoverable revenue sitting in missed calls right now.\n\n"
+        f"Here's your custom demo: {demo_url}\n\n"
+        f"Takes 2 minutes to see.\n\n"
+        f"Dan\n\n---\nMARKETING AUDIT SUMMARY:\n{audit[:600]}...\n\nFull audit: {demo_url}"
+    )
+    sms_body = f"hey {first}... i rebuilt {company}'s homepage with a live voice ai already running. here it is: {demo_url}  -- 2 min to see it. worth it? reply stop to opt out."
+
+    async with httpx.AsyncClient() as client:
+        await client.post(
+            f"{GHL_BASE}/conversations/messages/outbound", headers=headers,
+            json={"type": "Email", "contactId": cid, "subject": "built you a custom demo",
+                  "body": email_body, "locationId": GHL_LOCATION}
+        )
+        await client.post(
+            f"{GHL_BASE}/conversations/messages/outbound", headers=headers,
+            json={"type": "SMS", "contactId": cid, "message": sms_body, "locationId": GHL_LOCATION}
+        )
+
+
+# â”€â”€ Step 8: Tag + pipeline â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def update_pipeline_stage(contact_id: str, demo_url: str):
+    dan_cid = os.getenv("DAN_PHONE_CONTACT_ID", "")
+    headers = {"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-04-15", "Content-Type": "application/json"}
+    async with httpx.AsyncClient() as client:
+        await client.post(f"{GHL_BASE}/contacts/{contact_id}/tags", headers=headers, json={"tags": ["demo delivered"]})
+        if dan_cid:
+            await client.post(
+                f"{GHL_BASE}/conversations/messages/outbound", headers=headers,
+                json={"type": "SMS", "contactId": dan_cid,
+                      "message": f"DEMO DELIVERED\nContact: {contact_id}\nDemo: {demo_url}",
+                      "locationId": GHL_LOCATION}
+            )
+
+
+# â”€â”€ Background demo build task â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+async def build_demo_task(demo_id: str, req: CreateDemoRequest):
+    store = demo_store[demo_id]
+
+    def update(step, status, msg=""):
+        store.update({"step": step, "status": status, "message": msg})
+
+    try:
+        contact = {}
+        if req.contact_id:
+            async with httpx.AsyncClient() as client:
+                r = await client.get(
+                    f"{GHL_BASE}/contacts/{req.contact_id}",
+                    headers={"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-04-15"},
+                )
+                contact = r.json().get("contact", {})
+
+        update(1, "scraping", "Crawling website with Firecrawl")
+        scraped = await scrape_website(req.website_url)
+
+        update(2, "building", "Extracting brand identity")
+        brand = await extract_brand(scraped["markdown"], req.client_name)
+
+        update(3, "building", "Generating marketing audit")
+        audit = await generate_audit(brand, contact)
+
+        update(4, "building", "Building optimized homepage (template cloner)")
+        html = generate_world_class_roofing_site(brand, req.widget_key)
+
+        update(5, "deploying", "Deploying to Vercel")
+        slug = re.sub(r"[^a-z0-9]", "-", req.client_name.lower())[:28].strip("-")
+        demo_url = await deploy_to_vercel(slug, html)
+
+        update(6, "deploying", "Finalizing demo page")
+        store["demo_url"] = demo_url
+        store["brand"] = brand
+
+        if req.contact_id:
+            update(7, "done", "Updating GHL contact")
+            await update_ghl_contact(req.contact_id, demo_url)
+            await update_pipeline_stage(req.contact_id, demo_url)
+
+        if req.send_delivery and contact:
+            update(8, "done", "Sending email + SMS")
+            await send_delivery(contact, demo_url, audit)
+
+        update(10, "done", f"Demo live: {demo_url}")
+        store["status"] = "done"
+        store["demo_url"] = demo_url
+        await ws_manager.broadcast("demo_complete", {"company": req.client_name, "demo_url": demo_url, "contact_id": req.contact_id or ""})
+
+    except Exception as e:
+        store["status"] = "error"
+        store["message"] = str(e)
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# CORE ENDPOINTS
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+@app.get("/health")
+async def health():
+    return {"status": "ok", "service": "Ava Demo Studio API"}
+
+
+@app.post("/demos/create", response_model=DemoStatusResponse)
+async def create_demo(req: CreateDemoRequest, background_tasks: BackgroundTasks):
+    demo_id = f"demo_{int(time.time()*1000)}"
+    demo_store[demo_id] = {
+        "demo_id": demo_id, "status": "queued", "step": 0,
+        "total_steps": 10, "demo_url": None, "message": "Queued",
+    }
+    background_tasks.add_task(build_demo_task, demo_id, req)
+    return DemoStatusResponse(demo_id=demo_id, status="queued", step=0, total_steps=10, message="Build started")
+
+
+@app.get("/demos/{demo_id}/status", response_model=DemoStatusResponse)
+async def get_demo_status(demo_id: str):
+    if demo_id not in demo_store:
+        raise HTTPException(404, "Demo not found")
+    d = demo_store[demo_id]
+    return DemoStatusResponse(**{k: d[k] for k in DemoStatusResponse.model_fields})
+
+
+@app.get("/demos")
+async def list_demos():
+    return list(demo_store.values())
+
+
+@app.post("/dispatch")
+async def dispatch_command(payload: dict, background_tasks: BackgroundTasks):
+    command = payload.get("command", "").lower()
+    url     = payload.get("url", "")
+    cid     = payload.get("contact_id", "")
+    name    = payload.get("company", "Roofing Company")
+
+    if command == "demo" and url:
+        req = CreateDemoRequest(website_url=url, client_name=name, contact_id=cid or None, send_delivery=bool(cid))
+        demo_id = f"demo_{int(time.time()*1000)}"
+        demo_store[demo_id] = {"demo_id": demo_id, "status": "queued", "step": 0, "total_steps": 10, "demo_url": None, "message": "Queued"}
+        background_tasks.add_task(build_demo_task, demo_id, req)
+        return {"status": "started", "demo_id": demo_id}
+
+    if command == "status":
+        return {"total": len(demo_store), "done": sum(1 for d in demo_store.values() if d["status"] == "done")}
+
+    return {"status": "unknown_command"}
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# INGEST ENDPOINTS (called by local Python scripts)
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+@app.post("/ingest/scraper-run")
+async def ingest_scraper_run(payload: ScraperRunPayload, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    run_id = f"scrape_{int(time.time())}"
+    demo_store[f"scraper_run_{run_id}"] = payload.model_dump()
+
+    if os.getenv("SUPABASE_URL"):
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/scraper_runs",
+                headers={"apikey": os.getenv("SUPABASE_KEY", ""), "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}", "Content-Type": "application/json", "Prefer": "return=minimal"},
+                json={**payload.model_dump(), "cities": [payload.city] if payload.city else [], "leads_found": payload.scraped, "leads_pushed_to_ghl": payload.contacts_created, "status": "complete", "completed_at": datetime.now().isoformat()}
+            )
+
+    await ws_manager.broadcast("scraper_complete", {"city": payload.city or "", "count": payload.scraped, "city_index": payload.city_index or 0})
+    return {"status": "ok", "received": payload.city, "scraped": payload.scraped}
+
+
+@app.post("/ingest/outreach-run")
+async def ingest_outreach_run(payload: OutreachRunPayload, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    if os.getenv("SUPABASE_URL"):
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/outreach_runs",
+                headers={"apikey": os.getenv("SUPABASE_KEY", ""), "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}", "Content-Type": "application/json", "Prefer": "return=minimal"},
+                json={**payload.model_dump(), "run_at": datetime.now().isoformat()}
+            )
+    return {"status": "ok"}
+
+
+@app.post("/ingest/replies")
+async def ingest_replies(payload: RepliesPayload, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    if os.getenv("SUPABASE_URL"):
+        async with httpx.AsyncClient() as client:
+            for reply in payload.replies:
+                await client.post(
+                    f"{os.getenv('SUPABASE_URL')}/rest/v1/hot_leads",
+                    headers={"apikey": os.getenv("SUPABASE_KEY", ""), "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}", "Content-Type": "application/json", "Prefer": "return=minimal"},
+                    json={"contact_id": reply.contact_id, "company_name": reply.company, "message_body": reply.snippet, "intent": "positive", "event_type": "hot_lead_reply", "received_at": reply.timestamp or datetime.now().isoformat()}
+                )
+    for r in payload.replies:
+        demo_store[f"reply_{r.contact_id}_{int(time.time())}"] = r.model_dump()
+        await ws_manager.broadcast("positive_reply", {"contact_id": r.contact_id, "company": r.company, "snippet": (r.snippet or "")[:200]})
+    return {"status": "ok", "replies_stored": len(payload.replies)}
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# DASHBOARD READ ENDPOINTS
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+@app.get("/scraper/stats")
+async def get_scraper_stats():
+    runs = []
+    if os.getenv("SUPABASE_URL"):
+        async with httpx.AsyncClient() as client:
+            r = await client.get(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/scraper_runs",
+                headers={"apikey": os.getenv("SUPABASE_KEY", ""), "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}"},
+                params={"order": "completed_at.desc", "limit": "30"}
+            )
+            if r.status_code == 200:
+                runs = r.json()
+    if not runs:
+        runs = [v for k, v in demo_store.items() if k.startswith("scraper_run_")]
+
+    today_str = datetime.now().strftime("%Y-%m-%d")
+    today_runs = [r for r in runs if str(r.get("completed_at", r.get("date", ""))).startswith(today_str)]
+
+    return {
+        "runs": runs[:10],
+        "today": today_runs[0] if today_runs else None,
+        "total_cities": len(runs),
+        "city_index": runs[0].get("city_index", 25) if runs else 25,
+        "last_city": runs[0].get("city", "") if runs else "",
+    }
+
+
+@app.get("/outreach/stats")
+async def get_outreach_stats():
+    if os.getenv("SUPABASE_URL"):
+        async with httpx.AsyncClient() as client:
+            r = await client.get(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/outreach_runs",
+                headers={"apikey": os.getenv("SUPABASE_KEY", ""), "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}"},
+                params={"order": "run_at.desc", "limit": "30"}
+            )
+            if r.status_code == 200:
+                runs = r.json()
+                today_str = datetime.now().strftime("%Y-%m-%d")
+                today = [x for x in runs if str(x.get("run_at", x.get("date", ""))).startswith(today_str)]
+                return {
+                    "runs": runs[:10],
+                    "today_emails": sum(x.get("emails_sent", 0) for x in today),
+                    "today_sms": sum(x.get("sms_sent", 0) for x in today),
+                    "total_processed": sum(x.get("contacts_processed", 0) for x in runs),
+                }
+    return {"runs": [], "today_emails": 0, "today_sms": 0, "total_processed": 0}
+
+
+async def get_hot_leads(limit: int = 20) -> list:
+    if os.getenv("SUPABASE_URL"):
+        async with httpx.AsyncClient() as client:
+            r = await client.get(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/hot_leads",
+                headers={"apikey": os.getenv("SUPABASE_KEY", ""), "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}"},
+                params={"order": "received_at.desc", "limit": str(limit)}
+            )
+            if r.status_code == 200:
+                leads = r.json()
+                return [{"company": l.get("company_name", ""), "message": l.get("message_body", ""), "intent": l.get("intent", "positive"), "time": l.get("received_at", ""), "contact_id": l.get("contact_id", "")} for l in leads]
+    return []
+
+
+@app.get("/outreach/hot-leads")
+async def outreach_hot_leads(limit: int = 20):
+    return await get_hot_leads(limit)
+
+
+@app.get("/analytics/summary")
+async def get_analytics_summary():
+    scraper  = await get_scraper_stats()
+    outreach = await get_outreach_stats()
+    demos_done = sum(1 for d in demo_store.values() if isinstance(d, dict) and d.get("status") == "done")
+
+    calls_booked = 0
+    async with httpx.AsyncClient() as client:
+        r = await client.get(
+            f"{GHL_BASE}/contacts",
+            headers={"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-04-15"},
+            params={"locationId": GHL_LOCATION, "tags": "meeting booked", "limit": "1"}
+        )
+        if r.status_code == 200:
+            calls_booked = r.json().get("meta", {}).get("total", 0)
+
+    hot_leads = await get_hot_leads(5)
+    return {
+        "leadsToday": scraper.get("today", {}).get("scraped", 0) if scraper.get("today") else 0,
+        "leadsCity": scraper.get("last_city", ""),
+        "cityIndex": scraper.get("city_index", 25),
+        "citiesTotal": 365,
+        "emailsToday": (scraper.get("today", {}).get("emails_sent", 0) if scraper.get("today") else 0) + outreach.get("today_emails", 0),
+        "smsToday": outreach.get("today_sms", 0),
+        "demosBuilt": demos_done,
+        "posReplies": len([l for l in hot_leads if l.get("intent") == "positive"]),
+        "callsBooked": calls_booked,
+        "mrr": 4466,
+        "recentHotLeads": hot_leads,
+    }
+
+
+@app.get("/analytics/scraper-runs")
+async def get_scraper_runs(days: int = 1):
+    """Return scraper runs from last N days from Supabase."""
+    try:
+        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.get(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/scraper_runs",
+                headers={
+                    "apikey": os.getenv("SUPABASE_KEY", ""),
+                    "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}",
+                },
+                params={"created_at": f"gte.{cutoff}", "order": "created_at.desc", "limit": "100"},
+            )
+            if r.status_code == 200:
+                return r.json()
+    except Exception:
+        pass
+    return []
+
+
+@app.get("/analytics/outreach-runs")
+async def get_outreach_runs(days: int = 1):
+    """Return outreach runs from last N days from Supabase."""
+    try:
+        cutoff = (datetime.utcnow() - timedelta(days=days)).isoformat()
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.get(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/outreach_runs",
+                headers={
+                    "apikey": os.getenv("SUPABASE_KEY", ""),
+                    "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}",
+                },
+                params={"created_at": f"gte.{cutoff}", "order": "created_at.desc", "limit": "50"},
+            )
+            if r.status_code == 200:
+                return r.json()
+    except Exception:
+        pass
+    return []
+
+
+@app.get("/analytics/demos")
+async def get_demos_analytics(days: int = 7):
+    """Return demos built in last N days from in-memory store."""
+    cutoff_ms = (datetime.utcnow() - timedelta(days=days)).timestamp() * 1000
+    results = []
+    for demo_id, d in demo_store.items():
+        if not isinstance(d, dict) or d.get("status") not in ("done", "complete"):
+            continue
+        # demo_id format: demo_<unix_ms>
+        try:
+            ts = int(demo_id.split("_")[1])
+            if ts >= cutoff_ms:
+                results.append({
+                    "demo_id": demo_id,
+                    "company_name": d.get("client_name", ""),
+                    "client_name": d.get("client_name", ""),
+                    "demo_url": d.get("demo_url", ""),
+                    "created_at": datetime.utcfromtimestamp(ts / 1000).isoformat(),
+                })
+        except (IndexError, ValueError):
+            pass
+    results.sort(key=lambda x: x["created_at"], reverse=True)
+    return results[:50]
+
+
+@app.get("/ghl/pipeline/stats")
+async def get_pipeline_stats():
+    """Return real GHL pipeline stage counts for the 3 SVA pipelines."""
+    SVA_PIPELINES = ["SVA Cold Outreach Pipeline", "SVA Demo Machine", "SVA Clients"]
+    result = {}
+
+    async with httpx.AsyncClient(timeout=15) as client:
+        # 1. Fetch all pipelines for this location
+        r = await client.get(
+            f"{GHL_BASE}/opportunities/pipelines",
+            headers={"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-04-15"},
+            params={"locationId": GHL_LOCATION},
+        )
+        pipelines = r.json().get("pipelines", []) if r.status_code == 200 else []
+
+        for pipeline in pipelines:
+            name = pipeline.get("name", "")
+            if not any(sva in name for sva in SVA_PIPELINES):
+                continue
+
+            pid = pipeline.get("id", "")
+            stages = {s["id"]: s["name"] for s in pipeline.get("stages", [])}
+            stage_counts = {sname: 0 for sname in stages.values()}
+
+            # 2. Count opportunities by stage (paginate up to 5 pages)
+            after = None
+            for _ in range(5):
+                params = {"location_id": GHL_LOCATION, "pipeline_id": pid, "limit": "100"}
+                if after:
+                    params["startAfter"] = after
+                sr = await client.get(
+                    f"{GHL_BASE}/opportunities/search",
+                    headers={"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-04-15"},
+                    params=params,
+                )
+                if sr.status_code != 200:
+                    break
+                opps = sr.json().get("opportunities", [])
+                for opp in opps:
+                    sname = stages.get(opp.get("pipelineStageId", ""), "Unknown")
+                    stage_counts[sname] = stage_counts.get(sname, 0) + 1
+                meta = sr.json().get("meta", {})
+                after = meta.get("startAfterDate") or meta.get("nextPageUrl")
+                if not after or len(opps) < 100:
+                    break
+
+            result[name] = {"pipeline_id": pid, "stages": stage_counts, "total": sum(stage_counts.values())}
+
+    return result if result else {"note": "No SVA pipelines found â€” create them first via GHL UI"}
+
+
+@app.get("/ghl/replies/recent")
+async def get_recent_replies(limit: int = 20):
+    stored = await get_hot_leads(limit)
+    ghl_replies = []
+    async with httpx.AsyncClient(timeout=10) as client:
+        r = await client.get(
+            f"{GHL_BASE}/conversations",
+            headers={"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-04-15"},
+            params={"locationId": GHL_LOCATION, "type": "TYPE_PHONE", "limit": "20", "sort": "last_message_date", "sortDirection": "desc"}
+        )
+        if r.status_code == 200:
+            for c in r.json().get("conversations", []):
+                if c.get("unreadCount", 0) > 0:
+                    ghl_replies.append({"company": c.get("contactName", ""), "message": c.get("lastMessageBody", "")[:200], "intent": "unknown", "time": c.get("dateUpdated", ""), "contact_id": c.get("contactId", ""), "source": "ghl_live"})
+
+    seen, merged = set(), []
+    for r in stored + ghl_replies:
+        cid = r.get("contact_id", "")
+        if cid not in seen:
+            seen.add(cid)
+            merged.append(r)
+    return merged[:limit]
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# WEBSOCKET
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await ws_manager.connect(websocket)
+    try:
+        await websocket.send_text(json.dumps({"event": "connected", "data": {"status": "ok"}}))
+        while True:
+            await asyncio.sleep(30)
+            await websocket.send_text(json.dumps({"event": "heartbeat", "data": {}}))
+    except WebSocketDisconnect:
+        ws_manager.disconnect(websocket)
+    except Exception:
+        ws_manager.disconnect(websocket)
+
+
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+# GHL WEBHOOK
+# â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+
+@app.post("/webhooks/ghl")
+async def ghl_webhook(request: Request):
+    try:
+        payload = await request.json()
+    except Exception:
+        return {"status": "error", "detail": "invalid json"}
+
+    event_type = payload.get("type") or payload.get("event") or ""
+    contact    = payload.get("contact") or payload.get("data", {})
+    company    = contact.get("companyName", contact.get("name", "Unknown"))
+    contact_id = contact.get("id", "")
+
+    if os.getenv("SUPABASE_URL"):
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                f"{os.getenv('SUPABASE_URL')}/rest/v1/ghl_activity",
+                headers={"apikey": os.getenv("SUPABASE_KEY", ""), "Authorization": f"Bearer {os.getenv('SUPABASE_KEY', '')}", "Content-Type": "application/json", "Prefer": "return=minimal"},
+                json={"event_type": event_type, "contact_id": contact_id, "company_name": company, "message_body": payload.get("message", {}).get("body", "") if "message" in payload else "", "intent": "", "raw_payload": payload, "received_at": datetime.now().isoformat()}
+            )
+
+    if event_type in ("InboundMessage", "ConversationUnread"):
+        await ws_manager.broadcast("positive_reply", {"contact_id": contact_id, "company": company, "snippet": payload.get("message", {}).get("body", "")[:200], "timestamp": datetime.now().isoformat()})
+    elif "appointment" in event_type.lower() or "booking" in event_type.lower():
+        await ws_manager.broadcast("meeting_booked", {"company": company, "contact_id": contact_id, "time": datetime.now().isoformat()})
+
+    return {"status": "ok", "event": event_type}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# AGENT STATUS STORE — CEO TEAM DASHBOARD
+# Local agents POST their status here; dashboard reads it via GET.
+# ══════════════════════════════════════════════════════════════════════════════
+
+agent_status_store: dict = {}
+
+
+class AgentStatusUpdate(BaseModel):
+    agent_id: str
+    agent_name: str
+    department: str
+    status: str          # ok | error | blocked | running
+    last_run: str        # ISO timestamp
+    output_summary: str  # "100 SMS sent to Tacoma WA"
+    output_count: int = 0
+    next_run: str = ""
+    blockers: list[str] = []
+    hot_items: list[str] = []
+
+
+async def _supabase_upsert_agent(data: dict):
+    """Persist agent status to Supabase if configured."""
+    supa_url = os.getenv("SUPABASE_URL")
+    supa_key = os.getenv("SUPABASE_KEY")
+    if not supa_url or not supa_key:
+        return
+    try:
+        async with httpx.AsyncClient() as client:
+            await client.post(
+                f"{supa_url}/rest/v1/agent_status",
+                headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}",
+                         "Content-Type": "application/json", "Prefer": "resolution=merge-duplicates"},
+                json={**data, "updated_at": datetime.now().isoformat()},
+                timeout=8
+            )
+    except Exception:
+        pass
+
+
+async def _supabase_get_agents() -> list[dict]:
+    """Read agent statuses from Supabase if configured."""
+    supa_url = os.getenv("SUPABASE_URL")
+    supa_key = os.getenv("SUPABASE_KEY")
+    if not supa_url or not supa_key:
+        return []
+    try:
+        async with httpx.AsyncClient() as client:
+            r = await client.get(
+                f"{supa_url}/rest/v1/agent_status?order=updated_at.desc",
+                headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}"},
+                timeout=8
+            )
+            return r.json() if r.status_code == 200 else []
+    except Exception:
+        return []
+
+
+@app.post("/agents/status")
+async def update_agent_status(payload: AgentStatusUpdate, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    data = {**payload.dict(), "updated_at": datetime.now().isoformat()}
+    agent_status_store[payload.agent_id] = data
+    await _supabase_upsert_agent(data)
+    return {"status": "ok", "agent_id": payload.agent_id}
+
+
+@app.get("/agents/status")
+async def get_all_agent_status(x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    if agent_status_store:
+        return {"agents": list(agent_status_store.values()), "updated_at": datetime.now().isoformat(), "source": "memory"}
+    # Fall back to Supabase if memory is empty (after Railway restart)
+    supa_agents = await _supabase_get_agents()
+    for a in supa_agents:
+        agent_status_store[a["agent_id"]] = a
+    return {"agents": supa_agents, "updated_at": datetime.now().isoformat(), "source": "supabase"}
+
+
+@app.get("/agents/status/{agent_id}")
+async def get_agent_status(agent_id: str, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    if agent_id not in agent_status_store:
+        raise HTTPException(status_code=404, detail="Agent not found")
+    return agent_status_store[agent_id]
+
+
+@app.get("/agents/health-summary")
+async def get_agent_health_summary(x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    agents = list(agent_status_store.values())
+    ok    = sum(1 for a in agents if a["status"] == "ok")
+    err   = sum(1 for a in agents if a["status"] == "error")
+    blk   = sum(1 for a in agents if a["status"] == "blocked")
+    run   = sum(1 for a in agents if a["status"] == "running")
+    all_blockers = []
+    for a in agents:
+        all_blockers.extend(a.get("blockers", []))
+    return {
+        "total": len(agents),
+        "ok": ok, "error": err, "blocked": blk, "running": run,
+        "blockers": all_blockers,
+        "last_briefing": max((a["updated_at"] for a in agents), default=None) if agents else None,
+    }

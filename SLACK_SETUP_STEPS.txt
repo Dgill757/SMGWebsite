@@ -1,0 +1,136 @@
+SUMMIT VOICE AI — SLACK APP SETUP GUIDE
+========================================
+Estimated time: 15 minutes
+Result: Real-time Slack alerts for hot leads, demo completions, and daily outreach summaries
+
+========================================
+STEP 1: CREATE THE SLACK APP
+========================================
+1. Go to: https://api.slack.com/apps
+2. Click "Create New App"
+3. Choose "From scratch"
+4. App Name: Summit Voice AI
+5. Workspace: Select your workspace (e.g., Summit Voice AI)
+6. Click "Create App"
+
+========================================
+STEP 2: ENABLE INCOMING WEBHOOKS
+========================================
+7. In the left sidebar, click "Incoming Webhooks"
+8. Toggle "Activate Incoming Webhooks" → ON
+9. Scroll down and click "Add New Webhook to Workspace"
+10. Choose channel: #ava-dispatch (create it first if it doesn't exist)
+    - To create: In Slack → click "+" next to Channels → Create channel → name it "ava-dispatch"
+11. Click "Allow"
+12. You'll be redirected back — COPY the Webhook URL
+    Format: https://hooks.slack.com/services/T.../B.../xxxx
+    SAVE THIS — you'll need it in step 30
+
+========================================
+STEP 3: ENABLE BOT TOKEN (FOR SLASH COMMANDS)
+========================================
+13. In the left sidebar, click "OAuth & Permissions"
+14. Scroll to "Scopes" → "Bot Token Scopes"
+15. Click "Add an OAuth Scope" and add these:
+    - chat:write
+    - commands
+    - channels:read
+    - channels:history
+16. Scroll up and click "Install to Workspace"
+17. Click "Allow"
+18. COPY the "Bot User OAuth Token"
+    Format: xoxb-xxxx-xxxx-xxxx
+    SAVE THIS — you'll need it in step 31
+
+========================================
+STEP 4: CREATE SLASH COMMAND (OPTIONAL — for /ava status)
+========================================
+19. In the left sidebar, click "Slash Commands"
+20. Click "Create New Command"
+21. Command: /ava
+22. Request URL: https://ava-studio-api-production.up.railway.app/slack/command
+23. Short Description: Get Ava Studio status
+24. Click "Save"
+
+========================================
+STEP 5: ADD TOKENS TO RAILWAY
+========================================
+25. Go to: https://railway.app
+26. Open your project → Service (ava-studio-api)
+27. Click "Variables" tab
+28. Click "+ New Variable" for each of the following:
+
+Variable 1:
+  Name:  SLACK_WEBHOOK_URL
+  Value: [paste the webhook URL from step 12]
+
+Variable 2:
+  Name:  SLACK_BOT_TOKEN
+  Value: [paste the bot token from step 18]
+
+29. Railway will auto-redeploy after saving variables
+
+========================================
+STEP 6: ADD TOKENS TO LOCAL SCRIPTS
+========================================
+30. Open: C:\Users\DanGi\outreach\.env
+    Add line: SLACK_WEBHOOK_URL=https://hooks.slack.com/services/[your-url]
+
+31. Open: C:\Users\DanGi\scripts\.env (or same .env if shared)
+    Add line: SLACK_WEBHOOK_URL=https://hooks.slack.com/services/[your-url]
+    Add line: SLACK_BOT_TOKEN=xoxb-[your-token]
+
+========================================
+STEP 7: TEST IT
+========================================
+32. In your terminal, run:
+    curl -X POST https://ava-studio-api-production.up.railway.app/slack/events \
+      -H "Content-Type: application/json" \
+      -d '{"event":"test","message":"Ava Studio is live!"}'
+
+33. Check #ava-dispatch in Slack — you should see the message
+
+34. Run the daily outreach manually to test the summary:
+    cd C:\Users\DanGi\scripts
+    python ghl_daily_outreach.py
+    (a summary will post to #ava-dispatch after it finishes)
+
+========================================
+WHAT YOU'LL RECEIVE IN SLACK
+========================================
+- Hot lead alerts: Instant notification when a prospect replies positively
+  Example: "🔥 Hot Lead: Johnson Roofing (Chicago) — 'Interested, when can we chat?'"
+
+- Daily outreach summary (9am Mon-Fri):
+  📊 Daily Outreach Summary — Apr 28
+  📤 Contacts reached: 100
+  🔥 Hot leads today: 3
+  Dashboard: https://ava-demo-studio.vercel.app
+
+- Demo completions: When Ava builds a custom demo for a prospect
+  Example: "✅ Demo built for Sunlight Roofing — https://summit-demo-xyz.vercel.app"
+
+- Weekly content (Mondays 7am):
+  Preview of the week's LinkedIn/Facebook/Instagram/TikTok content
+
+========================================
+TROUBLESHOOTING
+========================================
+If messages aren't sending:
+1. Check Railway variables: SLACK_WEBHOOK_URL is set correctly
+2. Check the webhook URL hasn't expired (they don't expire, but verify)
+3. Check #ava-dispatch channel exists in your workspace
+4. Railway logs: railway logs --tail (in project directory)
+
+If slash command /ava doesn't work:
+1. Verify Railway is running (curl https://ava-studio-api-production.up.railway.app/health)
+2. The /slack/command endpoint expects POST from Slack
+3. In Slack app settings → Event Subscriptions → verify URL is verified
+
+========================================
+DONE ✅
+========================================
+After completing these steps, Summit Voice AI will notify you in real-time
+for every hot lead, demo completion, and daily summary.
+
+Estimated value: Never miss a hot lead again, even when you're on a job site.

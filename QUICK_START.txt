@@ -1,0 +1,129 @@
+SUMMIT OS — HOW TO USE IT IN 3 MINUTES
+=======================================
+
+OPEN EVERY MORNING (5 min total):
+1. Slack → #ava-dispatch (morning brief is there at 7am — stats, hot leads, todo)
+2. Browser → https://ava-demo-studio-dan-gill-iiis-projects.vercel.app
+   Password: summit2026
+3. Check "Replies" tab → any hot leads since yesterday?
+4. Check Calendly / Google Calendar → calls booked for today?
+
+That's it. Everything else runs without you.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+COMMANDS (from dashboard search bar or Slack #ava-dispatch)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  build [website URL]
+  → Builds a full demo in ~3-5 min. Deploys to Vercel. Sends email + SMS.
+  → Example: build peakroofingdallas.com
+
+  demo [website URL]
+  → Same as build. 10 automated steps. Professional site + voice AI.
+
+  audit [website URL]
+  → Marketing audit only. No website build. ~60 seconds.
+
+  scrape [City ST]
+  → Triggers Apollo to find roofing owners in that city right now.
+  → Example: scrape Dallas TX
+
+  /status
+  → Full system health check. All 7 scripts + Railway + Vercel.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WHEN SOMEONE REPLIES POSITIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+You get:
+  → Slack notification in #ava-dispatch
+  → Desktop toast alert (if reply monitor is running — it checks every 15 min)
+  → "Peak Roofing LLC" appears in dashboard Replies tab
+
+Your options:
+  A) Demo workflow fires automatically if "audit requested" tag was set
+  B) Tap "Build Demo" button in dashboard → demo in ~3-5 min
+  C) Type: build [their website URL] in Slack or dashboard
+
+After demo is built:
+  → GHL automatically sends their email + SMS with demo link
+  → Contact field ava_demo_url is updated
+  → Pipeline stage moves to "Demo Sent"
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+MONDAY MORNING (extra 5 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  7:00 AM  Content calendar preview arrives in Slack
+  7:30 AM  Social posts go out automatically (after social_media_automation runs)
+
+  Review the content in Slack.
+  Edit anything that feels off.
+  Posts go out: FB Tue 9am, Instagram Tue 11am, LinkedIn Wed 8am, Twitter/X immediate.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GHL PIPELINE REVIEW (10 min/week)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Anything stuck in "Demo Sent" for 48+ hrs? → Check if follow-up fired. If not, build demo.
+  Anything stuck in "Meeting Booked" for 72+ hrs? → AI sends nudge automatically.
+  Anything stuck in "Replied" for 24+ hrs? → Reach out manually or trigger demo.
+
+  Won? → Mark Won → Onboarding sequence fires automatically.
+  Lost? → Mark Lost → 90-day reactivation sequence fires automatically.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+WEEKLY ANALYTICS (15 min)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Dashboard → Analytics tab:
+  - Demos sent vs calls booked (track conversion rate)
+  - Which cities are responding? (focus next week's scraper there)
+  - Revenue forecast to $100K
+
+  Benchmark: 100 outreach/day → 3 replies → 0.25 calls → 0.1 close per day
+  Target:    3-4 closes/week = ~$1,500-$4,000 MRR added/week
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+OBSIDIAN VAULT (your long-term memory)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Open: C:\Users\DanGi\SummitVault in Obsidian
+  Install Terminal plugin (Community Plugins → search "Terminal" → install)
+
+  Open terminal in Obsidian → type: claude
+
+  Then type any of:
+    "morning brief"              → instant briefing (hot leads, pipeline, stats)
+    "build demo for [name, city]"  → builds demo from scratch
+    "what do I know about competitors?" → pulls WIKI/COMPETITORS notes
+    "weekly content ideas"       → generates social content calendar
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+IF SOMETHING BREAKS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  Railway down?
+  → cd C:\Users\DanGi\Downloads\SummitVoiceAiWorkflowsandDemoMachine
+  → railway up
+
+  Script not running?
+  → Task Scheduler → find "Summit*" task → right-click → Run
+  → Check C:\Users\DanGi\scripts\*.log for errors
+
+  Demo builds failing?
+  → Check Railway logs: railway logs (or railway.com → your project → Logs)
+  → Most common cause: Firecrawl can't scrape the site (Cloudflare-protected)
+  → Fix: try a different website URL, or build with no website using the no-website path
+
+  GHL workflows not firing?
+  → GHL → Automation → check workflow is Published (not Draft)
+  → Check the trigger condition matches what you expect
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+LIVE URLS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Dashboard:   https://ava-demo-studio-dan-gill-iiis-projects.vercel.app (pw: summit2026)
+API health:  https://ava-studio-api-production.up.railway.app/health
+Booking:     https://calendly.com/aivoice/call
+GHL:         https://app.gohighlevel.com

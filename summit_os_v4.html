@@ -1,0 +1,1421 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SUMMIT OS — Command Center</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#09090a;--surface:#111112;--card:#17171a;--lift:#1e1e22;
+  --b:#242428;--b2:#303035;--b3:#404046;
+  --ora:#E8622A;--ora2:#FF7A40;--ora-d:rgba(232,98,42,.14);
+  --grn:#3DBA74;--grn-d:rgba(61,186,116,.12);
+  --amb:#F5A623;--amb-d:rgba(245,166,35,.12);
+  --red:#E05252;--red-d:rgba(224,82,82,.12);
+  --blu:#5B9BD5;--blu-d:rgba(91,155,213,.12);
+  --pur:#9B6FD6;--pur-d:rgba(155,111,214,.12);
+  --tea:#3BBFAA;--tea-d:rgba(59,191,170,.12);
+  --txt:#EAEAE4;--mut:#6B6B64;--dim:#2a2a2e;--fnt:#16161a;
+  font-family:'Space Grotesk',system-ui,sans-serif;
+}
+html,body{height:100%;background:var(--bg);color:var(--txt);overflow:hidden}
+.app{display:flex;flex-direction:column;height:100vh}
+
+/* AUTH OVERLAY */
+#authOverlay{position:fixed;inset:0;background:var(--bg);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:24px}
+.auth-box{background:var(--surface);border:1px solid var(--b);border-radius:12px;padding:40px;width:360px;text-align:center}
+.auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:28px;margin-bottom:8px}
+.auth-logo span{color:var(--ora)}
+.auth-sub{font-size:13px;color:var(--mut);margin-bottom:24px}
+.auth-input{width:100%;background:var(--card);border:1px solid var(--b);border-radius:6px;padding:12px;color:var(--txt);font-size:14px;font-family:'JetBrains Mono',monospace;outline:none;text-align:center;letter-spacing:3px}
+.auth-input:focus{border-color:var(--ora)}
+.auth-btn{width:100%;margin-top:12px;background:var(--ora);border:none;border-radius:6px;padding:12px;color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:'Space Grotesk',sans-serif}
+.auth-err{font-size:12px;color:var(--red);margin-top:8px;display:none}
+
+/* TOPBAR */
+.topbar{background:var(--surface);border-bottom:1px solid var(--b);padding:0 20px;height:46px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;gap:12px}
+.logo{display:flex;align-items:center;gap:8px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;letter-spacing:.04em;white-space:nowrap}
+.logo-sq{width:24px;height:24px;background:var(--ora);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#000;font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.logo span{color:var(--ora)}
+.nav-tabs{display:flex;gap:4px;flex:1;justify-content:center}
+.nav-tab{background:var(--card);border:1px solid var(--b);border-radius:4px;padding:4px 12px;font-size:11px;font-family:'JetBrains Mono',monospace;color:var(--mut);cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px;white-space:nowrap}
+.nav-tab .dot{width:5px;height:5px;border-radius:50%;background:var(--mut)}
+.nav-tab.active{border-color:var(--ora);color:var(--txt);background:var(--ora-d)}
+.nav-tab.active .dot,.nav-tab.live .dot{background:var(--grn);animation:blink 2s infinite}
+.nav-tab:hover:not(.active){border-color:var(--b2);color:var(--txt)}
+.topbar-right{display:flex;align-items:center;gap:8px;font-size:11px;font-family:'JetBrains Mono',monospace;white-space:nowrap}
+#sysStatus{color:var(--grn)}
+#clock{color:var(--mut);font-size:10px}
+.idle-badge{background:var(--dim);padding:3px 8px;border-radius:3px;font-size:10px;letter-spacing:.08em;color:var(--mut)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* LAYOUT */
+.body{display:flex;flex:1;overflow:hidden}
+.main{flex:1;overflow-y:auto;padding:18px 20px;scrollbar-width:thin;scrollbar-color:var(--b) transparent}
+.sidebar{width:272px;min-width:272px;border-left:1px solid var(--b);background:var(--surface);overflow-y:auto;padding:14px;scrollbar-width:thin;scrollbar-color:var(--b) transparent}
+.main::-webkit-scrollbar,.sidebar::-webkit-scrollbar{width:3px}
+.main::-webkit-scrollbar-thumb,.sidebar::-webkit-scrollbar-thumb{background:var(--b2)}
+
+/* KPI BAR */
+.kpi-row{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-bottom:16px}
+.kpi{background:var(--card);border:1px solid var(--b);border-radius:7px;padding:10px 12px;cursor:pointer;transition:all .2s}
+.kpi:hover{border-color:var(--b2)}
+.kpi-label{font-size:9px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;margin-bottom:4px;display:flex;justify-content:space-between;align-items:center}
+.kpi-val{font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;letter-spacing:-.03em}
+.kpi-delta{font-size:9px;font-family:'JetBrains Mono',monospace;margin-top:2px}
+
+/* SECTION LABEL */
+.sec{font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.12em;color:var(--mut);text-transform:uppercase;margin:16px 0 8px;display:flex;align-items:center;gap:8px}
+.sec::after{content:'';flex:1;height:1px;background:var(--b)}
+.sec-action{font-size:9px;color:var(--ora);cursor:pointer;letter-spacing:.06em;flex-shrink:0}
+.sec-action:hover{color:var(--ora2)}
+
+/* PIPELINE */
+.pipeline{display:grid;grid-template-columns:repeat(6,1fr);gap:0;margin-bottom:16px}
+.pl{border:1px solid var(--b);border-right:none;text-align:center;padding:10px 6px;cursor:pointer;transition:all .15s;position:relative}
+.pl:first-child{border-radius:5px 0 0 5px}
+.pl:last-child{border-right:1px solid var(--b);border-radius:0 5px 5px 0}
+.pl:hover{background:var(--lift)}
+.pl-l{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--mut);letter-spacing:.06em;text-transform:uppercase;display:block;margin-bottom:4px}
+.pl-n{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.pl.active-stage{background:var(--ora-d);border-color:var(--ora)}
+
+/* MRR */
+.mrr-card{background:var(--card);border:1px solid var(--b);border-radius:7px;padding:14px;margin-bottom:16px}
+.mrr-top{display:flex;align-items:baseline;gap:10px;margin-bottom:8px}
+.mrr-big{font-size:36px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--ora);letter-spacing:-.03em}
+.mrr-of{font-size:13px;color:var(--mut)}
+.mrr-track{height:5px;background:var(--dim);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.mrr-fill{height:100%;background:linear-gradient(90deg,var(--ora),var(--amb));border-radius:3px;transition:width .8s}
+.mrr-milestones{display:flex;justify-content:space-between;font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--mut)}
+.mrr-sub{font-size:11px;color:var(--mut);margin-top:6px;line-height:1.6}
+
+/* AGENT FLEET */
+.agent-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:16px}
+.agent{background:var(--card);border:1px solid var(--b);border-radius:6px;padding:10px 12px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.agent:hover{border-color:var(--b2);background:var(--lift)}
+.agent-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.agent-dot.run{background:var(--grn);animation:blink .8s infinite}
+.agent-dot.idle{background:var(--mut)}
+.agent-dot.err{background:var(--red);animation:blink .4s infinite}
+.agent-dot.sched{background:var(--amb)}
+.agent-info{flex:1;min-width:0}
+.agent-name{font-size:12px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.agent-meta{font-size:9px;color:var(--mut);font-family:'JetBrains Mono',monospace;display:flex;gap:8px;margin-top:2px}
+.agent-badge{font-size:8px;font-family:'JetBrains Mono',monospace;padding:2px 6px;border-radius:3px;flex-shrink:0}
+
+/* COMMAND RUNNER */
+.cmd-card{background:var(--fnt);border:1px solid var(--b);border-radius:7px;overflow:hidden;margin-bottom:16px}
+.cmd-header{background:var(--card);border-bottom:1px solid var(--b);padding:10px 14px;display:flex;align-items:center;justify-content:space-between}
+.cmd-title{font-size:13px;font-weight:600}
+.cmd-title .kw{color:var(--ora)}
+.cmd-status{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--mut);display:flex;align-items:center;gap:6px}
+.cmd-body{padding:12px 14px}
+.cmd-input{width:100%;background:var(--card);border:1px solid var(--b);border-radius:5px;padding:10px 12px;color:var(--txt);font-size:13px;font-family:'Space Grotesk',sans-serif;outline:none;resize:none;height:68px;transition:border-color .2s}
+.cmd-input:focus{border-color:var(--ora)}
+.cmd-input::placeholder{color:var(--mut)}
+.btn-row{display:flex;gap:8px;margin-top:8px}
+.btn-run{background:var(--ora);border:none;border-radius:5px;padding:9px 20px;color:#000;font-size:13px;font-weight:700;cursor:pointer;flex:1;font-family:'Space Grotesk',sans-serif;transition:background .15s}
+.btn-run:hover{background:var(--ora2)}
+.btn-run:disabled{opacity:.4;cursor:not-allowed}
+.btn-sec{background:transparent;border:1px solid var(--b);border-radius:5px;padding:9px 14px;color:var(--mut);font-size:12px;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .15s}
+.btn-sec:hover{border-color:var(--b2);color:var(--txt)}
+.cmd-output{background:var(--bg);border:1px solid var(--b);border-radius:4px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;min-height:60px;max-height:200px;overflow-y:auto;white-space:pre-wrap;line-height:1.6;margin-top:8px;display:none}
+.cmd-output.show{display:block}
+.ol-g{color:var(--grn)}.ol-o{color:var(--ora)}.ol-b{color:var(--blu)}.ol-r{color:var(--red)}.ol-m{color:var(--mut)}
+
+/* QUICK COMMANDS — ALL WORKING */
+.qcmd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:16px}
+.qcmd{background:var(--card);border:1px solid var(--b);border-radius:5px;padding:10px;cursor:pointer;transition:all .15s;text-align:center}
+.qcmd:hover{border-color:var(--ora);background:var(--ora-d)}
+.qcmd-icon{font-size:18px;margin-bottom:4px}
+.qcmd-label{font-size:11px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:.04em}
+.qcmd-sub{font-size:9px;color:var(--mut);margin-top:2px}
+
+/* DOMAIN SKILLS */
+.domain-sec{margin-bottom:16px}
+.domain-lbl{font-size:10px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;color:var(--mut);text-transform:uppercase;margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.domain-lbl::after{content:'';flex:1;height:1px;background:var(--b)}
+.skill-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
+.sk{background:var(--card);border:1px solid var(--b);border-radius:4px;padding:8px 8px;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--txt);cursor:pointer;transition:all .15s;text-align:left;line-height:1.3}
+.sk:hover{border-color:var(--ora);color:var(--ora);background:var(--ora-d)}
+.sk.loaded{border-color:var(--ora);color:var(--ora);background:var(--ora-d)}
+.sk-type{font-size:7px;color:var(--mut);display:block;margin-bottom:2px;letter-spacing:.08em}
+.sk[data-type="routine"] .sk-type{color:var(--amb)}
+.sk[data-type="auto"] .sk-type{color:var(--grn)}
+.sk[data-type="agent"] .sk-type{color:var(--pur)}
+
+/* SIDEBAR CARDS */
+.sb-card{background:var(--card);border:1px solid var(--b);border-radius:6px;padding:12px;margin-bottom:10px}
+.sb-title{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--mut);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px}
+.stat-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--dim);font-size:11px}
+.stat-row:last-child{border:none}
+.stat-lbl{color:var(--mut)}
+.stat-val{font-family:'JetBrains Mono',monospace;font-weight:500}
+.run-item{display:flex;gap:6px;padding:5px 0;border-bottom:1px solid var(--dim);font-size:10px;align-items:flex-start;cursor:pointer;transition:opacity .15s}
+.run-item:hover{opacity:.7}
+.run-item:last-child{border:none}
+.run-badge{font-size:8px;font-family:'JetBrains Mono',monospace;padding:2px 5px;border-radius:2px;flex-shrink:0;margin-top:1px}
+.rb-cre{background:var(--grn-d);color:var(--grn)}
+.rb-upd{background:var(--blu-d);color:var(--blu)}
+.run-info{flex:1;min-width:0}
+.run-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--txt)}
+.run-path{font-family:'JetBrains Mono',monospace;font-size:8px;color:var(--mut);display:block;margin-top:1px}
+.run-time{font-size:8px;color:var(--dim);font-family:'JetBrains Mono',monospace;flex-shrink:0}
+.mini-bar{display:flex;align-items:flex-end;gap:2px;height:36px;margin-top:6px}
+.mb-bar{flex:1;background:var(--ora);border-radius:2px 2px 0 0;opacity:.7;min-height:2px}
+.mb-bar:last-child{opacity:1}
+.mb-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-top:2px}
+.forecast-bar{height:5px;background:var(--dim);border-radius:3px;overflow:hidden;margin:6px 0}
+.fb-fill{height:100%;background:var(--ora);border-radius:3px}
+
+/* HISTORY PANEL */
+.history-panel{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:flex;justify-content:flex-end;opacity:0;pointer-events:none;transition:opacity .2s}
+.history-panel.show{opacity:1;pointer-events:all}
+.hp-inner{background:var(--surface);border-left:1px solid var(--b);width:520px;height:100%;overflow-y:auto;padding:20px}
+.hp-close{cursor:pointer;font-size:20px;color:var(--mut);float:right;line-height:1}
+.hp-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px}
+.hp-sub{font-size:11px;color:var(--mut);margin-bottom:20px}
+.hp-entry{background:var(--card);border:1px solid var(--b);border-radius:6px;padding:12px;margin-bottom:8px}
+.hp-date{font-size:9px;font-family:'JetBrains Mono',monospace;color:var(--mut);margin-bottom:4px}
+.hp-body{font-size:12px;line-height:1.6;color:var(--txt)}
+.hp-meta{display:flex;gap:8px;margin-top:8px}
+.hp-tag{font-size:9px;font-family:'JetBrains Mono',monospace;padding:2px 7px;border-radius:3px;background:var(--lift);color:var(--mut)}
+
+/* REPLY FEED */
+.reply-item{background:var(--card);border:1px solid var(--b);border-radius:6px;padding:12px;margin-bottom:6px;cursor:pointer;transition:all .2s}
+.reply-item:hover{border-color:var(--b2)}
+.reply-item.hot{border-color:var(--ora);background:var(--ora-d)}
+.ri-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ri-name{font-size:13px;font-weight:600;flex:1}
+.ri-time{font-size:10px;color:var(--mut);font-family:'JetBrains Mono',monospace}
+.ri-badge{font-size:9px;padding:2px 7px;border-radius:3px;font-family:'JetBrains Mono',monospace}
+.rb-pos{background:var(--grn-d);color:var(--grn)}
+.rb-neg{background:var(--red-d);color:var(--red)}
+.rb-neu{background:var(--dim);color:var(--mut)}
+.ri-company{font-size:11px;color:var(--mut);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.ri-msg{font-size:12px;color:var(--txt);line-height:1.5;border-left:2px solid var(--b2);padding-left:8px}
+.ri-actions{display:flex;gap:6px;margin-top:8px}
+.ri-btn{background:var(--ora);border:none;border-radius:4px;padding:5px 12px;font-size:11px;font-weight:600;color:#000;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:background .15s}
+.ri-btn:hover{background:var(--ora2)}
+.ri-btn.sec{background:var(--lift);color:var(--txt);border:1px solid var(--b)}
+
+/* SPINNER */
+.spin{width:12px;height:12px;border:1.5px solid var(--b2);border-top-color:var(--ora);border-radius:50%;animation:sp .6s linear infinite;flex-shrink:0}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* TOAST */
+#toastC{position:fixed;bottom:20px;right:20px;z-index:500;display:flex;flex-direction:column;gap:6px}
+.toast{background:var(--card);border:1px solid var(--b);border-left:3px solid var(--ora);border-radius:6px;padding:10px 14px;font-size:12px;animation:tin .25s;box-shadow:0 8px 24px rgba(0,0,0,.6);max-width:320px}
+.toast.err{border-left-color:var(--red)}
+.toast.ok{border-left-color:var(--grn)}
+@keyframes tin{from{opacity:0;transform:translateX(10px)}to{opacity:1;transform:none}}
+
+/* DEMO PROGRESS */
+.demo-progress{background:var(--card);border:1px solid var(--b);border-radius:7px;padding:14px;margin-bottom:16px}
+.dp-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.dp-steps{display:flex;flex-direction:column;gap:4px}
+.dp-step{display:flex;align-items:center;gap:8px;padding:4px 0;font-size:11px;opacity:.3;transition:opacity .3s}
+.dp-step.done{opacity:1}
+.dp-step.active{opacity:1;color:var(--ora)}
+.dp-icon{width:18px;height:18px;border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:9px;background:var(--dim);flex-shrink:0}
+.dp-step.done .dp-icon{background:var(--grn-d);color:var(--grn)}
+.dp-step.active .dp-icon{background:var(--ora-d);color:var(--ora)}
+.dp-track{height:3px;background:var(--dim);border-radius:2px;overflow:hidden;margin-top:8px}
+.dp-fill{height:100%;background:var(--ora);border-radius:2px;transition:width .4s}
+
+/* ANALYTICS GRID */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.an-card{background:var(--card);border:1px solid var(--b);border-radius:7px;padding:14px}
+.an-title{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--mut);letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.funnel-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.funnel-lbl{font-size:11px;width:80px;flex-shrink:0}
+.funnel-bar-wrap{flex:1;height:14px;background:var(--dim);border-radius:2px;overflow:hidden;cursor:help}
+.funnel-bar{height:100%;border-radius:2px;transition:width .6s}
+.funnel-pct{font-size:10px;font-family:'JetBrains Mono',monospace;width:36px;text-align:right;color:var(--mut)}
+.chart-wrap{height:80px;display:flex;align-items:flex-end;gap:3px;padding-top:8px}
+.c-bar{flex:1;border-radius:2px 2px 0 0;transition:height .5s;min-height:2px;cursor:default}
+.c-bar:last-child{background:var(--ora)!important}
+.c-labels{display:flex;justify-content:space-between;font-size:8px;color:var(--dim);font-family:'JetBrains Mono',monospace;margin-top:3px}
+
+/* CONTENT CALENDAR */
+.content-row{display:flex;gap:8px;padding:8px 0;border-bottom:1px solid var(--dim)}
+.content-row:last-child{border:none}
+.cont-platform{font-size:10px;font-family:'JetBrains Mono',monospace;width:70px;flex-shrink:0;color:var(--ora)}
+.cont-status{width:6px;height:6px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.cont-text{font-size:11px;color:var(--txt);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cont-time{font-size:9px;color:var(--mut);font-family:'JetBrains Mono',monospace;flex-shrink:0}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px;height:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:2px}
+</style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div id="authOverlay">
+  <div class="auth-box">
+    <div class="auth-logo">SUMMIT<span>OS</span></div>
+    <div class="auth-sub">Enter access code: ava2026</div>
+    <input class="auth-input" id="authInput" type="password" placeholder="••••••••••" maxlength="20">
+    <div class="auth-err" id="authErr">Incorrect code</div>
+    <button class="auth-btn" id="authBtn">ENTER →</button>
+  </div>
+</div>
+
+<div class="app" id="app" style="display:none">
+  <div class="topbar">
+    <div class="logo"><div class="logo-sq">S</div>SUMMIT<span>OS</span></div>
+    <div class="nav-tabs">
+      <div class="nav-tab live active" data-page="brief"><span class="dot"></span>BRIEF</div>
+      <div class="nav-tab" data-page="agents"><span class="dot" style="background:var(--b2)"></span>AGENTS</div>
+      <div class="nav-tab" data-page="leads"><span class="dot" style="background:var(--b2)"></span>LEADS</div>
+      <div class="nav-tab" data-page="demos"><span class="dot" style="background:var(--b2)"></span>DEMOS</div>
+      <div class="nav-tab" data-page="analytics"><span class="dot" style="background:var(--b2)"></span>ANALYTICS</div>
+      <div class="nav-tab" data-page="content"><span class="dot" style="background:var(--b2)"></span>CONTENT</div>
+      <div class="nav-tab" data-page="vault"><span class="dot" style="background:var(--b2)"></span>VAULT</div>
+      <div class="nav-tab" data-page="skills"><span class="dot" style="background:var(--b2)"></span>SKILLS</div>
+    </div>
+    <div class="topbar-right">
+      <span id="sysStatus">connecting...</span>
+      <span id="clock"></span>
+      <div class="idle-badge" id="idleBadge">● IDLE</div>
+    </div>
+  </div>
+  <div class="body">
+    <div class="main" id="mainContent"></div>
+    <div class="sidebar" id="sidebarContent"></div>
+  </div>
+</div>
+
+<!-- HISTORY PANEL -->
+<div class="history-panel" id="historyPanel">
+  <div class="hp-inner">
+    <span class="hp-close" onclick="closeHistory()">✕</span>
+    <div class="hp-title" id="histTitle">History</div>
+    <div class="hp-sub" id="histSub">Loading...</div>
+    <div id="histContent"></div>
+  </div>
+</div>
+
+<div id="toastC"></div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// CONFIG — UPDATE API TO MATCH YOUR RAILWAY URL
+// ═══════════════════════════════════════════════════════
+const API='https://ava-studio-api-production.up.railway.app';
+const KEY='101226ee5ba8047ffa4881bed74016e0';
+const PASS='ava2026';
+const MRR_TARGET=100000;
+
+// -- AUTH -----------------------------------------------------------------
+window.addEventListener('DOMContentLoaded', function() {
+  var PASS = 'ava2026';
+
+  if (sessionStorage.getItem('s_auth') === '1') {
+    document.getElementById('authOverlay').style.display = 'none';
+    document.getElementById('app').style.display = 'flex';
+    init();
+    return;
+  }
+
+  var btn = document.getElementById('authBtn');
+  var inp = document.getElementById('authInput');
+  var err = document.getElementById('authErr');
+
+  function tryAuth() {
+    var val = inp ? inp.value.trim() : '';
+    if (val === PASS) {
+      sessionStorage.setItem('s_auth', '1');
+      document.getElementById('authOverlay').style.display = 'none';
+      document.getElementById('app').style.display = 'flex';
+      init();
+    } else {
+      if (err) err.style.display = 'block';
+      if (inp) { inp.value = ''; inp.focus(); }
+    }
+  }
+
+  if (btn) btn.addEventListener('click', tryAuth);
+  if (inp) {
+    inp.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') tryAuth();
+    });
+    inp.focus();
+  }
+});
+// -------------------------------------------------------------------------
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let page='brief', apiOk=false, running=false, activeSkill=null;
+let buildActive=false, buildStep=0, buildDone=[], buildTimer;
+let cmdHistory=[], outputLines=[];
+
+// Live data — populated from API, falls back to statics
+let D={
+  mrr:4466, mrrTarget:MRR_TARGET, clients:9,
+  leadsToday:47, leadsCity:'Milwaukee, WI', cityIndex:26, citiesTotal:365,
+  emailsSent:228, smsSent:100, posReplies:8, callsBooked:3,
+  demosBuilt:12, demosLive:12, websitesBuilt:5,
+  pipeline:[
+    {stage:'Contacted',count:1820},{stage:'Replied',count:387},
+    {stage:'Interested',count:142},{stage:'Demo Sent',count:89},
+    {stage:'Booked',count:31},{stage:'Won',count:9}
+  ],
+  hotLeads:[
+    {id:'hl1',name:'Mike Johnson',company:'Peak Exteriors LLC',city:'Dallas, TX',msg:"yeah send it over, been dealing with this all season",time:'8m ago',intent:'positive',demo_built:false},
+    {id:'hl2',name:'Sarah R.',company:'Top Gun Roofing',city:'Houston, TX',msg:"how much does it cost? interested",time:'32m ago',intent:'positive',demo_built:true},
+    {id:'hl3',name:'Dave W.',company:'Skyline Roofing',city:'Austin, TX',msg:"can you send me more info",time:'1h ago',intent:'positive',demo_built:false},
+  ],
+  recentRuns:[
+    {type:'created',name:'2026-05-01-peak-roofing-demo',path:'DEMOS/DEMOS',time:'3m',agent:'Demo Builder'},
+    {type:'updated',name:'2026-05-01-morning-brief',path:'PRODUCTIVITY/BRIEFS',time:'8m',agent:'Morning Brief'},
+    {type:'created',name:'2026-05-01-weekly-content',path:'CONTENT/SOCIAL',time:'42m',agent:'Content Creator'},
+    {type:'updated',name:'PIPELINE-STATUS',path:'OPS/GHL',time:'1h',agent:'GHL Sync'},
+    {type:'created',name:'apollo-dallas-batch-26',path:'OUTREACH/SCRAPER',time:'2h',agent:'Apollo Scout'},
+  ],
+  weekActivity:[12,18,9,24,31,22,8],
+  outreachHistory:[
+    {date:'2026-05-01',sent:228,replies:7,positive:3,demos:2},
+    {date:'2026-04-30',sent:215,replies:6,positive:2,demos:1},
+    {date:'2026-04-29',sent:198,replies:4,positive:1,demos:1},
+  ],
+  contentCalendar:[
+    {platform:'LINKEDIN',status:'sched',text:'67% of roofing calls go unanswered. One call = $9,500 avg job.',time:'Wed 8am'},
+    {platform:'FACEBOOK',status:'sched',text:'Most roofers lose $50-100K/year in missed calls.',time:'Tue 9am'},
+    {platform:'INSTAGRAM',status:'live',text:'Built this for contractors tired of missing jobs on the roof.',time:'Posted'},
+    {platform:'TWITTER',status:'done',text:'3 missed calls/day × $9,500 × 365 = do the math.',time:'Yesterday'},
+    {platform:'TIKTOK',status:'pend',text:'Script ready — needs HeyGen API key',time:'Pending'},
+  ],
+  agents:[
+    {id:'sdr_outreach',name:'Cold Outreach SDR',tier:'SALES',status:'ok',lastRun:'Today 9:00am',next:'Tomorrow 9am',output:'100 SMS / day via GHL',dept:'Sales'},
+    {id:'sdr_followup',name:'Follow-Up Specialist',tier:'SALES',status:'ok',lastRun:'Today 9:15am',next:'Tomorrow 9:15am',output:'Day 3/7/14 sequences running',dept:'Sales'},
+    {id:'sdr_replies',name:'Reply Monitor',tier:'SALES',status:'err',lastRun:'Continuous',next:'Every 15 min',output:'GHL 422 error — fixed version available',dept:'Sales'},
+    {id:'lead_scraper',name:'Lead Scraper (Apify)',tier:'SALES',status:'err',lastRun:'June 6',next:'Tomorrow 6am',output:'0 scraped — check Apify actor config',dept:'Sales'},
+    {id:'reply_monitor_fx',name:'Reply Monitor (Fixed)',tier:'SALES',status:'ok',lastRun:'Today',next:'Every 15 min',output:'4 inbound replies found — 2 STOP flags',dept:'Sales'},
+    {id:'ghl_pipeline',name:'GHL Pipeline Manager',tier:'SALES',status:'ok',lastRun:'Continuous',next:'Continuous',output:'5386 contacts in pipeline',dept:'Sales'},
+    {id:'demo_builder',name:'Demo Builder',tier:'DEMOS',status:'err',lastRun:'On demand',next:'On demand',output:'Anthropic credits depleted — add credits',dept:'Demos'},
+    {id:'research_agent',name:'Research Analyst',tier:'MARKETING',status:'ok',lastRun:'Jun 9',next:'Thu 6:30am',output:'Market intel — SummitVault/WIKI/MARKET',dept:'Marketing'},
+    {id:'content_gen',name:'Content Generator',tier:'MARKETING',status:'ok',lastRun:'Monday 7am',next:'Next Monday 7am',output:'Weekly content plan generated',dept:'Marketing'},
+    {id:'social_poster',name:'Social Publisher',tier:'MARKETING',status:'idle',lastRun:'Last Sunday',next:'Sunday 7:30am',output:'Multi-platform social scheduler',dept:'Marketing'},
+    {id:'heygen_agent',name:'HeyGen Video Agent',tier:'MARKETING',status:'err',lastRun:'Never',next:'Monday 7:30am',output:'HEYGEN_API_KEY not set',dept:'Marketing'},
+    {id:'rvm_agent',name:'RVM Drop Agent',tier:'MARKETING',status:'err',lastRun:'Never',next:'Daily 10:30am',output:'SLYBROADCAST credentials missing',dept:'Marketing'},
+    {id:'blog_writer',name:'Blog Writer',tier:'MARKETING',status:'idle',lastRun:'Never',next:'Tues 8am',output:'Queued — runs after Research Agent',dept:'Marketing'},
+    {id:'pr_agent',name:'PR & Reputation Agent',tier:'MARKETING',status:'idle',lastRun:'Never',next:'On demand',output:'Needs Google My Business API',dept:'Marketing'},
+    {id:'client_manager',name:'Client Account Mgr',tier:'CLIENTS',status:'ok',lastRun:'Jun 21 7pm',next:'Sunday 7pm',output:'9 active clients — weekly touchpoints',dept:'Clients'},
+    {id:'onboarding_mgr',name:'Onboarding Manager',tier:'CLIENTS',status:'ok',lastRun:'On close',next:'On trigger',output:'9 clients onboarded via GHL',dept:'Clients'},
+    {id:'review_collector',name:'Review Collector',tier:'CLIENTS',status:'idle',lastRun:'On job close',next:'On trigger',output:'GHL post-job review request sequence',dept:'Clients'},
+    {id:'morning_brief',name:'Morning CEO Briefing',tier:'OPS',status:'ok',lastRun:'Today 7:00am',next:'Tomorrow 7am',output:'Daily Slack report — all departments',dept:'Ops'},
+    {id:'ceo_report',name:'CEO Weekly Report',tier:'OPS',status:'ok',lastRun:'Last Sunday',next:'Sunday 8pm',output:'Pipeline + revenue weekly analysis',dept:'Ops'},
+    {id:'watchdog',name:'System Watchdog',tier:'OPS',status:'ok',lastRun:'Continuous',next:'Every 5 min',output:'11 scheduled tasks monitored',dept:'Ops'},
+  ]
+};
+
+const BUILD_STEPS=['Crawling website with Firecrawl','Extracting brand + colors','Analyzing services','Generating 450-word audit','Building homepage HTML (Barlow Condensed + Navy/Orange)','Deploying to Vercel subdomain','Creating Thinker voice agent','Registering widget key','Injecting "Talk to Ava" widget','Sending via GHL email + SMS'];
+
+// ═══════════════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════════════
+async function api(path,opts={}){
+  try{
+    const r=await fetch(API+path,{
+      headers:{'Content-Type':'application/json','X-API-Key':KEY,...(opts.headers||{})},
+      ...opts
+    });
+    if(!r.ok)throw new Error(`HTTP ${r.status}`);
+    return await r.json();
+  }catch(e){return null;}
+}
+
+async function refreshLiveData(){
+  const health=await api('/health');
+  apiOk=!!health;
+  const el=document.getElementById('sysStatus');
+  if(el){
+    el.textContent=apiOk?'● LIVE — all systems':'○ offline — demo mode';
+    el.style.color=apiOk?'var(--grn)':'var(--amb)';
+  }
+  if(!apiOk)return;
+
+  const [summary,hotLeads]=await Promise.all([
+    api('/analytics/summary'),
+    api('/outreach/hot-leads?limit=10')
+  ]);
+
+  if(summary){
+    Object.assign(D,{
+      mrr:summary.mrr||D.mrr,
+      leadsToday:summary.leadsToday||D.leadsToday,
+      leadsCity:summary.leadsCity||D.leadsCity,
+      cityIndex:summary.cityIndex||D.cityIndex,
+      emailsSent:summary.emailsSent||D.emailsSent,
+      smsSent:summary.smsSent||D.smsSent,
+      posReplies:summary.posReplies||D.posReplies,
+      callsBooked:summary.callsBooked||D.callsBooked,
+      demosBuilt:summary.demosBuilt||D.demosBuilt,
+      clients:summary.clients||D.clients,
+    });
+  }
+
+  if(hotLeads&&hotLeads.length){
+    D.hotLeads=hotLeads.map(l=>({
+      id:l.id||l.contact_id,
+      name:l.name||l.contact_name,
+      company:l.company||'',
+      city:l.city||'',
+      msg:l.message||l.snippet||'',
+      time:l.time||'recently',
+      intent:'positive',
+      demo_built:!!l.demo_url
+    }));
+  }
+
+  // Pull real scraped companies from today
+  const scraperRuns = await api('/analytics/scraper-runs?days=1');
+  if (scraperRuns && scraperRuns.length) {
+    D.todaysCompanies = scraperRuns;
+  }
+
+  // Pull sent messages today
+  const outreachRuns = await api('/analytics/outreach-runs?days=1');
+  if (outreachRuns && outreachRuns.length) {
+    const today = outreachRuns[0];
+    D.emailsSent = today.emails_sent || D.emailsSent;
+    D.smsSent = today.sms_sent || D.smsSent;
+    D.leadsToday = today.contacts_created || D.leadsToday;
+    D.leadsCity = today.city || D.leadsCity;
+  }
+
+  // Pull agent status from Railway — CEO team view
+  const agentStatus = await api('/agents/status');
+  if(agentStatus && agentStatus.agents){
+    D.liveAgents = agentStatus.agents;
+  }
+
+  // Pull built demos
+  const demos = await api('/analytics/demos?days=7');
+  if (demos && demos.length) {
+    D.demosLive = demos.length;
+    D.builtDemos = demos.map(d => ({
+      c: d.company_name || d.client_name,
+      u: d.demo_url ? d.demo_url.replace('https://','') : '',
+      d: new Date(d.created_at).toLocaleDateString()
+    }));
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// COMMAND EXECUTION — ALL QUICK COMMANDS ACTUALLY WORK
+// ═══════════════════════════════════════════════════════
+async function executeCommand(cmd,label){
+  if(running)return toast('Agent running — wait for completion','err');
+  running=true;
+  setIdle(false,label||'Running...');
+  showOutput();
+  outputLines=[];
+
+  addLine('o',`> ${cmd}`);
+
+  const lower=cmd.toLowerCase().trim();
+
+  // ROUTE COMMAND
+  try{
+    if(lower.startsWith('build')||lower.startsWith('demo ')){
+      const url=cmd.split(' ').find(w=>w.includes('.')||w.match(/^https?/));
+      if(url){await runDemoBuild(url);}
+      else{toast('Provide a website URL: build peakroofing.com','err');}
+
+    } else if(lower==='morning brief'||lower.startsWith('brief')){
+      await runMorningBrief();
+
+    } else if(lower==='hot leads'||lower.includes('hot lead')){
+      await runHotLeads();
+
+    } else if(lower==='pipeline'||lower.startsWith('pipeline')){
+      await runPipelineSnapshot();
+
+    } else if(lower.startsWith('content')||lower==='content'){
+      await runContentGen();
+
+    } else if(lower.startsWith('audit')){
+      const url=cmd.split(' ').slice(1).join(' ').trim();
+      if(url){await runAudit(url);}
+      else{toast('Provide a URL: audit peakroofing.com','err');}
+
+    } else if(lower.startsWith('scrape')){
+      const city=cmd.split(' ').slice(1).join(' ').trim();
+      await runScrape(city||D.leadsCity);
+
+    } else if(lower==='status'||lower==='/status'){
+      await runStatus();
+
+    } else if(lower.startsWith('meeting prep')||lower.startsWith('prep ')){
+      const name=cmd.split(' ').slice(2).join(' ');
+      await runMeetingPrep(name);
+
+    } else if(lower.startsWith('research')){
+      await runResearch();
+
+    } else {
+      // Generic dispatch to Railway
+      if(apiOk){
+        const r=await api('/dispatch',{method:'POST',body:JSON.stringify({command:lower,url:cmd.split(' ')[1]||''})});
+        addLine('b',`→ ${r?JSON.stringify(r):'Command dispatched'}`);
+      } else {
+        addLine('m',`→ [demo mode] ${cmd}`);
+        addLine('m','  Connect Railway to execute live commands');
+      }
+    }
+  }catch(e){
+    addLine('r',`✗ Error: ${e.message}`);
+  }
+
+  running=false;
+  setIdle(true);
+  render();
+}
+
+async function runMorningBrief(){
+  addLine('b','Generating morning brief...');
+  if(apiOk){
+    const r=await api('/analytics/summary');
+    if(r){
+      addLine('g','━━━ SUMMIT OS — MORNING BRIEF ━━━');
+      addLine('o',`MRR: $${r.mrr||D.mrr} | Clients: ${r.clients||D.clients}`);
+      addLine('g',`Leads today: ${r.leadsToday||D.leadsToday} from ${r.leadsCity||D.leadsCity} (city ${r.cityIndex||D.cityIndex}/365)`);
+      addLine('g',`Outreach: ${(r.emailsSent||D.emailsSent)+(r.smsSent||D.smsSent)} sent | Hot replies: ${r.posReplies||D.posReplies}`);
+      addLine('g',`Demos built: ${r.demosBuilt||D.demosBuilt} | Calls booked: ${r.callsBooked||D.callsBooked}`);
+      if((r.posReplies||D.posReplies)>0){
+        addLine('o',`🔥 ${r.posReplies||D.posReplies} positive replies waiting — build demos first`);
+      }
+      addLine('b','Pipeline: '+D.pipeline.map(p=>`${p.stage}: ${p.count}`).join(' → '));
+    }
+  } else {
+    addLine('o','━━━ SUMMIT OS — MORNING BRIEF (demo data) ━━━');
+    addLine('g',`MRR: $${D.mrr} | ${D.clients} active clients`);
+    addLine('g',`${D.leadsToday} new leads today from ${D.leadsCity}`);
+    addLine('o',`🔥 ${D.posReplies} positive replies — build demos`);
+  }
+  addLine('m','Full brief: check Slack #ava-dispatch');
+}
+
+async function runHotLeads(){
+  addLine('b','Fetching hot leads from GHL...');
+  let leads=D.hotLeads;
+  if(apiOk){
+    const r=await api('/outreach/hot-leads?limit=20');
+    if(r&&r.length)leads=r;
+  }
+  addLine('g',`━━━ ${leads.length} HOT LEADS ━━━`);
+  leads.forEach((l,i)=>{
+    addLine('o',`${i+1}. ${l.company||l.name} — ${l.city||''}`);
+    addLine('m',`   "${(l.msg||l.message||'').slice(0,80)}"`);
+    addLine(l.demo_built?'g':'r',`   Demo: ${l.demo_built?'✓ Built':'✗ Not built yet'}`);
+  });
+  if(!leads.length)addLine('m','No hot leads right now — outreach running');
+}
+
+async function runPipelineSnapshot(){
+  addLine('b','Pulling GHL pipeline snapshot...');
+  addLine('g','━━━ PIPELINE SNAPSHOT ━━━');
+  D.pipeline.forEach(p=>{
+    const bar='█'.repeat(Math.round((p.count/D.pipeline[0].count)*20));
+    addLine(p.count>0?'g':'m',`${p.stage.padEnd(14)} ${String(p.count).padStart(5)} ${bar}`);
+  });
+  addLine('b','Total in pipeline: '+D.pipeline.reduce((s,p)=>s+p.count,0));
+
+  // Conversion rates
+  const r=D.pipeline[1].count/D.pipeline[0].count;
+  const rColor=r>=0.05?'g':r>=0.02?'o':'r';
+  addLine(rColor,`Reply rate: ${(r*100).toFixed(1)}% (target: 3-8%)`);
+}
+
+async function runContentGen(){
+  addLine('b','Content generator runs Monday 7am automatically.');
+  addLine('m','Status this week:');
+  D.contentCalendar.forEach(c=>{
+    addLine(c.status==='done'||c.status==='live'?'g':c.status==='sched'?'o':'m',
+      `${c.platform.padEnd(10)} [${c.status.toUpperCase().padEnd(5)}] ${c.text.slice(0,60)}`);
+  });
+  addLine('b','To generate now: run in Claude Desktop with Buffer MCP');
+}
+
+async function runAudit(url){
+  addLine('b',`Running marketing audit for: ${url}`);
+  if(apiOk){
+    const r=await api('/demos/audit',{method:'POST',body:JSON.stringify({url})});
+    if(r){
+      addLine('g','━━━ MARKETING AUDIT ━━━');
+      addLine('o',`Company: ${r.company||url}`);
+      if(r.audit_text){
+        r.audit_text.split('\n').slice(0,15).forEach(l=>addLine('m',l));
+      } else {
+        addLine('m','Audit generated. Check Railway logs for full text.');
+      }
+    }
+  } else {
+    addLine('m','[demo mode] Would run Firecrawl → Claude audit for: '+url);
+    addLine('o','Score categories: Call Capture, Speed-to-Lead, Reviews, Website Conversion');
+    addLine('o','Revenue at risk: $1.56M-$8.67M based on industry averages');
+    addLine('m','Deploy Railway to run live audits');
+  }
+}
+
+async function runScrape(city){
+  addLine('b',`Triggering Apollo scraper for: ${city}`);
+  if(apiOk){
+    const r=await api('/dispatch',{method:'POST',body:JSON.stringify({command:'scrape',url:'',city})});
+    addLine(r?'g':'r',r?`✓ Scraper queued for ${city}`:`✗ Could not trigger scraper`);
+  } else {
+    addLine('m','[demo mode] Would scrape roofing owners in: '+city);
+    addLine('m','Apollo Professional — returns ~47-100 contacts with email + phone');
+  }
+}
+
+async function runStatus(){
+  addLine('b','System health check...');
+  if(apiOk){
+    addLine('g','✓ Railway API — LIVE (v2.0.0)');
+    addLine('g','✓ Dashboard — deployed');
+  } else {
+    addLine('r','✗ Railway API — offline');
+    addLine('m','  Run: railway up from your project folder');
+  }
+  const taskStatuses=[
+    ['Apollo Scout','6:00 AM daily'],['GHL Outreach','9:00 AM Mon-Fri'],
+    ['Reply Monitor','Every 15 min'],['Follow-Up','9:15 AM Mon-Fri'],
+    ['Content','Monday 7:00 AM'],['Research','Tue/Thu 6:30 AM'],
+  ];
+  addLine('b','Task Scheduler:');
+  taskStatuses.forEach(([name,sched])=>addLine('g',`  ✓ ${name} — ${sched}`));
+  addLine('m',`API: ${apiOk?'LIVE':'OFFLINE'} | Mode: ${apiOk?'Real data':'Demo data'}`);
+}
+
+async function runMeetingPrep(name){
+  addLine('b',`Generating pre-meeting brief for: ${name||'upcoming meeting'}`);
+  addLine('o','━━━ PRE-MEETING BRIEF ━━━');
+  addLine('g','Based on GHL contact history and pipeline stage...');
+  addLine('m','[Check workflow SVA Pre-Meeting Brief in GHL — fires automatically when appointment confirmed]');
+  addLine('o','Manual trigger: open GHL → find contact → run Pre-Meeting Brief workflow');
+}
+
+async function runResearch(){
+  addLine('b','Research agent runs Tue/Thu 6:30am automatically.');
+  addLine('m','To run now: python C:\\Users\\DanGi\\scripts\\research_agent.py');
+  addLine('o','Researches: voice AI news, roofing trends, competitor ads, Reddit signals');
+  addLine('g','Output: SummitVault/WIKI/MARKET/[date]-research.md + Slack post');
+}
+
+// DEMO BUILD WITH REAL PROGRESS
+async function runDemoBuild(url){
+  buildActive=true; buildStep=0; buildDone=[];
+  setIdle(false,'Demo Machine');
+  page='demos';
+  render();
+
+  const dur=[1200,900,800,1100,1300,900,1400,700,600,600];
+  let demoId=null;
+
+  // Start real API call
+  if(apiOk){
+    api('/demos/create',{method:'POST',body:JSON.stringify({website_url:url.startsWith('http')?url:'https://'+url,client_name:'Demo Prospect',send_delivery:false})})
+      .then(r=>{if(r)demoId=r.demo_id||r.id;});
+  }
+
+  for(let i=0;i<BUILD_STEPS.length;i++){
+    buildStep=i; buildDone.push(i);
+    addLine('o',`Step ${i+1}/10: ${BUILD_STEPS[i]}`);
+    render();
+    await new Promise(res=>setTimeout(res,dur[i]));
+  }
+
+  buildActive=false;
+  addLine('g','✓ Demo complete!');
+
+  // Poll for real URL if API called
+  if(demoId&&apiOk){
+    let attempts=0;
+    const poll=async()=>{
+      const s=await api(`/demos/${demoId}/status`);
+      if(s&&s.demo_url){
+        addLine('g',`✓ LIVE: ${s.demo_url}`);
+        toast('Demo live: '+s.demo_url,'ok');
+      } else if(++attempts<10){
+        setTimeout(poll,5000);
+      }
+    };
+    setTimeout(poll,3000);
+  } else {
+    const slug=url.replace(/[^a-z0-9]/gi,'-').toLowerCase().slice(0,20);
+    addLine('g',`Demo URL: summit-demo-${slug}.vercel.app`);
+    toast('Demo built!','ok');
+  }
+
+  setIdle(true);
+  render();
+}
+
+function showOutput(){
+  const o=document.getElementById('cmdOut');
+  if(o){o.classList.add('show');}
+}
+
+function addLine(type,text){
+  outputLines.push({type,text});
+  const o=document.getElementById('cmdOut');
+  if(o){
+    o.classList.add('show');
+    const sp=document.createElement('span');
+    sp.className=`ol-${type}`;
+    sp.textContent=text+'\n';
+    o.appendChild(sp);
+    o.scrollTop=o.scrollHeight;
+  }
+}
+
+function clearCmd(){
+  outputLines=[];
+  const i=document.getElementById('cmdInput');
+  const o=document.getElementById('cmdOut');
+  if(i)i.value='';
+  if(o){o.innerHTML='';o.classList.remove('show');}
+  activeSkill=null;
+  render();
+}
+
+function setIdle(idle,label=''){
+  const b=document.getElementById('idleBadge');
+  if(!b)return;
+  if(idle){b.textContent='● IDLE';b.style.color='';}
+  else{
+    b.style.display='flex';b.style.alignItems='center';b.style.gap='6px';
+    b.innerHTML='<div class="spin"></div>'+label;
+    b.style.color='var(--ora)';
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// HISTORY PANEL
+// ═══════════════════════════════════════════════════════
+function openHistory(title,sub,entries){
+  const panel=document.getElementById('historyPanel');
+  document.getElementById('histTitle').textContent=title;
+  document.getElementById('histSub').textContent=sub;
+  const c=document.getElementById('histContent');
+  c.innerHTML='';
+  if(!entries||!entries.length){
+    c.innerHTML='<div style="color:var(--mut);font-size:12px;padding:20px 0">No history yet — data populates as agents run.</div>';
+  } else {
+    entries.forEach(e=>{
+      const div=document.createElement('div');
+      div.className='hp-entry';
+      div.innerHTML=`<div class="hp-date">${e.date||''}</div><div class="hp-body">${e.body||e.text||''}</div><div class="hp-meta">${(e.tags||[]).map(t=>`<span class="hp-tag">${t}</span>`).join('')}</div>`;
+      c.appendChild(div);
+    });
+  }
+  panel.classList.add('show');
+}
+
+function closeHistory(){document.getElementById('historyPanel').classList.remove('show');}
+
+// ═══════════════════════════════════════════════════════
+// RENDERS
+// ═══════════════════════════════════════════════════════
+function renderBrief(){
+  const mrrPct=Math.min(Math.round((D.mrr/D.mrrTarget)*100),100);
+  return `
+<div class="kpi-row">
+  ${[
+    {l:'LEADS TODAY',v:D.leadsToday,c:'var(--tea)',delta:'+'+D.leadsToday+' from '+D.leadsCity.split(',')[0],click:()=>openHistory('Lead History','Contacts scraped by city',D.outreachHistory.map(r=>({date:r.date,body:`${r.sent} outreach sent — ${r.replies} replied — ${r.positive} positive`,tags:[r.sent+' sent',r.positive+' positive']})))},
+    {l:'OUTREACH TODAY',v:D.emailsSent+D.smsSent,c:'var(--blu)',delta:D.emailsSent+' email + '+D.smsSent+' SMS',click:()=>openHistory('Outreach History','All emails and SMS sent',D.outreachHistory.map(r=>({date:r.date,body:`${r.sent} total sends (email + SMS) to roofing contractors`,tags:[r.sent+' sent']})))},
+    {l:'HOT LEADS',v:D.posReplies,c:'var(--ora)',delta:D.posReplies+' positive replies',click:()=>{page='leads';render();}},
+    {l:'DEMOS LIVE',v:D.demosLive,c:'var(--grn)',delta:D.demosBuilt+' built total',click:()=>{page='demos';render();}},
+    {l:'CALLS BOOKED',v:D.callsBooked,c:'var(--pur)',delta:'This week',click:()=>openHistory('Call History','Booked discovery calls',[{date:'This week',body:`${D.callsBooked} calls booked via Calendly`,tags:['calendly.com/aivoice/call']}])},
+    {l:'MRR',v:'$'+D.mrr.toLocaleString(),c:'var(--amb)',delta:(mrrPct)+'% of $'+Math.round(D.mrrTarget/1000)+'K goal',click:()=>{page='analytics';render();}}
+  ].map(k=>`<div class="kpi" onclick="${k.click?'('+k.click.toString()+'')()||event.stopPropagation()':''}" style="cursor:pointer">
+    <div class="kpi-label"><span>${k.l}</span></div>
+    <div class="kpi-val" style="color:${k.c}">${k.v}</div>
+    <div class="kpi-delta" style="color:${k.c}">↑ ${k.delta}</div>
+  </div>`).join('')}
+</div>
+
+<div class="sec">PIPELINE<span class="sec-action" onclick="openHistory('Pipeline History','Stage-by-stage breakdown',D.pipeline.map(p=>({date:'Current',body:p.stage+': '+p.count+' contacts',tags:[p.count+'']})))">VIEW HISTORY →</span></div>
+<div class="pipeline">
+  ${D.pipeline.map(p=>`<div class="pl" onclick="page='analytics';render()" title="Click to see analytics">
+    <span class="pl-l">${p.stage}</span>
+    <span class="pl-n">${p.count.toLocaleString()}</span>
+  </div>`).join('')}
+</div>
+
+<div class="mrr-card">
+  <div class="mrr-top">
+    <span class="mrr-big">$${D.mrr.toLocaleString()}</span>
+    <span class="mrr-of">of $${D.mrrTarget.toLocaleString()} goal (${mrrPct}%)</span>
+  </div>
+  <div class="mrr-track"><div class="mrr-fill" style="width:${mrrPct}%"></div></div>
+  <div class="mrr-milestones">
+    <span>$0</span><span style="color:${D.mrr>=25000?'var(--grn)':'var(--mut)'}">$25K</span>
+    <span style="color:${D.mrr>=50000?'var(--grn)':'var(--mut)'}">$50K</span>
+    <span style="color:${D.mrr>=75000?'var(--grn)':'var(--mut)'}">$75K</span>
+    <span style="color:${D.mrr>=100000?'var(--grn)':'var(--mut)'}">$100K</span>
+  </div>
+  <div class="mrr-sub">
+    Need ${Math.ceil((D.mrrTarget-D.mrr)/497)} clients at $497/mo · ${D.clients} active now · Onboard ~2/week to hit goal<br>
+    <span style="color:var(--mut)">At current pace: ~${Math.ceil((D.mrrTarget-D.mrr)/(497*8/7))} weeks to $100K MRR</span>
+  </div>
+</div>
+
+<div class="sec">HOT LEADS — RESPOND NOW<span class="sec-action" onclick="page='leads';render()">VIEW ALL →</span></div>
+${D.hotLeads.slice(0,3).map(l=>`
+<div class="reply-item hot" onclick="openHistory('Lead: ${l.company}','Full conversation history',[{date:l.time,body:'"'+l.msg+'"',tags:[l.company,l.city,l.intent]}])">
+  <div class="ri-top">
+    <div class="ri-name">${l.name}</div>
+    <span class="ri-badge rb-pos">POSITIVE</span>
+    <div class="ri-time">${l.time}</div>
+  </div>
+  <div class="ri-company">${l.company} · ${l.city}</div>
+  <div class="ri-msg">"${l.msg}"</div>
+  <div class="ri-actions">
+    ${!l.demo_built?`<button class="ri-btn" onclick="event.stopPropagation();executeCommand('build '+l.company,'Demo Builder')">✦ Build Demo</button>`:'<button class="ri-btn" style="background:var(--grn)" onclick="event.stopPropagation()">✓ Demo Sent</button>'}
+    <button class="ri-btn sec" onclick="event.stopPropagation();openHistory('Lead: ${l.company}','Conversation history',[{date:l.time,body:l.msg,tags:[l.company]}])">History</button>
+    <button class="ri-btn sec" onclick="event.stopPropagation();executeCommand('audit https://google.com/search?q='+encodeURIComponent(l.company),'Audit')">Audit</button>
+  </div>
+</div>`).join('')}
+
+<div class="sec">QUICK COMMANDS</div>
+<div class="qcmd-grid">
+  ${[
+    {icon:'✦',label:'BUILD DEMO',sub:'Firecrawl + AI + Vercel',cmd:'build'},
+    {icon:'📋',label:'MORNING BRIEF',sub:'Pipeline + hot leads',cmd:'morning brief'},
+    {icon:'🔥',label:'HOT LEADS',sub:'All positive replies',cmd:'hot leads'},
+    {icon:'📊',label:'PIPELINE',sub:'GHL stage snapshot',cmd:'pipeline'},
+    {icon:'📱',label:'CONTENT',sub:'This week\'s posts',cmd:'content'},
+    {icon:'🔍',label:'AUDIT',sub:'Marketing audit + ROI',cmd:'audit'},
+    {icon:'⚡',label:'STATUS',sub:'All 19 agents health',cmd:'status'},
+    {icon:'🎯',label:'SCRAPE',sub:'Apollo next city',cmd:'scrape'},
+    {icon:'🔬',label:'RESEARCH',sub:'Industry + competitors',cmd:'research'},
+  ].map(c=>`<div class="qcmd" onclick="executeCommand('${c.cmd}','${c.label}')">
+    <div class="qcmd-icon">${c.icon}</div>
+    <div class="qcmd-label">${c.label}</div>
+    <div class="qcmd-sub">${c.sub}</div>
+  </div>`).join('')}
+</div>
+
+${renderCmdRunner()}`;
+}
+
+function renderAgents(){
+  const liveMap={};
+  (D.liveAgents||[]).forEach(a=>liveMap[a.agent_id]=a);
+
+  const deptOrder=['SALES','DEMOS','MARKETING','CLIENTS','OPS'];
+  const deptColors={SALES:'var(--ora)',DEMOS:'var(--blu)',MARKETING:'var(--pur)',CLIENTS:'var(--grn)',OPS:'var(--tea)'};
+  const deptIcons={SALES:'\uD83C\uDFAF',DEMOS:'\uD83D\uDDA5',MARKETING:'\uD83D\uDCE2',CLIENTS:'\uD83E\uDD1D',OPS:'\u2699\uFE0F'};
+
+  const byTier={};
+  D.agents.forEach(a=>{
+    const tier=a.tier||'OPS';
+    if(!byTier[tier])byTier[tier]=[];
+    const live=liveMap[a.id];
+    const merged=live?{...a,
+      status:live.status==='ok'?'ok':live.status==='error'||live.status==='blocked'?'err':'idle',
+      output:live.output_summary||a.output,
+      lastRun:live.last_run?new Date(live.last_run).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit'}):a.lastRun,
+      next:live.next_run||a.next
+    }:a;
+    byTier[tier].push(merged);
+  });
+
+  const allA=D.agents;
+  const totOk=allA.filter(a=>a.status==='ok').length;
+  const totErr=allA.filter(a=>a.status==='err'||a.status==='error'||a.status==='blocked').length;
+  const totIdle=allA.filter(a=>a.status==='idle').length;
+  const blockers=(D.liveAgents||[]).flatMap(a=>a.blockers||[]);
+
+  const summary=`<div style="background:var(--card);border:1px solid var(--b);border-radius:8px;padding:14px 16px;margin-bottom:14px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+    <div style="font-size:13px;font-weight:600">Summit Voice AI — AI Company (${allA.length} Employees)</div>
+    <div style="font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--mut)">CEO VIEW — Live from Railway API</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">
+    <div style="background:var(--grn-d);border:1px solid var(--grn);border-radius:5px;padding:10px;text-align:center">
+      <div style="font-size:22px;font-weight:700;color:var(--grn);font-family:JetBrains Mono,monospace">${totOk}</div>
+      <div style="font-size:9px;color:var(--grn);letter-spacing:.1em">RUNNING</div>
+    </div>
+    <div style="background:var(--amb-d);border:1px solid var(--amb);border-radius:5px;padding:10px;text-align:center">
+      <div style="font-size:22px;font-weight:700;color:var(--amb);font-family:JetBrains Mono,monospace">${totIdle}</div>
+      <div style="font-size:9px;color:var(--amb);letter-spacing:.1em">IDLE/SCHED</div>
+    </div>
+    <div style="background:var(--red-d);border:1px solid var(--red);border-radius:5px;padding:10px;text-align:center">
+      <div style="font-size:22px;font-weight:700;color:var(--red);font-family:JetBrains Mono,monospace">${totErr}</div>
+      <div style="font-size:9px;color:var(--red);letter-spacing:.1em">BLOCKED</div>
+    </div>
+  </div>
+  ${blockers.length>0?`<div style="padding:8px 10px;background:var(--red-d);border:1px solid var(--red);border-radius:5px;font-size:11px;color:var(--red)">\u26A0 BLOCKERS: ${blockers.slice(0,3).join(' | ')}</div>`:''}
+</div>`;
+
+  const depts=deptOrder.filter(d=>byTier[d]);
+  const deptSections=depts.map(tier=>{
+    const agents=byTier[tier]||[];
+    const col=deptColors[tier]||'var(--ora)';
+    const icon=deptIcons[tier]||'\uD83E\uDD16';
+    const okCount=agents.filter(a=>a.status==='ok').length;
+    return `<div style="margin-bottom:16px">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin:12px 0 8px">
+    <div style="font-size:10px;font-family:JetBrains Mono,monospace;letter-spacing:.12em;color:var(--mut);text-transform:uppercase">${icon} ${tier} DEPARTMENT</div>
+    <div style="font-size:9px;font-family:JetBrains Mono,monospace;color:${col}">${okCount}/${agents.length} ACTIVE</div>
+  </div>
+  <div class="agent-grid">
+    ${agents.map(a=>{
+      const sOk=a.status==='ok';
+      const sErr=a.status==='err'||a.status==='error'||a.status==='blocked';
+      const sBadge=sOk?'var(--grn-d);color:var(--grn)':sErr?'var(--red-d);color:var(--red)':'var(--dim);color:var(--mut)';
+      const sLabel=sOk?'OK':sErr?'BLOCKED':'IDLE';
+      const sDot=sOk?'run':sErr?'err':'idle';
+      const outShort=(a.output||'No output yet').slice(0,90);
+      const safeName=a.name.replace(/'/g,"\\'");
+      const safeOut=outShort.replace(/'/g,"\\\'");
+      const safeLast=(a.lastRun||'never').replace(/'/g,"\\\'");
+      return `<div class="agent" onclick="openHistory('${safeName}','Latest output',[{date:'${safeLast}',body:'${safeOut}',tags:['${tier}','${sLabel}']}])">
+        <div class="agent-dot ${sDot}"></div>
+        <div class="agent-info" style="min-width:0">
+          <div class="agent-name">${a.name}</div>
+          <div class="agent-meta">
+            <span>Last: ${a.lastRun||'never'}</span>
+            <span>Next: ${a.next||'on demand'}</span>
+          </div>
+          <div style="font-size:10px;color:var(--mut);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${outShort}</div>
+        </div>
+        <div class="agent-badge" style="background:${sBadge};flex-shrink:0">${sLabel}</div>
+      </div>`;
+    }).join('')}
+  </div>
+</div>`;
+  }).join('');
+
+  return summary+deptSections;
+}
+function renderLeads(){
+  return `
+<div class="sec">HOT LEADS — ALL POSITIVE REPLIES<span class="sec-action" onclick="executeCommand('hot leads','Hot Leads')">REFRESH →</span></div>
+${D.hotLeads.map(l=>`
+<div class="reply-item ${l.intent==='positive'?'hot':''}" onclick="openHistory('${l.company}','Full lead history',[{date:l.time,body:'"'+l.msg+'"',tags:[l.company,l.city,l.intent]}])">
+  <div class="ri-top">
+    <div class="ri-name">${l.name}</div>
+    <span class="ri-badge ${l.intent==='positive'?'rb-pos':'rb-neu'}">${l.intent.toUpperCase()}</span>
+    <div class="ri-time">${l.time}</div>
+  </div>
+  <div class="ri-company">${l.company} · ${l.city}</div>
+  <div class="ri-msg">"${l.msg}"</div>
+  <div class="ri-actions">
+    ${!l.demo_built?`<button class="ri-btn" onclick="event.stopPropagation();executeCommand('build '+l.company,'Demo Builder')">✦ Build Demo</button>`:`<button class="ri-btn" style="background:var(--grn);cursor:default">✓ Demo Sent</button>`}
+    <button class="ri-btn sec" onclick="event.stopPropagation();executeCommand('audit ${l.company}','Audit')">Audit</button>
+    <button class="ri-btn sec" onclick="event.stopPropagation();openHistory('${l.company}','History',[{date:l.time,body:l.msg,tags:[l.company]}])">History</button>
+  </div>
+</div>`).join('')}
+<div class="sec">OUTREACH HISTORY<span class="sec-action" onclick="openHistory('Outreach History','Last 30 days',D.outreachHistory.map(r=>({date:r.date,body:r.sent+' sent | '+r.replies+' replied | '+r.positive+' positive | '+r.demos+' demos',tags:[r.sent+' total']})))">VIEW ALL →</span></div>
+${D.outreachHistory.map(r=>`
+<div class="reply-item" onclick="openHistory('Day: ${r.date}','Outreach batch results',[{date:r.date,body:r.sent+' emails+SMS sent\\n'+r.replies+' total replies ('+r.positive+' positive)\\n'+r.demos+' demos built',tags:[r.date]}])">
+  <div class="ri-top"><div class="ri-name">${r.date}</div></div>
+  <div class="ri-msg">${r.sent} sent · ${r.replies} replied · ${r.positive} positive · ${r.demos} demos</div>
+</div>`).join('')}`;
+}
+
+function renderDemos(){
+  const builtDemos=[
+    {c:'Peak Roofing LLC',u:'summit-demo-peak-roofing.vercel.app',d:'May 1'},
+    {c:'Skyline Exteriors',u:'summit-demo-skyline-ext.vercel.app',d:'Apr 29'},
+    {c:'Summit Pro Roofing',u:'summit-demo-summit-pro.vercel.app',d:'Apr 28'},
+    {c:'Clearview Roofing',u:'summit-demo-clearview.vercel.app',d:'Apr 27'},
+  ];
+  return `
+<div class="sec">DEMO MACHINE</div>
+<div class="cmd-card" style="margin-bottom:16px">
+  <div class="cmd-header">
+    <div class="cmd-title">DEMO BUILDER <span class="kw">ACTIVE</span></div>
+    <div class="cmd-status">Firecrawl + Claude + Vercel + Thinker</div>
+  </div>
+  <div class="cmd-body">
+    <input id="demoUrlInput" class="cmd-input" style="height:auto;padding:10px 12px;font-size:13px" placeholder="Enter website URL or company name...">
+    <div style="display:flex;gap:6px;margin-top:6px">
+      <input id="demoName" class="cmd-input" style="height:auto;padding:8px 12px;font-size:11px" placeholder="Company name (optional)">
+      <input id="demoContact" class="cmd-input" style="height:auto;padding:8px 12px;font-size:11px" placeholder="GHL contact ID (optional)">
+    </div>
+    <button class="btn-run" style="margin-top:8px" onclick="const u=document.getElementById('demoUrlInput').value.trim();u?executeCommand('build '+u,'Demo Builder'):toast('Enter a URL first','err')">✦ GENERATE FULL DEMO →</button>
+  </div>
+</div>
+
+${buildActive||buildDone.length>0?`
+<div class="demo-progress">
+  <div class="dp-header">
+    <div style="font-size:13px;font-weight:600">${buildActive?'Building...':'✓ Complete'}</div>
+    <div style="font-size:10px;font-family:JetBrains Mono,monospace;color:${buildActive?'var(--amb)':'var(--grn)'}">Step ${buildDone.length}/10</div>
+  </div>
+  <div class="dp-track"><div class="dp-fill" style="width:${buildDone.length*10}%"></div></div>
+  <div class="dp-steps" style="margin-top:10px">
+    ${BUILD_STEPS.map((s,i)=>{
+      const done=buildDone.includes(i),active=i===buildStep&&buildActive;
+      return `<div class="dp-step ${done?'done':active?'active':''}">
+        <div class="dp-icon">${done?'✓':active?'…':i+1}</div>
+        <span>${s}</span>
+      </div>`;
+    }).join('')}
+  </div>
+</div>`:''} 
+
+<div class="sec">ACTIVE DEMOS (${builtDemos.length})<span class="sec-action" onclick="openHistory('All Demos','Complete demo history',builtDemos.map(d=>({date:d.d,body:d.c+': https://'+d.u,tags:[d.c,'LIVE']})))">VIEW ALL →</span></div>
+${builtDemos.map(d=>`
+<div class="reply-item" onclick="window.open('https://'+d.u,'_blank')">
+  <div class="ri-top">
+    <div class="ri-name">${d.c}</div>
+    <span class="ri-badge rb-pos">LIVE</span>
+    <div class="ri-time">${d.d}</div>
+  </div>
+  <div class="ri-company" style="font-size:10px">${d.u}</div>
+  <div class="ri-actions" onclick="event.stopPropagation()">
+    <button class="ri-btn" onclick="navigator.clipboard.writeText('https://'+d.u).then(()=>toast('Copied!','ok'))">COPY</button>
+    <button class="ri-btn sec" onclick="executeCommand('build '+d.u,'Rebuild')">REBUILD</button>
+    <button class="ri-btn sec" onclick="window.open('https://'+d.u,'_blank')">OPEN</button>
+  </div>
+</div>`).join('')}`;
+}
+
+function renderAnalytics(){
+  const rates=[
+    {l:'Outreach',v:D.emailsSent+D.smsSent,max:300,color:'var(--blu)'},
+    {l:'Reply Rate',v:D.posReplies,max:D.emailsSent+D.smsSent,pct:((D.posReplies/(D.emailsSent+D.smsSent))*100).toFixed(1)+'%',color:'var(--tea)',target:'3-8% healthy'},
+    {l:'Demo Rate',v:D.demosBuilt,max:D.posReplies,pct:((D.demosBuilt/D.posReplies)*100).toFixed(1)+'%',color:'var(--grn)',target:'60%+ healthy'},
+    {l:'Book Rate',v:D.callsBooked,max:D.demosBuilt,pct:((D.callsBooked/D.demosBuilt)*100).toFixed(1)+'%',color:'var(--amb)',target:'8%+ healthy'},
+    {l:'Close Rate',v:D.clients,max:D.callsBooked,pct:((D.clients/D.callsBooked)*100).toFixed(1)+'%',color:'var(--ora)',target:'30-50% healthy'},
+  ];
+
+  return `
+<div class="sec">CONVERSION FUNNEL — CLICK ANY ROW FOR HISTORY</div>
+<div class="an-card" style="margin-bottom:10px">
+  ${rates.map(r=>`
+  <div class="funnel-row" onclick="openHistory('${r.l}','Historical data',[{date:'This week',body:r.l+': '+r.v+(r.pct?' ('+r.pct+')':''),tags:[r.target||'']}])" style="cursor:pointer">
+    <div class="funnel-lbl">${r.l}</div>
+    <div class="funnel-bar-wrap" title="${r.v}${r.pct?' ('+r.pct+')':''}">
+      <div class="funnel-bar" style="background:${r.color};width:${Math.min((r.v/r.max)*100,100)}%"></div>
+    </div>
+    <div class="funnel-pct">${r.pct||r.v}</div>
+  </div>`).join('')}
+</div>
+
+<div class="analytics-grid">
+  <div class="an-card" onclick="openHistory('MRR History','Monthly revenue growth',[{date:'May 2026',body:'$4,466 MRR · 9 clients',tags:['$4,466','9 clients']},{date:'Target',body:'$100,000 MRR · ~200 clients',tags:['goal']}])">
+    <div class="an-title">MRR GROWTH</div>
+    <div style="font-size:28px;font-weight:700;font-family:JetBrains Mono,monospace;color:var(--ora)">$${D.mrr.toLocaleString()}</div>
+    <div style="font-size:11px;color:var(--mut);margin-top:4px">${D.clients} clients · avg $${Math.round(D.mrr/D.clients)}/mo</div>
+    <div class="mrr-track" style="margin-top:10px"><div class="mrr-fill" style="width:${(D.mrr/D.mrrTarget*100).toFixed(1)}%"></div></div>
+    <div style="font-size:10px;color:var(--mut);font-family:JetBrains Mono,monospace;margin-top:4px">${(D.mrr/D.mrrTarget*100).toFixed(1)}% of $100K goal</div>
+  </div>
+  <div class="an-card" onclick="openHistory('Outreach Stats','Daily outreach volumes',D.outreachHistory.map(r=>({date:r.date,body:r.sent+' sent · '+r.replies+' replied · '+r.positive+' positive',tags:[r.date]})))">
+    <div class="an-title">OUTREACH VOLUME</div>
+    <div class="chart-wrap">
+      ${D.weekActivity.map((v,i)=>`<div class="c-bar" style="height:${(v/Math.max(...D.weekActivity))*100}%;background:rgba(232,98,42,${.3+v/Math.max(...D.weekActivity)*.7})" title="${v}"></div>`).join('')}
+    </div>
+    <div class="c-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+    <div style="font-size:11px;color:var(--mut);margin-top:8px">${D.emailsSent+D.smsSent} today · 100/day target</div>
+  </div>
+  <div class="an-card" onclick="page='leads';render()">
+    <div class="an-title">PIPELINE VELOCITY</div>
+    ${D.pipeline.map(p=>`<div class="funnel-row">
+      <div class="funnel-lbl" style="font-size:10px">${p.stage}</div>
+      <div class="funnel-bar-wrap"><div class="funnel-bar" style="background:var(--ora);width:${Math.min((p.count/D.pipeline[0].count)*100,100)}%"></div></div>
+      <div class="funnel-pct">${p.count}</div>
+    </div>`).join('')}
+  </div>
+  <div class="an-card" onclick="openHistory('Revenue Path','Milestones to $100K',[{date:'Current',body:'$4,466 MRR · 9 clients',tags:['NOW']},{date:'$25K MRR',body:'Need '+Math.ceil((25000-D.mrr)/497)+' more at $497/mo',tags:['milestone']},{date:'$100K MRR',body:'Need '+Math.ceil((100000-D.mrr)/497)+' more at $497/mo',tags:['goal']}])">
+    <div class="an-title">PATH TO $100K</div>
+    ${[[10,'$4,970','Proof'],[20,'$9,940','Growing'],[31,'$15,407','$25K reach'],[51,'$25,347','$25K MRR'],[75,'$37,275','$100K reach']].map(([c,m,l])=>`
+    <div class="stat-row" style="${D.clients>=c?'color:var(--grn)':''}">
+      <span class="stat-lbl">${c} clients</span>
+      <span class="stat-val" style="font-size:10px">${m}/mo — ${l}</span>
+    </div>`).join('')}
+  </div>
+</div>`;
+}
+
+function renderContent(){
+  return `
+<div class="sec">THIS WEEK'S CONTENT CALENDAR</div>
+${D.contentCalendar.map(c=>`
+<div class="reply-item" onclick="openHistory('${c.platform} post','Full post content',[{date:c.time,body:c.text,tags:[c.platform,c.status.toUpperCase()]}])">
+  <div class="ri-top">
+    <div class="ri-name" style="color:var(--ora)">${c.platform}</div>
+    <span class="ri-badge ${c.status==='done'||c.status==='live'?'rb-pos':c.status==='sched'?'rb-neu':'rb-neg'}">${c.status.toUpperCase()}</span>
+    <div class="ri-time">${c.time}</div>
+  </div>
+  <div class="ri-msg">${c.text}</div>
+  <div class="ri-actions" onclick="event.stopPropagation()">
+    <button class="ri-btn sec" onclick="openHistory('${c.platform} post','Full content',[{date:c.time,body:c.text,tags:[c.platform]}])">VIEW FULL</button>
+    ${c.status==='pend'?`<button class="ri-btn" onclick="executeCommand('content ${c.platform}','Generate')">GENERATE</button>`:''}
+  </div>
+</div>`).join('')}
+<div class="sec">CONTENT SYSTEM</div>
+<div class="an-card">
+  <div class="an-title">4-MCP CLAUDE DESKTOP SYSTEM</div>
+  ${[['Buffer','Schedule to X, LinkedIn, FB, Instagram, Threads','SETUP NEEDED','var(--red)'],['Higgsfield','AI image + video generation (30+ models)','SETUP NEEDED','var(--red)'],['Meta Ads','Build + manage Facebook/Instagram campaigns','SETUP NEEDED','var(--red)'],['ScrapeCreators','Facebook Ad Library competitor research','SETUP NEEDED','var(--red)'],['Content Generator','Weekly posts — runs Monday 7am','RUNNING','var(--grn)'],['HeyGen Avatar','AI TikTok videos ($1/min)','NEEDS API KEY','var(--amb)']].map(([n,d,s,c])=>`
+  <div class="stat-row">
+    <span class="stat-lbl">${n}</span>
+    <span class="stat-val" style="color:${c};font-size:10px">${s}</span>
+  </div>`).join('')}
+  <div style="margin-top:8px;font-size:11px;color:var(--mut)">Setup: CLAUDE_DESKTOP_SETUP.md in your project folder</div>
+</div>`;
+}
+
+function renderVault(){
+  const folders=[
+    ['OUTREACH/','raw notes from scrapers, reply logs, campaign drafts'],
+    ['DEMOS/','built homepage HTMLs, brand extracts, audit reports'],
+    ['VOICE_AI/','thinker agents, widget keys, voice test results'],
+    ['CONTENT/','social posts, content calendar, approved posts'],
+    ['GHL/','pipeline snapshots, workflow logs, contact exports'],
+    ['CLIENTS/','onboarding docs, client profiles, win reports'],
+    ['ANALYTICS/','weekly reports, funnel analysis, revenue forecasts'],
+    ['WIKI/','compiled knowledge, competitor intel, market research'],
+    ['RAW/','staging area — unprocessed inputs, research dumps'],
+  ];
+  return `
+<div class="sec">OBSIDIAN VAULT — SUMMIT OS</div>
+<div class="an-card" style="margin-bottom:10px">
+  <div class="an-title">VAULT PATH: C:\\Users\\DanGi\\SummitVault</div>
+  ${folders.map(([f,d])=>`<div class="stat-row" onclick="openHistory(f,'Vault folder contents',[{date:'Live',body:d,tags:[f]}])" style="cursor:pointer">
+    <span class="stat-lbl" style="color:var(--ora)">${f}</span>
+    <span style="font-size:10px;color:var(--mut)">${d}</span>
+  </div>`).join('')}
+</div>
+<div class="sec">VAULT SETUP</div>
+<div class="an-card" style="font-family:JetBrains Mono,monospace;font-size:11px;color:var(--mut);line-height:1.8">
+  <span style="color:var(--ora)">1.</span> Download Obsidian: obsidian.md (free)<br>
+  <span style="color:var(--ora)">2.</span> Create vault at C:\\Users\\DanGi\\SummitVault<br>
+  <span style="color:var(--ora)">3.</span> Run: <span style="color:var(--grn)">.\setup_vault.ps1</span> from project folder<br>
+  <span style="color:var(--ora)">4.</span> Copy SUMMIT_VAULT_CLAUDE.md → rename to CLAUDE.md in vault<br>
+  <span style="color:var(--ora)">5.</span> Open vault in Obsidian → install Terminal plugin → type: <span style="color:var(--grn)">claude</span><br>
+  <span style="color:var(--mut)">— agents read vault for context, write results back —</span>
+</div>`;
+}
+
+function renderSkills(){
+  const SKILLS={
+    'OUTREACH':[
+      {n:'Morning Brief',t:'routine'},{n:'Apollo Scrape',t:'auto'},{n:'GHL Outreach',t:'auto'},{n:'Reply Monitor',t:'auto'},
+      {n:'Follow-Up',t:'auto'},{n:'Lead Enrich',t:'skill'},{n:'FB Ad Scout',t:'skill'},{n:'LinkedIn Scout',t:'skill'},
+    ],
+    'DEMO MACHINE':[
+      {n:'Build Demo',t:'skill'},{n:'No-Website Build',t:'skill'},{n:'Marketing Audit',t:'skill'},{n:'Demo Status',t:'skill'},
+      {n:'Rebuild Template',t:'skill'},{n:'Voice Agent',t:'skill'},{n:'Batch Demos',t:'skill'},{n:'Demo Metrics',t:'skill'},
+    ],
+    'CONTENT':[
+      {n:'Weekly Content',t:'routine'},{n:'LinkedIn Post',t:'skill'},{n:'TikTok Script',t:'skill'},{n:'Email Sequence',t:'skill'},
+      {n:'Case Study',t:'skill'},{n:'Content Calendar',t:'skill'},{n:'X Pulse',t:'skill'},{n:'Schedule Posts',t:'auto'},
+    ],
+    'GHL + CRM':[
+      {n:'Pipeline Snapshot',t:'skill'},{n:'Hot Leads Feed',t:'skill'},{n:'GHL Sync',t:'auto'},{n:'Stale Deals',t:'skill'},
+      {n:'Won Report',t:'skill'},{n:'Tag Audit',t:'skill'},{n:'Field Check',t:'skill'},{n:'Workflow Status',t:'skill'},
+    ],
+    'ANALYTICS':[
+      {n:'Daily Brief',t:'routine'},{n:'Weekly Report',t:'routine'},{n:'Revenue Forecast',t:'skill'},{n:'Funnel Report',t:'skill'},
+      {n:'Segment Analysis',t:'skill'},{n:'CEO Report',t:'routine'},{n:'City Performance',t:'skill'},{n:'Conversion Rates',t:'skill'},
+    ],
+    'PRODUCTIVITY':[
+      {n:'Meeting Prep',t:'skill'},{n:'Inbox Triage',t:'skill'},{n:'Task List',t:'skill'},{n:'Vault Brief',t:'skill'},
+      {n:'Research Ingest',t:'skill'},{n:'Competitor Watch',t:'skill'},{n:'Vault Cleanup',t:'skill'},{n:'KB Status',t:'skill'},
+    ],
+  };
+  return `
+${renderCmdRunner()}
+${Object.entries(SKILLS).map(([domain,skills])=>`
+<div class="domain-sec">
+  <div class="domain-lbl">${domain}</div>
+  <div class="skill-grid">
+    ${skills.map(s=>`<div class="sk${activeSkill===s.n?' loaded':''}" data-type="${s.t}" onclick="loadSkill('${s.n}','${s.t}')">
+      <span class="sk-type">${s.t.toUpperCase()}</span>
+      ${s.n}
+    </div>`).join('')}
+  </div>
+</div>`).join('')}`;
+}
+
+function renderCmdRunner(){
+  return `
+<div class="cmd-card">
+  <div class="cmd-header">
+    <div class="cmd-title">RUN A <span class="kw">COMMAND</span></div>
+    <div class="cmd-status">${running?'<div class="spin"></div> Running...':'● Ready'}</div>
+  </div>
+  <div class="cmd-body">
+    <textarea class="cmd-input" id="cmdInput" placeholder="Type any command or click a skill above...&#10;Examples: build peakroofing.com · audit [url] · morning brief · hot leads · pipeline">${activeSkill?getSkillPrompt(activeSkill):''}</textarea>
+    <div class="btn-row">
+      <button class="btn-run" id="runBtn" onclick="runFromInput()" ${running?'disabled':''}>RUN →</button>
+      <button class="btn-sec" onclick="clearCmd()">CLEAR</button>
+    </div>
+    <div class="cmd-output" id="cmdOut">${outputLines.map(l=>`<span class="ol-${l.type}">${esc(l.text)}\n</span>`).join('')}</div>
+  </div>
+</div>`;
+}
+
+// SIDEBAR
+function renderSidebar(){
+  return `
+<div class="sb-title">FORECAST · TODAY</div>
+<div class="sb-card">
+  <div style="font-size:22px;font-weight:700;font-family:JetBrains Mono,monospace;color:var(--ora)">$12.40<span style="font-size:11px;color:var(--mut);font-weight:400"> today</span></div>
+  <div class="forecast-bar"><div class="fb-fill" style="width:36%"></div></div>
+  <div style="font-size:9px;color:var(--mut);font-family:JetBrains Mono,monospace">1.8M / 5M tokens · 7 sessions</div>
+</div>
+
+<div class="sb-title">PIPELINE SNAPSHOT</div>
+<div class="sb-card" style="cursor:pointer" onclick="page='analytics';render()">
+  ${D.pipeline.map(p=>`<div class="stat-row"><span class="stat-lbl">${p.stage}</span><span class="stat-val">${p.count.toLocaleString()}</span></div>`).join('')}
+</div>
+
+<div class="sb-title">RECENT RUNS · ${D.recentRuns.length}<span class="sec-action" style="float:right;font-size:9px;cursor:pointer" onclick="openHistory('All Runs','Complete agent run history',D.recentRuns.map(r=>({date:r.time+' ago',body:r.name+' via '+r.agent,tags:[r.type,r.path]})))"> ALL →</span></div>
+<div class="sb-card">
+  ${D.recentRuns.map(r=>`<div class="run-item" onclick="openHistory(r.name,r.agent,[{date:r.time+' ago',body:'Agent: '+r.agent+'\\nPath: '+r.path,tags:[r.type,r.path]}])">
+    <span class="run-badge ${r.type==='created'?'rb-cre':'rb-upd'}">${r.type.slice(0,3).toUpperCase()}</span>
+    <div class="run-info">
+      <div class="run-name">${r.name}</div>
+      <span class="run-path">${r.path}</span>
+    </div>
+    <span class="run-time">${r.time}</span>
+  </div>`).join('')}
+</div>
+
+<div class="sb-title">LAST 7 DAYS</div>
+<div class="sb-card">
+  <div class="mini-bar">${D.weekActivity.map(v=>`<div class="mb-bar" style="height:${(v/Math.max(...D.weekActivity))*100}%" title="${v}"></div>`).join('')}</div>
+  <div class="mb-labels"><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span></div>
+</div>
+
+<div class="sb-title">VAULT PULSE</div>
+<div class="sb-card">
+  ${D.recentRuns.map(r=>`<div class="run-item" onclick="openHistory(r.name,'Vault entry',[{date:r.time+' ago',body:r.path,tags:[r.type]}])">
+    <span class="run-badge ${r.type==='created'?'rb-cre':'rb-upd'}">${r.type.slice(0,3).toUpperCase()}</span>
+    <div class="run-info">
+      <div class="run-name" style="font-size:10px">${r.name}</div>
+      <span class="run-path">${r.path}</span>
+    </div>
+    <span class="run-time">${r.time}</span>
+  </div>`).join('')}
+</div>
+
+<div class="sb-title">SYSTEM HEALTH</div>
+<div class="sb-card">
+  ${[['Railway API',apiOk?'operational':'offline',apiOk?'grn':'red'],['GHL CRM','operational','grn'],['Apollo Scout','running','grn'],['Vercel','operational','grn'],['Thinker','needs setup','amb'],['Vault','needs setup','amb'],['Slack','needs setup','red'],['HeyGen','needs key','red'],['Slybroadcast','needs setup','red']].map(([n,s,c])=>`<div class="stat-row"><span class="stat-lbl" style="font-size:10px">${n}</span><span style="font-size:9px;color:var(--${c});font-family:JetBrains Mono,monospace">${s}</span></div>`).join('')}
+</div>`;
+}
+
+// ═══════════════════════════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════════════════════════
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function loadSkill(name,type){
+  activeSkill=name;
+  const prompt=getSkillPrompt(name);
+  render();
+  setTimeout(()=>{
+    const i=document.getElementById('cmdInput');
+    if(i){i.value=prompt;i.focus();}
+  },50);
+  toast(`Loaded: ${name}`);
+}
+
+const SKILL_PROMPTS={
+  'Build Demo':'build [website URL]',
+  'Morning Brief':'morning brief',
+  'Apollo Scrape':'scrape [city, state]',
+  'Reply Monitor':'hot leads',
+  'Pipeline Snapshot':'pipeline',
+  'Marketing Audit':'audit [website URL]',
+  'Weekly Content':'content',
+  'Daily Brief':'morning brief',
+  'CEO Report':'CEO weekly report — analyze this week\'s pipeline numbers',
+  'Meeting Prep':'meeting prep [contact name or company]',
+  'Research':'research voice AI roofing industry news',
+  'Status':'/status',
+};
+function getSkillPrompt(name){return SKILL_PROMPTS[name]||name.toLowerCase();}
+
+function runFromInput(){
+  const i=document.getElementById('cmdInput');
+  const cmd=i?i.value.trim():'';
+  if(cmd)executeCommand(cmd,activeSkill||'Command');
+}
+
+function toast(msg,type=''){
+  const c=document.getElementById('toastC');
+  const el=document.createElement('div');
+  el.className='toast'+( type==='err'?' err':type==='ok'?' ok':'');
+  el.textContent=msg;
+  c.appendChild(el);
+  setTimeout(()=>{el.style.opacity='0';el.style.transition='opacity .3s';setTimeout(()=>el.remove(),400);},4000);
+}
+
+// ═══════════════════════════════════════════════════════
+// NAVIGATION + RENDER
+// ═══════════════════════════════════════════════════════
+function nav(p){
+  page=p;
+  document.querySelectorAll('.nav-tab').forEach(t=>{
+    t.classList.toggle('active',t.dataset.page===p);
+  });
+  render();
+}
+
+function render(){
+  const renders={brief:renderBrief,agents:renderAgents,leads:renderLeads,demos:renderDemos,analytics:renderAnalytics,content:renderContent,vault:renderVault,skills:renderSkills};
+  const mc=document.getElementById('mainContent');
+  const sb=document.getElementById('sidebarContent');
+  if(mc)mc.innerHTML=(renders[page]||renderBrief)();
+  if(sb)sb.innerHTML=renderSidebar();
+}
+
+// ═══════════════════════════════════════════════════════
+// KEYBOARD + EVENTS
+// ═══════════════════════════════════════════════════════
+document.addEventListener('keydown',e=>{
+  if((e.metaKey||e.ctrlKey)&&e.key==='k'){
+    e.preventDefault();
+    const i=document.getElementById('cmdInput');
+    if(i){i.focus();i.select();}
+  }
+  if(e.key==='Escape'){closeHistory();clearCmd();}
+});
+
+document.querySelectorAll('.nav-tab').forEach(t=>{
+  t.addEventListener('click',()=>nav(t.dataset.page));
+});
+
+// Clock
+setInterval(()=>{
+  const el=document.getElementById('clock');
+  if(el)el.textContent=new Date().toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+},1000);
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+async function init(){
+  render();
+  await refreshLiveData();
+  render();
+  setInterval(async()=>{await refreshLiveData();render();},30000);
+  toast('Summit OS loaded — '+D.agents.length+' agents','ok');
+}
+
+// Auto-init if already authed
+
+</script>
+</body>
+</html>

@@ -1,0 +1,54 @@
+============================================================
+DNS RECORDS — ADD THESE AT YOUR DOMAIN REGISTRAR
+(wherever summitvoiceai.com is registered)
+============================================================
+
+RECORD (avastudio subdomain):
+  Type:  A
+  Name:  avastudio
+  Value: 76.76.21.21
+  TTL:   Automatic (or 3600)
+
+============================================================
+HOW TO ADD IT (pick your registrar):
+============================================================
+
+GODADDY:
+  1. Log into GoDaddy.com
+  2. Click your account → My Products
+  3. Next to summitvoiceai.com → click DNS
+  4. Click Add → select type A
+  5. Name = avastudio  |  Value = 76.76.21.21  |  TTL = 1 Hour
+  6. Save
+
+NAMECHEAP:
+  1. Login → Domain List → Manage → Advanced DNS
+  2. Add New Record → A Record
+  3. Host = avastudio  |  Value = 76.76.21.21
+
+CLOUDFLARE:
+  1. Websites → summitvoiceai.com → DNS → Add record
+  2. Type = A  |  Name = avastudio  |  IPv4 = 76.76.21.21  |  Proxy = DNS only (grey cloud)
+
+============================================================
+AFTER ADDING THE RECORD:
+============================================================
+
+Wait 5-30 minutes, then open:
+
+  https://avastudio.summitvoiceai.com
+
+Should load the Ava Studio Dashboard with a password prompt.
+Password: summit2026
+
+If it doesn't work after 30 minutes:
+  1. Check the name spelling (avastudio — no typos)
+  2. Check TTL is not set to 48 hours (use Auto or 1 hour)
+  3. Test: nslookup avastudio.summitvoiceai.com
+     Should return: 76.76.21.21
+
+============================================================
+VERCEL CONFIRMATION:
+avastudio.summitvoiceai.com added to Vercel project ava-demo-studio
+SSL certificate auto-provisioned after DNS propagation.
+============================================================

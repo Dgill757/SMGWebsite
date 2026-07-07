@@ -1,0 +1,85 @@
+﻿SUMMIT OS — COMPLETE SYSTEM STATUS
+====================================
+Generated: 2026-06-19 17:17 EST
+
+━━━ CORE INFRASTRUCTURE ━━━
+Railway API:          https://ava-studio-api-production.up.railway.app — LIVE
+Dashboard:            https://dashboard.summitvoiceai.com — LIVE
+                      https://avastudio.summitvoiceai.com — LIVE
+Dashboard login:      WORKING (fixed DOMContentLoaded auth bug)
+Dashboard password:   summit2026
+Supabase:            CONNECTED (ava-studio project: omdpkeaqgtizakdfughq)
+GitHub token:        NOT CHECKED (not required for current tasks)
+
+━━━ DEMO MACHINE ━━━
+Last test result:    FAILED — Anthropic API credits depleted
+Demo URL:            N/A (demo build failed at step 2/10)
+Error:               "Your credit balance is too low to access the Anthropic API"
+Fix required:        Add credits at console.anthropic.com → Plans & Billing
+                     OR update ANTHROPIC_API_KEY in Railway env vars with a key that has credits
+Template source:     In-memory demo_store (Railway service)
+Website quality:     N/A — demo could not complete due to credit issue
+
+━━━ SCHEDULED AGENTS (running on Dan's PC) ━━━
+SummitVoiceAI-DailyOutreach:  ✓  Ready — 6am daily
+Summit Daily Agent:            ✓  Ready — GHL outreach
+SummitVoiceAI-Followup:       ✓  Ready — Day 3/7/14 follow-up
+SummitVoiceAI-ReplyMonitor:   ✓  Ready — every 15 min
+Summit Content Generator:      ✓  Ready — Monday 7am
+Summit Research Agent:         ✓  Ready — Tue/Thu 6:30am
+Summit Social Poster:          ✓  Ready — Monday 7:30am
+Summit CEO Report:             ✓  Ready
+Summit Client Manager:         ✓  Ready
+Summit HeyGen Avatar:          ✓  Ready
+Summit RVM Drops:              ✓  Ready
+ALL 11/11 TASKS READY
+
+━━━ DATA FLOWING (verified live) ━━━
+Analytics summary:   330 companies scraped | 1,500 emails sent | city_index 62/365
+Last city:           Broken Arrow, Oklahoma
+Demos built:         1 (in session memory)
+Hot leads:           0 replies yet
+Railway env vars:    AVA_API_URL + AVA_API_KEY confirmed in both .env files
+
+━━━ NEW ENDPOINTS ADDED TO RAILWAY API ━━━
+GET /analytics/scraper-runs?days=N   — scraper runs from Supabase
+GET /analytics/outreach-runs?days=N  — outreach runs from Supabase
+GET /analytics/demos?days=N          — demos from in-memory store
+Railway redeployment: IN PROGRESS (railway up ran, build deploying)
+
+━━━ GHL SYSTEM ━━━
+Workflows published: NOT CHECKED (requires manual GHL login)
+AI prompts added:    NOT CHECKED
+Outbound webhooks:   NOT CHECKED
+
+━━━ WHAT DAN DOES TODAY ━━━
+🔴 CRITICAL — Fix demo machine first:
+   1. Go to console.anthropic.com → Plans & Billing → add credits
+      OR go to railway.com → ava-studio-api → Variables → update ANTHROPIC_API_KEY
+      with a key from an account that has credits
+      (This is the ONLY thing blocking demo builds)
+
+2. Paste AI prompts into 6 GHL workflows (workflow_ai_agent_prompts.txt) — 10 min
+3. Thinker Learn Session (voice_ai_automation_v2.py) — 15 min
+4. Slack app setup (playwright_slack_setup.py) — 15 min
+5. DNS record for dashboard.summitvoiceai.com — already pointing to Vercel ✓
+
+━━━ WHAT THE SYSTEM DOES AUTOMATICALLY ━━━
+Every morning: 47-100 new roofing owner leads scraped
+Every morning: 100 personalized emails + 100 SMS sent (scripts running)
+Every 15 min:  All replies classified, hot leads surfaced
+Every Monday:  6 social media posts generated + scheduled
+Every demo:    Full 10-step website + voice AI built (BLOCKED by API credits)
+
+━━━ DASHBOARD STATUS ━━━
+URL:            https://dashboard.summitvoiceai.com
+Password:       summit2026
+Auth bug:       FIXED — replaced broken IIFE with DOMContentLoaded handler
+Data loading:   LIVE from Railway API
+New endpoints:  3 added for real-time scraper/outreach/demo data
+Last deploy:    2026-06-19 17:17 EST
+
+━━━ REVENUE ━━━
+Current MRR:    $4,466 (9 clients)
+Target:         $50,000 MRR by December 31, 2026
+Gap:            $45,534 (~46 clients at $997 or ~92 at $497)

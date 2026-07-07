@@ -1,0 +1,40 @@
+﻿# ── SECRETS — never commit ────────────────────────────────
+.env
+*.env
+FILL_IN_THIS.env
+PASSWORDS.txt
+DASHBOARD_PASSWORD.txt
+# Handoff docs containing live credentials (see CODEBASE_AUDIT.md)
+BUILD_COMPLETE.txt
+CLAUDE_CODE_FINAL_PASS.md
+CLAUDE_CODE_RESTART_PROMPT.md
+CLAUDE_md_for_antigravity.md
+COMPLETE_SETUP_GUIDE.md
+DAN_MANUAL_STEPS.md
+DAN_MANUAL_STEPS_FINAL.md
+FINAL_BUILD_PROMPT.md
+FINAL_COMPLETE.txt
+FINAL_SESSION_PROMPT.md
+GHL_WORKFLOW_COMPLETE_GUIDE.txt
+INSTALL_EVERYTHING.md
+MASTER_REFERENCE.txt
+summit_daily_ops_directive.md
+SUMMIT_VAULT_CLAUDE.md
+SYSTEM_COMPLETE.txt
+SYSTEM_LIVE.txt
+THE_ANTIGRAVITY_PROMPT.md
+THE_MASTER_GUIDE.md
+THINKER_LEARN_SESSION.md
+# Binary docs (may embed credentials, unscannable)
+*.docx
+*.pdf
+# ── Junk / local ──────────────────────────────────────────
+__pycache__/
+*.pyc
+.playwright-mcp/
+.vercel/
+vercel_deploy/.vercel/
+.claude/
+# Screenshots (80MB+ of Playwright captures)
+*.png
+screenshots/

@@ -1,0 +1,57 @@
+SUMMIT VOICE AI — DNS RECORDS FOR CUSTOM DASHBOARD SUBDOMAIN
+=============================================================
+Generated: 2026-04-28
+
+DOMAIN TO CONFIGURE: avadashboard.summitvoiceai.com
+POINTS TO: Ava Studio Dashboard (Vercel project: ava-demo-studio)
+STATUS: Added to Vercel ✅ (verified: true)
+
+--------------------------------------------------------------
+ADD THIS DNS RECORD IN YOUR DOMAIN REGISTRAR / GODADDY
+--------------------------------------------------------------
+
+Type:   CNAME
+Name:   avadashboard
+Value:  cname.vercel-dns.com
+TTL:    3600 (or "Auto" / "1 Hour")
+
+--------------------------------------------------------------
+WHERE TO ADD IT (GoDaddy instructions):
+--------------------------------------------------------------
+1. Log in to GoDaddy (godaddy.com)
+2. Click your account → My Products
+3. Next to summitvoiceai.com → click DNS
+4. Scroll to "CNAME" section → click Add
+5. Name:  avadashboard
+   Value: cname.vercel-dns.com
+   TTL:   1 Hour
+6. Click Save
+
+DNS propagation: 5 min to 48 hours (usually under 30 min with GoDaddy)
+
+--------------------------------------------------------------
+VERIFY IT WORKED:
+--------------------------------------------------------------
+After adding DNS, visit:
+  https://avadashboard.summitvoiceai.com
+
+Should load the Ava Studio Dashboard exactly like:
+  https://ava-demo-studio.vercel.app
+
+--------------------------------------------------------------
+NOTES:
+--------------------------------------------------------------
+- Vercel has already accepted the domain (verified:true)
+- No additional Vercel config needed
+- The CNAME points to Vercel's shared CDN — fast global delivery
+- SSL certificate will be auto-provisioned by Vercel (Let's Encrypt)
+  within minutes of DNS propagating
+- If you see "SSL Not Available" warning in Vercel dashboard,
+  wait 10 min after DNS propagation — it auto-resolves
+
+--------------------------------------------------------------
+CURRENT LIVE URLS:
+--------------------------------------------------------------
+Dashboard (Vercel):     https://ava-demo-studio.vercel.app
+Dashboard (custom):     https://avadashboard.summitvoiceai.com  [after DNS]
+API (Railway):          https://ava-studio-api-production.up.railway.app

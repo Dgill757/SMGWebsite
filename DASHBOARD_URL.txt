@@ -1,0 +1,5 @@
+﻿Production URL: https://ava-demo-studio-mi0nol8pa-dan-gill-iiis-projects.vercel.app
+Custom domain 1: https://dashboard.summitvoiceai.com
+Custom domain 2: https://avastudio.summitvoiceai.com
+Password: summit2026
+Deployed: 2026-06-19 10:56

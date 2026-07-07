@@ -1,0 +1,195 @@
+SUMMIT VOICE AI — SYSTEM HANDOFF + QUICK WINS
+Generated: June 23, 2026
+=======================================================
+
+YOUR AI COMPANY IS RUNNING. HERE IS THE FULL PICTURE.
+
+======================================================
+WHAT'S RUNNING RIGHT NOW (Auto on schedule)
+======================================================
+
+Task Name                   | When          | Status
+----------------------------|---------------|--------
+SummitVoiceAI-DailyOutreach | Mon-Fri 9am   | RUNNING — 100 SMS/day
+SummitVoiceAI-Followup      | Mon-Fri 9:15am| RUNNING — Day 3/7/14 sequences
+SummitVoiceAI-ReplyMonitor  | Every 15 min  | BROKEN — 422 error (use Fixed ver)
+Summit Reply Monitor Fixed  | Every 15 min  | NEW — fixed endpoint, running
+Summit Research Agent       | Tue/Thu 6:30am| RUNNING — market intel
+Summit Content Generator    | Monday 7am    | RUNNING — weekly content
+Summit Social Poster        | Sunday 7:30am | RUNNING — multi-platform
+Summit Client Manager       | Sunday 7pm    | RUNNING — 9 clients
+Summit CEO Report           | Sunday 8pm    | RUNNING — weekly Slack report
+Summit Morning Briefing     | Daily 7am     | NEW — CEO daily standup
+Summit Blog Writer          | Tuesday 8am   | NEW — SEO blog posts
+Summit Daily Agent          | Daily 7am     | RUNNING
+
+Total: 13 scheduled agents | AI Employees: 20
+
+======================================================
+WHAT DAN NEEDS TO DO (Priority order)
+======================================================
+
+1. ADD ANTHROPIC CREDITS (URGENT — demo machine offline)
+   Go to: https://console.anthropic.com/settings/billing
+   Add $50+ in credits.
+   This unblocks: demo machine, blog writer, content gen, CEO report.
+
+2. OPT OUT 2 STOP REPLIES (URGENT — legal compliance)
+   GHL links (just click and mark as opted out):
+   Legacy Roofing Services:
+     https://app.gohighlevel.com/v2/location/u1lprxdJy1vmuaHEVJRM/contacts/aWWU0RrQ6O0qcLawECDt
+   Tar River Roofing:
+     https://app.gohighlevel.com/v2/location/u1lprxdJy1vmuaHEVJRM/contacts/zHeW991msuzVK7vcIX4v
+   Both are tagged "STOP Reply - Review Needed" so you can search for the tag in GHL.
+
+3. SET SLACK WEBHOOK URL (for all agent notifications)
+   Get it from: Slack > Apps > Incoming Webhooks
+   Then run: notepad c:\Users\DanGi\scripts\.env
+   Replace: SLACK_WEBHOOK_URL=https://hooks.slack.com/services/YOUR_WEBHOOK_HERE
+   With the real webhook URL.
+   This enables: morning briefing, CEO report, hot lead alerts, and more.
+
+4. ADD 9 REAL CLIENT DETAILS TO SUPABASE
+   Go to: https://supabase.com/dashboard/project/omdpkeaqgtizakdfughq/editor
+   Table: clients
+   Update company_name, contact_name, email, phone, ghl_contact_id for each client.
+   This enables: client manager weekly reports, review requests, churn prevention.
+
+5. GET HEYGEN API KEY (for video content)
+   Sign up: heygen.com
+   Add to: notepad c:\Users\DanGi\scripts\.env
+   HEYGEN_API_KEY=your_key_here
+   This enables: AI avatar videos for content + demos.
+
+6. GET SLYBROADCAST CREDENTIALS (for ringless voicemails)
+   Sign up: slybroadcast.com
+   Add to .env: SLYBROADCAST_USER=email SLYBROADCAST_PASS=password
+   This enables: RVM drops to warm leads.
+
+======================================================
+YOUR DASHBOARD (CEO View)
+======================================================
+
+URL: https://dashboard.summitvoiceai.com
+Password: ava2026
+
+TABS:
+- BRIEF: Daily scorecard + quick actions
+- AGENTS: ALL 20 AI employees with live status, last run, output
+- LEADS: Hot leads + outreach history
+- DEMOS: Demo builder + active demos
+- ANALYTICS: MRR trends + pipeline stats
+- CONTENT: Blog posts + social posts generated
+- VAULT: Research files, reports, KB
+- SKILLS: Quick commands (build demo, research, send blast)
+
+CEO TEAM VIEW (AGENTS tab):
+- 5 departments: Sales, Demos, Marketing, Clients, Ops
+- Each agent shows: status, last run time, today's output, next run
+- Green = running OK, Red = blocked, Yellow = scheduled
+- Click any agent to see detailed output history
+
+======================================================
+YOUR AI COMPANY ORG CHART
+======================================================
+
+SALES DEPT (SDR Team)
+- Cold Outreach SDR: 100 GHL contacts/day (Mon-Fri 9am)
+- Follow-Up Specialist: Day 3/7/14 sequences (Mon-Fri 9:15am)
+- Reply Monitor (Fixed): Every 15 min — flags hot leads
+- Lead Scraper (Apify): Daily 6am — scrapes new roofing companies
+- GHL Pipeline Manager: 5,386 contacts, continuous
+
+DEMO MACHINE
+- Demo Builder: On-demand — BLOCKED (needs Anthropic credits)
+- Generated: GSAP + Three.js + Lenis websites (28KB template)
+
+MARKETING DEPT
+- Research Analyst: Tue/Thu 6:30am — market intel, competitor monitoring
+- Content Generator: Monday 7am — 6 posts/week across all platforms
+- Social Publisher: Sunday 7:30am — multi-platform scheduler
+- Blog Writer (new): Tuesday 8am — SEO blog posts
+- HeyGen Video Agent: BLOCKED (needs API key)
+- RVM Drop Agent: BLOCKED (needs Slybroadcast creds)
+
+CLIENT SUCCESS
+- Client Account Manager: Sunday 7pm — weekly reports for 9 clients
+- Onboarding Manager: On deal close — GHL workflow trigger
+- Review Collector: On job close — automated Google review requests
+
+OPS & INTEL
+- Morning CEO Briefing (new): 7am daily — Slack + SummitVault
+- CEO Weekly Report: Sunday 8pm — pipeline analysis
+- System Watchdog: Continuous — monitors all tasks
+
+======================================================
+OUTREACH STATUS
+======================================================
+
+GHL Pipeline:
+- Total contacts: 5,386
+- Sent yesterday: 100 SMS
+- Awaiting reply: 5,286
+- Hot leads (7d): 0 (check hot_leads.log)
+- Sequences running: Day 3/7/14
+
+Cities scraped: 62/365 (last: Broken Arrow OK, June 6)
+Apify scraper: BLOCKED — check credits or actor at apify.com
+
+======================================================
+MRR PATH
+======================================================
+
+Current MRR: $4,466 (9 clients)
+Target: $50,000 by Dec 31, 2026
+Gap: $45,534 | Clients needed: ~45 more
+
+At current outreach (100/day = 3,650 contacts/month):
+- 2% reply rate = 73 replies
+- 30% positive = 22 hot leads
+- 20% close rate = 4-5 clients/month
+- At $497/client = $2,000+ MRR/month
+- Timeline to $50K: ~23 months at current rate
+
+TO ACCELERATE:
+1. Fix Apify scraper (resume city scraping, currently stopped June 6)
+2. Enable email + SMS (currently SMS only) 
+3. Run demo machine on hot leads (needs Anthropic credits)
+4. Add HeyGen video to demo outreach
+
+======================================================
+QUICK COMMAND CENTER
+======================================================
+
+Morning check:
+  python c:\Users\DanGi\scripts\morning_ceo_briefing.py
+
+Check STOP replies:
+  python C:\Temp\stop_check.py
+
+Check hot leads:
+  type c:\Users\DanGi\scripts\hot_leads.log
+
+Run reply monitor (fixed):
+  python c:\Users\DanGi\scripts\ghl_reply_monitor_fixed.py
+
+Run blog writer (manual):
+  python c:\Users\DanGi\scripts\blog_writer.py
+
+Dashboard: https://dashboard.summitvoiceai.com (pw: ava2026)
+API docs: https://ava-studio-api-production.up.railway.app/docs
+Supabase: https://supabase.com/dashboard/project/omdpkeaqgtizakdfughq
+
+======================================================
+FILES YOU CARE ABOUT
+======================================================
+
+c:\Users\DanGi\scripts\morning_ceo_briefing.py   NEW daily CEO briefing
+c:\Users\DanGi\scripts\ghl_reply_monitor_fixed.py NEW fixed reply monitor
+c:\Users\DanGi\scripts\blog_writer.py              NEW blog writer agent
+c:\Users\DanGi\scripts\review_collector.py         NEW review collector
+c:\Users\DanGi\scripts\stop_reply_report.py        NEW STOP reply handler
+c:\Users\DanGi\scripts\.env                        All credentials + keys
+c:\Users\DanGi\SummitVault\REPORTS\               CEO briefing archives
+c:\Users\DanGi\SummitVault\CONTENT\BLOGS\         Blog post output
+c:\Users\DanGi\scripts\hot_leads.log               All inbound replies

@@ -1,0 +1,172 @@
+SUMMIT VOICE AI — GHL MANUAL STEPS (Gaps 7, 8, 9)
+====================================================
+Time required: ~20 minutes total
+These are the only 3 things that require manual UI clicks in GHL.
+Everything else in the system is 100% automated.
+
+====================================================
+GAP 7: SET UP GHL WEBHOOK (5 minutes)
+====================================================
+This wires GHL to send reply events to your dashboard in real-time.
+Every time a contact replies, the dashboard updates instantly.
+
+STEPS:
+1. Log into GHL: https://app.gohighlevel.com
+2. Make sure you're in the Summit Voice AI sub-account (location: u1lprxdJy1vmuaHEVJRM)
+3. Click Settings (gear icon, bottom left)
+4. Click "Integrations" in the left sidebar
+5. Click "Webhooks" tab at the top
+6. Click "+ Add Webhook" (top right button)
+7. Fill in:
+   - Webhook Name: Ava Studio API
+   - Webhook URL: https://ava-studio-api-production.up.railway.app/webhooks/ghl
+   - Events to subscribe (check ALL of these):
+     ✅ InboundMessage
+     ✅ OutboundMessage
+     ✅ ContactCreate
+     ✅ AppointmentCreate
+     ✅ OpportunityCreate
+     ✅ OpportunityStatusChange
+     ✅ NoteCreate
+     ✅ TaskCreate
+8. Click Save / Create Webhook
+9. Done ✅
+
+WHAT THIS DOES:
+- Every time a contact replies to an outreach email/SMS, GHL fires this webhook
+- The Ava Studio API receives it, classifies intent (POSITIVE/NEGATIVE/NONE)
+- Dashboard updates in real-time — hot leads appear instantly
+- You see every reply in the dashboard without checking GHL manually
+
+====================================================
+GAP 8: PUBLISH 8 SUMMIT VOICE AI WORKFLOWS (10 minutes)
+====================================================
+These 8 workflows are built and ready — they just need to be toggled from
+Draft → Published. GHL requires this to be done in the UI (no API support).
+
+HOW TO PUBLISH EACH WORKFLOW:
+1. In GHL, click "Automations" in the left sidebar
+2. Find the workflow by name (use search box at top)
+3. Click the workflow name to open it
+4. In the top-right corner, toggle the status from "Draft" to "Published"
+   (it may say "Publish" as a button, or show a toggle switch)
+5. Click Save / Confirm
+6. Repeat for all 8 below
+
+THE 8 WORKFLOWS TO PUBLISH:
+(Search by name — copy/paste each into the GHL search box)
+
+1. "SVA Lead Enrichment Agent"
+   ID: f5b27d6b-22b6-4f84-a595-4187cbbf97e3
+   Purpose: Enriches new contacts with Apollo data (company info, email, etc.)
+   When: Triggers when a new contact is added with tag "Claude Outreach"
+
+2. "SVA Main Outreach Segment A"
+   ID: d8839093-7f78-4e2f-9112-222c2e2da88e
+   Purpose: Day 3 / Day 7 / Day 14 follow-up sequence
+   When: Triggers after first outreach email is sent
+
+3. "SVA Post-Call Follow-Up"
+   ID: ee3e90d4-d1dd-404d-9034-c652ea93f4d7
+   Purpose: Sends follow-up after Ava completes a voice call
+   When: Triggered by Ava call completion webhook
+
+4. "Ai Agent - No Website Campaign"
+   ID: 1aa20a13-6795-4ceb-bf22-7998a19197e8
+   Purpose: Outreach to contacts who got the auto-built no-website demo
+   When: Triggered when a demo is built for a no-website contact
+
+5. "Demo Follow-Up Sequence"
+   ID: d7b827fb-a10a-4f38-93b8-e2953b86f23b
+   Purpose: Follows up after demo link is sent — checks if viewed
+   When: Triggered by "Demo Sent" tag being added to contact
+
+6. "Summit Voice AI Cold Outreach Sequence"
+   ID: cec983ce-27b6-4d3d-ba69-d391f1a8d619
+   Purpose: Master cold outreach sequence (email + SMS multi-touch)
+   When: Contact enters Cold Outreach pipeline
+
+7. "New Workflow : 1777384103673" (SVA Reply Router)
+   ID: 3ac73042-89bc-4ff1-875d-c0bb4325888a
+   Purpose: Routes incoming replies to POSITIVE / NEGATIVE / NONE branches
+   When: Triggered on any inbound message from a contact
+
+8. "New Workflow : 1777384780714" (SVA Positive Reply Handler)
+   ID: 7cf30b85-d977-47cc-b9fa-39a4a4de8064
+   Purpose: Handles positive replies — sends personalized Calendly link
+   When: Called by Reply Router when intent is POSITIVE
+
+====================================================
+GAP 9: PASTE AI AGENT PROMPTS INTO 6 WORKFLOWS (10 minutes)
+====================================================
+The full prompts are in: workflow_ai_agent_prompts.txt (same folder as this file)
+
+For each workflow below:
+1. Open it in GHL Automations
+2. Find the "AI Agent" or "AI" step (usually step 1 or 2)
+3. Click the step to edit it
+4. Paste the corresponding prompt from workflow_ai_agent_prompts.txt
+5. Save the workflow
+
+THE 6 WORKFLOWS NEEDING AI AGENT PROMPTS:
+
+WORKFLOW 1: SVA Reply Router (New Workflow 1777384103673)
+  - Find the AI Intent Classification step
+  - Paste: Workflow 1 prompt from workflow_ai_agent_prompts.txt
+  - This classifies every reply as POSITIVE / NEGATIVE / NONE
+
+WORKFLOW 2: SVA Main Outreach Segment A
+  - Find the AI Agent step for the Day 7 email
+  - Paste: Workflow 2 prompt from workflow_ai_agent_prompts.txt
+  - This generates personalized follow-up content
+
+WORKFLOW 3: SVA Positive Reply Handler (New Workflow 1777384780714)
+  - Find the AI Agent response step
+  - Paste: Workflow 3 prompt from workflow_ai_agent_prompts.txt
+  - This crafts the personalized Calendly offer message
+
+WORKFLOW 4: SVA Marketing Audit + Demo Delivery
+  - Find the AI Agent step for the delivery email
+  - Paste: Workflow 4 prompt from workflow_ai_agent_prompts.txt
+  - This personalizes the demo delivery message
+
+WORKFLOW 5: Demo Follow-Up Sequence
+  - Find the AI Agent step
+  - Paste: Workflow 5 prompt from workflow_ai_agent_prompts.txt
+  - This checks demo view status and adjusts follow-up
+
+WORKFLOW 6: Ai Agent - No Website Campaign
+  - Find the AI Agent outreach step
+  - Paste: Workflow 6 prompt from workflow_ai_agent_prompts.txt
+  - This handles outreach for no-website auto-built demos
+
+NOTE: The full prompts are in workflow_ai_agent_prompts.txt.
+Open that file → find the section for each workflow → copy the prompt block → paste.
+
+====================================================
+AFTER COMPLETING ALL 3 GAPS:
+====================================================
+Your system is 100% operational. Here's what happens automatically:
+
+DAILY (Mon-Fri, 9am):
+  → 100 roofing contacts scraped from Apollo
+  → Personalized emails sent via GHL
+  → GHL workflows trigger follow-up sequences automatically
+  → Replies routed by AI intent detection
+  → Hot leads appear in dashboard instantly (via webhook)
+  → Slack notification sent to #ava-dispatch
+
+MONDAY (7am):
+  → Weekly content calendar generated
+  → LinkedIn, Facebook, Instagram, Twitter, TikTok content ready
+
+ON DEMAND:
+  → Demo machine: send a URL → custom site built and deployed in 60 seconds
+  → No-website: company name only → demo built automatically
+
+DASHBOARD: https://ava-demo-studio.vercel.app
+API: https://ava-studio-api-production.up.railway.app/health
+
+====================================================
+DONE ✅ — You built a $50K MRR machine.
+====================================================

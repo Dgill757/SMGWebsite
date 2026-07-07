@@ -1,0 +1,44 @@
+﻿INTEGRATIONS NEEDED
+========================================
+Generated 2026-07-06 by checking .env against every agent script.
+Each item unlocks a dormant, already-written agent. None block core revenue flow.
+
+MISSING: SLACK_WEBHOOK_URL  (currently placeholder "YOUR_SLACK_WEBHOOK_URL_HERE")
+  Unlocks: morning CEO briefing, content notifications, research briefs,
+           hot-lead pings to #ava-dispatch
+  How: run playwright_slack_setup.py (15 min, semi-automated)
+       OR manually: api.slack.com/apps -> Create App "Ava Studio" ->
+       Incoming Webhooks -> Add to #ava-dispatch -> paste URL into
+       .env + C:\Users\DanGi\outreach\.env + Railway
+
+MISSING: APOLLO_API_KEY  (placeholder in this folder's .env)
+  Note: outreach enrichment may already work via C:\Users\DanGi\outreach\.env.
+  If enrich_with_apollo logs errors: apollo.io -> Settings -> Integrations -> API
+  -> copy key -> both .env files.
+
+MISSING: GITHUB_TOKEN
+  Unlocks: template_cloner_FIXED.py (clone Dan's real site templates for demos)
+  How: github.com/settings/tokens -> Fine-grained token, repo read access ->
+       .env + Railway
+
+MISSING: HEYGEN_API_KEY
+  Unlocks: heygen_agent.py (Monday avatar video from TikTok script)
+  How: heygen.com -> Settings -> API -> .env
+
+MISSING: SLYBROADCAST_USER + SLYBROADCAST_PASSWORD
+  Unlocks: rvm_agent.py (ringless voicemail drops, ~$0.05-0.09/drop)
+  How: slybroadcast.com signup -> credentials -> .env
+
+MISSING: LINKEDIN_ACCESS_TOKEN
+  Unlocks: social_media_automation.py LinkedIn posting
+  How: developer.linkedin.com -> app -> OAuth token (w_member_social scope)
+
+MISSING: FACEBOOK_ACCESS_TOKEN
+  Unlocks: social_media_automation.py Facebook page posting
+  How: business.facebook.com -> Meta for Developers -> Page access token
+
+PRIORITY ORDER (by revenue impact):
+  1. SLACK_WEBHOOK_URL  - visibility into everything already running
+  2. GITHUB_TOKEN       - demo quality (real templates)
+  3. SLYBROADCAST       - new outreach channel to the 315K CRM contacts
+  4. HEYGEN / LINKEDIN / FACEBOOK - content distribution

@@ -1,0 +1,141 @@
+SUMMIT OS — COMPLETE SYSTEM STATUS V2
+======================================
+Date: 2026-05-29
+Sessions: 5 build sessions + this consolidation session (Session 6)
+
+━━━ INFRASTRUCTURE ━━━
+Railway API:      https://ava-studio-api-production.up.railway.app — LIVE — v2.0.0
+Vercel Dashboard: https://ava-demo-studio-kzws4qkmy-dan-gill-iiis-projects.vercel.app — LIVE
+                  Also: https://ava-demo-studio-dan-gill-iiis-projects.vercel.app (stable alias)
+                  Password: summit2026
+Supabase:         https://omdpkeaqgtizakdfughq.supabase.co — CONNECTED (4 tables)
+Custom Domain:    dashboard.summitvoiceai.com — ADDED TO VERCEL, DNS PENDING
+                  → Add A record: dashboard → 76.76.21.21 (see DNS_RECORDS_FINAL.txt)
+
+━━━ WHAT CHANGED THIS SESSION ━━━
+[DONE] template_cloner.py → REPLACED with FIXED version (uses real GitHub HTML, not generated HTML)
+[DONE] beautifulsoup4 + supabase added to requirements.txt
+[DONE] Fixed scrape_website() — Firecrawl r.json() is now guarded (was crashing demo builds)
+[DONE] summit_os.html deployed as new dashboard index (password-protected, secure DOM auth gate)
+[DONE] dashboard.summitvoiceai.com added to Vercel (waiting for DNS A record in GoDaddy)
+[DONE] research_agent.py → copied to C:\Users\DanGi\scripts\
+[DONE] social_media_automation.py → copied to C:\Users\DanGi\scripts\
+[DONE] CREATE_NEW_TASKS.ps1 → written to C:\Users\DanGi\scripts\ (admin script for 2 new tasks)
+[DONE] SummitVault → created at C:\Users\DanGi\SummitVault (11 top-level folders)
+[DONE] SummitVault CLAUDE.md → installed
+[DONE] SummitVault skills → 3 skills installed (build-demo, morning-brief, weekly-content)
+
+⚠️  NEEDS RAILWAY REDEPLOY (1 min):
+    Dan runs: railway login  (browser opens, 30 sec)
+    Then:     cd C:\Users\DanGi\Downloads\SummitVoiceAiWorkflowsandDemoMachine && railway up
+    Deploys:  FIXED template_cloner + Firecrawl crash fix
+
+━━━ DAILY AUTOMATION (RUNNING ON YOUR PC) ━━━
+daily_outreach.py:         CONFIRMED RUNNING — 6am daily (Apollo → GHL)
+ghl_daily_outreach:        CONFIRMED RUNNING — Mon-Fri 9am (100/day)
+ghl_followup:              CONFIRMED RUNNING — Mon-Fri 9:15am
+ghl_reply_monitor:         CONFIRMED RUNNING — every 15 min
+content_generator:         CONFIRMED RUNNING — Monday 7am
+Summit Daily Agent:        CONFIRMED RUNNING — 7am daily
+research_agent:            SCRIPT COPIED — task needs admin install (run CREATE_NEW_TASKS.ps1)
+social_media_poster:       SCRIPT COPIED — task needs admin install (run CREATE_NEW_TASKS.ps1)
+
+━━━ GHL SYSTEM ━━━
+Custom fields:             10/10 ✓
+Pipelines:                 3/3 ✓ (SVA Cold Outreach, SVA Demo Machine, SVA Clients)
+Workflows published:       41 confirmed (from last session record)
+Contacts:                  315,000+
+AI Agent prompts:          6 prompts ready in workflow_ai_agent_prompts.txt
+                           → Dan pastes these manually (10 min — see GHL_MANUAL_STEPS.txt)
+
+━━━ WEBSITE QUALITY ━━━
+Template source:           GitHub repos (Roofing-Template2 first, 2 fallbacks)
+FIXED cloner deployed:     NO — needs railway up (railway auth expired this session)
+GITHUB_TOKEN:              NOT SET on Railway → add for better rate limits
+                           Get from: github.com → Settings → Developer settings → Tokens → Classic
+Test demo URL:             https://summit-demo-sunlight-roofing-23jags2ww-dan-gill-iiis-projects.vercel.app
+                           (from last session — still live, built before FIXED cloner)
+
+━━━ OBSIDIAN VAULT ━━━
+Vault location:            C:\Users\DanGi\SummitVault ✓
+CLAUDE.md installed:       YES ✓
+Skills installed:          3 (build-demo, morning-brief, weekly-content)
+Open in Obsidian:          File → Open vault → C:\Users\DanGi\SummitVault
+Terminal plugin:           Install from Community Plugins → search "Terminal"
+Then type: claude          Full AI context loads from CLAUDE.md automatically
+
+━━━ ENV STATUS ━━━
+ANTHROPIC_API_KEY:         SET ✓
+FIRECRAWL_API_KEY:         SET ✓
+GHL_PRIVATE_TOKEN:         SET ✓
+VERCEL_TOKEN:              SET ✓
+SUPABASE_URL/KEY:          SET ✓
+THINKER_EMAIL/PASSWORD:    SET ✓
+APOLLO_API_KEY:            SET in outreach/.env ✓ (placeholder in deploy folder — Railway uses Railway vars)
+SLACK_WEBHOOK_URL:         NOT SET (see SLACK_SETUP_STEPS.txt — 15 min setup)
+GITHUB_TOKEN:              NOT SET (add to Railway for better template quality)
+Social media tokens:       NOT SET (LinkedIn, Facebook, Twitter — needed for social_media_automation.py)
+HEYGEN_API_KEY:            NOT SET (needed for AI avatar video in TikTok scripts)
+
+━━━ WHAT DAN STILL NEEDS TO DO ━━━
+
+CRITICAL (takes < 10 min total):
+1. Railway redeploy (2 min)
+   → Open terminal in this folder
+   → Run: railway login  (browser opens, click Authorize)
+   → Run: railway up
+   → Deploys: FIXED template cloner + crash fix for demo builds
+
+2. DNS A record for dashboard (2 min in GoDaddy)
+   → GoDaddy → summitvoiceai.com → DNS → Add Record
+   → Type: A  |  Name: dashboard  |  Value: 76.76.21.21  |  TTL: 1hr
+   → See DNS_RECORDS_FINAL.txt
+
+3. Task Scheduler for 2 new scripts (1 min)
+   → Right-click C:\Users\DanGi\scripts\CREATE_NEW_TASKS.ps1
+   → Run with PowerShell (as Administrator)
+   → Done — research + social agents start running on schedule
+
+OPTIONAL (not blocking, adds capability):
+4. GHL Webhook (5 min) — see GHL_MANUAL_STEPS.txt, Gap 7
+5. Publish any draft GHL Workflows (10 min) — see GHL_MANUAL_STEPS.txt, Gap 8
+6. Paste AI Agent prompts into 6 workflows (10 min) — see workflow_ai_agent_prompts.txt
+7. Slack setup (15 min) — see SLACK_SETUP_STEPS.txt
+8. Thinker learn session (15 min) — see THINKER_LEARN_SESSION.md
+9. Add GITHUB_TOKEN to Railway (2 min) — for higher-quality template cloning
+10. Add social media API tokens to scripts/.env (when ready to go live on social)
+
+━━━ SYSTEM HEALTH (TESTED THIS SESSION) ━━━
+Railway /health:           PASS — {"status":"ok","version":"2.0.0"}
+Ingest /scraper-run:       PASS — {"status":"ok","received":"Test City TX","scraped":10}
+Ingest /replies:           PASS — {"status":"ok","count":1}
+Demo machine:              PARTIAL — queues correctly, fails at scrape step due to Firecrawl
+                           crash bug (FIXED in local file, needs railway up to deploy)
+Dashboard (Vercel):        DEPLOYED — open URL, enter summit2026 to verify tabs
+
+━━━ LIVE URLS (CANONICAL) ━━━
+Dashboard:   https://ava-demo-studio-dan-gill-iiis-projects.vercel.app  (pw: summit2026)
+API Health:  https://ava-studio-api-production.up.railway.app/health
+Analytics:   https://ava-studio-api-production.up.railway.app/analytics/summary
+Booking:     https://calendly.com/aivoice/call
+
+━━━ PATH TO $100K MRR ━━━
+Current MRR:   ~$4,466 (9 clients)
+Target:        $100,000 by Dec 31, 2026
+Outreach:      100 contacts/day, Mon-Fri = 2,000 touches/week
+Reply rate:    ~3% = ~60 positive replies/week
+Demo-to-call:  ~8% = ~5 calls/week
+Close rate:    ~40% = ~2 new clients/week
+MRR per week:  ~$1,000 added (at $497 avg)
+Path to $100K: ~24 months at current pace
+To accelerate: Add $997 tier, increase close rate, batch demos for high-review contacts
+
+====================================================
+THREE THINGS NEEDED TO FULLY CLOSE OUT THIS SESSION
+====================================================
+1. railway login + railway up  (2 min)  ← most important
+2. DNS A record for dashboard  (2 min)
+3. CREATE_NEW_TASKS.ps1 as admin (1 min)
+
+After those 3 steps: zero manual work. Show up to booked calls.
+====================================================
