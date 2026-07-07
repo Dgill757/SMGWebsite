@@ -863,7 +863,41 @@ async def get_hot_leads(limit: int = 20) -> list:
 
 @app.get("/outreach/hot-leads")
 async def outreach_hot_leads(limit: int = 20):
-    return await get_hot_leads(limit)
+    leads = await get_hot_leads(limit)
+    if leads:
+        return leads
+    # Fallback: pull replied/hot-tagged contacts straight from GHL
+    try:
+        async with httpx.AsyncClient(timeout=10) as client:
+            r = await client.get(
+                f"{GHL_BASE}/contacts/",
+                headers={"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-07-28"},
+                params={"locationId": GHL_LOCATION, "query": "", "limit": str(limit)},
+            )
+            if r.status_code == 200:
+                try:
+                    contacts = (r.json() if r.content else {}).get("contacts", [])
+                except Exception:
+                    contacts = []
+                hot = []
+                for c in contacts:
+                    tags = [t.lower() for t in (c.get("tags") or [])]
+                    if any(("hot" in t or "replied positive" in t or "interested" in t) for t in tags):
+                        cf = c.get("customField") or {}
+                        hot.append({
+                            "contact_id": c.get("id", ""),
+                            "company": c.get("companyName", "") or f"{c.get('firstName','')} {c.get('lastName','')}".strip(),
+                            "message": "Replied / tagged hot in GHL",
+                            "intent": "positive",
+                            "time": c.get("dateUpdated", ""),
+                            "lead_score": (cf.get("lead_score") if isinstance(cf, dict) else "") or "",
+                            "demo_url": (cf.get("demo_url") if isinstance(cf, dict) else "") or "",
+                            "source": "ghl_live",
+                        })
+                return hot[:limit]
+    except Exception:
+        pass
+    return leads
 
 
 @app.get("/analytics/summary")
@@ -1712,3 +1746,118 @@ async def db_delete(table: str, request: Request, x_api_key: str = Header(defaul
             headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}"},
         )
         return {"ok": r.status_code in (200, 204)}
+
+
+# ============================================================================
+# CLIENT CRUD (dashboard Clients tab). service key server-side; RLS-safe.
+# ============================================================================
+class ClientPayload(BaseModel):
+    company_name: str
+    contact_name: str | None = None
+    email: str | None = None
+    phone: str | None = None
+    plan: str = "starter"
+    mrr: float = 0
+    start_date: str | None = None
+    city: str | None = None
+    state: str | None = None
+    demo_url: str | None = None
+    voice_agent_key: str | None = None
+    google_review_link: str | None = None
+    status: str = "active"
+    notes: str | None = None
+
+
+def _client_headers():
+    k = os.getenv("SUPABASE_KEY", "")
+    return {"apikey": k, "Authorization": f"Bearer {k}", "Content-Type": "application/json"}
+
+
+@app.get("/clients")
+async def clients_list(x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    supa_url = os.getenv("SUPABASE_URL", "")
+    if not supa_url:
+        return {"clients": [], "total_mrr": 0, "active_count": 0, "at_risk_count": 0, "churned_count": 0}
+    async with httpx.AsyncClient(timeout=12) as client:
+        r = await client.get(f"{supa_url}/rest/v1/clients?order=mrr.desc", headers=_client_headers())
+        try:
+            clients = r.json() if r.status_code == 200 and r.content else []
+        except Exception:
+            clients = []
+    def _mrr(c):
+        try:
+            return float(c.get("mrr") or 0)
+        except (TypeError, ValueError):
+            return 0.0
+    active = [c for c in clients if (c.get("status") or "active") == "active"]
+    return {
+        "clients": clients,
+        "total_mrr": round(sum(_mrr(c) for c in active), 2),
+        "active_count": len(active),
+        "at_risk_count": sum(1 for c in clients if c.get("status") == "at_risk"),
+        "churned_count": sum(1 for c in clients if c.get("status") == "churned"),
+    }
+
+
+@app.post("/clients")
+async def clients_create(payload: ClientPayload, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    supa_url = os.getenv("SUPABASE_URL", "")
+    if not supa_url:
+        raise HTTPException(503, "Supabase not configured")
+    data = {k: v for k, v in payload.model_dump().items() if v is not None}
+    data["created_at"] = datetime.utcnow().isoformat()
+    async with httpx.AsyncClient(timeout=12) as client:
+        r = await client.post(
+            f"{supa_url}/rest/v1/clients",
+            headers={**_client_headers(), "Prefer": "return=representation"},
+            json=data,
+        )
+        try:
+            rows = r.json() if r.content else []
+        except Exception:
+            rows = []
+    if r.status_code in (200, 201):
+        return {"success": True, "client": rows[0] if rows else data}
+    return {"success": False, "detail": (rows if rows else r.text)[:300]}
+
+
+@app.patch("/clients/{client_id}")
+async def clients_update(client_id: str, updates: dict, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    supa_url = os.getenv("SUPABASE_URL", "")
+    if not supa_url:
+        raise HTTPException(503, "Supabase not configured")
+    updates.pop("id", None)
+    updates["updated_at"] = datetime.utcnow().isoformat()
+    if updates.get("status") == "churned" and not updates.get("churned_at"):
+        updates["churned_at"] = datetime.utcnow().isoformat()
+    async with httpx.AsyncClient(timeout=12) as client:
+        r = await client.patch(
+            f"{supa_url}/rest/v1/clients?id=eq.{client_id}",
+            headers={**_client_headers(), "Prefer": "return=representation"},
+            json=updates,
+        )
+        try:
+            rows = r.json() if r.content else []
+        except Exception:
+            rows = []
+    return {"success": r.status_code in (200, 204), "client": rows[0] if rows else updates}
+
+
+@app.delete("/clients/{client_id}")
+async def clients_delete(client_id: str, x_api_key: str = Header(default="")):
+    """Soft delete: mark churned, never hard-delete (matches 'never delete' rule)."""
+    verify_api_key(x_api_key)
+    supa_url = os.getenv("SUPABASE_URL", "")
+    if not supa_url:
+        raise HTTPException(503, "Supabase not configured")
+    async with httpx.AsyncClient(timeout=12) as client:
+        r = await client.patch(
+            f"{supa_url}/rest/v1/clients?id=eq.{client_id}",
+            headers=_client_headers(),
+            json={"status": "churned", "churned_at": datetime.utcnow().isoformat(),
+                  "updated_at": datetime.utcnow().isoformat()},
+        )
+    return {"success": r.status_code in (200, 204)}

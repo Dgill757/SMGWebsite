@@ -1,0 +1,106 @@
+﻿SUMMIT OS - UI AUDIT (live dashboard: vercel_deploy\index.html = summit_os_v8)
+Served at: https://avastudio.summitvoiceai.com  (NOT dashboard.summitvoiceai.com,
+which is a separate "Knowledge Dashboard")
+Audited: 2026-07-06
+
+NOTE ON SCOPE: The directive's audit template lists tabs (ANALYTICS, VAULT,
+SKILLS with 48 buttons, quick-command grid, RUN button, slide-in history panel).
+Those belong to an OLDER dashboard build (summit_os_v4). The LIVE dashboard Dan
+opens is v8, with 8 tabs and a different, cleaner structure. This audit covers
+the REAL live dashboard.
+
+============================ BEFORE THIS SESSION ============================
+
+LOGIN
+  Access code prompt:          WORKS (server-side verify via Railway)
+  Enter-key submit:            WORKS
+
+NAV / TABS (8)
+  Brief/Team/Pipeline/Content/Clients/Demos/Finance/Intel: ALL WORK (showTab)
+  Header MRR / Clients / Agents / clock: WORK (real from /ceo/summary; clock live)
+
+[BRIEF]
+  4 stat cards (MRR/Scraped/Contacted/Hot Replies): REAL (/ceo/summary,/businesses/stats)
+  Morning Intelligence:        REAL (/intelligence/morning, cached fallback)
+  Live Activity Feed:          REAL (/activity/feed)
+  Refresh button:              WORKS (reloads loadBrief)
+  Agent Health cards:          REAL (/agents/health-summary)
+
+[TEAM]
+  Agent cards:                 REAL (/agents/status, 28 rows in Supabase)
+  Filter dropdown:             WORKS (filterTeam)
+  History button per agent:    WORKS (viewAgentHistory -> alert of activity)  [uses alert()]
+  Unblock button:              WORKS (posts /agents/status)
+  Deploy Agent modal:          WORKS (deployAgent -> /agents/status)
+  Activity feed:               REAL (/activity/feed)
+
+[PIPELINE]
+  4 stat cards:                REAL (/businesses/stats)
+  Scrape date list:            REAL (/businesses/dates)
+  Business table + search:     REAL (/businesses/by-date, 5,411 rows)
+  Prev/Next paging:            WORKS (bizPage)
+  SDR button per business:     WORKS (showSDR -> /businesses/analysis)
+  Free Site button:            WORKS (sendFreeSite -> /demos/create + free_sites)
+
+[CONTENT]
+  Content cards:               REAL (content_library, 14 rows via proxy)
+  Type/Status filters:         WORK (filterContent)
+  View Full per card:          WORKS (viewContent modal)
+  Approve/Reject/Publish:      WORKS (approveContent -> proxy PATCH + /ghl/social-post)
+
+[CLIENTS]
+  Client cards:                REAL (/clients/list, 4 clients)
+  MRR summary:                 REAL (sums client mrr)
+  Add Client modal + form:     WORKS (saveClient -> proxy POST)
+  >>> Edit button:             BROKEN <<< editClient() is a prompt() that edits
+                               ONLY mrr. No contact/email/phone/plan/status/
+                               demo_url/notes editing. No delete/churn. THIS is
+                               the "client edit button doesn't work" blocker.
+  Status badge:                FAKE - hardcoded "ACTIVE" for every client
+                               regardless of real status.
+  demo_url / voice_agent_key:  NOT SHOWN (columns didn't exist)
+
+[DEMOS]
+  Demo build form:             WORKS (buildDemo -> /demos/create)
+  10-step progress + dots:     WORKS (pollDemoStatus)  [needs Anthropic credits to finish]
+  Demo cards:                  REAL (merge /demos + demos_built)
+  Demo URL link (opens tab):   WORKS (<a target=_blank>)
+  Copy URL per demo:           WORKS (navigator.clipboard)
+  Free sites table:            REAL (free_sites)
+
+[FINANCE]
+  MRR / target progress:       REAL (/ceo/summary)
+  Revenue forecast:            static projection math (intentional)
+  P&L:                         REAL (mrr - expenses)
+  Expense CRUD:                WORKS (add/edit/pause/delete via proxy)
+  Clients list:                REAL (/clients/list)
+
+[INTEL]
+  Intelligence headlines:      REAL (/intelligence/morning)
+  Hot leads + score badges:    REAL (/outreach/hot-leads) - empty until replies land
+
+FEEDBACK MECHANISM
+  Uses browser alert()/prompt() in several places - functional but not polished.
+
+MOBILE
+  No responsive breakpoint - sidebar/nav and card grids overflow < 768px.
+
+============================ FIX LIST (this session) ============================
+  1. CLIENTS edit: replace prompt() with full edit modal (all fields + status
+     dropdown + soft delete/churn + demo_url + voice_agent_key). [CRITICAL]
+  2. CLIENTS status badge: reflect real c.status (active/at_risk/churned).
+  3. CLIENTS cards: show demo_url link + voice key (show/hide) + start date.
+  4. Clean /clients CRUD endpoints on Railway (GET summary/POST/PATCH/DELETE).
+  5. toast() system replacing alert() in client + demo flows.
+  6. Fade-in animation on card render.
+  7. Empty/error states hardened per tab.
+  8. Mobile responsive breakpoint < 768px.
+  9. /outreach/hot-leads GHL fallback when Supabase empty.
+ 10. Agent staleness coloring (amber if overdue, red if 48h+).
+
+DATA REALITY (honest):
+  The 4 clients in Supabase total $1,513.67 (Teo $500, ChimChimChuree $416.67,
+  Broken Arrow $300, Stonewall $297). The $4,466 / 9-client figure is real ONLY
+  after Dan enters the other 5 clients. I will NOT fabricate clients to fake the
+  number - the fix is a flawless Add/Edit form. MRR is wired to the real
+  Supabase total and will read correctly the moment the data is complete.

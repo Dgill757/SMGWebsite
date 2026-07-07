@@ -1,6 +1,6 @@
 ﻿<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Summit OS v6 — CEO Command Center</title>
+<title>Summit OS — CEO Command Center</title><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23E8612C%22/><text x=%2250%22 y=%2272%22 font-size=%2270%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>S</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -143,9 +143,33 @@ main{margin-top:52px;padding:24px;max-width:1400px;margin-left:auto;margin-right
 .w100{width:100%}
 .mt8{margin-top:8px}
 .mb12{margin-bottom:12px}
+.w100{width:100%}
+.mt8{margin-top:8px}
+.mb12{margin-bottom:12px}
 a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
+/* toast */
+#toast-wrap{position:fixed;top:18px;right:18px;z-index:2000;display:flex;flex-direction:column;gap:8px}
+.toast{background:var(--s1,#13131f);border:1px solid var(--bdr);border-left:3px solid var(--acc);border-radius:8px;padding:11px 16px;font-size:.82rem;color:var(--txt);box-shadow:0 8px 28px rgba(0,0,0,.4);min-width:210px;animation:tin .22s ease}
+.toast.ok{border-left-color:var(--grn,#22c55e)}.toast.err{border-left-color:var(--red,#ef4444)}
+@keyframes tin{from{opacity:0;transform:translateX(24px)}to{opacity:1;transform:none}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeUp .32s ease both}
+.cl-secret{cursor:pointer;user-select:none}
+/* mobile */
+@media(max-width:768px){
+  nav{flex-wrap:wrap;height:auto;padding:8px 12px;gap:6px}
+  .nav-l{flex-wrap:wrap;gap:4px}.nav-r{width:100%;justify-content:space-between;font-size:.7rem;gap:8px;flex-wrap:wrap}
+  .tab-btn{padding:6px 9px;font-size:.72rem}
+  main{padding:12px}
+  .cards4,.cards3,.cards2,.cl-grid,.ct-grid,.svc-grid{grid-template-columns:1fr!important}
+  .pipe-wrap{grid-template-columns:1fr!important}
+  .cards2{display:grid}
+  .modal{width:94vw!important}
+  table.tbl{font-size:.72rem}
+  #pp-search{width:120px!important}
+}
 </style></head>
-<body><!-- LOGIN -->
+<body><div id="toast-wrap"></div><!-- LOGIN -->
 <div id="login">
   <div class="lbox">
     <div class="logo"><span>S</span> SUMMIT OS</div>
@@ -294,7 +318,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
       <h2>Active Clients</h2>
       <span id="cl-summary" class="badge badge-acc" style="margin-left:8px"></span>
     </div>
-    <button class="btn btn-acc btn-sm" onclick="openModal('m-add-client')">+ Add Client</button>
+    <button class="btn btn-acc btn-sm" onclick="openAddClient()">+ Add Client</button>
   </div>
   <div id="cl-grid" class="cl-grid"><div class="loading">Loading clients...</div></div>
 </div>
@@ -460,13 +484,21 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <div class="modal-bg" id="m-add-client">
   <div class="modal">
     <button class="mclose" onclick="closeModal('m-add-client')">×</button>
-    <h3>Add Client</h3>
+    <h3 id="ac-title">Add Client</h3>
+    <input type="hidden" id="ac-id">
     <div class="fld"><label>Company Name *</label><input id="ac-name" placeholder="Apex Roofing"></div>
-    <div class="fld"><label>Contact Name</label><input id="ac-contact" placeholder="John Smith"></div>
-    <div class="fld"><label>Email</label><input id="ac-email" type="email" placeholder="john@apex.com"></div>
-    <div class="fld"><label>Phone</label><input id="ac-phone" placeholder="+1 555-0100"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="fld"><label>Monthly MRR ($)</label><input id="ac-mrr" type="number" placeholder="497"></div>
+      <div class="fld"><label>Contact Name</label><input id="ac-contact" placeholder="John Smith"></div>
+      <div class="fld"><label>Status</label>
+        <select id="ac-status"><option value="active">Active</option><option value="at_risk">At Risk</option><option value="churned">Churned</option></select>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="fld"><label>Email</label><input id="ac-email" type="email" placeholder="john@apex.com"></div>
+      <div class="fld"><label>Phone</label><input id="ac-phone" placeholder="+1 555-0100"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="fld"><label>Monthly MRR ($) *</label><input id="ac-mrr" type="number" step="0.01" placeholder="497"></div>
       <div class="fld"><label>Plan</label>
         <select id="ac-plan"><option value="starter">Starter ($497)</option><option value="growth">Growth ($997)</option><option value="custom">Custom</option><option value="annual">Annual</option></select>
       </div>
@@ -475,8 +507,15 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
       <div class="fld"><label>City</label><input id="ac-city" placeholder="Baltimore"></div>
       <div class="fld"><label>State</label><input id="ac-state" placeholder="MD" maxlength="2"></div>
     </div>
+    <div class="fld"><label>Start Date</label><input id="ac-start" type="date"></div>
+    <div class="fld"><label>Demo / Live Site URL</label><input id="ac-demo" placeholder="https://..."></div>
+    <div class="fld"><label>Voice Agent Key</label><input id="ac-voice" placeholder="agent widget key"></div>
+    <div class="fld"><label>Google Review Link</label><input id="ac-review" placeholder="https://g.page/..."></div>
     <div class="fld"><label>Notes</label><textarea id="ac-notes" placeholder="Any notes..."></textarea></div>
-    <button class="btn btn-acc w100" style="justify-content:center;margin-top:4px" onclick="saveClient()">Save Client</button>
+    <div class="row" style="gap:10px;margin-top:4px">
+      <button class="btn btn-acc" style="flex:1;justify-content:center" onclick="saveClient()">Save Client</button>
+      <button class="btn btn-red" id="ac-del" style="display:none" onclick="deleteClient()">Delete</button>
+    </div>
   </div>
 </div>
 
@@ -525,6 +564,8 @@ var _allContent=[], _allBiz=[], _allAgents=[];
 // ── Helpers ─────────────────────────────────────────────────────────────────
 async function get(p){try{var r=await fetch(API+p,{headers:{'x-api-key':KEY}});return r.ok?await r.json():{}}catch(e){return {}}}
 async function post(p,b){try{var r=await fetch(API+p,{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(b)});return r.ok?await r.json():{}}catch(e){return {}}}
+async function patchJSON(p,b){try{var r=await fetch(API+p,{method:'PATCH',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(b)});return r.ok?await r.json():{success:false}}catch(e){return {success:false}}}
+async function delJSON(p){try{var r=await fetch(API+p,{method:'DELETE',headers:{'x-api-key':KEY}});return r.ok?await r.json():{success:false}}catch(e){return {success:false}}}
 async function sGet(t,q){try{var r=await fetch(API+'/db/'+t+(q||''),{headers:{'x-api-key':KEY}});return r.ok?await r.json():[]}catch(e){return []}}
 async function sPost(t,b){try{var r=await fetch(API+'/db/'+t,{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(b)});return r.ok?await r.json():null}catch(e){return null}}
 async function sPatch(t,q,b){try{var r=await fetch(API+'/db/'+t+'?'+q,{method:'PATCH',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(b)});if(!r.ok)return false;var d=await r.json().catch(function(){return{}});return !!d.ok}catch(e){return false}}
@@ -539,6 +580,9 @@ function fmt$(n){return'$'+(Math.round(n||0)).toLocaleString()}
 function fmtDate(s){if(!s)return'--';var d=new Date(s);return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
 function fmtTime(s){if(!s)return'';var d=new Date(s);var now=new Date();var diff=Math.floor((now-d)/1000);if(diff<60)return diff+'s ago';if(diff<3600)return Math.floor(diff/60)+'m ago';if(diff<86400)return Math.floor(diff/3600)+'h ago';return d.toLocaleDateString('en-US',{month:'short',day:'numeric'})}
 function truncate(s,n){if(!s)return'';return s.length>n?s.substring(0,n)+'...':s}
+function toast(msg,kind){var w=el('toast-wrap');if(!w)return;var t=document.createElement('div');t.className='toast '+(kind||'');t.textContent=msg;w.appendChild(t);setTimeout(function(){t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(function(){t.remove()},300)},kind==='err'?4200:2600)}
+function fadeIn(sel){var nodes=document.querySelectorAll(sel);nodes.forEach(function(n,i){n.style.animationDelay=(Math.min(i,12)*35)+'ms';n.classList.add('fade-in')})}
+function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;')}
 function openModal(id){var m=el(id);if(m)m.classList.add('open')}
 function closeModal(id){var m=el(id);if(m)m.classList.remove('open')}
 window.onclick=function(e){if(e.target.classList.contains('modal-bg'))e.target.classList.remove('open')}
@@ -624,8 +668,9 @@ function renderAgents(agents){
   html('tm-agents',agents.map(function(a){
     var dc=dotColor(a.status);
     var bk=a.blockers&&a.blockers.length?'<div style="margin-top:8px;font-size:.73rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:6px;padding:6px 8px;color:var(--yel)">BLOCKED: '+a.blockers.join(', ')+'</div>':'';
-    var hi=a.hot_items&&a.hot_items.length?'<div style="margin-top:6px;font-size:.73px;color:var(--grn)">'+a.hot_items[0]+'</div>':'';
-    return'<div class="ag-card"><div class="ag-hd"><div><div class="ag-name">'+a.agent_name+'</div><div class="ag-dept">'+a.department+'</div></div><div class="ag-dot '+dc+'"></div></div><div class="ag-out">'+truncate(a.output_summary,90)+'</div><div class="ag-meta">Last run: '+fmtTime(a.last_run)+(a.next_run?' · Next: '+a.next_run:'')+'</div>'+bk+hi+'<div class="row mt8" style="gap:6px"><button class="btn btn-ghost btn-xs" onclick="viewAgentHistory(\''+a.agent_id+'\')">History</button>'+(a.status==='blocked'?'<button class="btn btn-grn btn-xs" onclick="unblockAgent(\''+a.agent_id+'\')">Unblock</button>':'')+'</div></div>'
+    var hi=a.hot_items&&a.hot_items.length?'<div style="margin-top:6px;font-size:.73rem;color:var(--grn)">'+a.hot_items[0]+'</div>':'';
+    var stale='';if(a.last_run&&a.last_run!=='Never'){var ageH=(Date.now()-new Date(a.last_run).getTime())/3600000;if(ageH>72)stale=' <span class="badge badge-red" style="font-size:.6rem">STALE '+Math.floor(ageH/24)+'d</span>';else if(ageH>36)stale=' <span class="badge badge-yel" style="font-size:.6rem">'+Math.floor(ageH)+'h</span>';}
+    return'<div class="ag-card"><div class="ag-hd"><div><div class="ag-name">'+a.agent_name+'</div><div class="ag-dept">'+a.department+'</div></div><div class="ag-dot '+dc+'"></div></div><div class="ag-out">'+truncate(a.output_summary,90)+'</div><div class="ag-meta">Last run: '+fmtTime(a.last_run)+stale+(a.next_run?' · Next: '+a.next_run:'')+'</div>'+bk+hi+'<div class="row mt8" style="gap:6px"><button class="btn btn-ghost btn-xs" onclick="viewAgentHistory(\''+a.agent_id+'\')">History</button>'+(a.status==='blocked'?'<button class="btn btn-grn btn-xs" onclick="unblockAgent(\''+a.agent_id+'\')">Unblock</button>':'')+'</div></div>'
   }).join(''));
 }
 
@@ -826,36 +871,82 @@ async function approveContent(id,status){
 }
 
 // ── CLIENTS ──────────────────────────────────────────────────────────────
+var _clientCache=[];
 async function loadClients(){
-  var d=await get('/clients/list');
-  var clients=d.clients||[];
-  var mrr=clients.reduce(function(s,c){return s+parseFloat(c.mrr||0)},0);
-  html('cl-summary',clients.length+' ACTIVE — '+fmt$(mrr)+' MRR');
-  if(!clients.length){html('cl-grid','<div class="loading">No clients yet. Add your first client!</div>');return;}
+  var d=await get('/clients');
+  var clients=(d&&d.clients)||[];
+  _clientCache=clients;
+  var mrr=(d&&d.total_mrr)||0, active=(d&&d.active_count)||0, atrisk=(d&&d.at_risk_count)||0, churned=(d&&d.churned_count)||0;
+  html('cl-summary',active+' ACTIVE · '+fmt$(mrr)+' MRR'+(atrisk?' · '+atrisk+' AT RISK':'')+(churned?' · '+churned+' churned':''));
+  if(!clients.length){html('cl-grid','<div class="loading">No clients yet. Click <b>+ Add Client</b> to add your first one.</div>');return;}
+  var planColor={'starter':'badge-acc','growth':'badge-grn','custom':'badge-blu','annual':'badge-yel'};
+  var stMap={active:['ACTIVE','badge-grn'],at_risk:['AT RISK','badge-yel'],churned:['CHURNED','badge-red']};
   html('cl-grid',clients.map(function(c){
-    var health=8;// Future: calculate from activity
-    var planColor={'starter':'badge-acc','growth':'badge-grn','custom':'badge-blu','annual':'badge-yel'}[c.plan]||'badge-grey';
-    return'<div class="cl-card"><div class="row mb12"><span class="badge badge-grn">ACTIVE</span><span class="badge '+planColor+'" style="margin-left:auto">'+c.plan+'</span></div><div class="cl-name">'+c.company_name+'</div><div class="cl-meta">'+(c.contact_name?c.contact_name+' · ':'')+fmt$(c.mrr)+'/mo'+(c.city?(' · '+c.city+', '+c.state):'')+'</div><div style="font-size:.78rem;color:var(--txt2);margin-bottom:12px">'+(c.phone||'')+(c.email?(' · '+c.email):'')+'</div><div class="prog-bar" style="margin-bottom:6px"><div class="prog-fill" style="width:'+health*10+'%"></div></div><div class="row"><span class="muted2" style="font-size:.73rem">Health: '+health+'/10</span><div class="gap8" style="margin-left:auto"><button class="btn btn-ghost btn-xs" onclick="editClient(\''+c.id+'\')">Edit</button></div></div></div>'
+    var st=stMap[c.status||'active']||stMap.active;
+    var pc=planColor[c.plan]||'badge-grey';
+    var loc=(c.city?c.city+(c.state?', '+c.state:''):'');
+    var demo=c.demo_url?'<a href="'+esc(c.demo_url)+'" target="_blank" style="font-size:.75rem">View live site ↗</a>':'';
+    var vk=c.voice_agent_key?'<div style="font-size:.72rem;color:var(--txt2);margin-top:6px">Voice key: <span class="cl-secret mono" title="click to reveal" onclick="this.textContent=this.dataset.k;this.onclick=null" data-k="'+esc(c.voice_agent_key)+'">•••••• reveal</span></div>':'';
+    return'<div class="cl-card"><div class="row mb12"><span class="badge '+st[1]+'">'+st[0]+'</span><span class="badge '+pc+'" style="margin-left:auto">'+(c.plan||'-')+'</span></div>'+
+      '<div class="cl-name">'+esc(c.company_name||'Client')+'</div>'+
+      '<div class="cl-meta">'+(c.contact_name?esc(c.contact_name)+' · ':'')+fmt$(c.mrr)+'/mo'+(loc?(' · '+esc(loc)):'')+'</div>'+
+      '<div style="font-size:.78rem;color:var(--txt2);margin-bottom:8px">'+esc(c.phone||'')+(c.email?(' · '+esc(c.email)):'')+'</div>'+
+      (demo?'<div style="margin-bottom:6px">'+demo+'</div>':'')+vk+
+      '<div class="row" style="margin-top:12px"><span class="muted2" style="font-size:.72rem">'+(c.start_date?('Since '+fmtDate(c.start_date)):'')+'</span>'+
+      '<div class="gap8" style="margin-left:auto"><button class="btn btn-ghost btn-xs" onclick="editClient(\''+c.id+'\')">Edit</button></div></div></div>';
   }).join(''));
+  fadeIn('#cl-grid .cl-card');
 }
 
-async function saveClient(){
-  var name=el('ac-name').value.trim();if(!name){alert('Company name required');return;}
-  var data={company_name:name,contact_name:el('ac-contact').value||null,email:el('ac-email').value||null,phone:el('ac-phone').value||null,mrr:parseFloat(el('ac-mrr').value)||0,plan:el('ac-plan').value,city:el('ac-city').value||null,state:el('ac-state').value||null,notes:el('ac-notes').value||null,status:'active'};
-  await sPost('clients',data);
-  closeModal('m-add-client');loadClients();loadHeader();
+function _clientForm(){
+  return {company_name:el('ac-name').value.trim(),contact_name:el('ac-contact').value.trim()||null,
+    email:el('ac-email').value.trim()||null,phone:el('ac-phone').value.trim()||null,
+    mrr:parseFloat(el('ac-mrr').value)||0,plan:el('ac-plan').value,status:el('ac-status').value,
+    city:el('ac-city').value.trim()||null,state:el('ac-state').value.trim()||null,
+    start_date:el('ac-start').value||null,demo_url:el('ac-demo').value.trim()||null,
+    voice_agent_key:el('ac-voice').value.trim()||null,google_review_link:el('ac-review').value.trim()||null,
+    notes:el('ac-notes').value.trim()||null};
+}
+
+function openAddClient(){
+  el('ac-title').textContent='Add Client';el('ac-id').value='';
+  ['ac-name','ac-contact','ac-email','ac-phone','ac-mrr','ac-city','ac-state','ac-start','ac-demo','ac-voice','ac-review','ac-notes'].forEach(function(i){el(i).value=''});
+  el('ac-plan').value='starter';el('ac-status').value='active';el('ac-del').style.display='none';
+  openModal('m-add-client');
 }
 
 function editClient(id){
-  // Simple inline edit via prompt for now
-  get('/clients/list').then(function(d){
-    var c=(d.clients||[]).find(function(x){return x.id===id});
-    if(!c)return;
-    var mrr=prompt('Update MRR for '+c.company_name+':',c.mrr);
-    if(mrr===null)return;
-    sPatch('clients','id=eq.'+id,{mrr:parseFloat(mrr)}).then(function(){loadClients();loadHeader();});
-  });
+  var c=_clientCache.find(function(x){return x.id===id});
+  if(!c){toast('Client not found','err');return;}
+  el('ac-title').textContent='Edit '+(c.company_name||'Client');el('ac-id').value=id;
+  el('ac-name').value=c.company_name||'';el('ac-contact').value=c.contact_name||'';
+  el('ac-email').value=c.email||'';el('ac-phone').value=c.phone||'';
+  el('ac-mrr').value=c.mrr||'';el('ac-plan').value=c.plan||'starter';el('ac-status').value=c.status||'active';
+  el('ac-city').value=c.city||'';el('ac-state').value=c.state||'';
+  el('ac-start').value=(c.start_date||'').substring(0,10);el('ac-demo').value=c.demo_url||'';
+  el('ac-voice').value=c.voice_agent_key||'';el('ac-review').value=c.google_review_link||'';el('ac-notes').value=c.notes||'';
+  el('ac-del').style.display='';
+  openModal('m-add-client');
 }
+
+async function saveClient(){
+  var data=_clientForm();
+  if(!data.company_name){toast('Company name required','err');el('ac-name').focus();return;}
+  var id=el('ac-id').value;
+  var r=id?await patchJSON('/clients/'+id,data):await post('/clients',data);
+  if(r&&r.success!==false){toast(id?'Client updated ✓':'Client added ✓','ok');closeModal('m-add-client');loadClients();loadHeader();}
+  else{toast('Save failed — check Railway logs','err');}
+}
+
+async function deleteClient(){
+  var id=el('ac-id').value;if(!id)return;
+  var c=_clientCache.find(function(x){return x.id===id});
+  if(!confirm('Mark '+((c&&c.company_name)||'this client')+' as churned? (soft delete — record is kept)'))return;
+  var r=await delJSON('/clients/'+id);
+  if(r&&r.success){toast('Client marked churned','ok');closeModal('m-add-client');loadClients();loadHeader();}
+  else{toast('Delete failed','err');}
+}
+
 </script><script>
 // ── DEMOS ──────────────────────────────────────────────────────────────
 var _curDemoUrl='';
@@ -898,7 +989,8 @@ async function buildDemo(){
   var cid=el('dm-cid').value.trim()||null;
   var deliver=el('dm-deliver').checked;
   var res=await post('/demos/create',{client_name:name,website_url:url,contact_id:cid,send_delivery:deliver});
-  if(!res.demo_id){txt('dm-status','Error — could not start build');return;}
+  if(!res.demo_id){txt('dm-status','Error — could not start build');toast('Build failed to start — check Anthropic credits','err');return;}
+  toast('Demo build started ✓','ok');
   var demoId=res.demo_id;_activeDemoId=demoId;
   // Save to Supabase
   await sPost('demos_built',{demo_id:demoId,company_name:name,website_url:url,ghl_contact_id:cid,status:'queued',step:0,total_steps:10,message:'Build started'});
@@ -917,7 +1009,7 @@ async function pollDemoStatus(demoId){
     _curDemoUrl=s.demo_url;
     // Update Supabase record
     sPatch('demos_built','demo_id=eq.'+demoId,{status:'done',demo_url:s.demo_url,completed_at:new Date().toISOString()});
-    loadDemos();
+    toast('Demo live ✓','ok');loadDemos();
   }else if(s.status==='error'){
     txt('dm-status','Build failed: '+(s.message||'Unknown error'));
   }else{
@@ -967,7 +1059,7 @@ async function loadIntel(){
   var headlines=intel.headlines||[];
   html('it-intel',headlines.map(function(h){return'<div class="card-sm"><div class="row mb12"><span class="badge badge-acc" style="font-size:.65rem">'+h.category+'</span></div><div style="font-weight:600;font-size:.85rem;margin-bottom:6px">'+h.headline+'</div><div style="font-size:.78rem;color:var(--txt2)">'+h.relevance+'</div></div>'}).join('')||'<div class="loading">No intel available</div>');
   var ls=(leads.leads||leads||[]);ls.sort(function(a,b){return (parseInt(b.lead_score)||0)-(parseInt(a.lead_score)||0)});
-  html('it-leads',ls.length?ls.map(function(l){return'<div class="card-sm"><div class="row"><span style="font-weight:600;font-size:.82rem">'+(l.company_name||l.company||'Unknown Company')+'</span>'+statusBadge('hot')+(l.lead_score?scoreBadge(l.lead_score):'')+'</div><div style="font-size:.78rem;color:var(--txt2);margin-top:4px">'+truncate(l.message_body||l.message||'',100)+'</div><div class="feed-time" style="margin-top:4px">'+fmtTime(l.received_at||l.time)+'</div></div>'}).join(''):'<div class="loading">No hot leads yet</div>');
+  html('it-leads',ls.length?ls.map(function(l){return'<div class="card-sm"><div class="row"><span style="font-weight:600;font-size:.82rem">'+(l.company_name||l.company||'Unknown Company')+'</span>'+statusBadge('hot')+(l.lead_score?scoreBadge(l.lead_score):'')+'</div><div style="font-size:.78rem;color:var(--txt2);margin-top:4px">'+truncate(l.message_body||l.message||'',100)+'</div><div class="feed-time" style="margin-top:4px">'+fmtTime(l.received_at||l.time)+'</div></div>'}).join(''):'<div class="loading">No hot leads yet today — outreach is running at 100/day. Replies appear here as they land.</div>');
 }
 
 // ── KEYBOARD SHORTCUTS ──────────────────────────────────────────────────
@@ -1175,7 +1267,7 @@ async function loadDemos(){
     var name=d.company_name||d.client_name||'Demo';
     var st=d.status||'done';
     var srcBadge=d._src==='free_sites'?'<span class="badge badge-acc" style="font-size:.6rem">Free Site</span>':d._src==='api'?'<span class="badge badge-grey" style="font-size:.6rem">API</span>':'';
-    return'<div class="card-sm"><div class="row mb12" style="align-items:flex-start;gap:6px"><div style="flex:1"><div style="font-weight:700;font-size:.9rem">'+truncate(name,36)+'</div><div class="muted2" style="font-size:.72rem">'+fmtDate(d.created_at||d.built_at)+'</div></div>'+srcBadge+statusBadge(st)+'</div>'+(url?'<a href="'+url+'" target="_blank" style="font-size:.75rem;color:var(--acc);display:block;margin-bottom:10px;word-break:break-all">'+url+'</a>':'<div style="font-size:.75rem;color:var(--txt3);margin-bottom:10px">Building in progress...</div>')+'<div class="gap8">'+(url?'<button class="btn btn-acc btn-xs" onclick="window.open(\''+url+'\',\'_blank\')">&#128065; View</button><button class="btn btn-ghost btn-xs" onclick="navigator.clipboard.writeText(\''+url+'\').then(function(){alert(\'Copied!\')})">Copy URL</button>':'<span style="font-size:.72rem;color:var(--txt3)">Check back in 60s...</span>')+'</div></div>';
+    return'<div class="card-sm"><div class="row mb12" style="align-items:flex-start;gap:6px"><div style="flex:1"><div style="font-weight:700;font-size:.9rem">'+truncate(name,36)+'</div><div class="muted2" style="font-size:.72rem">'+fmtDate(d.created_at||d.built_at)+'</div></div>'+srcBadge+statusBadge(st)+'</div>'+(url?'<a href="'+url+'" target="_blank" style="font-size:.75rem;color:var(--acc);display:block;margin-bottom:10px;word-break:break-all">'+url+'</a>':'<div style="font-size:.75rem;color:var(--txt3);margin-bottom:10px">Building in progress...</div>')+'<div class="gap8">'+(url?'<button class="btn btn-acc btn-xs" onclick="window.open(\''+url+'\',\'_blank\')">&#128065; View</button><button class="btn btn-ghost btn-xs" onclick="navigator.clipboard.writeText(\''+url+'\').then(function(){toast(\'URL copied ✓\',\'ok\')})">Copy URL</button>':'<span style="font-size:.72rem;color:var(--txt3)">Check back in 60s...</span>')+'</div></div>';
   }).join(''));
   loadFreeSites();
 }
@@ -1684,6 +1776,26 @@ async function loadContent(){
   txt('ct-count',_allContent.length+' items');
   renderContent(_allContent);
 }
+</script>
+<script>
+/* Global render polish: fade in cards as they are inserted, regardless of which
+   render path produced them. Robust against the file's layered patch scripts. */
+(function(){
+  var SEL='.card-sm,.cl-card,.ag-card,.feed-item,.build-card,.ct-card';
+  try{
+    var mo=new MutationObserver(function(muts){
+      muts.forEach(function(m){
+        for(var i=0;i<m.addedNodes.length;i++){
+          var n=m.addedNodes[i];
+          if(n.nodeType!==1)continue;
+          if(n.matches&&n.matches(SEL)){n.classList.add('fade-in');}
+          if(n.querySelectorAll){n.querySelectorAll(SEL).forEach(function(c){c.classList.add('fade-in');});}
+        }
+      });
+    });
+    mo.observe(document.body,{childList:true,subtree:true});
+  }catch(e){}
+})();
 </script>
 </body></html>
 

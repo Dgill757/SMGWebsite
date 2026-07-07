@@ -1,0 +1,68 @@
+﻿SUMMIT OS - LAUNCH VERIFICATION
+=================================
+Date: 2026-07-07
+Tester: Claude (autonomous), verified LIVE in a real browser via Playwright
+Live dashboard: https://avastudio.summitvoiceai.com  (access code in PASSWORDS.txt)
+API: https://ava-studio-api-production.up.railway.app
+
+AUTH / SECURITY
+  Login with code from PASSWORDS.txt (SVA-...):   PASS (server-side verify)
+  summit2026 correctly rejected (401):            PASS
+  No credentials in page source:                  PASS (security_check.py green;
+                                                   verified live page: 0 secrets)
+  JS: all 12 script blocks parse cleanly:         PASS (node --check)
+  Live browser console:                           0 JS errors (favicon now inlined)
+
+TABS (all 8 load real data, verified live)
+  BRIEF:     PASS - real MRR/scraped/contacted/replies, intel, activity feed, health
+  TEAM:      PASS - 28 real agents, staleness chips, filter, history, unblock
+  PIPELINE:  PASS - 5,411 businesses, date list, search, paging, SDR, Free Site
+  CONTENT:   PASS - content_library via proxy, filters, view, approve/publish
+  CLIENTS:   PASS - see below
+  DEMOS:     PASS - build form, progress, real demo history, View/Copy buttons
+  FINANCE:   PASS - MRR/target, P&L, expense CRUD, client list
+  INTEL:     PASS - headlines, hot leads + score badges
+
+CRITICAL FUNCTIONALITY (the "throw it against the wall" items)
+  Client EDIT modal opens pre-filled:   PASS (verified live: "Edit Teo Roofing"
+                                         with all fields populated)
+  Client edit SAVES to Supabase:        PASS (verified live: 500 -> 501 saved,
+                                         header MRR updated, card re-rendered,
+                                         then restored to 500)
+  Client edit - ALL fields editable:    PASS (contact/email/phone/plan/status/
+                                         city/state/start/demo_url/voice_key/
+                                         review/notes) - API lifecycle test:
+                                         create/edit-every-field/persist/churn
+  Client ADD form:                      PASS (openAddClient resets + POST /clients)
+  Client soft-delete (churn):           PASS (never hard-deletes; status->churned)
+  Real status badges (not fake ACTIVE): PASS (reflect active/at_risk/churned)
+  MRR shows REAL number:                PASS - $1,514 (the true Supabase total of
+                                         the 4 real clients). Will read $4,466 the
+                                         moment Dan enters his other 5 via the now-
+                                         working Add Client form. NOT fabricated.
+  Demo machine builds on click:         WIRED (blocked only by Anthropic credits)
+  Hot leads (GHL fallback added):       PASS (endpoint 200; empty until replies)
+  Quick command / dispatch:             PASS (POST /dispatch -> 200)
+  Toast feedback + fade-in animations:  PASS (MutationObserver, toast system)
+  Mobile responsive (<768px):           PASS (breakpoint added)
+
+ENDPOINT TEST BATTERY (test_endpoints.py against production)
+  9/9 PASS: /health /analytics/summary /clients /outreach/hot-leads
+            /analytics/activity-feed /agents/status /ceo/summary
+            /businesses/stats /dispatch
+
+DEPLOYED
+  Railway:  ava-studio-api-production.up.railway.app (client CRUD + hot-leads fallback live)
+  Vercel:   avastudio.summitvoiceai.com (token-free, console-clean)
+  GitHub:   branch summit-os (main = marketing site, untouched)
+
+VERDICT: SHIP IT
+
+Honest caveats (not defects, decisions):
+  1. MRR is real at $1,514 (4 clients in DB). The $4,466/9-client figure needs
+     Dan to enter his other 5 clients - the Add Client form now makes that a
+     2-minute job. No fake data was inserted to inflate the number.
+  2. Demo machine is fully wired but returns an error until Anthropic credits
+     are added (console.anthropic.com -> Billing). This is the last blocker.
+  3. dashboard.summitvoiceai.com is a SEPARATE "Knowledge Dashboard" - the CEO
+     Command Center is avastudio.summitvoiceai.com.
