@@ -751,9 +751,9 @@ function bizPage(dir){_bizOffset=Math.max(0,_bizOffset+dir*_bizLimit);fetchBizPa
 function renderBizTable(list){
   if(!list.length){html('pp-tbody','<tr><td colspan="7" class="loading">No businesses found</td></tr>');return;}
   html('pp-tbody',list.map(function(b){
-    var name=b.company_name||'<span class="muted2">Unknown</span>';
-    var ph=b.phone?('<a href="tel:'+b.phone+'">'+b.phone+'</a>'):'<span class="muted2">--</span>';
-    var ws=b.website?('<a href="'+b.website+'" target="_blank" style="font-size:.75rem">Visit</a>'):'<span class="muted2">--</span>';
+    var name=b.company_name?esc(b.company_name):'<span class="muted2">Unknown</span>';
+    var ph=b.phone?('<a href="tel:'+encodeURIComponent(b.phone)+'">'+esc(b.phone)+'</a>'):'<span class="muted2">--</span>';
+    var ws=b.website?('<a href="'+esc(b.website)+'" target="_blank" style="font-size:.75rem">Visit</a>'):'<span class="muted2">--</span>';
     var seg='<span class="badge '+(b.segment==='A'?'badge-grn':'badge-grey')+'">'+b.segment+'</span>';
     var replied=b.replied?'<span class="green">Yes</span>':'No';
     var cid=b.ghl_contact_id||b.id;
@@ -964,7 +964,7 @@ async function loadDemos(){
   html('dm-list',all.map(function(d){
     var url=d.demo_url||'';
     var st=d.status||'queued';
-    return'<div class="card-sm"><div class="row mb12"><span style="font-weight:700;font-size:.88rem">'+truncate(d.company_name||d.client_name||'Demo',40)+'</span>'+statusBadge(st)+'</div>'+(url?'<div style="margin-bottom:8px"><a href="'+url+'" target="_blank" class="mono" style="font-size:.75rem">'+url+'</a></div>':'')+'<div class="row"><span class="muted2" style="font-size:.72rem">'+fmtDate(d.created_at)+'</span><div class="gap8 ml-auto">'+(url?'<button class="btn btn-ghost btn-xs" onclick="navigator.clipboard.writeText(\''+url+'\')">Copy URL</button>':'')+'</div></div></div>'
+    return'<div class="card-sm"><div class="row mb12"><span style="font-weight:700;font-size:.88rem">'+esc(truncate(d.company_name||d.client_name||'Demo',40))+'</span>'+statusBadge(st)+'</div>'+(url?'<div style="margin-bottom:8px"><a href="'+url+'" target="_blank" class="mono" style="font-size:.75rem">'+url+'</a></div>':'')+'<div class="row"><span class="muted2" style="font-size:.72rem">'+fmtDate(d.created_at)+'</span><div class="gap8 ml-auto">'+(url?'<button class="btn btn-ghost btn-xs" onclick="navigator.clipboard.writeText(\''+url+'\')">Copy URL</button>':'')+'</div></div></div>'
   }).join(''));
   // Load free sites
   loadFreeSites();
@@ -974,7 +974,7 @@ async function loadFreeSites(){
   var list=await sGet('free_sites','?order=sent_at.desc&limit=20');
   if(!list.length){html('fs-tbody','<tr><td colspan="4" class="loading">No free sites sent yet</td></tr>');return;}
   html('fs-tbody',list.map(function(f){
-    return'<tr><td style="font-weight:600">'+f.company_name+'</td><td class="muted2">'+fmtDate(f.sent_at)+'</td><td>'+(f.demo_url?('<a href="'+f.demo_url+'" target="_blank" style="font-size:.78rem">'+truncate(f.demo_url,35)+'</a>'):'<span class="muted2">Building...</span>')+'</td><td>'+(f.responded?'<span class="green">Yes</span>':'No')+'</td></tr>'
+    return'<tr><td style="font-weight:600">'+esc(f.company_name)+'</td><td class="muted2">'+fmtDate(f.sent_at)+'</td><td>'+(f.demo_url?('<a href="'+f.demo_url+'" target="_blank" style="font-size:.78rem">'+truncate(f.demo_url,35)+'</a>'):'<span class="muted2">Building...</span>')+'</td><td>'+(f.responded?'<span class="green">Yes</span>':'No')+'</td></tr>'
   }).join(''));
 }
 
@@ -1059,7 +1059,7 @@ async function loadIntel(){
   var headlines=intel.headlines||[];
   html('it-intel',headlines.map(function(h){return'<div class="card-sm"><div class="row mb12"><span class="badge badge-acc" style="font-size:.65rem">'+h.category+'</span></div><div style="font-weight:600;font-size:.85rem;margin-bottom:6px">'+h.headline+'</div><div style="font-size:.78rem;color:var(--txt2)">'+h.relevance+'</div></div>'}).join('')||'<div class="loading">No intel available</div>');
   var ls=(leads.leads||leads||[]);ls.sort(function(a,b){return (parseInt(b.lead_score)||0)-(parseInt(a.lead_score)||0)});
-  html('it-leads',ls.length?ls.map(function(l){return'<div class="card-sm"><div class="row"><span style="font-weight:600;font-size:.82rem">'+(l.company_name||l.company||'Unknown Company')+'</span>'+statusBadge('hot')+(l.lead_score?scoreBadge(l.lead_score):'')+'</div><div style="font-size:.78rem;color:var(--txt2);margin-top:4px">'+truncate(l.message_body||l.message||'',100)+'</div><div class="feed-time" style="margin-top:4px">'+fmtTime(l.received_at||l.time)+'</div></div>'}).join(''):'<div class="loading">No hot leads yet today — outreach is running at 100/day. Replies appear here as they land.</div>');
+  html('it-leads',ls.length?ls.map(function(l){return'<div class="card-sm"><div class="row"><span style="font-weight:600;font-size:.82rem">'+esc(l.company_name||l.company||'Unknown Company')+'</span>'+statusBadge('hot')+(l.lead_score?scoreBadge(l.lead_score):'')+'</div><div style="font-size:.78rem;color:var(--txt2);margin-top:4px">'+esc(truncate(l.message_body||l.message||'',100))+'</div><div class="feed-time" style="margin-top:4px">'+fmtTime(l.received_at||l.time)+'</div></div>'}).join(''):'<div class="loading">No hot leads yet today — outreach is running at 100/day. Replies appear here as they land.</div>');
 }
 
 // ── KEYBOARD SHORTCUTS ──────────────────────────────────────────────────
@@ -1076,7 +1076,7 @@ function renderBizTable(list){
   if(!list.length){html('pp-tbody','<tr><td colspan="8" class="loading">No businesses found</td></tr>');return;}
   html('pp-tbody',list.map(function(b){
     var name=(b.company_name&&b.company_name!='Unknown')
-      ? '<span style="font-weight:600">'+b.company_name+'</span>'
+      ? '<span style="font-weight:600">'+esc(b.company_name)+'</span>'
       : '<span style="color:var(--txt3);font-style:italic;font-size:.8rem">Pending enrichment</span>';
     var ph=b.phone?('<a href="tel:'+b.phone+'" style="color:var(--acc);font-size:.82rem">'+b.phone+'</a>'):'<span class="muted2">--</span>';
     var ws=(b.website||b.has_website)
@@ -1397,7 +1397,7 @@ function renderBizTable(list){
   if(!list.length){html('pp-tbody','<tr><td colspan="7" class="loading">No businesses found</td></tr>');return;}
   html('pp-tbody',list.map(function(b){
     var cid=b.ghl_contact_id||b.id;
-    var nameHtml='<span style="font-weight:600;color:var(--acc);cursor:pointer">'+( (b.company_name&&b.company_name!='Unknown')?b.company_name:'(Pending)')+'</span>';
+    var nameHtml='<span style="font-weight:600;color:var(--acc);cursor:pointer">'+( (b.company_name&&b.company_name!='Unknown')?esc(b.company_name):'(Pending)')+'</span>';
     var ph=b.phone?('<a href="tel:'+b.phone+'" style="color:var(--txt);font-size:.82rem" onclick="event.stopPropagation()">'+b.phone+'</a>'):'<span class="muted2" style="font-size:.78rem">--</span>';
     var ws=(b.website||b.has_website)?('<a href="'+(b.website||'#')+'" target="_blank" style="color:var(--grn);font-size:.78rem" onclick="event.stopPropagation()">&#10003; Site</a>'):'<span style="color:var(--yel);font-size:.75rem">&#10007; None</span>';
     var stars='<span class="muted2" style="font-size:.72rem">--</span>';
@@ -1599,7 +1599,7 @@ function _renderBuildCards(list){
     var stMap={queued:'badge-acc',in_progress:'badge-yel',delivered:'badge-grn',paid:'badge-grn'};
     var stars='--';
     if(b.review_rating){var r=parseFloat(b.review_rating);stars='&#9733; '+r.toFixed(1)+' ('+( b.review_count||0)+' reviews)';}
-    return'<div class="build-card priority-'+(b.priority||'normal')+' status-'+st+'"><div class="row mb12" style="align-items:flex-start"><div style="flex:1"><div class="build-name">'+b.company_name+'</div><div class="build-loc">'+loc+' &bull; '+ph+'</div></div>'+statusBadge(st)+'</div><div class="row" style="gap:12px;margin-bottom:10px"><div style="text-align:center"><div class="build-score" style="color:'+scClr+'">'+sc+'%</div><div style="font-size:.68rem;color:var(--txt3)">Close Prob</div></div><div style="flex:1;font-size:.78rem;color:var(--txt2)"><div>'+stars+'</div><div style="color:'+(b.existing_website?'var(--grn)':'var(--yel)')+'">&#9679; '+(b.existing_website?'Has site':'No site — build from scratch')+'</div>'+(b.email?'<div>'+b.email+'</div>':'')+'</div></div><div class="build-pkg">'+( b.top_package||'Voice AI + Website')+'</div>'+(b.call_opener?'<div class="build-opener">&#x201C;'+truncate(b.call_opener,160)+'&#x201D;</div>':'')+'<div class="build-actions"><button class="btn btn-acc btn-xs" onclick="startBuild(\''+b.id+'\')">&#9889; Start Build</button>'+(b.phone?'<a href="tel:'+b.phone+'" class="btn btn-ghost btn-xs">&#128222; Call</a>':'')+(b.google_maps_url?'<a href="'+b.google_maps_url+'" target="_blank" class="btn btn-ghost btn-xs">&#128205; Maps</a>':'')+'<button class="btn btn-ghost btn-xs" onclick="markBuildStatus(\''+b.id+'\',\'delivered\')">&#10003; Delivered</button><button class="btn btn-grn btn-xs" onclick="markBuildPaid(\''+b.id+'\','+( b.setup_fee||2997)+')">&#36; Mark Paid</button></div></div>';
+    return'<div class="build-card priority-'+(b.priority||'normal')+' status-'+st+'"><div class="row mb12" style="align-items:flex-start"><div style="flex:1"><div class="build-name">'+esc(b.company_name)+'</div><div class="build-loc">'+loc+' &bull; '+ph+'</div></div>'+statusBadge(st)+'</div><div class="row" style="gap:12px;margin-bottom:10px"><div style="text-align:center"><div class="build-score" style="color:'+scClr+'">'+sc+'%</div><div style="font-size:.68rem;color:var(--txt3)">Close Prob</div></div><div style="flex:1;font-size:.78rem;color:var(--txt2)"><div>'+stars+'</div><div style="color:'+(b.existing_website?'var(--grn)':'var(--yel)')+'">&#9679; '+(b.existing_website?'Has site':'No site — build from scratch')+'</div>'+(b.email?'<div>'+esc(b.email)+'</div>':'')+'</div></div><div class="build-pkg">'+( b.top_package||'Voice AI + Website')+'</div>'+(b.call_opener?'<div class="build-opener">&#x201C;'+esc(truncate(b.call_opener,160))+'&#x201D;</div>':'')+'<div class="build-actions"><button class="btn btn-acc btn-xs" onclick="startBuild(\''+b.id+'\')">&#9889; Start Build</button>'+(b.phone?'<a href="tel:'+b.phone+'" class="btn btn-ghost btn-xs">&#128222; Call</a>':'')+(b.google_maps_url?'<a href="'+b.google_maps_url+'" target="_blank" class="btn btn-ghost btn-xs">&#128205; Maps</a>':'')+'<button class="btn btn-ghost btn-xs" onclick="markBuildStatus(\''+b.id+'\',\'delivered\')">&#10003; Delivered</button><button class="btn btn-grn btn-xs" onclick="markBuildPaid(\''+b.id+'\','+( b.setup_fee||2997)+')">&#36; Mark Paid</button></div></div>';
   }).join('');
 }
 
