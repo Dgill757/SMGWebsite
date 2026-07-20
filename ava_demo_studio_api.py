@@ -7,7 +7,7 @@ Deploy to Railway.
 import os, json, re, time, base64, httpx, asyncio
 from datetime import datetime, timedelta
 from typing import Set
-from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request
+from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -18,9 +18,18 @@ load_dotenv()
 
 app = FastAPI(title="Ava Demo Studio API", version="3.2.0")
 
+# CORS: browsers enforce this, so it only affects the browser dashboard.
+# Server-to-server callers (GHL webhooks, local scripts) ignore CORS entirely.
+# Locked to the known Summit dashboard origins; override with the Railway
+# variable ALLOWED_ORIGINS (comma-separated) if you add a new domain.
+_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+ALLOWED_ORIGINS = [o.strip() for o in _origins_env.split(",") if o.strip()] or [
+    "https://avastudio.summitvoiceai.com",
+    "https://dashboard.summitvoiceai.com",
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=ALLOWED_ORIGINS,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -54,6 +63,48 @@ def verify_api_key(x_api_key: str):
         raise HTTPException(status_code=503, detail="Auth not configured")
     if x_api_key not in allowed:
         raise HTTPException(status_code=401, detail="Invalid API key")
+
+
+async def require_key(x_api_key: str = Header(default="")):
+    """Route dependency: rejects any request without a valid dashboard/API key.
+    The dashboard already sends x-api-key on every call, so attaching this to a
+    read endpoint does not break it - it only closes the endpoint to strangers."""
+    verify_api_key(x_api_key)
+
+
+# â”€â”€ Abuse protection for the open /dispatch endpoint â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+# /dispatch is called by GHL workflow webhooks and local scripts that do NOT
+# currently send an API key, so we cannot hard-require auth without breaking
+# the live pipeline. Instead we protect it three ways, none of which break
+# existing callers:
+#   1. Per-IP rate limit (blocks a flood of requests).
+#   2. A daily cap on paid build/audit commands (blocks credit-burn abuse
+#      even from an allowed caller or a leaked URL).
+#   3. OPTIONAL key enforcement: set DISPATCH_REQUIRE_KEY=1 in Railway AFTER
+#      every caller (GHL webhooks + daily_outreach.py) has been updated to
+#      send the x-api-key header. Until then it stays off (non-breaking).
+_rl_hits: dict = {}          # ip -> [timestamps]
+_build_day: dict = {}        # "YYYY-MM-DD" -> count of paid builds
+DISPATCH_RL_MAX     = int(os.getenv("DISPATCH_RL_MAX", "30"))    # requests
+DISPATCH_RL_WINDOW  = int(os.getenv("DISPATCH_RL_WINDOW", "60")) # seconds
+DISPATCH_DAILY_CAP  = int(os.getenv("DISPATCH_DAILY_CAP", "60")) # paid builds/day
+
+
+def _rate_limit(ip: str, max_hits: int, window: int):
+    now = time.time()
+    hits = [t for t in _rl_hits.get(ip, []) if now - t < window]
+    if len(hits) >= max_hits:
+        raise HTTPException(status_code=429, detail="Rate limit exceeded")
+    hits.append(now)
+    _rl_hits[ip] = hits
+
+
+def _daily_build_guard():
+    day = datetime.utcnow().strftime("%Y-%m-%d")
+    used = _build_day.get(day, 0)
+    if used >= DISPATCH_DAILY_CAP:
+        raise HTTPException(status_code=429, detail="Daily build cap reached")
+    _build_day[day] = used + 1
 
 
 # â”€â”€ Schemas â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -660,7 +711,9 @@ async def health():
 
 
 @app.post("/demos/create", response_model=DemoStatusResponse)
-async def create_demo(req: CreateDemoRequest, background_tasks: BackgroundTasks):
+async def create_demo(req: CreateDemoRequest, background_tasks: BackgroundTasks,
+                      x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)  # dashboard already sends the key; closes direct paid-build hole
     demo_id = f"demo_{int(time.time()*1000)}"
     demo_store[demo_id] = {
         "demo_id": demo_id, "status": "queued", "step": 0,
@@ -671,7 +724,7 @@ async def create_demo(req: CreateDemoRequest, background_tasks: BackgroundTasks)
     return DemoStatusResponse(demo_id=demo_id, status="queued", step=0, total_steps=10, message="Build started")
 
 
-@app.get("/demos/{demo_id}/status", response_model=DemoStatusResponse)
+@app.get("/demos/{demo_id}/status", response_model=DemoStatusResponse, dependencies=[Depends(require_key)])
 async def get_demo_status(demo_id: str):
     d = demo_store.get(demo_id)
     if not d:
@@ -691,20 +744,30 @@ async def get_demo_status(demo_id: str):
     return DemoStatusResponse(**{k: d.get(k) for k in DemoStatusResponse.model_fields})
 
 
-@app.get("/demos")
+@app.get("/demos", dependencies=[Depends(require_key)])
 async def list_demos():
     return list(demo_store.values())
 
 
 @app.post("/dispatch")
-async def dispatch_command(payload: dict, background_tasks: BackgroundTasks):
+async def dispatch_command(payload: dict, background_tasks: BackgroundTasks,
+                          request: Request, x_api_key: str = Header(default="")):
     """
     Universal command dispatcher. Called by:
     - GHL workflows (demo machine / audit triggers)
     - SMS commands from Dan (via GHL workflow webhook)
     - Dashboard quick commands
     - daily_outreach.py (auto demo builds for 80+ scored leads, deliver=False)
+
+    Abuse protection (see helpers above): per-IP rate limit always on; paid
+    build/audit commands are capped per day; key enforcement is opt-in via
+    DISPATCH_REQUIRE_KEY once all callers send x-api-key.
     """
+    client_ip = request.client.host if request.client else "unknown"
+    _rate_limit(client_ip, DISPATCH_RL_MAX, DISPATCH_RL_WINDOW)
+    if os.getenv("DISPATCH_REQUIRE_KEY") == "1":
+        verify_api_key(x_api_key)
+
     command = (payload.get("command") or "").lower().strip()
     url     = payload.get("url", "")
     cid     = payload.get("contact_id", "")
@@ -712,7 +775,11 @@ async def dispatch_command(payload: dict, background_tasks: BackgroundTasks):
     city    = payload.get("city", "")
     deliver = payload.get("deliver", True)
 
+    if url and not re.match(r"^https?://", url):
+        raise HTTPException(status_code=400, detail="url must start with http:// or https://")
+
     if command in ("demo", "build") and (url or cid):
+        _daily_build_guard()
         req = CreateDemoRequest(website_url=url, client_name=name, contact_id=cid or None,
                                 send_delivery=bool(cid) and bool(deliver))
         demo_id = f"demo_{int(time.time()*1000)}"
@@ -722,6 +789,7 @@ async def dispatch_command(payload: dict, background_tasks: BackgroundTasks):
         return {"status": "queued", "demo_id": demo_id, "message": f"Building demo for {name or url}"}
 
     if command == "audit" and url:
+        _daily_build_guard()
         audit_id = f"audit_{int(time.time()*1000)}"
         demo_store[audit_id] = {"demo_id": audit_id, "status": "queued", "step": 0, "total_steps": 3, "demo_url": None, "message": "Audit queued"}
         background_tasks.add_task(run_audit_task, audit_id, url, name, cid)
@@ -798,7 +866,7 @@ async def ingest_replies(payload: RepliesPayload, x_api_key: str = Header(defaul
 # DASHBOARD READ ENDPOINTS
 # â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
 
-@app.get("/scraper/stats")
+@app.get("/scraper/stats", dependencies=[Depends(require_key)])
 async def get_scraper_stats():
     runs = []
     if os.getenv("SUPABASE_URL"):
@@ -825,7 +893,7 @@ async def get_scraper_stats():
     }
 
 
-@app.get("/outreach/stats")
+@app.get("/outreach/stats", dependencies=[Depends(require_key)])
 async def get_outreach_stats():
     if os.getenv("SUPABASE_URL"):
         async with httpx.AsyncClient() as client:
@@ -861,7 +929,7 @@ async def get_hot_leads(limit: int = 20) -> list:
     return []
 
 
-@app.get("/outreach/hot-leads")
+@app.get("/outreach/hot-leads", dependencies=[Depends(require_key)])
 async def outreach_hot_leads(limit: int = 20):
     leads = await get_hot_leads(limit)
     if leads:
@@ -900,7 +968,7 @@ async def outreach_hot_leads(limit: int = 20):
     return leads
 
 
-@app.get("/analytics/summary")
+@app.get("/analytics/summary", dependencies=[Depends(require_key)])
 async def get_analytics_summary():
     scraper  = await get_scraper_stats()
     outreach = await get_outreach_stats()
@@ -935,7 +1003,7 @@ async def get_analytics_summary():
     }
 
 
-@app.get("/analytics/scraper-runs")
+@app.get("/analytics/scraper-runs", dependencies=[Depends(require_key)])
 async def get_scraper_runs(days: int = 1):
     """Return scraper runs from last N days from Supabase."""
     try:
@@ -956,7 +1024,7 @@ async def get_scraper_runs(days: int = 1):
     return []
 
 
-@app.get("/analytics/outreach-runs")
+@app.get("/analytics/outreach-runs", dependencies=[Depends(require_key)])
 async def get_outreach_runs(days: int = 1):
     """Return outreach runs from last N days from Supabase."""
     try:
@@ -977,7 +1045,7 @@ async def get_outreach_runs(days: int = 1):
     return []
 
 
-@app.get("/analytics/demos")
+@app.get("/analytics/demos", dependencies=[Depends(require_key)])
 async def get_demos_analytics(days: int = 7):
     """Return demos built in last N days from in-memory store."""
     cutoff_ms = (datetime.utcnow() - timedelta(days=days)).timestamp() * 1000
@@ -1002,7 +1070,7 @@ async def get_demos_analytics(days: int = 7):
     return results[:50]
 
 
-@app.get("/ghl/pipeline/stats")
+@app.get("/ghl/pipeline/stats", dependencies=[Depends(require_key)])
 async def get_pipeline_stats():
     """Return real GHL pipeline stage counts for the 3 SVA pipelines."""
     SVA_PIPELINES = ["SVA Cold Outreach Pipeline", "SVA Demo Machine", "SVA Clients"]
@@ -1060,7 +1128,7 @@ async def get_pipeline_stats():
     return result if result else {"note": "No SVA pipelines found â€” create them first via GHL UI"}
 
 
-@app.get("/ghl/replies/recent")
+@app.get("/ghl/replies/recent", dependencies=[Depends(require_key)])
 async def get_recent_replies(limit: int = 20):
     stored = await get_hot_leads(limit)
     ghl_replies = []
@@ -1112,6 +1180,15 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.post("/webhooks/ghl")
 async def ghl_webhook(request: Request):
+    # Optional shared-secret gate. GHL can't send x-api-key like the dashboard,
+    # so we accept a secret in the ?s= query param or X-Webhook-Secret header.
+    # Set GHL_WEBHOOK_SECRET in Railway AND add ?s=<secret> to the webhook URL
+    # in each GHL workflow to enable. Off by default so nothing breaks today.
+    _wh_secret = os.getenv("GHL_WEBHOOK_SECRET", "")
+    if _wh_secret:
+        supplied = request.query_params.get("s") or request.headers.get("x-webhook-secret", "")
+        if supplied != _wh_secret:
+            raise HTTPException(status_code=401, detail="Invalid webhook secret")
     try:
         payload = await request.json()
     except Exception:
@@ -1585,7 +1662,7 @@ async def check_schema():
 
 
 # -- Unified activity feed across agent tables --------------------------------
-@app.get("/analytics/activity-feed")
+@app.get("/analytics/activity-feed", dependencies=[Depends(require_key)])
 async def analytics_activity_feed(limit: int = 20):
     """Unified feed of today's agent activity (scrapes, outreach, hot leads, demos)."""
     feed = []
