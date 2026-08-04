@@ -25,3 +25,8 @@ Operational note: Ollama `llama3.2:3b` is installed, but the machine had only ab
 - Replaced threshold-triggered recording with continuous four-second Whisper capture segments after the live UI showed an open microphone but no recording events.
 - Added a live microphone level percentage and selectable input-device control to the Jarvis panel.
 - Replaced the obsolete `Read-only mode` badge/API mode with `Actions gated` / `controlled_actions`.
+- Installed and authenticated the Slack Codex plugin to the `SummitMarketingGroup` workspace.
+- Added the persistent Jarvis integration registry and Railway readiness endpoint.
+- Added and live-tested native read adapters for GHL pipelines/contact search and Firecrawl web research.
+- Verified Jarvis itself returned observed GHL pipeline stages and live web research through the controlled tool router.
+- Confirmed Google Calendar and Drive Codex connections; Gmail requires reauthentication and Railway still needs dedicated offline Google OAuth credentials.
