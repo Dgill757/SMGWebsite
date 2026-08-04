@@ -977,6 +977,16 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         except IntegrationUnavailable as exc:
             await _record_jarvis_event(channel, f"integration:{tool_name}", success=False, error_class=exc.__class__.__name__)
             return f"I could not run {tool_name}: {exc}"
+        if tool_name == "google_oauth_status" and isinstance(observed, dict):
+            requirements = observed.get("requirements") or {}
+            ready = [name.replace("_", " ").title() for name, ok in requirements.items() if ok]
+            missing = [name.replace("_", " ").title() for name, ok in requirements.items() if not ok]
+            answer = "Google OAuth is connected. Granted capabilities: " + (", ".join(ready) or "none") + "."
+            if missing:
+                answer += " Still missing: " + ", ".join(missing) + "."
+            else:
+                answer += " No required SummitOS Google scopes are missing."
+            return answer
         raw = json.dumps(observed, default=str)[:24000]
         answer_rules = (
             "Use only observed fields. Distinguish facts from hypotheses. Include real source URLs when public research is present; do not invent numeric footnotes. "
@@ -1121,14 +1131,15 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
                 f"The scraper has recorded {int(scraper.get('total_cities') or 0):,} runs/cities; the last city was "
                 f"{scraper.get('last_city') or 'not recorded'}. Outreach is paused, so those leads are not being messaged."
             )
+        elif any(phrase in lower for phrase in ("hello", "hi jarvis", "good morning", "good afternoon", "good evening", "thank you", "thanks")):
+            answer = (
+                "Hello Dan. The cloud reasoning providers are temporarily unavailable, but live SummitOS tools remain connected. "
+                "On your desktop I will automatically use local Ollama instead. What should we work on?"
+            )
         else:
             answer = (
-                "The reasoning providers are unavailable, but I am still connected to the live SummitOS reporting layer.\n\n"
-                f"Snapshot: ${float(summary.get('mrr') or 0):,.0f} MRR, {summary.get('clients') or 0} clients, "
-                f"{int(businesses.get('total') or 0):,} scraped businesses, "
-                f"{len(replies) if isinstance(replies, list) else 0} conversations needing review, and "
-                f"{(health.get('ok') or 0) + (health.get('running') or 0)} reporting agents online.\n\n"
-                f"Outreach processed in the recent reporting window: {int(outreach.get('total_processed') or 0):,}. Automated sends remain paused."
+                "The cloud reasoning providers are temporarily unavailable. Live SummitOS tools are still connected, "
+                "and the desktop app will automatically route this request to local Ollama. Please retry if the local connector is offline."
             )
         await _record_jarvis_event("dashboard", "chat", latency_ms=round((time.perf_counter() - started) * 1000), success=False, error_class="ProvidersUnavailable")
         return JarvisChatResponse(response=answer, state="limited", context_updated_at=context["captured_at"], provider="deterministic")

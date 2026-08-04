@@ -114,6 +114,7 @@ def audit(event: str, detail: dict):
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=8000)
     history: list[dict[str, str]] = []
+    memory_context: str = Field(default="", max_length=24000)
 
 
 class ToolRequest(BaseModel):
@@ -180,7 +181,10 @@ async def health():
 
 @app.post("/chat", dependencies=[Depends(require_local_token)])
 async def chat(req: ChatRequest):
-    messages = [{"role": "system", "content": core_context()}]
+    system = core_context()
+    if req.memory_context:
+        system += "\n\nRETRIEVED SUMMITOS MEMORY (use only when relevant):\n" + req.memory_context
+    messages = [{"role": "system", "content": system}]
     messages.extend(req.history[-10:])
     messages.append({"role": "user", "content": req.message})
     payload = {

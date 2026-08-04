@@ -66,6 +66,7 @@ class SafetyAndFrontendTests(unittest.TestCase):
         self.assertIn("create_ghl_contact(lead, city, has_email)", source)
         self.assertIn("if has_email and not OUTREACH_PAUSED", source)
 
+    @unittest.skip("Replaced by safe half-duplex regression below")
     def test_voice_has_neural_bridge_barge_in_and_hard_stop(self):
         html = (ROOT / "vercel_deploy" / "index.html").read_text(encoding="utf-8-sig")
         for contract in ("/voice/generate", "/voice/transcribe", "emergencyStopJarvis", "Echo ignored", "say “Jarvis” to interrupt", "event.key==='Escape'"):
@@ -75,6 +76,11 @@ class SafetyAndFrontendTests(unittest.TestCase):
         html = (ROOT / "vercel_deploy" / "index.html").read_text(encoding="utf-8-sig")
         neural_branch = html[html.index("function speakJarvis"):html.index("function jarvisAdd")]
         self.assertIn("return}browserSpeakJarvis(spoken)", neural_branch)
+
+    def test_voice_is_single_flight_and_mic_suspends_during_playback(self):
+        html = (ROOT / "vercel_deploy" / "index.html").read_text(encoding="utf-8-sig")
+        for contract in ("_jarvisSpeechGeneration++", "_jarvisVoiceAbort.abort()", "stopLocalListening();var generation", "_jarvisRecorder||_jarvisSpeaking", "event.key==='Escape'"):
+            self.assertIn(contract, html)
 
     def test_channel_routes_exist(self):
         source = (ROOT / "ava_demo_studio_api.py").read_text(encoding="utf-8-sig")
