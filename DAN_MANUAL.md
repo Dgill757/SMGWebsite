@@ -122,9 +122,18 @@ JARVIS_PHONE_STT_PROVIDER=Deepgram
 
 Generate the WebSocket secret locally:
 
+Windows PowerShell 5.1 compatible command:
+
 ```powershell
-[Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(32)).ToLower()
+$bytes = New-Object byte[] 32
+$rng = [Security.Cryptography.RandomNumberGenerator]::Create()
+$rng.GetBytes($bytes)
+$secret = ([BitConverter]::ToString($bytes)).Replace('-', '').ToLower()
+$rng.Dispose()
+$secret
 ```
+
+The value is a secret. Store it only as `JARVIS_PHONE_WS_SECRET` in Railway.
 
 5. In Twilio → Phone Numbers → Manage → Active Numbers → your Jarvis number:
    - **Messaging / A message comes in**: Webhook, `https://ava-studio-api-production.up.railway.app/jarvis/sms/webhook`, HTTP POST
