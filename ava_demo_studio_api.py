@@ -901,7 +901,10 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         query = re.sub(r"(?i).*?(meeting brief on|company brief on|prospect brief on|research prospect|cold call brief)(?: for| about| on)?", "", message).strip(" :,.?")
         integration_plan = ("prospect_company_brief", {"query": query})
     elif "ghl" in lower and ("pipeline" in lower or "stage" in lower):
-        integration_plan = ("ghl_pipelines", {})
+        if any(term in lower for term in ("health", "stale", "stuck", "opportunities", "deals", "follow up")):
+            integration_plan = ("ghl_opportunity_health", {"limit": 100, "stale_days": 7})
+        else:
+            integration_plan = ("ghl_pipelines", {})
     elif "ghl" in lower and ("find contact" in lower or "search contact" in lower):
         query = re.sub(r"(?i).*?(find|search) contact(?:s)?(?: in)? ghl(?: for)?", "", message).strip(" :,.?")
         integration_plan = ("ghl_search_contacts", {"query": query, "limit": 20})
@@ -910,6 +913,10 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         integration_plan = ("web_research", {"query": query, "limit": 5})
     elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "week", "agenda", "meetings")):
         integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
+    elif any(phrase in lower for phrase in ("when am i free", "calendar availability", "available times", "open time on my calendar")):
+        integration_plan = ("calendar_availability", {"days": 7, "duration_minutes": 30})
+    elif any(phrase in lower for phrase in ("triage my inbox", "clean up my inbox", "prioritize my email", "inbox priorities")):
+        integration_plan = ("gmail_inbox_triage", {"limit": 25})
     elif any(phrase in lower for phrase in ("unread email", "unread mail", "check my inbox", "recent email")):
         integration_plan = ("gmail_search", {"query": "is:unread", "limit": 10})
     elif any(phrase in lower for phrase in ("search my drive", "find in drive", "google drive")):

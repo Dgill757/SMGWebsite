@@ -10,6 +10,7 @@ from __future__ import annotations
 import asyncio
 import os
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from typing import Any
 
 import httpx
@@ -23,10 +24,10 @@ def integration_status() -> dict[str, dict[str, Any]]:
     google = all(os.getenv(k) for k in ("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REFRESH_TOKEN"))
     return {
         "summitos": {"ready": bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_KEY")), "capabilities": ["brief", "clients", "agents", "leads"]},
-        "ghl": {"ready": bool(os.getenv("GHL_PRIVATE_TOKEN") and os.getenv("GHL_LOCATION_ID")), "capabilities": ["contacts", "pipelines", "conversations"]},
+        "ghl": {"ready": bool(os.getenv("GHL_PRIVATE_TOKEN") and os.getenv("GHL_LOCATION_ID")), "capabilities": ["contacts", "pipelines", "opportunity_health", "conversations"]},
         "web_research": {"ready": bool(os.getenv("FIRECRAWL_API_KEY")), "capabilities": ["search", "scrape"]},
         "google_calendar": {"ready": google, "capabilities": ["upcoming_events", "availability", "create_event"]},
-        "gmail": {"ready": google, "capabilities": ["search", "read", "draft", "send"]},
+        "gmail": {"ready": google, "capabilities": ["search", "read_metadata", "inbox_triage"]},
         "google_drive": {"ready": google, "capabilities": ["search", "read"]},
         "slack": {"ready": bool(os.getenv("SLACK_BOT_TOKEN") or os.getenv("SLACK_WEBHOOK_URL")), "capabilities": ["read", "send"]},
         "local_computer": {"ready": True, "capabilities": ["files", "git", "processes", "approved_commands"]},
@@ -67,6 +68,50 @@ async def ghl_search_contacts(query: str, limit: int = 20) -> dict:
     response = await _request_with_retry("GET", "https://services.leadconnectorhq.com/contacts/", headers=_ghl_headers(), params={"locationId": location, "query": query, "limit": min(max(limit, 1), 50)})
     contacts = response.json().get("contacts", [])
     return {"contacts": [{"id": c.get("id"), "name": c.get("contactName") or c.get("name"), "company": c.get("companyName"), "email": c.get("email"), "phone": c.get("phone"), "tags": c.get("tags", [])} for c in contacts]}
+
+
+async def ghl_opportunity_health(limit: int = 100, stale_days: int = 7) -> dict:
+    """Return an observed, read-only sales-pipeline health snapshot."""
+    location = os.getenv("GHL_LOCATION_ID", "")
+    pipelines, response = await asyncio.gather(
+        ghl_pipelines(),
+        _request_with_retry(
+            "GET", "https://services.leadconnectorhq.com/opportunities/search",
+            headers=_ghl_headers(),
+            params={"location_id": location, "status": "open", "limit": min(max(limit, 1), 100)},
+        ),
+    )
+    stage_names = {
+        stage.get("id"): {"stage": stage.get("name"), "pipeline": pipe.get("name")}
+        for pipe in pipelines.get("pipelines", []) for stage in pipe.get("stages", [])
+    }
+    now = datetime.now(timezone.utc)
+    rows = []
+    for opportunity in response.json().get("opportunities", []):
+        changed_raw = opportunity.get("lastStageChangeAt") or opportunity.get("updatedAt") or opportunity.get("createdAt")
+        age_days = None
+        if changed_raw:
+            try:
+                age_days = (now - datetime.fromisoformat(str(changed_raw).replace("Z", "+00:00"))).days
+            except ValueError:
+                pass
+        contact = opportunity.get("contact") or {}
+        labels = stage_names.get(opportunity.get("pipelineStageId"), {})
+        rows.append({
+            "id": opportunity.get("id"), "name": opportunity.get("name"),
+            "pipeline": labels.get("pipeline"), "stage": labels.get("stage"),
+            "monetary_value": opportunity.get("monetaryValue"),
+            "stage_age_days": age_days, "stale": age_days is not None and age_days >= stale_days,
+            "contact": {"id": contact.get("id") or opportunity.get("contactId"), "name": contact.get("name"), "company": contact.get("companyName"), "email": contact.get("email"), "phone": contact.get("phone")},
+            "updated_at": opportunity.get("updatedAt"),
+        })
+    stale = sorted((row for row in rows if row["stale"]), key=lambda row: row.get("stage_age_days") or 0, reverse=True)
+    return {
+        "status": "open", "open_count": len(rows),
+        "open_value": sum(float(row.get("monetary_value") or 0) for row in rows),
+        "stale_after_days": stale_days, "stale_count": len(stale),
+        "stale_opportunities": stale[:25], "opportunities": rows[:50],
+    }
 
 
 async def prospects_without_website(limit: int = 10) -> dict:
@@ -136,6 +181,38 @@ async def google_calendar_upcoming(days: int = 7, limit: int = 20) -> dict:
     return {"events": [{"id": e.get("id"), "summary": e.get("summary"), "start": e.get("start"), "end": e.get("end"), "location": e.get("location"), "attendees": e.get("attendees", [])} for e in response.json().get("items", [])]}
 
 
+async def google_calendar_availability(days: int = 5, duration_minutes: int = 30) -> dict:
+    """Find business-hour openings without inventing or reserving time."""
+    token = await _google_access_token()
+    tz = ZoneInfo("America/New_York")
+    now = datetime.now(tz)
+    end = now + timedelta(days=min(max(days, 1), 14))
+    response = await _request_with_retry(
+        "POST", "https://www.googleapis.com/calendar/v3/freeBusy",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        json={"timeMin": now.isoformat(), "timeMax": end.isoformat(), "timeZone": "America/New_York", "items": [{"id": "primary"}]},
+    )
+    busy = response.json().get("calendars", {}).get("primary", {}).get("busy", [])
+    intervals = sorted((datetime.fromisoformat(x["start"].replace("Z", "+00:00")).astimezone(tz), datetime.fromisoformat(x["end"].replace("Z", "+00:00")).astimezone(tz)) for x in busy)
+    slots = []
+    cursor_day = now.date()
+    while cursor_day <= end.date() and len(slots) < 30:
+        if cursor_day.weekday() < 5:
+            cursor = datetime.combine(cursor_day, datetime.min.time(), tzinfo=tz).replace(hour=9)
+            day_end = cursor.replace(hour=17)
+            cursor = max(cursor, now)
+            for busy_start, busy_end in intervals:
+                if busy_end <= cursor or busy_start >= day_end:
+                    continue
+                if busy_start - cursor >= timedelta(minutes=duration_minutes):
+                    slots.append({"start": cursor.isoformat(), "end": (cursor + timedelta(minutes=duration_minutes)).isoformat()})
+                cursor = max(cursor, busy_end)
+            if day_end - cursor >= timedelta(minutes=duration_minutes):
+                slots.append({"start": cursor.isoformat(), "end": (cursor + timedelta(minutes=duration_minutes)).isoformat()})
+        cursor_day += timedelta(days=1)
+    return {"time_zone": "America/New_York", "duration_minutes": duration_minutes, "window_days": days, "available_slots": slots[:20], "busy_periods_checked": len(intervals)}
+
+
 async def google_calendar_create_event(arguments: dict) -> dict:
     """Create one explicitly approved event and return Google's receipt."""
     token = await _google_access_token()
@@ -175,6 +252,26 @@ async def gmail_search(query: str = "is:unread", limit: int = 10) -> dict:
         data = detail.json(); meta = {h["name"].lower(): h["value"] for h in data.get("payload", {}).get("headers", [])}
         messages.append({"id": data.get("id"), "thread_id": data.get("threadId"), "from": meta.get("from"), "subject": meta.get("subject"), "date": meta.get("date"), "snippet": data.get("snippet")})
     return {"query": query, "messages": messages}
+
+
+async def gmail_inbox_triage(limit: int = 25) -> dict:
+    """Classify unread metadata/snippets; it does not mutate the mailbox."""
+    result = await gmail_search("is:unread newer_than:30d", limit)
+    buckets = {"reply_now": [], "revenue_or_client": [], "calendar_or_meeting": [], "newsletter_or_automated": [], "other": []}
+    for message in result.get("messages", []):
+        text = " ".join(str(message.get(k) or "") for k in ("from", "subject", "snippet")).casefold()
+        if any(term in text for term in ("unsubscribe", "newsletter", "no-reply", "noreply", "notification")):
+            bucket = "newsletter_or_automated"
+        elif any(term in text for term in ("meeting", "calendar", "invite", "appointment", "reschedule")):
+            bucket = "calendar_or_meeting"
+        elif any(term in text for term in ("invoice", "payment", "client", "proposal", "contract", "roof", "lead", "demo")):
+            bucket = "revenue_or_client"
+        elif any(term in text for term in ("question", "re:", "following up", "can you", "could you")):
+            bucket = "reply_now"
+        else:
+            bucket = "other"
+        buckets[bucket].append(message)
+    return {"query": result["query"], "unread_count_sampled": len(result.get("messages", [])), "buckets": buckets, "note": "Priority labels are deterministic suggestions based on message metadata and snippets; no email was changed."}
 
 
 async def google_drive_search(query: str, limit: int = 10) -> dict:
@@ -229,11 +326,12 @@ async def daily_executive_inputs() -> dict:
     """Return observed inputs for a revenue-first daily briefing."""
     results = await asyncio.gather(
         google_calendar_upcoming(2, 25),
-        gmail_search("is:unread", 12),
+        gmail_inbox_triage(25),
         prospects_without_website(10),
+        ghl_opportunity_health(100, 7),
         return_exceptions=True,
     )
-    labels = ("calendar", "unread_email", "no_website_prospects")
+    labels = ("calendar", "inbox_triage", "no_website_prospects", "pipeline_health")
     return {
         "captured_at": datetime.now(timezone.utc).isoformat(),
         "outreach_paused": True,
@@ -245,11 +343,14 @@ READ_TOOLS = {
     "integrations_status": lambda args: integration_status(),
     "ghl_pipelines": lambda args: ghl_pipelines(),
     "ghl_search_contacts": lambda args: ghl_search_contacts(str(args.get("query", "")), int(args.get("limit", 20))),
+    "ghl_opportunity_health": lambda args: ghl_opportunity_health(int(args.get("limit", 100)), int(args.get("stale_days", 7))),
     "prospects_without_website": lambda args: prospects_without_website(int(args.get("limit", 10))),
     "prospect_company_brief": lambda args: prospect_company_brief(str(args.get("query", ""))),
     "web_research": lambda args: web_research(str(args.get("query", "")), int(args.get("limit", 5))),
     "calendar_upcoming": lambda args: google_calendar_upcoming(int(args.get("days", 7)), int(args.get("limit", 20))),
+    "calendar_availability": lambda args: google_calendar_availability(int(args.get("days", 5)), int(args.get("duration_minutes", 30))),
     "gmail_search": lambda args: gmail_search(str(args.get("query", "is:unread")), int(args.get("limit", 10))),
+    "gmail_inbox_triage": lambda args: gmail_inbox_triage(int(args.get("limit", 25))),
     "drive_search": lambda args: google_drive_search(str(args.get("query", "")), int(args.get("limit", 10))),
     "meeting_prep": lambda args: meeting_prep(str(args.get("query", "next meeting"))),
     "daily_executive_inputs": lambda args: daily_executive_inputs(),
