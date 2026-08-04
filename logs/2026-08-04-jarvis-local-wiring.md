@@ -38,3 +38,13 @@ Operational note: Ollama `llama3.2:3b` is installed, but the machine had only ab
 - Paused microphone capture while Jarvis is thinking or speaking and delayed restart after playback.
 - Added transcript de-duplication, fuzzy self-echo rejection, a required `Jarvis` wake word, and a five-second follow-up window.
 - Added `docs/JARVIS_EMPLOYEE_ARCHITECTURE_RESEARCH.md` with the revenue-first work-engine plan.
+
+## Revenue tools and conversational follow-up
+
+- Replaced fixed four-second audio batching with silence-ended segments (650 ms silence, eight-second safety cap), reducing dead time after speech.
+- Extended the follow-up conversation window to 20 seconds because local transcription latency made the previous five-second window expire before the transcript arrived.
+- Added a live SummitOS query for uncontacted roofing prospects with no website. It ranks useful candidates but never sends outreach.
+- Added prospect/company briefs that combine SummitOS records, GHL contacts, and Firecrawl public research.
+- Added natural-language Google Calendar event planning plus explicit approval and Google receipt handling.
+- Production verification returned ten no-website prospects and a combined Teo Roofing brief. A test calendar proposal parsed tomorrow's 1–4 PM block correctly and was denied after verification, so no event was created.
+- Imported ignored local reference repositories for OpenClaw, GAIA, BrowserOS, and CoWork OS. No third-party executor or credentials were installed.
