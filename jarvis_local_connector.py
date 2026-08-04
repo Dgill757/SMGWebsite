@@ -287,7 +287,7 @@ async def voice_transcribe(audio: UploadFile = File(...)):
         response = await client.post(
             "http://127.0.0.1:17493/transcribe",
             files={"file": (audio.filename or "speech.webm", content, audio.content_type or "audio/webm")},
-            data={"model": "turbo", "language": "en"},
+            data={"model": os.getenv("JARVIS_WHISPER_MODEL", "base"), "language": "en"},
         )
         if response.status_code >= 400:
             raise HTTPException(503, f"Voicebox transcription failed: HTTP {response.status_code}")
