@@ -22,3 +22,6 @@ Operational note: Ollama `llama3.2:3b` is installed, but the machine had only ab
 - Added a controlled local tool router shared by dashboard voice/text and Telegram.
 - Verified a dashboard request created and completed a real `git_status` task on the PC connector.
 - Verified the same local tool request was delivered through Telegram.
+- Replaced threshold-triggered recording with continuous four-second Whisper capture segments after the live UI showed an open microphone but no recording events.
+- Added a live microphone level percentage and selectable input-device control to the Jarvis panel.
+- Replaced the obsolete `Read-only mode` badge/API mode with `Actions gated` / `controlled_actions`.
