@@ -1261,12 +1261,18 @@ async def jarvis_phone_twiml(request: Request):
         return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response><Say>This number is private.</Say><Hangup/></Response>', media_type="application/xml")
     base = os.getenv("JARVIS_PUBLIC_URL", "").replace("https://", "wss://").rstrip("/")
     ws_url = f"{base}/jarvis/phone/ws?s={os.getenv('JARVIS_PHONE_WS_SECRET','')}"
+    tts_provider = html_lib.escape(os.getenv("JARVIS_PHONE_TTS_PROVIDER", "ElevenLabs"), quote=True)
+    voice = html_lib.escape(os.getenv("JARVIS_PHONE_VOICE", "UgBBYS2sOqTuMpoF3BR0-flash_v2_5-1.0_0.72_0.82"), quote=True)
+    transcription_provider = html_lib.escape(os.getenv("JARVIS_PHONE_STT_PROVIDER", "Deepgram"), quote=True)
     xml = (
         '<?xml version="1.0" encoding="UTF-8"?><Response><Connect>'
         f'<ConversationRelay url="{ws_url}" welcomeGreeting="JARVIS online. Please say your four digit PIN." '
+        f'language="en-US" ttsProvider="{tts_provider}" voice="{voice}" '
+        f'transcriptionProvider="{transcription_provider}" elevenlabsTextNormalization="on" '
         'welcomeGreetingInterruptible="speech" interruptible="speech" interruptSensitivity="high" '
         'reportInputDuringAgentSpeech="speech" preemptible="true" speechTimeout="700" dtmfDetection="true" '
-        'hints="Summit Voice AI,GoHighLevel,roofing,MRR" />'
+        'ignoreBackchannel="true" events="speaker-events tokens-played" '
+        'hints="Summit Voice AI,GoHighLevel,roofing,MRR,Teo Roofing,Stonewall Roofing" />'
         '</Connect></Response>'
     )
     return Response(content=xml, media_type="application/xml")

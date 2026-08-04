@@ -115,6 +115,9 @@ JARVIS_ALLOWED_SMS_RECIPIENTS=<Dan's mobile number in E.164>
 JARVIS_PHONE_PIN=<a private four-digit PIN>
 JARVIS_PHONE_WS_SECRET=<a random 64-character secret>
 JARVIS_PUBLIC_URL=https://ava-studio-api-production.up.railway.app
+JARVIS_PHONE_TTS_PROVIDER=ElevenLabs
+JARVIS_PHONE_VOICE=UgBBYS2sOqTuMpoF3BR0-flash_v2_5-1.0_0.72_0.82
+JARVIS_PHONE_STT_PROVIDER=Deepgram
 ```
 
 Generate the WebSocket secret locally:
@@ -128,6 +131,18 @@ Generate the WebSocket secret locally:
    - **Voice / A call comes in**: Webhook, `https://ava-studio-api-production.up.railway.app/jarvis/phone/twiml`, HTTP POST
 6. Save the number configuration.
 7. Redeploy Railway.
+
+### Exact ConversationRelay Console setup
+
+1. In Twilio, open **Voice > Settings > Privacy & Security**.
+2. Accept the **Predictive and Generative AI/ML Features Addendum** and save.
+3. You do not need a separate TwiML App for SummitOS. Open **Phone Numbers > Manage > Active Numbers > your Jarvis number**.
+4. Set **A call comes in** to **Webhook**, URL `https://ava-studio-api-production.up.railway.app/jarvis/phone/twiml`, method **HTTP POST**.
+5. Set **A message comes in** to **Webhook**, URL `https://ava-studio-api-production.up.railway.app/jarvis/sms/webhook`, method **HTTP POST**.
+6. Do not paste a WebSocket URL into the Console. The TwiML endpoint generates the authenticated `wss://` connection.
+7. Save the number, redeploy Railway, and wait for **SUCCESS** before calling.
+
+The default phone stack is ElevenLabs Flash 2.5 TTS plus Deepgram STT. This does not use the local Kokoro voice or require a separate ElevenLabs API key. To choose another phone voice later, copy its ConversationRelay voice ID into `JARVIS_PHONE_VOICE` and redeploy.
 
 ### SMS acceptance test
 
