@@ -198,7 +198,8 @@ async def meeting_prep(query: str = "next meeting") -> dict:
     generic = not needle or needle in {"next", "next meeting", "my next meeting", "upcoming"}
     selected = None
     if generic:
-        selected = events[0] if events else None
+        eligible = [event for event in events if not any(isinstance(a, dict) and a.get("self") and a.get("responseStatus") == "declined" for a in event.get("attendees", []))]
+        selected = eligible[0] if eligible else None
     else:
         selected = next((event for event in events if needle in str(event.get("summary", "")).casefold() or any(needle in str(a).casefold() for a in event.get("attendees", []))), None)
     if not selected:

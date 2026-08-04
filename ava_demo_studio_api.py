@@ -919,14 +919,21 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         tool_name, tool_args = integration_plan
         try:
             observed = await execute_read_tool(tool_name, tool_args)
+            if tool_name == "daily_executive_inputs" and isinstance(observed, dict):
+                observed["summitos_live"] = await _jarvis_live_context(AVA_API_KEY)
             await _record_jarvis_event(channel, f"integration:{tool_name}", success=True)
         except IntegrationUnavailable as exc:
             await _record_jarvis_event(channel, f"integration:{tool_name}", success=False, error_class=exc.__class__.__name__)
             return f"I could not run {tool_name}: {exc}"
-        raw = json.dumps(observed, default=str)[:18000]
+        raw = json.dumps(observed, default=str)[:24000]
+        answer_rules = (
+            "Use only observed fields. Distinguish facts from hypotheses. Include real source URLs when public research is present; do not invent numeric footnotes. "
+            "For an executive brief, include live MRR, active clients, calendar, inbox, inbound replies, scraper/prospect status, agent failures, and three cash-impact-ranked actions. "
+            "For meeting prep, state whether the event is accepted, tentative, or declined and never prepare a declined event as the next meeting."
+        )
         try:
             summary = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM,
-                messages=[{"role": "user", "content": f"Dan asked: {message}\n\nOBSERVED {tool_name} RESULT:\n{raw}\n\nAnswer concisely. Never claim an action beyond this result."}], max_tokens=900)
+                messages=[{"role": "user", "content": f"Dan asked: {message}\n\nOBSERVED {tool_name} RESULT:\n{raw}\n\n{answer_rules}\nNever claim an action beyond this result."}], max_tokens=1200)
             return summary.text
         except JarvisProvidersUnavailable:
             return raw[:3500]
