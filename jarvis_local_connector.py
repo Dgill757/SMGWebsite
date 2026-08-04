@@ -205,8 +205,12 @@ async def voice_status():
             response = await client.get("http://127.0.0.1:17493/profiles")
             response.raise_for_status()
         payload = response.json()
-        profiles = payload.get("profiles", []) if isinstance(payload, dict) else payload
-        return {"online": True, "ready": bool(profiles), "profiles": payload}
+        profiles = payload.get("profiles", []) if isinstance(payload, dict) and "profiles" in payload else payload
+        if isinstance(profiles, dict):
+            ready = bool(profiles.get("default_engine"))
+        else:
+            ready = any(bool(profile.get("default_engine")) for profile in profiles if isinstance(profile, dict))
+        return {"online": True, "ready": ready, "profiles": payload}
     except Exception as exc:
         return {"online": False, "ready": False, "error": exc.__class__.__name__, "setup": "Open Voicebox and download Kokoro plus Whisper Turbo"}
 

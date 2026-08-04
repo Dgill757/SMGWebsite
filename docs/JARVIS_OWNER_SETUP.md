@@ -8,7 +8,7 @@ Voicebox 0.5.0 is already installed from its hash-verified official Windows rele
 
 1. In Voicebox, finish any first-run prompt.
 2. In Models, download **Kokoro** first. It is the smallest fast CPU voice engine.
-3. Choose a natural British male preset and make it the default.
+3. Open the existing **Jarvis** voice profile, choose **Kokoro** as its default engine, select a natural British male preset, and save. The profile currently has no default engine, so speech will return HTTP 400 until this is done.
 4. In transcription settings, download Whisper Turbo.
 5. Leave Voicebox running. Its local API should answer at `http://127.0.0.1:17493`.
 6. Open `.jarvis-local\voice-token.txt` in the SummitOS project.
