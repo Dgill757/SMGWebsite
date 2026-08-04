@@ -14,3 +14,17 @@
 - Railway deployments: `4b7db21e-817c-4402-b19b-24c859f06e8d`, `2da57156-88b8-47ee-bf94-462a46c4cd1d`.
 - Production Vercel deployment: `dpl_5imfSkS6WzPCqZCgiA3FH4ERqJeN`.
 - Visual browser QA deferred due local browser-helper ESM conflict; no visual-pass claim made.
+
+## Communications and autonomy pass
+
+- Added approval-gated Gmail full read, draft, send-draft, label, archive, mark-read, star, and Trash tools. Permanent deletion is intentionally not exposed.
+- Added Slack history and approval-gated posting tools.
+- Added private allowlisted Twilio inbound/outbound SMS and inbound/outbound phone paths.
+- Added Twilio WebSocket signature validation plus spoken and DTMF PIN handling.
+- Added desktop neural-voice barge-in monitoring with echo rejection.
+- Migrated all 13 legacy model-dependent scheduled agents away from direct Anthropic calls to Groq, OpenRouter, local Ollama, then Anthropic failover.
+- Added 12 unit/safety regressions and a 15-check non-destructive production evaluator.
+- Production evaluation passed 15/15; no email, SMS, Slack message, or computer action was executed.
+- Telegram webhook round trip returned HTTP 200 and delivered a live integration-status response.
+- Fixed local memory authority weighting so current-business-state outranks historical reports.
+- Added `DAN_MANUAL.md` for Google, Slack, Twilio, browser, voice, Telegram, and final acceptance setup.

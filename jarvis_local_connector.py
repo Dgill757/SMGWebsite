@@ -12,6 +12,7 @@ import asyncio
 import hashlib
 import json
 import os
+import re
 import secrets
 import sqlite3
 import subprocess
@@ -205,16 +206,30 @@ async def search_memory(q: str, limit: int = 12):
     query = q.casefold().strip()
     if not query:
         return {"results": []}
+    tokens = {token for token in re.findall(r"[a-z0-9]{3,}", query) if token not in {"what", "when", "where", "which", "with", "that", "this", "from", "about", "tell", "show"}}
+    truth_terms = {"current", "mrr", "revenue", "clients", "client", "business", "today", "now"}
     results = []
     for path in VAULT.rglob("*.md"):
         try:
             text = path.read_text(encoding="utf-8", errors="ignore")
         except OSError:
             continue
-        score = text.casefold().count(query) + path.name.casefold().count(query) * 3
+        lowered, path_lower = text.casefold(), str(path.relative_to(VAULT)).casefold()
+        exact = lowered.count(query) + path.name.casefold().count(query) * 3
+        token_score = sum(min(lowered.count(token), 8) for token in tokens) + sum(4 for token in tokens if token in path.name.casefold())
+        authority = 0
+        if path.name.casefold() == "current-business-state.md":
+            authority = 100 if tokens & truth_terms else 20
+        elif path.name.casefold() in {"revenue-math.md", "claude.md"}:
+            authority = 12
+        normalized_path = path_lower.replace("\\", "/")
+        if any(folder in normalized_path for folder in ("reports/", "analytics/weekly/")) and tokens & truth_terms:
+            authority -= 8
+        score = exact * 4 + token_score + authority
         if score:
-            index = text.casefold().find(query)
-            results.append({"path": str(path.relative_to(VAULT)), "score": score, "excerpt": text[max(0,index-180):index+420]})
+            indices = [lowered.find(term) for term in [query, *tokens] if lowered.find(term) >= 0]
+            index = min(indices) if indices else 0
+            results.append({"path": str(path.relative_to(VAULT)), "score": score, "authority": authority, "excerpt": text[max(0,index-180):index+420]})
     results.sort(key=lambda item: item["score"], reverse=True)
     return {"results": results[:max(1, min(limit, 30))]}
 

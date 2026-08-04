@@ -80,6 +80,8 @@ class SafetyAndFrontendTests(unittest.TestCase):
         source = (ROOT / "ava_demo_studio_api.py").read_text(encoding="utf-8-sig")
         for route in ('/jarvis/telegram/webhook', '/jarvis/sms/webhook', '/jarvis/phone/twiml', '/jarvis/phone/ws', '/jarvis/phone/call'):
             self.assertIn(route, source)
+        self.assertIn('event.get("type") == "dtmf"', source)
+        self.assertIn('validator.validate(public_ws_url', source)
 
     def test_external_mutations_are_registered_as_write_tools(self):
         expected = {"calendar_create_event", "gmail_create_draft", "gmail_send_draft", "gmail_modify_message", "gmail_trash_message", "gmail_create_label", "slack_send_message", "twilio_send_sms"}

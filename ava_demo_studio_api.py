@@ -1242,8 +1242,13 @@ async def jarvis_phone_ws(websocket: WebSocket):
     expected = os.getenv("JARVIS_PHONE_WS_SECRET", "")
     if not expected or not secrets.compare_digest(supplied, expected):
         await websocket.close(code=1008); return
+    validator = _twilio_validator(); signature = websocket.headers.get("x-twilio-signature", "")
+    public_ws_url = os.getenv("JARVIS_PUBLIC_URL", "").replace("https://", "wss://").rstrip("/") + "/jarvis/phone/ws?s=" + supplied
+    if not validator or not signature or not validator.validate(public_ws_url, {}, signature):
+        await websocket.close(code=1008); return
     await websocket.accept()
     authenticated = False
+    pin_digits = ""
     allowed = {item.strip() for item in os.getenv("JARVIS_ALLOWED_CALLERS", "").split(",") if item.strip()}
     try:
         while True:
@@ -1253,11 +1258,18 @@ async def jarvis_phone_ws(websocket: WebSocket):
                 continue
             if event.get("type") == "interrupt":
                 continue
+            if event.get("type") == "dtmf" and not authenticated:
+                pin_digits = (pin_digits + str(event.get("digit", "")))[-4:]
+                if pin_digits == os.getenv("JARVIS_PHONE_PIN", ""):
+                    authenticated = True
+                    await websocket.send_json({"type": "text", "token": "Identity confirmed. What do you need?", "last": True, "interruptible": True, "preemptible": True})
+                continue
             if event.get("type") != "prompt" or not event.get("last", True):
                 continue
             utterance = (event.get("voicePrompt") or "").strip()
             if not authenticated:
-                digits = "".join(re.findall(r"\d", utterance))
+                word_digits = {"zero": "0", "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9"}
+                digits = "".join(re.findall(r"\d", utterance)) or "".join(word_digits.get(word, "") for word in re.findall(r"[a-z]+", utterance.casefold()))
                 if digits != os.getenv("JARVIS_PHONE_PIN", ""):
                     await websocket.send_json({"type": "text", "token": "That PIN is incorrect. Try again.", "last": True, "interruptible": True, "preemptible": True})
                     continue
