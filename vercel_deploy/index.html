@@ -634,6 +634,7 @@ var _activeDemoId=null, _bizDate=null, _bizOffset=0, _bizTotal=0, _bizLimit=50;
 var _allContent=[], _allBiz=[], _allAgents=[];
 var _jarvisHistory=[];
 var _jarvisRecognition=null,_jarvisListening=false,_jarvisAlwaysListening=false,_jarvisVoice=true,_jarvisSpeaking=false,_jarvisOrbState='idle',_jarvisSpeechLevel=0;
+var _jarvisStream=null,_jarvisRecorder=null,_jarvisChunks=[],_jarvisAudio=null,_jarvisVadTimer=null,_jarvisSpeechStarted=0,_jarvisLastVoice=0;
 var _jarvisVoiceBridgeToken='';try{_jarvisVoiceBridgeToken=localStorage.getItem('summit-jarvis-voice-token')||''}catch(e){}
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
@@ -720,6 +721,7 @@ function initJarvisOrb(){
     var g=ctx.createRadialGradient(cx,cy,0,cx,cy,90);g.addColorStop(0,'rgba('+col.join(',')+',.34)');g.addColorStop(1,'rgba('+col.join(',')+',0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,90,0,Math.PI*2);ctx.fill();_jarvisSpeechLevel*=.92;requestAnimationFrame(frame)}frame()
 }
 function initJarvisVoice(){
+  if(_jarvisVoiceBridgeToken)return;
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
   _jarvisRecognition=new SR();_jarvisRecognition.lang='en-US';_jarvisRecognition.interimResults=true;_jarvisRecognition.continuous=true;
   _jarvisRecognition.onstart=function(){_jarvisListening=true;el('jarvis-mic').classList.add('active');el('jarvis-mic').textContent=_jarvisAlwaysListening?'● Always listening':'● Listening';setJarvisState('listening','Listening')};
@@ -728,11 +730,25 @@ function initJarvisVoice(){
   _jarvisRecognition.onend=function(){_jarvisListening=false;if(_jarvisAlwaysListening){setTimeout(function(){try{_jarvisRecognition.start()}catch(e){}},250)}else{el('jarvis-mic').classList.remove('active');el('jarvis-mic').textContent='◉ Talk';setJarvisState('','Online')}};
   _jarvisRecognition.onerror=function(e){_jarvisListening=false;setJarvisState('error','Mic '+e.error)};
 }
-function toggleJarvisListening(){if(!_jarvisRecognition){toast('Voice input needs Chrome microphone permission','err');return}_jarvisAlwaysListening=!_jarvisAlwaysListening;if(!_jarvisAlwaysListening){_jarvisRecognition.stop();el('jarvis-mic').textContent='◉ Talk'}else if(!_jarvisListening){window.speechSynthesis.cancel();try{_jarvisRecognition.start()}catch(e){}}}
-function toggleJarvisVoice(){_jarvisVoice=!_jarvisVoice;var b=el('jarvis-voice-toggle');b.textContent=_jarvisVoice?'Voice on':'Voice off';b.classList.toggle('active',_jarvisVoice);if(!_jarvisVoice)window.speechSynthesis.cancel()}
-function pairJarvisVoice(){var token=prompt('Paste the local voice pairing code from .jarvis-local/voice-token.txt');if(!token)return;_jarvisVoiceBridgeToken=token.trim();try{localStorage.setItem('summit-jarvis-voice-token',_jarvisVoiceBridgeToken)}catch(e){}fetch('http://127.0.0.1:8766/voice/status',{headers:{Authorization:'Bearer '+_jarvisVoiceBridgeToken}}).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){toast(d.ready?'Neural voice connected':'Voicebox is running. Finish Kokoro voice setup.',d.ready?'':'err')}).catch(function(){toast('Local voice pairing failed','err')})}
+function stopJarvisAudio(){window.speechSynthesis.cancel();if(_jarvisAudio){_jarvisAudio.pause();_jarvisAudio.src='';_jarvisAudio=null}_jarvisSpeaking=false}
+async function startLocalListening(){
+  if(_jarvisStream)return;try{
+    _jarvisStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+    var ctx=new AudioContext(),src=ctx.createMediaStreamSource(_jarvisStream),an=ctx.createAnalyser();an.fftSize=512;src.connect(an);var levels=new Uint8Array(an.fftSize);
+    _jarvisListening=true;el('jarvis-mic').classList.add('active');el('jarvis-mic').textContent='● Always listening';setJarvisState('listening','Local Whisper listening');
+    _jarvisVadTimer=setInterval(function(){an.getByteTimeDomainData(levels);var sum=0;for(var i=0;i<levels.length;i++){var v=(levels[i]-128)/128;sum+=v*v}var rms=Math.sqrt(sum/levels.length),now=Date.now();
+      if(rms>.035){_jarvisLastVoice=now;if(!_jarvisRecorder&&(!_jarvisSpeaking||rms>.07)){stopJarvisAudio();_jarvisChunks=[];_jarvisRecorder=new MediaRecorder(_jarvisStream);_jarvisRecorder.ondataavailable=function(e){if(e.data.size)_jarvisChunks.push(e.data)};_jarvisRecorder.onstop=transcribeLocalSpeech;_jarvisRecorder.start();_jarvisSpeechStarted=now;setJarvisState('listening','Hearing you...')}}
+      if(_jarvisRecorder&&now-_jarvisLastVoice>750&&now-_jarvisSpeechStarted>450)_jarvisRecorder.stop();
+    },75);
+  }catch(e){toast('Microphone permission is required: '+e.message,'err');_jarvisAlwaysListening=false}
+}
+function stopLocalListening(){if(_jarvisVadTimer)clearInterval(_jarvisVadTimer);_jarvisVadTimer=null;if(_jarvisRecorder&&_jarvisRecorder.state!=='inactive')_jarvisRecorder.stop();_jarvisRecorder=null;if(_jarvisStream)_jarvisStream.getTracks().forEach(function(t){t.stop()});_jarvisStream=null;_jarvisListening=false;el('jarvis-mic').classList.remove('active');el('jarvis-mic').textContent='◉ Talk'}
+async function transcribeLocalSpeech(){var chunks=_jarvisChunks.slice();_jarvisRecorder=null;if(!chunks.length)return;setJarvisState('thinking','Whisper transcribing');try{var form=new FormData();form.append('audio',new Blob(chunks,{type:chunks[0].type||'audio/webm'}),'speech.webm');var r=await fetch('http://127.0.0.1:8766/voice/transcribe',{method:'POST',headers:{Authorization:'Bearer '+_jarvisVoiceBridgeToken},body:form});if(!r.ok)throw new Error('HTTP '+r.status);var d=await r.json(),words=(d.text||d.transcription||d.transcript||'').trim();if(words&&!el('jarvis-send').disabled){el('jarvis-input').value=words;sendJarvis()}else setJarvisState('listening','Local Whisper listening')}catch(e){toast('Local Whisper failed: '+e.message,'err');setJarvisState('error','Whisper unavailable')}}
+function toggleJarvisListening(){_jarvisAlwaysListening=!_jarvisAlwaysListening;if(_jarvisVoiceBridgeToken){if(_jarvisAlwaysListening)startLocalListening();else stopLocalListening();return}if(!_jarvisRecognition){toast('Pair local neural voice first','err');_jarvisAlwaysListening=false;return}if(!_jarvisAlwaysListening){_jarvisRecognition.stop();el('jarvis-mic').textContent='◉ Talk'}else if(!_jarvisListening){stopJarvisAudio();try{_jarvisRecognition.start()}catch(e){}}}
+function toggleJarvisVoice(){_jarvisVoice=!_jarvisVoice;var b=el('jarvis-voice-toggle');b.textContent=_jarvisVoice?'Voice on':'Voice off';b.classList.toggle('active',_jarvisVoice);if(!_jarvisVoice)stopJarvisAudio()}
+function pairJarvisVoice(){var token=prompt('Paste the local voice pairing code from .jarvis-local/voice-token.txt');if(!token)return;_jarvisVoiceBridgeToken=token.trim();try{localStorage.setItem('summit-jarvis-voice-token',_jarvisVoiceBridgeToken)}catch(e){}fetch('http://127.0.0.1:8766/voice/status',{headers:{Authorization:'Bearer '+_jarvisVoiceBridgeToken}}).then(function(r){if(!r.ok)throw new Error();return r.json()}).then(function(d){toast(d.ready?'Kokoro + Whisper connected locally':'Voicebox is running. Finish Kokoro voice setup.',d.ready?'':'err');if(d.ready)initJarvisVoice()}).catch(function(){_jarvisVoiceBridgeToken='';toast('Local voice pairing failed','err')})}
 function browserSpeakJarvis(text){if(!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text),voices=window.speechSynthesis.getVoices();u.voice=voices.find(function(v){return /Google UK English Male|Ryan.*Natural|Guy.*Natural|Daniel/i.test(v.name)})||voices.find(function(v){return /Natural|Online/i.test(v.name)&&/en-GB|en-US/i.test(v.lang)})||voices.find(function(v){return /en-GB/i.test(v.lang)})||null;u.rate=.98;u.pitch=.94;u.onstart=function(){_jarvisSpeaking=true;setJarvisState('speaking','Speaking... talk to interrupt')};u.onboundary=function(){_jarvisSpeechLevel=Math.min(1,_jarvisSpeechLevel+.34)};u.onend=function(){_jarvisSpeaking=false;setJarvisState(_jarvisAlwaysListening?'listening':'',_jarvisAlwaysListening?'Listening':'Online')};window.speechSynthesis.speak(u)}
-function speakJarvis(text){if(!_jarvisVoice)return;_jarvisSpeaking=true;setJarvisState('speaking','Speaking... talk to interrupt');if(_jarvisVoiceBridgeToken){fetch('http://127.0.0.1:8766/voice/speak',{method:'POST',headers:{Authorization:'Bearer '+_jarvisVoiceBridgeToken,'Content-Type':'application/json'},body:JSON.stringify({text:text})}).then(function(r){if(!r.ok)throw new Error();setJarvisState(_jarvisAlwaysListening?'listening':'',_jarvisAlwaysListening?'Listening':'Online')}).catch(function(){browserSpeakJarvis(text)});return}browserSpeakJarvis(text)}
+function speakJarvis(text){if(!_jarvisVoice)return;stopJarvisAudio();_jarvisSpeaking=true;setJarvisState('speaking','Speaking... talk to interrupt');if(_jarvisVoiceBridgeToken){fetch('http://127.0.0.1:8766/voice/generate',{method:'POST',headers:{Authorization:'Bearer '+_jarvisVoiceBridgeToken,'Content-Type':'application/json'},body:JSON.stringify({text:text,profile:'Jarvis Local'})}).then(function(r){if(!r.ok)throw new Error();return r.blob()}).then(function(blob){_jarvisAudio=new Audio(URL.createObjectURL(blob));_jarvisAudio.onended=function(){_jarvisSpeaking=false;setJarvisState(_jarvisAlwaysListening?'listening':'',_jarvisAlwaysListening?'Local Whisper listening':'Online')};_jarvisAudio.play()}).catch(function(){browserSpeakJarvis(text)});return}browserSpeakJarvis(text)}
 function jarvisAdd(role,content,save){
   var log=el('jarvis-log');if(!log)return;
   var box=document.createElement('div');box.className='jarvis-msg '+role;
@@ -764,12 +780,13 @@ async function sendJarvis(){
   var input=el('jarvis-input'),button=el('jarvis-send');var message=(input.value||'').trim();if(!message||button.disabled)return;
   var prior=_jarvisHistory.slice(-12);jarvisAdd('user',message,true);input.value='';button.disabled=true;button.textContent='Thinking';setJarvisState('thinking','Thinking');
   try{
-    var response=await fetch(API+'/jarvis/chat',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({message:message,history:prior})});
+    var memory='';if(_jarvisVoiceBridgeToken){try{var mr=await fetch('http://127.0.0.1:8766/assistant/memory?q='+encodeURIComponent(message)+'&limit=6',{headers:{Authorization:'Bearer '+_jarvisVoiceBridgeToken}});if(mr.ok){var md=await mr.json();memory=(md.results||[]).map(function(x){return x.path+'\n'+x.excerpt}).join('\n\n')}}catch(e){}}
+    var response=await fetch(API+'/jarvis/chat',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({message:message,history:prior,memory_context:memory})});
     var data=await response.json().catch(function(){return{}});
     if(!response.ok)throw new Error(data.detail||('Request failed '+response.status));
     var answer=data.response||'I could not produce a response.';jarvisAdd('assistant',answer,true);setJarvisState(data.state==='limited'?'limited':'',data.state==='limited'?'Limited mode':'Online');speakJarvis(answer);
     txt('j-updated','Context updated '+new Date(data.context_updated_at||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));
-  }catch(err){jarvisAdd('assistant','I hit a connection problem: '+err.message,false);setJarvisState('error','Connection error')}
+  }catch(err){if(_jarvisVoiceBridgeToken){try{var lr=await fetch('http://127.0.0.1:8766/assistant/chat',{method:'POST',headers:{Authorization:'Bearer '+_jarvisVoiceBridgeToken,'Content-Type':'application/json'},body:JSON.stringify({message:message,history:prior})});if(!lr.ok)throw new Error();var ld=await lr.json();jarvisAdd('assistant',ld.response,true);speakJarvis(ld.response);setJarvisState('','Local Ollama');return}catch(e){}}jarvisAdd('assistant','I hit a connection problem: '+err.message,false);setJarvisState('error','Connection error')}
   finally{button.disabled=false;button.textContent='Send';input.focus()}
 }
 function clearJarvis(){_jarvisHistory=[];try{localStorage.removeItem('summit-jarvis-history')}catch(e){}html('jarvis-log','');jarvisAdd('assistant','Conversation cleared. What should we work on?',true)}

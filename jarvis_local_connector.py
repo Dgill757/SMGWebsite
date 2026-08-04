@@ -22,7 +22,7 @@ from typing import Literal
 
 import httpx
 from dotenv import load_dotenv
-from fastapi import Depends, FastAPI, Header, HTTPException, UploadFile, File
+from fastapi import Depends, FastAPI, Header, HTTPException, UploadFile, File, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
 
@@ -133,6 +133,27 @@ class SpeakRequest(BaseModel):
     profile: str | None = None
 
 
+async def voicebox_profiles(client: httpx.AsyncClient) -> list[dict]:
+    response = await client.get("http://127.0.0.1:17493/profiles")
+    response.raise_for_status()
+    payload = response.json()
+    return payload.get("profiles", []) if isinstance(payload, dict) else payload
+
+
+async def default_voicebox_profile(client: httpx.AsyncClient, requested: str | None = None) -> dict:
+    profiles = await voicebox_profiles(client)
+    if requested:
+        match = next((p for p in profiles if p.get("id") == requested or p.get("name") == requested), None)
+        if match:
+            return match
+    match = next((p for p in profiles if p.get("name") == "Jarvis Local"), None)
+    if not match:
+        match = next((p for p in profiles if p.get("default_engine") == "kokoro"), None)
+    if not match:
+        raise HTTPException(503, "No ready Voicebox profile found")
+    return match
+
+
 def core_context() -> str:
     parts = []
     for relative in ("00-Jarvis/identity.md", "00-Jarvis/rules.md", "01-Business/offer.md"):
@@ -228,6 +249,35 @@ async def voice_speak(req: SpeakRequest):
     return {"ok": True}
 
 
+@app.post("/voice/generate", dependencies=[Depends(require_voice_token)])
+async def voice_generate(req: SpeakRequest):
+    """Generate local neural audio for browser playback so barge-in can stop it."""
+    async with httpx.AsyncClient(timeout=120) as client:
+        profile = await default_voicebox_profile(client, req.profile)
+        generated = await client.post("http://127.0.0.1:17493/generate", json={
+            "profile_id": profile["id"], "text": req.text, "language": "en",
+            "engine": profile.get("default_engine") or "kokoro", "normalize": True,
+        })
+        generated.raise_for_status()
+        generation_id = generated.json()["id"]
+        for _ in range(120):
+            status = await client.get(f"http://127.0.0.1:17493/history/{generation_id}")
+            if status.status_code == 404:
+                await asyncio.sleep(.1)
+                continue
+            status.raise_for_status()
+            state = status.json()
+            if state.get("status") == "completed":
+                audio = await client.get(f"http://127.0.0.1:17493/audio/{generation_id}")
+                audio.raise_for_status()
+                audit("voice_generate", {"characters": len(req.text), "profile": profile.get("name")})
+                return Response(content=audio.content, media_type=audio.headers.get("content-type", "audio/wav"))
+            if state.get("status") in ("failed", "cancelled"):
+                raise HTTPException(503, state.get("error") or "Voice generation failed")
+            await asyncio.sleep(.1)
+    raise HTTPException(504, "Voice generation timed out")
+
+
 @app.post("/voice/transcribe", dependencies=[Depends(require_voice_token)])
 async def voice_transcribe(audio: UploadFile = File(...)):
     content = await audio.read()
@@ -238,6 +288,16 @@ async def voice_transcribe(audio: UploadFile = File(...)):
         if response.status_code >= 400:
             raise HTTPException(503, f"Voicebox transcription failed: HTTP {response.status_code}")
     return response.json()
+
+
+@app.get("/assistant/memory", dependencies=[Depends(require_voice_token)])
+async def assistant_memory(q: str, limit: int = 6):
+    return await search_memory(q, limit)
+
+
+@app.post("/assistant/chat", dependencies=[Depends(require_voice_token)])
+async def assistant_chat(req: ChatRequest):
+    return await chat(req)
 
 
 @app.post("/tools/read", dependencies=[Depends(require_local_token)])
