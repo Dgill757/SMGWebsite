@@ -30,3 +30,11 @@ Operational note: Ollama `llama3.2:3b` is installed, but the machine had only ab
 - Added and live-tested native read adapters for GHL pipelines/contact search and Firecrawl web research.
 - Verified Jarvis itself returned observed GHL pipeline stages and live web research through the controlled tool router.
 - Confirmed Google Calendar and Drive Codex connections; Gmail requires reauthentication and Railway still needs dedicated offline Google OAuth credentials.
+## Voice feedback-loop containment
+
+- Stopped the runaway Voicebox processes, then restarted the desktop Voicebox service and verified its health endpoint.
+- Added a visible emergency Stop control that aborts queued chat, voice generation, playback, capture, and transcription.
+- Prevented simultaneous local neural and browser voices. Paired local voice failures now remain silent and report the error.
+- Paused microphone capture while Jarvis is thinking or speaking and delayed restart after playback.
+- Added transcript de-duplication, fuzzy self-echo rejection, a required `Jarvis` wake word, and a five-second follow-up window.
+- Added `docs/JARVIS_EMPLOYEE_ARCHITECTURE_RESEARCH.md` with the revenue-first work-engine plan.
