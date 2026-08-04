@@ -69,6 +69,47 @@ async def ghl_search_contacts(query: str, limit: int = 20) -> dict:
     return {"contacts": [{"id": c.get("id"), "name": c.get("contactName") or c.get("name"), "company": c.get("companyName"), "email": c.get("email"), "phone": c.get("phone"), "tags": c.get("tags", [])} for c in contacts]}
 
 
+async def prospects_without_website(limit: int = 10) -> dict:
+    """Return high-signal uncontacted prospects from SummitOS, never send to them."""
+    url, key = os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_KEY", "")
+    if not url or not key:
+        raise IntegrationUnavailable("Supabase is not configured")
+    headers = {"apikey": key, "Authorization": f"Bearer {key}"}
+    params = {
+        "select": "id,ghl_contact_id,company_name,owner_name,phone,email,city,state,website,has_website,review_count,review_rating,outreach_sent,status,scraped_at",
+        "or": "(has_website.eq.false,website.is.null,website.eq.)",
+        "outreach_sent": "eq.false",
+        "order": "review_count.desc.nullslast,scraped_at.desc",
+        "limit": str(min(max(limit, 1), 25)),
+    }
+    response = await _request_with_retry("GET", f"{url}/rest/v1/scraped_businesses", headers=headers, params=params)
+    return {"outreach_paused": True, "prospects": response.json()}
+
+
+async def prospect_company_brief(query: str) -> dict:
+    """Combine SummitOS lead data, GHL contact data, and current public research."""
+    if not query.strip():
+        raise IntegrationUnavailable("A company or contact name is required")
+    url, key = os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_KEY", "")
+    local_rows: list[dict] = []
+    if url and key:
+        headers = {"apikey": key, "Authorization": f"Bearer {key}"}
+        response = await _request_with_retry("GET", f"{url}/rest/v1/scraped_businesses", headers=headers, params={"select": "*", "company_name": f"ilike.*{query.strip()}*", "limit": "5"})
+        local_rows = response.json()
+    ghl, research = await asyncio.gather(
+        ghl_search_contacts(query, 10),
+        web_research(f'"{query}" roofing company owner reviews services', 6),
+        return_exceptions=True,
+    )
+    return {
+        "query": query,
+        "summitos_records": local_rows,
+        "ghl": {"unavailable": str(ghl)} if isinstance(ghl, Exception) else ghl,
+        "public_research": {"unavailable": str(research)} if isinstance(research, Exception) else research,
+        "instruction": "Separate observed facts from sales-call hypotheses. Never invent an owner, revenue, or website status.",
+    }
+
+
 async def web_research(query: str, limit: int = 5) -> dict:
     key = os.getenv("FIRECRAWL_API_KEY", "")
     if not key:
@@ -95,6 +136,35 @@ async def google_calendar_upcoming(days: int = 7, limit: int = 20) -> dict:
     return {"events": [{"id": e.get("id"), "summary": e.get("summary"), "start": e.get("start"), "end": e.get("end"), "location": e.get("location"), "attendees": e.get("attendees", [])} for e in response.json().get("items", [])]}
 
 
+async def google_calendar_create_event(arguments: dict) -> dict:
+    """Create one explicitly approved event and return Google's receipt."""
+    token = await _google_access_token()
+    summary = str(arguments.get("summary", "")).strip()
+    start = str(arguments.get("start", "")).strip()
+    end = str(arguments.get("end", "")).strip()
+    if not summary or not start or not end:
+        raise IntegrationUnavailable("Calendar event requires summary, start, and end")
+    event: dict[str, Any] = {
+        "summary": summary,
+        "description": str(arguments.get("description", ""))[:4000],
+        "start": {"dateTime": start, "timeZone": arguments.get("time_zone", "America/New_York")},
+        "end": {"dateTime": end, "timeZone": arguments.get("time_zone", "America/New_York")},
+        "reminders": {"useDefault": False, "overrides": [{"method": "popup", "minutes": int(arguments.get("reminder_minutes", 15))}]},
+    }
+    if arguments.get("location"):
+        event["location"] = str(arguments["location"])
+    attendees = [str(email).strip() for email in arguments.get("attendees", []) if "@" in str(email)]
+    if attendees:
+        event["attendees"] = [{"email": email} for email in attendees]
+    response = await _request_with_retry(
+        "POST", "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+        headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"},
+        params={"sendUpdates": "all" if attendees else "none"}, json=event,
+    )
+    created = response.json()
+    return {"created": True, "id": created.get("id"), "summary": created.get("summary"), "start": created.get("start"), "end": created.get("end"), "html_link": created.get("htmlLink")}
+
+
 async def gmail_search(query: str = "is:unread", limit: int = 10) -> dict:
     token = await _google_access_token(); headers = {"Authorization": f"Bearer {token}"}
     response = await _request_with_retry("GET", "https://gmail.googleapis.com/gmail/v1/users/me/messages", headers=headers, params={"q": query, "maxResults": min(max(limit, 1), 25)})
@@ -111,9 +181,15 @@ READ_TOOLS = {
     "integrations_status": lambda args: integration_status(),
     "ghl_pipelines": lambda args: ghl_pipelines(),
     "ghl_search_contacts": lambda args: ghl_search_contacts(str(args.get("query", "")), int(args.get("limit", 20))),
+    "prospects_without_website": lambda args: prospects_without_website(int(args.get("limit", 10))),
+    "prospect_company_brief": lambda args: prospect_company_brief(str(args.get("query", ""))),
     "web_research": lambda args: web_research(str(args.get("query", "")), int(args.get("limit", 5))),
     "calendar_upcoming": lambda args: google_calendar_upcoming(int(args.get("days", 7)), int(args.get("limit", 20))),
     "gmail_search": lambda args: gmail_search(str(args.get("query", "is:unread")), int(args.get("limit", 10))),
+}
+
+WRITE_TOOLS = {
+    "calendar_create_event": google_calendar_create_event,
 }
 
 
@@ -121,5 +197,13 @@ async def execute_read_tool(name: str, arguments: dict) -> Any:
     fn = READ_TOOLS.get(name)
     if not fn:
         raise IntegrationUnavailable(f"Unknown integration tool: {name}")
+    result = fn(arguments)
+    return await result if hasattr(result, "__await__") else result
+
+
+async def execute_write_tool(name: str, arguments: dict) -> Any:
+    fn = WRITE_TOOLS.get(name)
+    if not fn:
+        raise IntegrationUnavailable(f"Unknown mutating integration tool: {name}")
     result = fn(arguments)
     return await result if hasattr(result, "__await__") else result

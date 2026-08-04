@@ -18,7 +18,7 @@ from jarvis_model_router import (
     configured_provider_names,
     provider_health_snapshot,
 )
-from jarvis_integrations import IntegrationUnavailable, execute_read_tool, integration_status
+from jarvis_integrations import IntegrationUnavailable, execute_read_tool, execute_write_tool, integration_status
 from premium_website_generator_v2 import generate_world_class_roofing_site
 
 load_dotenv()
@@ -808,6 +808,10 @@ Approved roots are C:\\Users\\DanGi\\Downloads\\SummitVoiceAI, C:\\Users\\DanGi\
 list_directory arguments: {"path":"absolute path"}. read_file: {"path":"absolute file"}. search_files: {"path":"absolute root","pattern":"glob"}. processes: {}. git_status: {"path":"absolute repo"}. write_file: {"path":"absolute file","content":"complete new content"}. run_command: {"cwd":"absolute directory","command":"PowerShell command"}.
 Never infer a destructive command. Never use write_file unless Dan explicitly supplied the complete intended content. Use run_command only when Dan explicitly asked to run something."""
 
+JARVIS_CALENDAR_PLAN_SYSTEM = """Convert Dan's calendar request into one proposed Google Calendar event. Return JSON only:
+{"tool":"calendar_create_event","arguments":{"summary":"...","start":"RFC3339 with offset","end":"RFC3339 with offset","time_zone":"America/New_York","description":"...","location":"","attendees":[],"reminder_minutes":15}}
+Use the supplied current date and America/New_York. Preserve explicit times and dates. A vacation block is an event covering the requested daytime range. If a required date or start time is genuinely missing, return {"tool":"none","missing":"what is needed"}. Do not invent attendee email addresses."""
+
 
 def _extract_json_object(text: str) -> dict | None:
     try:
@@ -825,6 +829,17 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         task = jarvis_connector_tasks.get(task_id)
         if not task or task.get("status") != "awaiting_approval":
             return f"I could not find pending action {task_id}."
+        if task.get("executor") == "cloud":
+            try:
+                task["status"] = "running"
+                task["result"] = await execute_write_tool(task["tool"], task["arguments"])
+                task["status"] = "completed"
+                task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+                await _record_jarvis_event(channel, f"action:{task['tool']}", success=True)
+                return f"Approved and completed {task_id}. Receipt: {json.dumps(task['result'], default=str)}"
+            except IntegrationUnavailable as exc:
+                task["status"] = "failed"; task["error"] = str(exc)
+                return f"Approval was recorded, but the action failed safely: {exc}"
         task["status"] = "queued"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
         return f"Approved {task_id}. Your local connector will execute it and record the result."
     if lower.startswith(("/deny ", "deny ")):
@@ -835,8 +850,39 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         task["status"] = "denied"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
         return f"Denied {task_id}. Nothing was executed."
     integration_plan = None
+    calendar_write = (
+        ("calendar" in lower and any(term in lower for term in ("schedule", "add", "create", "block", "remind")))
+        or any(term in lower for term in ("schedule a meeting", "block off", "time block", "put it on my calendar"))
+    )
+    if calendar_write:
+        try:
+            now_local = datetime.now().astimezone().isoformat()
+            planned = await ask_jarvis_model(
+                anthropic_client=ai, system=JARVIS_CALENDAR_PLAN_SYSTEM,
+                messages=[{"role": "user", "content": f"CURRENT LOCAL DATETIME: {now_local}\nREQUEST: {message}"}], max_tokens=500,
+            )
+            plan = _extract_json_object(planned.text) or {}
+        except JarvisProvidersUnavailable:
+            return "I can create that calendar event after approval, but a reasoning provider is required to translate the natural-language date safely."
+        if plan.get("tool") != "calendar_create_event":
+            return f"I need one detail before I can prepare that calendar event: {plan.get('missing') or 'the date and start time'}."
+        task_id = secrets.token_hex(12)
+        arguments = plan.get("arguments") if isinstance(plan.get("arguments"), dict) else {}
+        preview = f"Create Google Calendar event: {json.dumps(arguments, default=str)}"
+        jarvis_connector_tasks[task_id] = {
+            "id": task_id, "tool": "calendar_create_event", "arguments": arguments,
+            "risk": "external", "executor": "cloud", "preview": preview,
+            "status": "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z",
+            "updated_at": datetime.utcnow().isoformat() + "Z",
+        }
+        return f"I prepared this calendar action but have not executed it.\n\n{preview}\n\nApprove action {task_id} in the dashboard, or reply /approve {task_id}."
     if "integration status" in lower or "what can you access" in lower or "which tools" in lower:
         integration_plan = ("integrations_status", {})
+    elif any(phrase in lower for phrase in ("who should we reach out", "who should i reach out", "prospects without a website", "doesn't have a website", "do not have a website")):
+        integration_plan = ("prospects_without_website", {"limit": 10})
+    elif any(phrase in lower for phrase in ("meeting brief on", "company brief on", "prospect brief on", "research prospect", "cold call brief")):
+        query = re.sub(r"(?i).*?(meeting brief on|company brief on|prospect brief on|research prospect|cold call brief)(?: for| about| on)?", "", message).strip(" :,.?")
+        integration_plan = ("prospect_company_brief", {"query": query})
     elif "ghl" in lower and ("pipeline" in lower or "stage" in lower):
         integration_plan = ("ghl_pipelines", {})
     elif "ghl" in lower and ("find contact" in lower or "search contact" in lower):
@@ -845,7 +891,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
     elif any(phrase in lower for phrase in ("research the web", "research online", "search the internet", "web research")):
         query = re.sub(r"(?i).*?(research the web|research online|search the internet|web research)(?: for| about)?", "", message).strip(" :,.?")
         integration_plan = ("web_research", {"query": query, "limit": 5})
-    elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "schedule", "week")):
+    elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "week", "agenda", "meetings")):
         integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
     elif any(phrase in lower for phrase in ("unread email", "unread mail", "check my inbox", "recent email")):
         integration_plan = ("gmail_search", {"query": "is:unread", "limit": 10})
@@ -1202,7 +1248,20 @@ async def cloud_decide_action(task_id: str, payload: JarvisApprovalDecision):
     task = jarvis_connector_tasks.get(task_id)
     if not task or task["status"] != "awaiting_approval":
         raise HTTPException(404, "Pending approval not found")
-    task["status"] = "queued" if payload.approved else "denied"
+    if not payload.approved:
+        task["status"] = "denied"
+    elif task.get("executor") == "cloud":
+        task["status"] = "running"
+        try:
+            task["result"] = await execute_write_tool(task["tool"], task["arguments"])
+            task["status"] = "completed"
+            await _record_jarvis_event("dashboard", f"action:{task['tool']}", success=True)
+        except IntegrationUnavailable as exc:
+            task["status"] = "failed"
+            task["error"] = str(exc)
+            await _record_jarvis_event("dashboard", f"action:{task['tool']}", success=False, error_class=exc.__class__.__name__)
+    else:
+        task["status"] = "queued"
     task["updated_at"] = datetime.utcnow().isoformat() + "Z"
     return task
 
