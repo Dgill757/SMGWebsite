@@ -1,11 +1,12 @@
 ﻿<!DOCTYPE html><html lang="en"><head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Summit OS — CEO Command Center</title><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23E8612C%22/><text x=%2250%22 y=%2272%22 font-size=%2270%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>S</text></svg>">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<title>Summit OS — JARVIS Command Center</title><link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23070B14%22/><circle cx=%2250%22 cy=%2250%22 r=%2228%22 fill=%22none%22 stroke=%22%233BE8FF%22 stroke-width=%226%22/><text x=%2250%22 y=%2262%22 font-size=%2234%22 text-anchor=%22middle%22 fill=%22white%22 font-family=%22sans-serif%22 font-weight=%22bold%22>S</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-:root{--bg:#0D0D12;--s1:#13131A;--s2:#1A1A24;--s3:#22222E;--bdr:rgba(255,255,255,.07);--acc:#E8612C;--grn:#22C55E;--red:#EF4444;--yel:#F59E0B;--blu:#3B82F6;--txt:#FFFFFF;--txt2:rgba(255,255,255,.65);--txt3:rgba(255,255,255,.35)}
+:root{--bg:#070B14;--s1:#0E1626;--s2:#111C30;--s3:#16233A;--bdr:#1B2942;--bdr-bright:#26405F;--acc:#3BE8FF;--acc-dim:#1D9FB8;--grn:#41F5A0;--red:#FF6B6B;--yel:#FFB020;--blu:#6AA9FF;--txt:#E7EEFA;--txt2:#8DA0BF;--txt3:#687B99}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);min-height:100vh;overflow-x:hidden}
+h1,h2,h3,.nav-logo,.lbox .logo{font-family:'Chakra Petch','Inter',sans-serif;letter-spacing:.02em}
 /* ── LOGIN ── */
 #login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999}
 .lbox{background:var(--s1);border:1px solid var(--bdr);border-radius:16px;padding:48px 40px;width:340px;text-align:center}
@@ -168,6 +169,38 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
   table.tbl{font-size:.72rem}
   #pp-search{width:120px!important}
 }
+/* JARVIS command interface */
+.jarvis-shell{display:grid;grid-template-columns:minmax(270px,340px) minmax(360px,1fr) 300px;gap:16px;min-height:calc(100vh - 100px)}
+.jarvis-panel{background:linear-gradient(160deg,rgba(17,28,48,.96),rgba(10,16,32,.96));border:1px solid var(--bdr);border-radius:14px;position:relative;overflow:hidden}
+.jarvis-panel:before,.jarvis-panel:after{content:"";position:absolute;width:20px;height:20px;pointer-events:none}
+.jarvis-panel:before{left:8px;top:8px;border-left:1px solid var(--acc);border-top:1px solid var(--acc)}
+.jarvis-panel:after{right:8px;bottom:8px;border-right:1px solid var(--acc);border-bottom:1px solid var(--acc)}
+.jarvis-orb-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;min-height:500px;text-align:center}
+.jarvis-orb{width:230px;height:230px;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle,rgba(59,232,255,.24) 0,rgba(59,232,255,.08) 32%,transparent 66%);filter:drop-shadow(0 0 28px rgba(59,232,255,.26))}
+.jarvis-orb:before,.jarvis-orb:after{content:"";position:absolute;border-radius:50%;border:1px solid var(--acc)}
+.jarvis-orb:before{inset:18px;border-style:dashed;animation:jarvisSpin 18s linear infinite}
+.jarvis-orb:after{inset:44px;border-width:2px;box-shadow:0 0 28px rgba(59,232,255,.35),inset 0 0 22px rgba(59,232,255,.2);animation:jarvisPulse 3.2s ease-in-out infinite}
+.jarvis-core{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle,#E7EEFA 0,var(--acc) 18%,rgba(59,232,255,.16) 55%,transparent 68%);box-shadow:0 0 44px var(--acc)}
+.jarvis-orb.thinking:before{border-color:var(--yel);animation-duration:1.5s}.jarvis-orb.thinking:after{border-color:var(--yel);box-shadow:0 0 36px rgba(255,176,32,.55)}
+.jarvis-orb.error:before,.jarvis-orb.error:after{border-color:var(--red)}
+.jarvis-state{font:600 .68rem 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-top:22px}
+.jarvis-chat{display:flex;flex-direction:column;min-height:500px}
+.jarvis-chat-head{padding:18px 22px;border-bottom:1px solid var(--bdr)}
+.jarvis-log{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:14px;max-height:calc(100vh - 260px)}
+.jarvis-msg{max-width:86%;padding:12px 14px;border-radius:10px;line-height:1.6;font-size:.88rem;white-space:pre-wrap}
+.jarvis-msg.user{align-self:flex-end;background:rgba(59,232,255,.1);border:1px solid rgba(59,232,255,.24)}
+.jarvis-msg.assistant{align-self:flex-start;background:var(--s2);border:1px solid var(--bdr)}
+.jarvis-msg .who{display:block;font:600 .62rem 'JetBrains Mono';letter-spacing:.16em;text-transform:uppercase;color:var(--acc);margin-bottom:6px}
+.jarvis-compose{display:flex;gap:10px;padding:16px;border-top:1px solid var(--bdr)}
+.jarvis-compose textarea{flex:1;min-height:48px;max-height:140px;resize:vertical;background:var(--bg);border:1px solid var(--bdr-bright);border-radius:9px;color:var(--txt);padding:12px;font:inherit;outline:none}
+.jarvis-compose textarea:focus{border-color:var(--acc);box-shadow:0 0 0 2px rgba(59,232,255,.1)}
+.jarvis-side{padding:20px}.jarvis-side h3{font-size:.78rem;text-transform:uppercase;color:var(--acc);letter-spacing:.12em;margin-bottom:12px}
+.jarvis-metric{padding:11px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;gap:12px;font-size:.78rem}.jarvis-metric span{color:var(--txt2)}
+.jarvis-suggestions{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}.jarvis-suggestions button{background:transparent;border:1px solid var(--bdr-bright);color:var(--txt2);border-radius:20px;padding:7px 10px;font-size:.7rem;cursor:pointer}.jarvis-suggestions button:hover{border-color:var(--acc);color:var(--acc)}
+@keyframes jarvisSpin{to{transform:rotate(360deg)}}@keyframes jarvisPulse{50%{transform:scale(1.08);opacity:.72}}
+@media(max-width:1100px){.jarvis-shell{grid-template-columns:280px 1fr}.jarvis-side{grid-column:1/-1}.jarvis-orb{width:190px;height:190px}}
+@media(max-width:760px){.jarvis-shell{grid-template-columns:1fr}.jarvis-orb-zone{min-height:300px}.jarvis-chat{min-height:520px}.jarvis-log{max-height:420px}.jarvis-msg{max-width:94%}}
+@media(prefers-reduced-motion:reduce){.jarvis-orb:before,.jarvis-orb:after,.nav-dot{animation:none!important}}
 </style></head>
 <body><div id="toast-wrap"></div><!-- LOGIN -->
 <div id="login">
@@ -187,6 +220,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <nav>
   <div class="nav-l">
     <div class="nav-logo"><span>S</span> SUMMIT OS</div>
+    <button class="tab-btn" data-tab="jarvis" onclick="showTab('jarvis')">Jarvis</button>
     <button class="tab-btn active" data-tab="brief" onclick="showTab('brief')">Brief</button>
     <button class="tab-btn" data-tab="team" onclick="showTab('team')">Team</button>
     <button class="tab-btn" data-tab="pipeline" onclick="showTab('pipeline')">Pipeline</button>
@@ -205,6 +239,41 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 </nav>
 
 <main>
+
+<!-- JARVIS TAB -->
+<div id="pg-jarvis" class="tab-pane">
+  <div class="jarvis-shell">
+    <section class="jarvis-panel jarvis-orb-zone" aria-label="Jarvis status">
+      <div class="jarvis-orb" id="jarvis-orb" aria-hidden="true"><div class="jarvis-core"></div></div>
+      <div class="jarvis-state" id="jarvis-state">Standby</div>
+      <div style="margin-top:10px;color:var(--txt2);font-size:.78rem;line-height:1.6">Summit operating intelligence<br><span class="badge badge-yel" style="margin-top:10px">Read-only mode</span></div>
+      <div class="jarvis-suggestions" aria-label="Suggested prompts">
+        <button onclick="askJarvis('Give me my business briefing. What needs me first?')">Morning brief</button>
+        <button onclick="askJarvis('Who needs a reply right now? Rank them by revenue impact.')">Reply queue</button>
+        <button onclick="askJarvis('What is the single highest-leverage thing I should do today?')">Top priority</button>
+        <button onclick="askJarvis('Check agent health and tell me what is silently broken.')">System health</button>
+      </div>
+    </section>
+    <section class="jarvis-panel jarvis-chat" aria-label="Conversation with Jarvis">
+      <div class="jarvis-chat-head row"><div><h2>JARVIS</h2><div class="muted2" style="font-size:.7rem;margin-top:3px">Live SummitOS context • Actions gated</div></div><button class="btn btn-ghost btn-sm ml-auto" onclick="clearJarvis()">Clear</button></div>
+      <div class="jarvis-log" id="jarvis-log" role="log" aria-live="polite"></div>
+      <div class="jarvis-compose">
+        <textarea id="jarvis-input" aria-label="Message Jarvis" placeholder="Ask about the business, leads, clients, or system health..." onkeydown="jarvisKey(event)"></textarea>
+        <button class="btn btn-acc" id="jarvis-send" onclick="sendJarvis()">Send</button>
+      </div>
+    </section>
+    <aside class="jarvis-panel jarvis-side" aria-label="Live system panel">
+      <h3>Live system</h3>
+      <div class="jarvis-metric"><span>Jarvis</span><b id="j-health">Checking</b></div>
+      <div class="jarvis-metric"><span>MRR</span><b id="j-mrr">--</b></div>
+      <div class="jarvis-metric"><span>Clients</span><b id="j-clients">--</b></div>
+      <div class="jarvis-metric"><span>Agents online</span><b id="j-agents">--</b></div>
+      <div class="jarvis-metric"><span>Needs reply</span><b id="j-replies">--</b></div>
+      <div class="jarvis-metric"><span>Outreach</span><b style="color:var(--yel)">Paused</b></div>
+      <div style="font:400 .65rem 'JetBrains Mono';color:var(--txt3);margin-top:16px" id="j-updated">Not updated</div>
+    </aside>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════
      BRIEF TAB
@@ -560,6 +629,7 @@ var API='https://ava-studio-api-production.up.railway.app';
 var KEY='';// set at login; validated server-side by Railway
 var _activeDemoId=null, _bizDate=null, _bizOffset=0, _bizTotal=0, _bizLimit=50;
 var _allContent=[], _allBiz=[], _allAgents=[];
+var _jarvisHistory=[];
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 async function get(p){try{var r=await fetch(API+p,{headers:{'x-api-key':KEY}});return r.ok?await r.json():{}}catch(e){return {}}}
@@ -611,6 +681,7 @@ function initDash(){
   loadHeader();
   loadBrief();
   setInterval(loadHeader,30000);
+  if(location.hash==='#jarvis'||new URLSearchParams(location.search).get('tab')==='jarvis')showTab('jarvis');
 }
 
 // ── Header ─────────────────────────────────────────────────────────────────
@@ -623,9 +694,54 @@ async function loadHeader(){
 function showTab(t){
   document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===t)});
   document.querySelectorAll('.tab-pane').forEach(function(p){p.style.display=p.id==='pg-'+t?'block':'none'});
-  var loaders={team:loadTeam,pipeline:loadPipeline,content:loadContent,clients:loadClients,demos:loadDemos,finance:loadFinance,intel:loadIntel};
+  var loaders={jarvis:loadJarvis,team:loadTeam,pipeline:loadPipeline,content:loadContent,clients:loadClients,demos:loadDemos,finance:loadFinance,intel:loadIntel};
   if(loaders[t])loaders[t]();
+  if(t==='jarvis')history.replaceState(null,'','#jarvis');
 }
+
+// ── JARVIS ─────────────────────────────────────────────────────────────────
+function setJarvisState(state,label){
+  var orb=el('jarvis-orb');if(!orb)return;
+  orb.className='jarvis-orb '+(state||'');
+  txt('jarvis-state',label||state||'Standby');
+}
+function jarvisAdd(role,content,save){
+  var log=el('jarvis-log');if(!log)return;
+  var box=document.createElement('div');box.className='jarvis-msg '+role;
+  var who=document.createElement('span');who.className='who';who.textContent=role==='user'?'Dan':'Jarvis';
+  var body=document.createElement('div');body.textContent=content;
+  box.appendChild(who);box.appendChild(body);log.appendChild(box);log.scrollTop=log.scrollHeight;
+  if(save!==false){_jarvisHistory.push({role:role,content:content});_jarvisHistory=_jarvisHistory.slice(-30);try{localStorage.setItem('summit-jarvis-history',JSON.stringify(_jarvisHistory))}catch(e){}}
+}
+function loadJarvisHistory(){
+  if(_jarvisHistory.length)return;
+  try{_jarvisHistory=JSON.parse(localStorage.getItem('summit-jarvis-history')||'[]')}catch(e){_jarvisHistory=[]}
+  if(_jarvisHistory.length){_jarvisHistory.forEach(function(m){jarvisAdd(m.role,m.content,false)})}
+  else jarvisAdd('assistant','Online. I can read your live SummitOS metrics, agent health, and GHL reply queue.\n\nWhat do you want to know?',true);
+}
+async function loadJarvis(){
+  loadJarvisHistory();setJarvisState('','Online');
+  var results=await Promise.all([get('/jarvis/health'),get('/ceo/summary'),get('/agents/health-summary'),get('/ghl/replies/recent?limit=20')]);
+  var health=results[0]||{},summary=results[1]||{},agents=results[2]||{},replies=results[3]||[];
+  txt('j-health',health.status==='online'?'Online':'Unavailable');txt('j-mrr',fmt$(summary.mrr));txt('j-clients',summary.clients||0);
+  txt('j-agents',(agents.ok||0)+(agents.running||0));txt('j-replies',Array.isArray(replies)?replies.length:0);
+  txt('j-updated','Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));
+}
+function jarvisKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendJarvis()}}
+function askJarvis(prompt){var input=el('jarvis-input');input.value=prompt;sendJarvis()}
+async function sendJarvis(){
+  var input=el('jarvis-input'),button=el('jarvis-send');var message=(input.value||'').trim();if(!message||button.disabled)return;
+  var prior=_jarvisHistory.slice(-12);jarvisAdd('user',message,true);input.value='';button.disabled=true;button.textContent='Thinking';setJarvisState('thinking','Thinking');
+  try{
+    var response=await fetch(API+'/jarvis/chat',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({message:message,history:prior})});
+    var data=await response.json().catch(function(){return{}});
+    if(!response.ok)throw new Error(data.detail||('Request failed '+response.status));
+    jarvisAdd('assistant',data.response||'I could not produce a response.',true);setJarvisState('','Online');
+    txt('j-updated','Context updated '+new Date(data.context_updated_at||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));
+  }catch(err){jarvisAdd('assistant','I hit a connection problem: '+err.message,false);setJarvisState('error','Connection error')}
+  finally{button.disabled=false;button.textContent='Send';input.focus()}
+}
+function clearJarvis(){_jarvisHistory=[];try{localStorage.removeItem('summit-jarvis-history')}catch(e){}html('jarvis-log','');jarvisAdd('assistant','Conversation cleared. What should we work on?',true)}
 
 // ── BRIEF ──────────────────────────────────────────────────────────────────
 async function loadBrief(){
@@ -1798,4 +1914,3 @@ async function loadContent(){
 })();
 </script>
 </body></html>
-

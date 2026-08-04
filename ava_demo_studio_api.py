@@ -115,6 +115,19 @@ class CreateDemoRequest(BaseModel):
     widget_key: str | None = None
     send_delivery: bool = True
 
+class JarvisMessage(BaseModel):
+    role: str
+    content: str
+
+class JarvisChatRequest(BaseModel):
+    message: str
+    history: list[JarvisMessage] = []
+
+class JarvisChatResponse(BaseModel):
+    response: str
+    state: str = "idle"
+    context_updated_at: str
+
 class DemoStatusResponse(BaseModel):
     demo_id: str
     status: str
@@ -708,6 +721,94 @@ async def build_demo_task(demo_id: str, req: CreateDemoRequest):
 @app.get("/health")
 async def health():
     return {"status": "ok", "service": "Ava Demo Studio API"}
+
+
+JARVIS_SYSTEM = """You are JARVIS, the operating intelligence inside Summit OS for Dan Gill III,
+solo founder of Summit Voice AI. Your job is to help Dan reach $50K MRR by December 31, 2026.
+Summit Voice AI sells AI voice and automation systems to owner-operated roofing contractors.
+Current baseline is about $4,466 MRR across 9 clients. Pricing is $497-$997/month plus setup,
+framed as as little as $16/day. The average roofing job is $9,500.
+
+Voice: direct, calm, useful, short sentences. No fluff. No em dashes. Explain technical details
+in plain English. Lead with the answer. Never invent live business facts when context is missing.
+
+Safety: this version is read-only. You may analyze, prioritize, draft, and recommend. Never claim
+you sent a message, changed CRM data, deployed code, deleted data, or performed an external action.
+Automated outreach is currently PAUSED. Do not recommend resuming it unless Dan explicitly asks.
+
+When live context is supplied, distinguish facts from inference. Optimize recommendations for:
+1) adding clients or reducing churn, 2) saving repeated founder time, 3) scaling without hires."""
+
+
+async def _jarvis_live_context(x_api_key: str) -> dict:
+    """Collect a compact, read-only snapshot through existing authenticated helpers."""
+    results = await asyncio.gather(
+        get_ceo_analytics_summary(x_api_key),
+        get_agent_health_summary(x_api_key),
+        get_recent_replies(10),
+        return_exceptions=True,
+    )
+    names = ("ceo_summary", "agent_health", "recent_replies")
+    context = {}
+    for name, value in zip(names, results):
+        context[name] = {"unavailable": str(value)} if isinstance(value, Exception) else value
+    context["outreach_status"] = "paused: lead scraping/contact creation only; no automated email or SMS"
+    context["captured_at"] = datetime.utcnow().isoformat() + "Z"
+    return context
+
+
+@app.get("/jarvis/health", dependencies=[Depends(require_key)])
+async def jarvis_health():
+    return {
+        "status": "online",
+        "mode": "read_only",
+        "model": os.getenv("JARVIS_MODEL", "claude-sonnet-4-6"),
+        "outreach": "paused",
+    }
+
+
+@app.post("/jarvis/chat", response_model=JarvisChatResponse)
+async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    message = req.message.strip()
+    if not message:
+        raise HTTPException(status_code=400, detail="Message is required")
+    if len(message) > 8000:
+        raise HTTPException(status_code=400, detail="Message is too long")
+
+    context = await _jarvis_live_context(x_api_key)
+    safe_history = [
+        {"role": item.role, "content": item.content[:6000]}
+        for item in req.history[-12:]
+        if item.role in ("user", "assistant") and item.content.strip()
+    ]
+    safe_history.append({
+        "role": "user",
+        "content": f"LIVE SUMMIT OS CONTEXT:\n{json.dumps(context, default=str)[:18000]}\n\nDAN'S REQUEST:\n{message}",
+    })
+
+    def _ask_jarvis():
+        return ai.messages.create(
+            model=os.getenv("JARVIS_MODEL", "claude-sonnet-4-6"),
+            max_tokens=1400,
+            system=JARVIS_SYSTEM,
+            messages=safe_history,
+        )
+
+    try:
+        result = await asyncio.to_thread(_ask_jarvis)
+        answer = "".join(
+            block.text for block in result.content if getattr(block, "type", "") == "text"
+        ).strip()
+        if not answer:
+            raise RuntimeError("Jarvis returned an empty response")
+        return JarvisChatResponse(
+            response=answer,
+            state="idle",
+            context_updated_at=context["captured_at"],
+        )
+    except anthropic.APIError as exc:
+        raise HTTPException(status_code=502, detail=f"Jarvis model unavailable: {exc.__class__.__name__}")
 
 
 @app.post("/demos/create", response_model=DemoStatusResponse)
