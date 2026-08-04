@@ -284,10 +284,16 @@ async def voice_transcribe(audio: UploadFile = File(...)):
     if len(content) > 25_000_000:
         raise HTTPException(413, "Audio exceeds 25 MB")
     async with httpx.AsyncClient(timeout=180) as client:
-        response = await client.post("http://127.0.0.1:17493/transcribe", files={"audio": (audio.filename or "speech.webm", content, audio.content_type or "audio/webm")}, data={"model": "whisper-turbo"})
+        response = await client.post(
+            "http://127.0.0.1:17493/transcribe",
+            files={"file": (audio.filename or "speech.webm", content, audio.content_type or "audio/webm")},
+            data={"model": "turbo", "language": "en"},
+        )
         if response.status_code >= 400:
             raise HTTPException(503, f"Voicebox transcription failed: HTTP {response.status_code}")
-    return response.json()
+    result = response.json()
+    audit("voice_transcribe", {"characters": len(result.get("text", "")), "duration": result.get("duration")})
+    return result
 
 
 @app.get("/assistant/memory", dependencies=[Depends(require_voice_token)])

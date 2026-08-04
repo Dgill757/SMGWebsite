@@ -737,8 +737,8 @@ async function startLocalListening(){
     var ctx=new AudioContext(),src=ctx.createMediaStreamSource(_jarvisStream),an=ctx.createAnalyser();an.fftSize=512;src.connect(an);var levels=new Uint8Array(an.fftSize);
     _jarvisListening=true;el('jarvis-mic').classList.add('active');el('jarvis-mic').textContent='● Always listening';setJarvisState('listening','Local Whisper listening');
     _jarvisVadTimer=setInterval(function(){an.getByteTimeDomainData(levels);var sum=0;for(var i=0;i<levels.length;i++){var v=(levels[i]-128)/128;sum+=v*v}var rms=Math.sqrt(sum/levels.length),now=Date.now();
-      if(rms>.035){_jarvisLastVoice=now;if(!_jarvisRecorder&&(!_jarvisSpeaking||rms>.07)){stopJarvisAudio();_jarvisChunks=[];_jarvisRecorder=new MediaRecorder(_jarvisStream);_jarvisRecorder.ondataavailable=function(e){if(e.data.size)_jarvisChunks.push(e.data)};_jarvisRecorder.onstop=transcribeLocalSpeech;_jarvisRecorder.start();_jarvisSpeechStarted=now;setJarvisState('listening','Hearing you...')}}
-      if(_jarvisRecorder&&now-_jarvisLastVoice>750&&now-_jarvisSpeechStarted>450)_jarvisRecorder.stop();
+      if(rms>.012){_jarvisLastVoice=now;if(!_jarvisRecorder&&(!_jarvisSpeaking||rms>.035)){stopJarvisAudio();_jarvisChunks=[];_jarvisRecorder=new MediaRecorder(_jarvisStream);_jarvisRecorder.ondataavailable=function(e){if(e.data.size)_jarvisChunks.push(e.data)};_jarvisRecorder.onstop=transcribeLocalSpeech;_jarvisRecorder.start();_jarvisSpeechStarted=now;setJarvisState('listening','Hearing you...')}}
+      if(_jarvisRecorder&&((now-_jarvisLastVoice>750&&now-_jarvisSpeechStarted>450)||now-_jarvisSpeechStarted>20000))_jarvisRecorder.stop();
     },75);
   }catch(e){toast('Microphone permission is required: '+e.message,'err');_jarvisAlwaysListening=false}
 }

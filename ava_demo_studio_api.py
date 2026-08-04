@@ -751,14 +751,15 @@ async def health():
 JARVIS_SYSTEM = """You are JARVIS, the operating intelligence inside Summit OS for Dan Gill III,
 solo founder of Summit Voice AI. Your job is to help Dan reach $50K MRR by December 31, 2026.
 Summit Voice AI sells AI voice and automation systems to owner-operated roofing contractors.
-Current baseline is about $4,466 MRR across 9 clients. Pricing is $497-$997/month plus setup,
-framed as as little as $16/day. The average roofing job is $9,500.
+Use the supplied live context as the only authority for current MRR and client count. Pricing is
+$497-$997/month plus setup, framed as as little as $16/day. The average roofing job is $9,500.
 
 Voice: direct, calm, useful, short sentences. No fluff. No em dashes. Explain technical details
 in plain English. Lead with the answer. Never invent live business facts when context is missing.
 
-Safety: this version is read-only. You may analyze, prioritize, draft, and recommend. Never claim
-you sent a message, changed CRM data, deployed code, deleted data, or performed an external action.
+Safety: you may use the controlled tool router when it supplies an observed result. Never claim
+you sent a message, changed data, ran code, or performed an external action unless a tool result confirms it.
+Computer writes and commands require Dan's explicit approval. Destructive operations remain blocked.
 Automated outreach is currently PAUSED. Do not recommend resuming it unless Dan explicitly asks.
 
 When live context is supplied, distinguish facts from inference. Optimize recommendations for:
@@ -799,6 +800,79 @@ async def _record_jarvis_event(channel: str, event_type: str, *, provider: str |
         pass
 
 
+JARVIS_LOCAL_TOOL_SYSTEM = """You route Dan Gill III's explicit computer requests to one safe tool.
+Return JSON only. Schema: {"tool":"none|list_directory|read_file|search_files|processes|git_status|write_file|run_command","arguments":{},"risk":"read|write|execute"}.
+Use none for questions, business reporting, brainstorming, internet requests, CRM/calendar/email requests, or anything not requiring the local computer.
+Approved roots are C:\\Users\\DanGi\\Downloads\\SummitVoiceAI, C:\\Users\\DanGi\\SummitVault, C:\\Users\\DanGi\\outreach, and C:\\Users\\DanGi\\scripts.
+list_directory arguments: {"path":"absolute path"}. read_file: {"path":"absolute file"}. search_files: {"path":"absolute root","pattern":"glob"}. processes: {}. git_status: {"path":"absolute repo"}. write_file: {"path":"absolute file","content":"complete new content"}. run_command: {"cwd":"absolute directory","command":"PowerShell command"}.
+Never infer a destructive command. Never use write_file unless Dan explicitly supplied the complete intended content. Use run_command only when Dan explicitly asked to run something."""
+
+
+def _extract_json_object(text: str) -> dict | None:
+    try:
+        start, end = text.find("{"), text.rfind("}")
+        return json.loads(text[start:end + 1]) if start >= 0 and end > start else None
+    except (ValueError, TypeError, json.JSONDecodeError):
+        return None
+
+
+async def _maybe_local_tool(message: str, channel: str) -> str | None:
+    """Plan at most one local tool. Mutations always wait for explicit approval."""
+    lower = message.casefold().strip()
+    if lower.startswith(("/approve ", "approve ")):
+        task_id = message.split(maxsplit=1)[1].strip()
+        task = jarvis_connector_tasks.get(task_id)
+        if not task or task.get("status") != "awaiting_approval":
+            return f"I could not find pending action {task_id}."
+        task["status"] = "queued"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        return f"Approved {task_id}. Your local connector will execute it and record the result."
+    if lower.startswith(("/deny ", "deny ")):
+        task_id = message.split(maxsplit=1)[1].strip()
+        task = jarvis_connector_tasks.get(task_id)
+        if not task or task.get("status") != "awaiting_approval":
+            return f"I could not find pending action {task_id}."
+        task["status"] = "denied"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        return f"Denied {task_id}. Nothing was executed."
+    triggers = ("my computer", "local file", "locally", "git status", "read file", "find file", "search files", "list directory", "running process", "run script", "run command", "edit file", "write file")
+    if not any(trigger in lower for trigger in triggers):
+        return None
+    try:
+        planned = await ask_jarvis_model(
+            anthropic_client=ai, system=JARVIS_LOCAL_TOOL_SYSTEM,
+            messages=[{"role": "user", "content": message}], max_tokens=600,
+        )
+        plan = _extract_json_object(planned.text) or {}
+    except JarvisProvidersUnavailable:
+        return "I understood this as a local-computer request, but no reasoning provider is available to plan it safely."
+    tool = plan.get("tool")
+    allowed = {"list_directory", "read_file", "search_files", "processes", "git_status", "write_file", "run_command"}
+    if tool not in allowed:
+        return None
+    risk = "read" if tool in {"list_directory", "read_file", "search_files", "processes", "git_status"} else ("write" if tool == "write_file" else "execute")
+    task_id = secrets.token_hex(12)
+    arguments = plan.get("arguments") if isinstance(plan.get("arguments"), dict) else {}
+    preview = f"{tool}: {json.dumps(arguments, default=str)[:1000]}"
+    task = {"id": task_id, "tool": tool, "arguments": arguments, "risk": risk, "preview": preview,
+            "status": "queued" if risk == "read" else "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z", "updated_at": datetime.utcnow().isoformat() + "Z"}
+    jarvis_connector_tasks[task_id] = task
+    await _record_jarvis_event(channel, "tool_queued", success=True)
+    if risk != "read":
+        return f"Action {task_id} needs approval before I touch the computer.\n\n{preview}\n\nReply /approve {task_id} or /deny {task_id}."
+    for _ in range(40):
+        await asyncio.sleep(.5)
+        if task.get("status") in ("completed", "failed"):
+            break
+    if task.get("status") != "completed":
+        return f"I queued local read task {task_id}. Current status: {task.get('status')}."
+    raw_result = json.dumps(task.get("result"), default=str)[:16000]
+    try:
+        summary = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM,
+            messages=[{"role": "user", "content": f"Dan asked: {message}\n\nLOCAL TOOL RESULT:\n{raw_result}\n\nAnswer concisely and accurately."}], max_tokens=700)
+        return summary.text
+    except JarvisProvidersUnavailable:
+        return raw_result[:3500]
+
+
 @app.get("/jarvis/health", dependencies=[Depends(require_key)])
 async def jarvis_health():
     return {
@@ -820,6 +894,10 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
         raise HTTPException(status_code=400, detail="Message is required")
     if len(message) > 8000:
         raise HTTPException(status_code=400, detail="Message is too long")
+
+    tool_answer = await _maybe_local_tool(message, "dashboard")
+    if tool_answer is not None:
+        return JarvisChatResponse(response=tool_answer, state="idle", context_updated_at=datetime.utcnow().isoformat() + "Z", provider="tool_router", model="controlled-local-tools")
 
     context = await _jarvis_live_context(x_api_key)
     safe_history = [
@@ -880,7 +958,10 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
 
 
 async def _jarvis_channel_answer(message: str, channel: str) -> str:
-    """Shared brain for Telegram and phone. Channels never receive action tools."""
+    """Shared brain for remote channels with controlled local action routing."""
+    tool_answer = await _maybe_local_tool(message, channel)
+    if tool_answer is not None:
+        return tool_answer
     context = await _jarvis_live_context(AVA_API_KEY)
     messages = [{"role": "user", "content": f"CHANNEL: {channel}\nLIVE CONTEXT:\n{json.dumps(context, default=str)[:18000]}\n\nREQUEST:\n{message}"}]
     try:
@@ -1365,7 +1446,7 @@ async def get_analytics_summary():
         "demosBuilt": demos_done,
         "posReplies": len([l for l in hot_leads if l.get("intent") == "positive"]),
         "callsBooked": calls_booked,
-        "mrr": 4466,
+        "mrr": float(os.getenv("SUMMIT_MRR", "797")),
         "recentHotLeads": hot_leads,
     }
 
@@ -1811,7 +1892,8 @@ async def get_ceo_analytics_summary(x_api_key: str = Header(default="")):
     supa_url = os.getenv("SUPABASE_URL", "")
     supa_key = os.getenv("SUPABASE_KEY", "")
     summary = {
-        "mrr": 4466, "clients": 9, "contacted_today": 100,
+        "mrr": float(os.getenv("SUMMIT_MRR", "797")),
+        "clients": int(os.getenv("SUMMIT_CLIENT_COUNT", "2")), "contacted_today": 100,
         "hot_leads": 0, "demos_built": 0, "tasks_running": 14,
         "agents_ok": 0, "agents_blocked": 0, "agents_total": 26
     }
