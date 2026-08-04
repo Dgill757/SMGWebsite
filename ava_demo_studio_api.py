@@ -958,10 +958,10 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
     elif any(phrase in lower for phrase in ("research the web", "research online", "search the internet", "web research")):
         query = re.sub(r"(?i).*?(research the web|research online|search the internet|web research)(?: for| about)?", "", message).strip(" :,.?")
         integration_plan = ("web_research", {"query": query, "limit": 5})
-    elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "week", "agenda", "meetings")):
-        integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
     elif any(phrase in lower for phrase in ("when am i free", "calendar availability", "available times", "open time on my calendar")):
         integration_plan = ("calendar_availability", {"days": 7, "duration_minutes": 30})
+    elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "week", "agenda", "meetings")):
+        integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
     elif any(phrase in lower for phrase in ("triage my inbox", "clean up my inbox", "prioritize my email", "inbox priorities")):
         integration_plan = ("gmail_inbox_triage", {"limit": 25})
     elif "read gmail message" in lower or "read email id" in lower:
@@ -1143,7 +1143,12 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
         scraper = context.get("scraper") or {}
         outreach = context.get("outreach") or {}
         lower = message.casefold()
-        if any(word in lower for word in ("scrap", "business", "prospect", "roofing website", "lead")):
+        if ("mrr" in lower or "revenue" in lower) and ("client" in lower or "customer" in lower):
+            answer = (
+                f"Current MRR is ${float(summary.get('mrr') or 0):,.0f} from {summary.get('clients') or 0} active clients. "
+                "This comes from the live SummitOS reporting layer."
+            )
+        elif any(word in lower for word in ("scrap", "business", "prospect", "roofing website", "lead")):
             answer = (
                 f"We have {int(businesses.get('total') or 0):,} scraped roofing businesses in SummitOS. "
                 f"{int(businesses.get('analyzed') or 0):,} have analysis records and "
