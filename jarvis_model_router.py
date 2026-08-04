@@ -119,7 +119,8 @@ async def ask_jarvis_model(
                     base_url="https://openrouter.ai/api/v1",
                     api_key=os.environ["OPENROUTER_API_KEY"],
                     model=os.getenv("JARVIS_OPENROUTER_MODEL", "openrouter/auto"),
-                    system=system, messages=messages, max_tokens=max_tokens,
+                    system=system, messages=messages,
+                    max_tokens=min(max_tokens, int(os.getenv("JARVIS_OPENROUTER_MAX_TOKENS", "600"))),
                 ); _success(provider, round((time.perf_counter() - started) * 1000)); return result
             if provider == "groq" and os.getenv("GROQ_API_KEY"):
                 result = await _openai_compatible(
