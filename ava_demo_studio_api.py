@@ -836,14 +836,27 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
     triggers = ("my computer", "local file", "locally", "git status", "read file", "find file", "search files", "list directory", "running process", "run script", "run command", "edit file", "write file")
     if not any(trigger in lower for trigger in triggers):
         return None
-    try:
-        planned = await ask_jarvis_model(
-            anthropic_client=ai, system=JARVIS_LOCAL_TOOL_SYSTEM,
-            messages=[{"role": "user", "content": message}], max_tokens=600,
-        )
-        plan = _extract_json_object(planned.text) or {}
-    except JarvisProvidersUnavailable:
-        return "I understood this as a local-computer request, but no reasoning provider is available to plan it safely."
+    # Common commands are deterministic so provider prompt drift can never claim
+    # the authenticated connector is unavailable when it is actually online.
+    path_match = re.search(r"[A-Za-z]:\\[^\r\n\"']+", message)
+    local_path = path_match.group(0).strip().rstrip(".,; ") if path_match else ""
+    if "git status" in lower and local_path:
+        plan = {"tool": "git_status", "arguments": {"path": local_path}, "risk": "read"}
+    elif "running process" in lower or "what processes" in lower:
+        plan = {"tool": "processes", "arguments": {}, "risk": "read"}
+    elif ("read file" in lower or "open file" in lower) and local_path:
+        plan = {"tool": "read_file", "arguments": {"path": local_path}, "risk": "read"}
+    elif ("list directory" in lower or "list files" in lower) and local_path:
+        plan = {"tool": "list_directory", "arguments": {"path": local_path}, "risk": "read"}
+    else:
+        try:
+            planned = await ask_jarvis_model(
+                anthropic_client=ai, system=JARVIS_LOCAL_TOOL_SYSTEM,
+                messages=[{"role": "user", "content": message}], max_tokens=600,
+            )
+            plan = _extract_json_object(planned.text) or {}
+        except JarvisProvidersUnavailable:
+            return "I understood this as a local-computer request, but no reasoning provider is available to plan it safely."
     tool = plan.get("tool")
     allowed = {"list_directory", "read_file", "search_files", "processes", "git_status", "write_file", "run_command"}
     if tool not in allowed:
