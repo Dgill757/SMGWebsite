@@ -4,10 +4,10 @@ Summit Voice AI | FastAPI + Firecrawl + Claude + Vercel
 Deploy to Railway.
 """
 
-import os, json, re, time, base64, httpx, asyncio
+import os, json, re, time, base64, httpx, asyncio, secrets
 from datetime import datetime, timedelta
 from typing import Set
-from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request, Depends
+from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
@@ -16,6 +16,7 @@ from jarvis_model_router import (
     JarvisProvidersUnavailable,
     ask_jarvis_model,
     configured_provider_names,
+    provider_health_snapshot,
 )
 from premium_website_generator_v2 import generate_world_class_roofing_site
 
@@ -132,6 +133,24 @@ class JarvisChatResponse(BaseModel):
     response: str
     state: str = "idle"
     context_updated_at: str
+    provider: str | None = None
+    model: str | None = None
+
+class JarvisOutboundCallRequest(BaseModel):
+    to: str | None = None
+
+class JarvisConnectorTaskRequest(BaseModel):
+    tool: str
+    arguments: dict = {}
+    risk: str = "read"
+
+class JarvisConnectorTaskResult(BaseModel):
+    status: str
+    result: object | None = None
+    error: str | None = None
+
+class JarvisApprovalDecision(BaseModel):
+    approved: bool
 
 class DemoStatusResponse(BaseModel):
     demo_id: str
@@ -751,9 +770,13 @@ async def _jarvis_live_context(x_api_key: str) -> dict:
         get_ceo_analytics_summary(x_api_key),
         get_agent_health_summary(x_api_key),
         get_recent_replies(10),
+        get_scraper_stats(),
+        get_businesses_stats(x_api_key),
+        get_outreach_stats(),
+        clients_list(x_api_key),
         return_exceptions=True,
     )
-    names = ("ceo_summary", "agent_health", "recent_replies")
+    names = ("ceo_summary", "agent_health", "recent_replies", "scraper", "businesses", "outreach", "clients")
     context = {}
     for name, value in zip(names, results):
         context[name] = {"unavailable": str(value)} if isinstance(value, Exception) else value
@@ -762,12 +785,26 @@ async def _jarvis_live_context(x_api_key: str) -> dict:
     return context
 
 
+async def _record_jarvis_event(channel: str, event_type: str, *, provider: str | None = None,
+                               model: str | None = None, latency_ms: int | None = None,
+                               success: bool = True, error_class: str | None = None):
+    supa_url, supa_key = os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_KEY", "")
+    if not supa_url or not supa_key:
+        return
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            await client.post(f"{supa_url}/rest/v1/jarvis_events", headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}", "Content-Type": "application/json", "Prefer": "return=minimal"}, json={"channel": channel, "event_type": event_type, "provider": provider, "model": model, "latency_ms": latency_ms, "success": success, "error_class": error_class})
+    except Exception:
+        pass
+
+
 @app.get("/jarvis/health", dependencies=[Depends(require_key)])
 async def jarvis_health():
     return {
         "status": "online",
         "mode": "read_only",
         "providers": configured_provider_names(),
+        "provider_health": provider_health_snapshot(),
         "model": "automatic failover",
         "outreach": "paused",
     }
@@ -775,6 +812,7 @@ async def jarvis_health():
 
 @app.post("/jarvis/chat", response_model=JarvisChatResponse)
 async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default="")):
+    started = time.perf_counter()
     verify_api_key(x_api_key)
     message = req.message.strip()
     if not message:
@@ -800,25 +838,240 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
             messages=safe_history,
             max_tokens=1400,
         )
+        latency_ms = round((time.perf_counter() - started) * 1000)
+        await _record_jarvis_event("dashboard", "chat", provider=result.provider, model=result.model, latency_ms=latency_ms)
         return JarvisChatResponse(
             response=result.text,
             state="idle",
             context_updated_at=context["captured_at"],
+            provider=result.provider,
+            model=result.model,
         )
     except JarvisProvidersUnavailable:
         summary = context.get("ceo_summary") or {}
         health = context.get("agent_health") or {}
         replies = context.get("recent_replies") or []
-        answer = (
-            "I am connected to SummitOS, but none of the configured model providers is available. "
-            "Live reporting still works.\n\n"
-            f"Snapshot: ${float(summary.get('mrr') or 0):,.0f} MRR, "
-            f"{summary.get('clients') or 0} clients, "
-            f"{len(replies) if isinstance(replies, list) else 0} conversations needing review, "
-            f"and {(health.get('ok') or 0) + (health.get('running') or 0)} reporting agents online.\n\n"
-            "Automated outreach remains paused. Configure OpenRouter, Groq, Anthropic, or the local Ollama bridge to restore reasoning."
+        businesses = context.get("businesses") or {}
+        scraper = context.get("scraper") or {}
+        outreach = context.get("outreach") or {}
+        lower = message.casefold()
+        if any(word in lower for word in ("scrap", "business", "prospect", "roofing website", "lead")):
+            answer = (
+                f"We have {int(businesses.get('total') or 0):,} scraped roofing businesses in SummitOS. "
+                f"{int(businesses.get('analyzed') or 0):,} have analysis records and "
+                f"{int(businesses.get('hot_prospects') or 0):,} are currently marked hot prospects.\n\n"
+                f"The scraper has recorded {int(scraper.get('total_cities') or 0):,} runs/cities; the last city was "
+                f"{scraper.get('last_city') or 'not recorded'}. Outreach is paused, so those leads are not being messaged."
+            )
+        else:
+            answer = (
+                "The reasoning providers are unavailable, but I am still connected to the live SummitOS reporting layer.\n\n"
+                f"Snapshot: ${float(summary.get('mrr') or 0):,.0f} MRR, {summary.get('clients') or 0} clients, "
+                f"{int(businesses.get('total') or 0):,} scraped businesses, "
+                f"{len(replies) if isinstance(replies, list) else 0} conversations needing review, and "
+                f"{(health.get('ok') or 0) + (health.get('running') or 0)} reporting agents online.\n\n"
+                f"Outreach processed in the recent reporting window: {int(outreach.get('total_processed') or 0):,}. Automated sends remain paused."
+            )
+        await _record_jarvis_event("dashboard", "chat", latency_ms=round((time.perf_counter() - started) * 1000), success=False, error_class="ProvidersUnavailable")
+        return JarvisChatResponse(response=answer, state="limited", context_updated_at=context["captured_at"], provider="deterministic")
+
+
+async def _jarvis_channel_answer(message: str, channel: str) -> str:
+    """Shared brain for Telegram and phone. Channels never receive action tools."""
+    context = await _jarvis_live_context(AVA_API_KEY)
+    messages = [{"role": "user", "content": f"CHANNEL: {channel}\nLIVE CONTEXT:\n{json.dumps(context, default=str)[:18000]}\n\nREQUEST:\n{message}"}]
+    try:
+        result = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM, messages=messages, max_tokens=700)
+        return result.text
+    except JarvisProvidersUnavailable:
+        businesses = context.get("businesses") or {}
+        summary = context.get("ceo_summary") or {}
+        return (
+            f"The reasoning providers are unavailable. Live status: ${float(summary.get('mrr') or 0):,.0f} MRR, "
+            f"{summary.get('clients') or 0} clients, and {int(businesses.get('total') or 0):,} scraped businesses. "
+            "Automated outreach is paused."
         )
-        return JarvisChatResponse(response=answer, state="limited", context_updated_at=context["captured_at"])
+
+
+@app.post("/jarvis/telegram/webhook")
+async def jarvis_telegram_webhook(request: Request):
+    token = os.getenv("TELEGRAM_BOT_TOKEN", "")
+    secret = os.getenv("TELEGRAM_WEBHOOK_SECRET", "")
+    if not token or not secret:
+        raise HTTPException(503, "Telegram is not configured")
+    if not secrets.compare_digest(request.headers.get("x-telegram-bot-api-secret-token", ""), secret):
+        raise HTTPException(401, "Invalid Telegram webhook secret")
+    payload = await request.json()
+    message = payload.get("message") or payload.get("edited_message") or {}
+    chat_id = str((message.get("chat") or {}).get("id", ""))
+    allowed = {item.strip() for item in os.getenv("TELEGRAM_ALLOWED_CHAT_IDS", "").split(",") if item.strip()}
+    if not chat_id or chat_id not in allowed:
+        print(f"[JARVIS] Rejected Telegram chat id {chat_id[:20]}")
+        return {"ok": True}
+    text = (message.get("text") or "").strip()
+    if not text:
+        return {"ok": True}
+    answer = await _jarvis_channel_answer(text, "telegram")
+    async with httpx.AsyncClient(timeout=20) as client:
+        response = await client.post(f"https://api.telegram.org/bot{token}/sendMessage", json={"chat_id": chat_id, "text": answer[:4096]})
+        response.raise_for_status()
+    return {"ok": True}
+
+
+def _twilio_validator():
+    try:
+        from twilio.request_validator import RequestValidator
+        return RequestValidator(os.getenv("TWILIO_AUTH_TOKEN", ""))
+    except Exception:
+        return None
+
+
+async def _validate_twilio_http(request: Request):
+    validator = _twilio_validator()
+    if not validator or not os.getenv("TWILIO_AUTH_TOKEN"):
+        raise HTTPException(503, "Twilio is not configured")
+    form = dict(await request.form())
+    public_url = os.getenv("JARVIS_PUBLIC_URL", str(request.url)).rstrip("/")
+    if request.url.path not in public_url:
+        public_url += request.url.path
+    if not validator.validate(public_url, form, request.headers.get("x-twilio-signature", "")):
+        raise HTTPException(401, "Invalid Twilio signature")
+    return form
+
+
+@app.post("/jarvis/phone/twiml")
+async def jarvis_phone_twiml(request: Request):
+    form = await _validate_twilio_http(request)
+    caller = form.get("To", "") if str(form.get("Direction", "")).startswith("outbound") else form.get("From", "")
+    allowed = {item.strip() for item in os.getenv("JARVIS_ALLOWED_CALLERS", "").split(",") if item.strip()}
+    if caller not in allowed:
+        return Response(content='<?xml version="1.0" encoding="UTF-8"?><Response><Say>This number is private.</Say><Hangup/></Response>', media_type="application/xml")
+    base = os.getenv("JARVIS_PUBLIC_URL", "").replace("https://", "wss://").rstrip("/")
+    ws_url = f"{base}/jarvis/phone/ws?s={os.getenv('JARVIS_PHONE_WS_SECRET','')}"
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?><Response><Connect>'
+        f'<ConversationRelay url="{ws_url}" welcomeGreeting="JARVIS online. Please say your four digit PIN." '
+        'welcomeGreetingInterruptible="speech" interruptible="true" dtmfDetection="true" '
+        'hints="Summit Voice AI,GoHighLevel,roofing,MRR" />'
+        '</Connect></Response>'
+    )
+    return Response(content=xml, media_type="application/xml")
+
+
+@app.websocket("/jarvis/phone/ws")
+async def jarvis_phone_ws(websocket: WebSocket):
+    supplied = websocket.query_params.get("s", "")
+    expected = os.getenv("JARVIS_PHONE_WS_SECRET", "")
+    if not expected or not secrets.compare_digest(supplied, expected):
+        await websocket.close(code=1008); return
+    await websocket.accept()
+    authenticated = False
+    allowed = {item.strip() for item in os.getenv("JARVIS_ALLOWED_CALLERS", "").split(",") if item.strip()}
+    try:
+        while True:
+            event = json.loads(await websocket.receive_text())
+            if event.get("type") == "setup" and event.get("from") not in allowed:
+                await websocket.send_json({"type": "end", "handoffData": '{"reason":"caller-not-allowed"}'})
+                continue
+            if event.get("type") == "interrupt":
+                continue
+            if event.get("type") != "prompt" or not event.get("last", True):
+                continue
+            utterance = (event.get("voicePrompt") or "").strip()
+            if not authenticated:
+                digits = "".join(re.findall(r"\d", utterance))
+                if digits != os.getenv("JARVIS_PHONE_PIN", ""):
+                    await websocket.send_json({"type": "text", "token": "That PIN is incorrect. Try again.", "last": True, "interruptible": True, "preemptible": True})
+                    continue
+                authenticated = True
+                await websocket.send_json({"type": "text", "token": "Identity confirmed. What do you need?", "last": True, "interruptible": True, "preemptible": True})
+                continue
+            answer = await _jarvis_channel_answer(utterance, "phone")
+            await websocket.send_json({"type": "text", "token": answer, "last": True, "interruptible": True, "preemptible": True})
+    except WebSocketDisconnect:
+        pass
+
+
+@app.post("/jarvis/phone/call", dependencies=[Depends(require_key)])
+async def jarvis_outbound_call(req: JarvisOutboundCallRequest):
+    sid, token, number = os.getenv("TWILIO_ACCOUNT_SID", ""), os.getenv("TWILIO_AUTH_TOKEN", ""), os.getenv("TWILIO_NUMBER", "")
+    destination = req.to or os.getenv("DAN_PHONE_NUMBER", "")
+    allowed = {item.strip() for item in os.getenv("JARVIS_ALLOWED_CALLERS", "").split(",") if item.strip()}
+    if not sid or not token or not number or destination not in allowed:
+        raise HTTPException(503, "Twilio outbound calling is not fully configured or destination is not allowlisted")
+    twiml_url = os.getenv("JARVIS_PUBLIC_URL", "").rstrip("/") + "/jarvis/phone/twiml"
+    async with httpx.AsyncClient(timeout=20) as client:
+        response = await client.post(f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Calls.json", auth=(sid, token), data={"To": destination, "From": number, "Url": twiml_url, "Method": "POST"})
+        response.raise_for_status()
+    return {"status": "calling", "call_sid": response.json().get("sid")}
+
+
+# Outbound-polling bridge. The PC calls Railway; Railway never opens a port on the PC.
+jarvis_connector_tasks: dict[str, dict] = {}
+jarvis_connector_heartbeat: dict = {}
+
+
+def _verify_connector(authorization: str):
+    expected = os.getenv("JARVIS_CONNECTOR_CLOUD_TOKEN", "")
+    if not expected or not secrets.compare_digest(authorization, f"Bearer {expected}"):
+        raise HTTPException(401, "Invalid connector token")
+
+
+@app.post("/jarvis/connector/heartbeat")
+async def connector_heartbeat(request: Request):
+    _verify_connector(request.headers.get("authorization", ""))
+    payload = await request.json()
+    jarvis_connector_heartbeat.update({**payload, "seen_at": datetime.utcnow().isoformat() + "Z"})
+    return {"ok": True}
+
+
+@app.get("/jarvis/connector/tasks/next")
+async def connector_next_task(authorization: str = Header(default="")):
+    _verify_connector(authorization)
+    eligible = [task for task in jarvis_connector_tasks.values() if task["status"] == "queued"]
+    eligible.sort(key=lambda task: task["created_at"])
+    if not eligible:
+        return Response(status_code=204)
+    task = eligible[0]
+    task["status"] = "running"
+    task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+    return task
+
+
+@app.post("/jarvis/connector/tasks/{task_id}/result")
+async def connector_task_result(task_id: str, payload: JarvisConnectorTaskResult, authorization: str = Header(default="")):
+    _verify_connector(authorization)
+    task = jarvis_connector_tasks.get(task_id)
+    if not task:
+        raise HTTPException(404, "Task not found")
+    task.update(payload.model_dump(), updated_at=datetime.utcnow().isoformat() + "Z")
+    return {"ok": True}
+
+
+@app.get("/jarvis/connector/status", dependencies=[Depends(require_key)])
+async def connector_status():
+    return {"heartbeat": jarvis_connector_heartbeat, "tasks": list(jarvis_connector_tasks.values())[-50:]}
+
+
+@app.post("/jarvis/actions/request", dependencies=[Depends(require_key)])
+async def cloud_request_action(payload: JarvisConnectorTaskRequest):
+    risk = payload.risk if payload.risk in ("read", "write", "execute", "external") else "external"
+    task_id = secrets.token_hex(12)
+    preview = f"{payload.tool}: {json.dumps(payload.arguments, default=str)[:1000]}"
+    task = {"id": task_id, "tool": payload.tool, "arguments": payload.arguments, "risk": risk, "preview": preview,
+            "status": "queued" if risk == "read" else "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z", "updated_at": datetime.utcnow().isoformat() + "Z"}
+    jarvis_connector_tasks[task_id] = task
+    return task
+
+
+@app.post("/jarvis/actions/{task_id}/decision", dependencies=[Depends(require_key)])
+async def cloud_decide_action(task_id: str, payload: JarvisApprovalDecision):
+    task = jarvis_connector_tasks.get(task_id)
+    if not task or task["status"] != "awaiting_approval":
+        raise HTTPException(404, "Pending approval not found")
+    task["status"] = "queued" if payload.approved else "denied"
+    task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+    return task
 
 
 @app.post("/demos/create", response_model=DemoStatusResponse)
@@ -1416,6 +1669,10 @@ async def get_agent_status(agent_id: str, x_api_key: str = Header(default="")):
 @app.get("/agents/health-summary")
 async def get_agent_health_summary(x_api_key: str = Header(default="")):
     verify_api_key(x_api_key)
+    if not agent_status_store:
+        for agent in await _supabase_get_agents():
+            if agent.get("agent_id"):
+                agent_status_store[agent["agent_id"]] = agent
     agents = list(agent_status_store.values())
     ok    = sum(1 for a in agents if a["status"] == "ok")
     err   = sum(1 for a in agents if a["status"] == "error")
@@ -1599,6 +1856,14 @@ async def get_ceo_analytics_summary(x_api_key: str = Header(default="")):
                         summary["mrr"]     = sum(r.get("mrr", 0) for r in rows)
         except Exception:
             pass
+    # Owner-verified metrics override incomplete CRM rows without mutating CRM data.
+    # Keep the source visible so discrepancies are auditable rather than hidden.
+    if os.getenv("SUMMIT_MRR"):
+        summary["mrr"] = float(os.environ["SUMMIT_MRR"])
+        summary["mrr_source"] = os.getenv("SUMMIT_METRICS_SOURCE", "owner_verified")
+    if os.getenv("SUMMIT_CLIENT_COUNT"):
+        summary["clients"] = int(os.environ["SUMMIT_CLIENT_COUNT"])
+        summary["clients_source"] = os.getenv("SUMMIT_METRICS_SOURCE", "owner_verified")
     return summary
 
 
@@ -1763,7 +2028,7 @@ async def check_schema():
                 r = await client.get(
                     f"{supa_url}/rest/v1/{table}",
                     headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}"},
-                    params={"select": "id", "limit": "1"},
+                    params={"select": "agent_id" if table == "agent_status" else "id", "limit": "1"},
                 )
                 if r.status_code >= 400:
                     print(f"[STARTUP] Missing/broken table: {table} (HTTP {r.status_code}) -- run the supabase schema SQL")

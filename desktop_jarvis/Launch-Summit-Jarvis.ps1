@@ -1,6 +1,10 @@
 param([switch]$InstallShortcut)
 
 $jarvisUrl = "https://avastudio.summitvoiceai.com/?tab=jarvis#jarvis"
+$localLauncher = Join-Path $PSScriptRoot "Start-Jarvis-Local.ps1"
+if (Test-Path -LiteralPath $localLauncher) {
+    & $localLauncher
+}
 $browserCandidates = @(
     "${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe",
     "$env:ProgramFiles\Microsoft\Edge\Application\msedge.exe",

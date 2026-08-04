@@ -1,6 +1,7 @@
 ﻿# ── SECRETS — never commit ────────────────────────────────
 .env
 *.env
+.jarvis-local/
 FILL_IN_THIS.env
 PASSWORDS.txt
 DASHBOARD_PASSWORD.txt

@@ -268,7 +268,10 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
       <div class="jarvis-metric"><span>Clients</span><b id="j-clients">--</b></div>
       <div class="jarvis-metric"><span>Agents online</span><b id="j-agents">--</b></div>
       <div class="jarvis-metric"><span>Needs reply</span><b id="j-replies">--</b></div>
+      <div class="jarvis-metric"><span>Scraped businesses</span><b id="j-businesses">--</b></div>
+      <div class="jarvis-metric"><span>Local connector</span><b id="j-connector">Offline</b></div>
       <div class="jarvis-metric"><span>Outreach</span><b style="color:var(--yel)">Paused</b></div>
+      <div id="j-approvals" style="margin-top:16px"></div>
       <div style="font:400 .65rem 'JetBrains Mono';color:var(--txt3);margin-top:16px" id="j-updated">Not updated</div>
     </aside>
   </div>
@@ -629,7 +632,7 @@ var KEY='';// set at login; validated server-side by Railway
 var _activeDemoId=null, _bizDate=null, _bizOffset=0, _bizTotal=0, _bizLimit=50;
 var _allContent=[], _allBiz=[], _allAgents=[];
 var _jarvisHistory=[];
-var _jarvisRecognition=null,_jarvisListening=false,_jarvisVoice=true,_jarvisOrbState='idle',_jarvisSpeechLevel=0;
+var _jarvisRecognition=null,_jarvisListening=false,_jarvisAlwaysListening=false,_jarvisVoice=true,_jarvisSpeaking=false,_jarvisOrbState='idle',_jarvisSpeechLevel=0;
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 async function get(p){try{var r=await fetch(API+p,{headers:{'x-api-key':KEY}});return r.ok?await r.json():{}}catch(e){return {}}}
@@ -716,15 +719,16 @@ function initJarvisOrb(){
 }
 function initJarvisVoice(){
   var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
-  _jarvisRecognition=new SR();_jarvisRecognition.lang='en-US';_jarvisRecognition.interimResults=true;_jarvisRecognition.continuous=false;
-  _jarvisRecognition.onstart=function(){_jarvisListening=true;el('jarvis-mic').classList.add('active');setJarvisState('listening','Listening')};
-  _jarvisRecognition.onresult=function(e){var final='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript}if(final)el('jarvis-input').value=final.trim()};
-  _jarvisRecognition.onend=function(){_jarvisListening=false;el('jarvis-mic').classList.remove('active');if((el('jarvis-input').value||'').trim())sendJarvis();else setJarvisState('','Online')};
+  _jarvisRecognition=new SR();_jarvisRecognition.lang='en-US';_jarvisRecognition.interimResults=true;_jarvisRecognition.continuous=true;
+  _jarvisRecognition.onstart=function(){_jarvisListening=true;el('jarvis-mic').classList.add('active');el('jarvis-mic').textContent=_jarvisAlwaysListening?'● Always listening':'● Listening';setJarvisState('listening','Listening')};
+  _jarvisRecognition.onspeechstart=function(){if(_jarvisSpeaking){window.speechSynthesis.cancel();_jarvisSpeaking=false;setJarvisState('listening','Interrupted... listening')}};
+  _jarvisRecognition.onresult=function(e){var final='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript}if(final&&!el('jarvis-send').disabled){el('jarvis-input').value=final.trim();sendJarvis()}};
+  _jarvisRecognition.onend=function(){_jarvisListening=false;if(_jarvisAlwaysListening){setTimeout(function(){try{_jarvisRecognition.start()}catch(e){}},250)}else{el('jarvis-mic').classList.remove('active');el('jarvis-mic').textContent='◉ Talk';setJarvisState('','Online')}};
   _jarvisRecognition.onerror=function(e){_jarvisListening=false;setJarvisState('error','Mic '+e.error)};
 }
-function toggleJarvisListening(){if(!_jarvisRecognition){toast('Voice input needs Chrome microphone permission','err');return}if(_jarvisListening)_jarvisRecognition.stop();else{window.speechSynthesis.cancel();_jarvisRecognition.start()}}
+function toggleJarvisListening(){if(!_jarvisRecognition){toast('Voice input needs Chrome microphone permission','err');return}_jarvisAlwaysListening=!_jarvisAlwaysListening;if(!_jarvisAlwaysListening){_jarvisRecognition.stop();el('jarvis-mic').textContent='◉ Talk'}else if(!_jarvisListening){window.speechSynthesis.cancel();try{_jarvisRecognition.start()}catch(e){}}}
 function toggleJarvisVoice(){_jarvisVoice=!_jarvisVoice;var b=el('jarvis-voice-toggle');b.textContent=_jarvisVoice?'Voice on':'Voice off';b.classList.toggle('active',_jarvisVoice);if(!_jarvisVoice)window.speechSynthesis.cancel()}
-function speakJarvis(text){if(!_jarvisVoice||!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text),voices=window.speechSynthesis.getVoices();u.voice=voices.find(function(v){return /Daniel|George|Ryan|UK English Male/i.test(v.name)})||voices.find(function(v){return /en-GB/i.test(v.lang)})||null;u.rate=.96;u.pitch=.86;u.onstart=function(){setJarvisState('speaking','Speaking')};u.onboundary=function(){_jarvisSpeechLevel=Math.min(1,_jarvisSpeechLevel+.34)};u.onend=function(){setJarvisState('','Online')};window.speechSynthesis.speak(u)}
+function speakJarvis(text){if(!_jarvisVoice||!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text),voices=window.speechSynthesis.getVoices();u.voice=voices.find(function(v){return /Google UK English Male|Ryan.*Natural|Guy.*Natural|Daniel/i.test(v.name)})||voices.find(function(v){return /Natural|Online/i.test(v.name)&&/en-GB|en-US/i.test(v.lang)})||voices.find(function(v){return /en-GB/i.test(v.lang)})||null;u.rate=.98;u.pitch=.94;u.onstart=function(){_jarvisSpeaking=true;setJarvisState('speaking','Speaking... talk to interrupt')};u.onboundary=function(){_jarvisSpeechLevel=Math.min(1,_jarvisSpeechLevel+.34)};u.onend=function(){_jarvisSpeaking=false;setJarvisState(_jarvisAlwaysListening?'listening':'',_jarvisAlwaysListening?'Listening':'Online')};window.speechSynthesis.speak(u)}
 function jarvisAdd(role,content,save){
   var log=el('jarvis-log');if(!log)return;
   var box=document.createElement('div');box.className='jarvis-msg '+role;
@@ -741,12 +745,15 @@ function loadJarvisHistory(){
 }
 async function loadJarvis(){
   loadJarvisHistory();initJarvisOrb();if(!_jarvisRecognition)initJarvisVoice();setJarvisState('','Online');
-  var results=await Promise.all([get('/jarvis/health'),get('/ceo/summary'),get('/agents/health-summary'),get('/ghl/replies/recent?limit=20')]);
-  var health=results[0]||{},summary=results[1]||{},agents=results[2]||{},replies=results[3]||[];
+  var results=await Promise.all([get('/jarvis/health'),get('/ceo/summary'),get('/agents/health-summary'),get('/ghl/replies/recent?limit=20'),get('/businesses/stats'),get('/jarvis/connector/status')]);
+  var health=results[0]||{},summary=results[1]||{},agents=results[2]||{},replies=results[3]||[],businesses=results[4]||{},connector=results[5]||{};
   txt('j-health',health.status==='online'?'Online':'Unavailable');txt('j-mrr',fmt$(summary.mrr));txt('j-clients',summary.clients||0);
   txt('j-agents',(agents.ok||0)+(agents.running||0));txt('j-replies',Array.isArray(replies)?replies.length:0);
+  txt('j-businesses',(businesses.total||0).toLocaleString());var seen=connector.heartbeat&&connector.heartbeat.seen_at?new Date(connector.heartbeat.seen_at):null;var connected=seen&&(Date.now()-seen.getTime()<90000);txt('j-connector',connected?'Online':'Offline');el('j-connector').style.color=connected?'var(--grn)':'var(--red)';
+  var pending=(connector.tasks||[]).filter(function(t){return t.status==='awaiting_approval'});html('j-approvals',pending.length?'<h3>Approvals</h3>'+pending.map(function(t){return '<div class="card-sm" style="margin-top:8px"><div style="font-size:.72rem">'+esc(t.preview)+'</div><div class="row" style="gap:6px;margin-top:8px"><button class="btn btn-acc btn-sm" onclick="decideJarvisAction(\''+t.id+'\',true)">Approve</button><button class="btn btn-ghost btn-sm" onclick="decideJarvisAction(\''+t.id+'\',false)">Deny</button></div></div>'}).join(''):'');
   txt('j-updated','Updated '+new Date().toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));
 }
+async function decideJarvisAction(id,approved){var r=await fetch(API+'/jarvis/actions/'+id+'/decision',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({approved:approved})});if(!r.ok){toast('Approval update failed','err');return}toast(approved?'Action approved':'Action denied');loadJarvis()}
 function jarvisKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendJarvis()}}
 function askJarvis(prompt){var input=el('jarvis-input');input.value=prompt;sendJarvis()}
 async function sendJarvis(){
