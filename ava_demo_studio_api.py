@@ -890,7 +890,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
 async def jarvis_health():
     return {
         "status": "online",
-        "mode": "read_only",
+        "mode": "controlled_actions",
         "providers": configured_provider_names(),
         "provider_health": provider_health_snapshot(),
         "model": "automatic failover",
