@@ -37,6 +37,10 @@ TOKEN_PATH = STATE_DIR / "connector-token.txt"
 if not TOKEN_PATH.exists():
     TOKEN_PATH.write_text(secrets.token_urlsafe(32), encoding="utf-8")
 CONNECTOR_TOKEN = os.getenv("JARVIS_CONNECTOR_TOKEN") or TOKEN_PATH.read_text(encoding="utf-8").strip()
+VOICE_TOKEN_PATH = STATE_DIR / "voice-token.txt"
+if not VOICE_TOKEN_PATH.exists():
+    VOICE_TOKEN_PATH.write_text(secrets.token_urlsafe(24), encoding="utf-8")
+VOICE_TOKEN = VOICE_TOKEN_PATH.read_text(encoding="utf-8").strip()
 
 DEFAULT_ROOTS = [
     VAULT,
@@ -80,6 +84,11 @@ def db() -> sqlite3.Connection:
 def require_local_token(authorization: str = Header(default="")):
     if not secrets.compare_digest(authorization, f"Bearer {CONNECTOR_TOKEN}"):
         raise HTTPException(401, "Invalid local connector token")
+
+
+def require_voice_token(authorization: str = Header(default="")):
+    if not secrets.compare_digest(authorization, f"Bearer {VOICE_TOKEN}"):
+        raise HTTPException(401, "Invalid voice bridge token")
 
 
 def safe_path(raw: str, *, must_exist: bool = True) -> Path:
@@ -189,18 +198,20 @@ async def search_memory(q: str, limit: int = 12):
     return {"results": results[:max(1, min(limit, 30))]}
 
 
-@app.get("/voice/status", dependencies=[Depends(require_local_token)])
+@app.get("/voice/status", dependencies=[Depends(require_voice_token)])
 async def voice_status():
     try:
         async with httpx.AsyncClient(timeout=3) as client:
             response = await client.get("http://127.0.0.1:17493/profiles")
             response.raise_for_status()
-        return {"online": True, "profiles": response.json()}
+        payload = response.json()
+        profiles = payload.get("profiles", []) if isinstance(payload, dict) else payload
+        return {"online": True, "ready": bool(profiles), "profiles": payload}
     except Exception as exc:
-        return {"online": False, "error": exc.__class__.__name__, "setup": "Open Voicebox and download Kokoro plus Whisper Turbo"}
+        return {"online": False, "ready": False, "error": exc.__class__.__name__, "setup": "Open Voicebox and download Kokoro plus Whisper Turbo"}
 
 
-@app.post("/voice/speak", dependencies=[Depends(require_local_token)])
+@app.post("/voice/speak", dependencies=[Depends(require_voice_token)])
 async def voice_speak(req: SpeakRequest):
     payload = {"text": req.text}
     if req.profile:
@@ -213,7 +224,7 @@ async def voice_speak(req: SpeakRequest):
     return {"ok": True}
 
 
-@app.post("/voice/transcribe", dependencies=[Depends(require_local_token)])
+@app.post("/voice/transcribe", dependencies=[Depends(require_voice_token)])
 async def voice_transcribe(audio: UploadFile = File(...)):
     content = await audio.read()
     if len(content) > 25_000_000:

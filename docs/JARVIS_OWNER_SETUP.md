@@ -11,6 +11,8 @@ Voicebox 0.5.0 is already installed from its hash-verified official Windows rele
 3. Choose a natural British male preset and make it the default.
 4. In transcription settings, download Whisper Turbo.
 5. Leave Voicebox running. Its local API should answer at `http://127.0.0.1:17493`.
+6. Open `.jarvis-local\voice-token.txt` in the SummitOS project.
+7. In the JARVIS dashboard click **Pair local neural voice** and paste that code. This code only authorizes speech; it cannot access files or execute tools.
 
 Do not start with Qwen3-TTS on this PC. Kokoro is substantially lighter and better suited to the available RAM/GPU.
 
@@ -32,6 +34,18 @@ Do not start with Qwen3-TTS on this PC. Kokoro is substantially lighter and bett
 3. Add `JARVIS_OPENROUTER_MODEL` with the model identifier you want, or leave automatic routing enabled.
 
 Never paste either key into the dashboard, Obsidian, GitHub, or a chat message.
+
+## OpenLive desktop conversation mode
+
+OpenLive 0.2.5 is already installed at `%LOCALAPPDATA%\Programs\OpenLive\OpenLive.exe`.
+
+1. Open **OpenLive** from the Windows Start menu.
+2. Select Codex/ACP as the agent connection so it can use your existing Codex login.
+3. Select local Whisper for transcription and a local TTS engine.
+4. Enable VAD, Smart Turn, barge-in, and Mini Mode.
+5. Keep tool permissions on **Ask**. Do not choose an unrestricted or auto-approve mode.
+
+OpenLive is the desktop continuous-conversation shell. SummitOS remains the business dashboard and cloud phone/text control plane.
 
 ## 3. Telegram
 
@@ -65,13 +79,13 @@ Never paste either key into the dashboard, Obsidian, GitHub, or a chat message.
 
 Outbound calls are restricted to numbers in `JARVIS_ALLOWED_CALLERS`.
 
-## 5. Supabase repair
+## 5. Supabase JARVIS persistence
 
 1. Open the SummitOS Supabase project.
 2. Open **SQL Editor** and create a new query.
 3. Paste the complete contents of `jarvis_supabase_migration.sql`.
 4. Click **Run**.
-5. Redeploy Railway and confirm its startup log no longer reports `agent_status` missing.
+5. Redeploy Railway. This adds durable JARVIS telemetry and connector-task storage. The earlier `agent_status` warning was already fixed in code; it was caused by checking the wrong primary-key column.
 
 ## 6. Daily use
 
