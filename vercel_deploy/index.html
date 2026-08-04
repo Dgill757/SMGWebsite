@@ -176,14 +176,10 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 .jarvis-panel:before{left:8px;top:8px;border-left:1px solid var(--acc);border-top:1px solid var(--acc)}
 .jarvis-panel:after{right:8px;bottom:8px;border-right:1px solid var(--acc);border-bottom:1px solid var(--acc)}
 .jarvis-orb-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;min-height:500px;text-align:center}
-.jarvis-orb{width:230px;height:230px;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle,rgba(59,232,255,.24) 0,rgba(59,232,255,.08) 32%,transparent 66%);filter:drop-shadow(0 0 28px rgba(59,232,255,.26))}
-.jarvis-orb:before,.jarvis-orb:after{content:"";position:absolute;border-radius:50%;border:1px solid var(--acc)}
-.jarvis-orb:before{inset:18px;border-style:dashed;animation:jarvisSpin 18s linear infinite}
-.jarvis-orb:after{inset:44px;border-width:2px;box-shadow:0 0 28px rgba(59,232,255,.35),inset 0 0 22px rgba(59,232,255,.2);animation:jarvisPulse 3.2s ease-in-out infinite}
-.jarvis-core{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle,#E7EEFA 0,var(--acc) 18%,rgba(59,232,255,.16) 55%,transparent 68%);box-shadow:0 0 44px var(--acc)}
-.jarvis-orb.thinking:before{border-color:var(--yel);animation-duration:1.5s}.jarvis-orb.thinking:after{border-color:var(--yel);box-shadow:0 0 36px rgba(255,176,32,.55)}
-.jarvis-orb.limited:before,.jarvis-orb.limited:after{border-color:var(--yel)}
-.jarvis-orb.error:before,.jarvis-orb.error:after{border-color:var(--red)}
+.jarvis-orb{width:280px;height:280px;border-radius:50%;position:relative;display:grid;place-items:center;background:radial-gradient(circle,rgba(59,232,255,.08),transparent 68%);filter:drop-shadow(0 0 28px rgba(59,232,255,.32))}
+.jarvis-orb canvas{width:100%;height:100%;border-radius:50%}
+.jarvis-orb:after{content:"";position:absolute;inset:13%;border:1px solid rgba(59,232,255,.2);border-radius:50%;box-shadow:inset 0 0 32px rgba(59,232,255,.12),0 0 30px rgba(59,232,255,.12);pointer-events:none}
+.jarvis-orb.thinking{filter:drop-shadow(0 0 34px rgba(255,176,32,.44))}.jarvis-orb.listening{filter:drop-shadow(0 0 38px rgba(65,245,160,.48))}.jarvis-orb.speaking{filter:drop-shadow(0 0 42px rgba(59,232,255,.55))}.jarvis-orb.limited{filter:drop-shadow(0 0 30px rgba(255,176,32,.4))}.jarvis-orb.error{filter:drop-shadow(0 0 34px rgba(255,107,107,.5))}
 .jarvis-state{font:600 .68rem 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-top:22px}
 .jarvis-chat{display:flex;flex-direction:column;min-height:500px}
 .jarvis-chat-head{padding:18px 22px;border-bottom:1px solid var(--bdr)}
@@ -198,6 +194,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 .jarvis-side{padding:20px}.jarvis-side h3{font-size:.78rem;text-transform:uppercase;color:var(--acc);letter-spacing:.12em;margin-bottom:12px}
 .jarvis-metric{padding:11px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;gap:12px;font-size:.78rem}.jarvis-metric span{color:var(--txt2)}
 .jarvis-suggestions{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}.jarvis-suggestions button{background:transparent;border:1px solid var(--bdr-bright);color:var(--txt2);border-radius:20px;padding:7px 10px;font-size:.7rem;cursor:pointer}.jarvis-suggestions button:hover{border-color:var(--acc);color:var(--acc)}
+.jarvis-voice{display:flex;gap:8px;margin-top:12px}.jarvis-voice button{background:rgba(59,232,255,.06);border:1px solid var(--bdr-bright);color:var(--txt2);border-radius:20px;padding:8px 12px;cursor:pointer}.jarvis-voice button.active{color:#07111d;background:var(--acc);border-color:var(--acc)}
 @keyframes jarvisSpin{to{transform:rotate(360deg)}}@keyframes jarvisPulse{50%{transform:scale(1.08);opacity:.72}}
 @media(max-width:1100px){.jarvis-shell{grid-template-columns:280px 1fr}.jarvis-side{grid-column:1/-1}.jarvis-orb{width:190px;height:190px}}
 @media(max-width:760px){.jarvis-shell{grid-template-columns:1fr}.jarvis-orb-zone{min-height:300px}.jarvis-chat{min-height:520px}.jarvis-log{max-height:420px}.jarvis-msg{max-width:94%}}
@@ -245,9 +242,10 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <div id="pg-jarvis" class="tab-pane">
   <div class="jarvis-shell">
     <section class="jarvis-panel jarvis-orb-zone" aria-label="Jarvis status">
-      <div class="jarvis-orb" id="jarvis-orb" aria-hidden="true"><div class="jarvis-core"></div></div>
+      <div class="jarvis-orb" id="jarvis-orb" aria-hidden="true"><canvas id="jarvis-orb-canvas" width="560" height="560"></canvas></div>
       <div class="jarvis-state" id="jarvis-state">Standby</div>
       <div style="margin-top:10px;color:var(--txt2);font-size:.78rem;line-height:1.6">Summit operating intelligence<br><span class="badge badge-yel" style="margin-top:10px">Read-only mode</span></div>
+      <div class="jarvis-voice"><button id="jarvis-mic" onclick="toggleJarvisListening()">◉ Talk</button><button id="jarvis-voice-toggle" class="active" onclick="toggleJarvisVoice()">Voice on</button></div>
       <div class="jarvis-suggestions" aria-label="Suggested prompts">
         <button onclick="askJarvis('Give me my business briefing. What needs me first?')">Morning brief</button>
         <button onclick="askJarvis('Who needs a reply right now? Rank them by revenue impact.')">Reply queue</button>
@@ -631,6 +629,7 @@ var KEY='';// set at login; validated server-side by Railway
 var _activeDemoId=null, _bizDate=null, _bizOffset=0, _bizTotal=0, _bizLimit=50;
 var _allContent=[], _allBiz=[], _allAgents=[];
 var _jarvisHistory=[];
+var _jarvisRecognition=null,_jarvisListening=false,_jarvisVoice=true,_jarvisOrbState='idle',_jarvisSpeechLevel=0;
 
 // ── Helpers ─────────────────────────────────────────────────────────────────
 async function get(p){try{var r=await fetch(API+p,{headers:{'x-api-key':KEY}});return r.ok?await r.json():{}}catch(e){return {}}}
@@ -704,8 +703,28 @@ function showTab(t){
 function setJarvisState(state,label){
   var orb=el('jarvis-orb');if(!orb)return;
   orb.className='jarvis-orb '+(state||'');
+  _jarvisOrbState=state||'idle';
   txt('jarvis-state',label||state||'Standby');
 }
+function initJarvisOrb(){
+  var canvas=el('jarvis-orb-canvas');if(!canvas||canvas.dataset.ready)return;canvas.dataset.ready='1';
+  var ctx=canvas.getContext('2d'),w=canvas.width,h=canvas.height,cx=w/2,cy=h/2,pts=[];
+  for(var i=0;i<1250;i++){var u=Math.random(),v=Math.random(),theta=2*Math.PI*u,phi=Math.acos(2*v-1);pts.push({x:Math.sin(phi)*Math.cos(theta),y:Math.sin(phi)*Math.sin(theta),z:Math.cos(phi),s:.35+Math.random()*.9})}
+  var t=0;function frame(){t+=_jarvisOrbState==='thinking'?.035:.009;ctx.clearRect(0,0,w,h);var palette={thinking:[255,176,32],listening:[65,245,160],error:[255,107,107],limited:[255,176,32],speaking:[59,232,255],idle:[59,232,255]},col=palette[_jarvisOrbState]||palette.idle,pulse=1+(_jarvisOrbState==='speaking'?_jarvisSpeechLevel*.11:Math.sin(t*2)*.012),radius=190*pulse;
+    pts.forEach(function(p){var a=t,b=t*.37,x=p.x*Math.cos(a)-p.z*Math.sin(a),z=p.x*Math.sin(a)+p.z*Math.cos(a),y=p.y*Math.cos(b)-z*Math.sin(b);z=p.y*Math.sin(b)+z*Math.cos(b);var depth=(z+1)/2,rr=radius*(.78+.22*depth),px=cx+x*rr,py=cy+y*rr,alpha=.12+.78*depth;ctx.beginPath();ctx.fillStyle='rgba('+col.join(',')+','+alpha+')';ctx.arc(px,py,p.s*(.7+1.5*depth),0,Math.PI*2);ctx.fill()});
+    var g=ctx.createRadialGradient(cx,cy,0,cx,cy,90);g.addColorStop(0,'rgba('+col.join(',')+',.34)');g.addColorStop(1,'rgba('+col.join(',')+',0)');ctx.fillStyle=g;ctx.beginPath();ctx.arc(cx,cy,90,0,Math.PI*2);ctx.fill();_jarvisSpeechLevel*=.92;requestAnimationFrame(frame)}frame()
+}
+function initJarvisVoice(){
+  var SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR)return;
+  _jarvisRecognition=new SR();_jarvisRecognition.lang='en-US';_jarvisRecognition.interimResults=true;_jarvisRecognition.continuous=false;
+  _jarvisRecognition.onstart=function(){_jarvisListening=true;el('jarvis-mic').classList.add('active');setJarvisState('listening','Listening')};
+  _jarvisRecognition.onresult=function(e){var final='';for(var i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript}if(final)el('jarvis-input').value=final.trim()};
+  _jarvisRecognition.onend=function(){_jarvisListening=false;el('jarvis-mic').classList.remove('active');if((el('jarvis-input').value||'').trim())sendJarvis();else setJarvisState('','Online')};
+  _jarvisRecognition.onerror=function(e){_jarvisListening=false;setJarvisState('error','Mic '+e.error)};
+}
+function toggleJarvisListening(){if(!_jarvisRecognition){toast('Voice input needs Chrome microphone permission','err');return}if(_jarvisListening)_jarvisRecognition.stop();else{window.speechSynthesis.cancel();_jarvisRecognition.start()}}
+function toggleJarvisVoice(){_jarvisVoice=!_jarvisVoice;var b=el('jarvis-voice-toggle');b.textContent=_jarvisVoice?'Voice on':'Voice off';b.classList.toggle('active',_jarvisVoice);if(!_jarvisVoice)window.speechSynthesis.cancel()}
+function speakJarvis(text){if(!_jarvisVoice||!window.speechSynthesis)return;window.speechSynthesis.cancel();var u=new SpeechSynthesisUtterance(text),voices=window.speechSynthesis.getVoices();u.voice=voices.find(function(v){return /Daniel|George|Ryan|UK English Male/i.test(v.name)})||voices.find(function(v){return /en-GB/i.test(v.lang)})||null;u.rate=.96;u.pitch=.86;u.onstart=function(){setJarvisState('speaking','Speaking')};u.onboundary=function(){_jarvisSpeechLevel=Math.min(1,_jarvisSpeechLevel+.34)};u.onend=function(){setJarvisState('','Online')};window.speechSynthesis.speak(u)}
 function jarvisAdd(role,content,save){
   var log=el('jarvis-log');if(!log)return;
   var box=document.createElement('div');box.className='jarvis-msg '+role;
@@ -721,7 +740,7 @@ function loadJarvisHistory(){
   else jarvisAdd('assistant','Online. I can read your live SummitOS metrics, agent health, and GHL reply queue.\n\nWhat do you want to know?',true);
 }
 async function loadJarvis(){
-  loadJarvisHistory();setJarvisState('','Online');
+  loadJarvisHistory();initJarvisOrb();if(!_jarvisRecognition)initJarvisVoice();setJarvisState('','Online');
   var results=await Promise.all([get('/jarvis/health'),get('/ceo/summary'),get('/agents/health-summary'),get('/ghl/replies/recent?limit=20')]);
   var health=results[0]||{},summary=results[1]||{},agents=results[2]||{},replies=results[3]||[];
   txt('j-health',health.status==='online'?'Online':'Unavailable');txt('j-mrr',fmt$(summary.mrr));txt('j-clients',summary.clients||0);
@@ -737,7 +756,7 @@ async function sendJarvis(){
     var response=await fetch(API+'/jarvis/chat',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({message:message,history:prior})});
     var data=await response.json().catch(function(){return{}});
     if(!response.ok)throw new Error(data.detail||('Request failed '+response.status));
-    jarvisAdd('assistant',data.response||'I could not produce a response.',true);setJarvisState(data.state==='limited'?'limited':'',data.state==='limited'?'Limited mode':'Online');
+    var answer=data.response||'I could not produce a response.';jarvisAdd('assistant',answer,true);setJarvisState(data.state==='limited'?'limited':'',data.state==='limited'?'Limited mode':'Online');speakJarvis(answer);
     txt('j-updated','Context updated '+new Date(data.context_updated_at||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));
   }catch(err){jarvisAdd('assistant','I hit a connection problem: '+err.message,false);setJarvisState('error','Connection error')}
   finally{button.disabled=false;button.textContent='Send';input.focus()}

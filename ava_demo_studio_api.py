@@ -12,6 +12,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import anthropic
+from jarvis_model_router import (
+    JarvisProvidersUnavailable,
+    ask_jarvis_model,
+    configured_provider_names,
+)
 from premium_website_generator_v2 import generate_world_class_roofing_site
 
 load_dotenv()
@@ -762,7 +767,8 @@ async def jarvis_health():
     return {
         "status": "online",
         "mode": "read_only",
-        "model": os.getenv("JARVIS_MODEL", "claude-sonnet-4-6"),
+        "providers": configured_provider_names(),
+        "model": "automatic failover",
         "outreach": "paused",
     }
 
@@ -787,46 +793,32 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
         "content": f"LIVE SUMMIT OS CONTEXT:\n{json.dumps(context, default=str)[:18000]}\n\nDAN'S REQUEST:\n{message}",
     })
 
-    def _ask_jarvis():
-        return ai.messages.create(
-            model=os.getenv("JARVIS_MODEL", "claude-sonnet-4-6"),
-            max_tokens=1400,
+    try:
+        result = await ask_jarvis_model(
+            anthropic_client=ai,
             system=JARVIS_SYSTEM,
             messages=safe_history,
+            max_tokens=1400,
         )
-
-    try:
-        result = await asyncio.to_thread(_ask_jarvis)
-        answer = "".join(
-            block.text for block in result.content if getattr(block, "type", "") == "text"
-        ).strip()
-        if not answer:
-            raise RuntimeError("Jarvis returned an empty response")
         return JarvisChatResponse(
-            response=answer,
+            response=result.text,
             state="idle",
             context_updated_at=context["captured_at"],
         )
-    except anthropic.APIError as exc:
-        if "credit balance is too low" in str(exc).lower():
-            summary = context.get("ceo_summary") or {}
-            health = context.get("agent_health") or {}
-            replies = context.get("recent_replies") or []
-            answer = (
-                "I am connected to SummitOS, but the Anthropic API account is out of credits, "
-                "so conversational reasoning is temporarily limited.\n\n"
-                f"Live snapshot: ${float(summary.get('mrr') or 0):,.0f} MRR, "
-                f"{summary.get('clients') or 0} clients, "
-                f"{len(replies) if isinstance(replies, list) else 0} conversations in the reply queue, "
-                f"and {(health.get('ok') or 0) + (health.get('running') or 0)} reporting agents online.\n\n"
-                "Automated outreach is paused. Add Anthropic API credits to unlock full Jarvis answers."
-            )
-            return JarvisChatResponse(
-                response=answer,
-                state="limited",
-                context_updated_at=context["captured_at"],
-            )
-        raise HTTPException(status_code=502, detail=f"Jarvis model unavailable: {exc.__class__.__name__}")
+    except JarvisProvidersUnavailable:
+        summary = context.get("ceo_summary") or {}
+        health = context.get("agent_health") or {}
+        replies = context.get("recent_replies") or []
+        answer = (
+            "I am connected to SummitOS, but none of the configured model providers is available. "
+            "Live reporting still works.\n\n"
+            f"Snapshot: ${float(summary.get('mrr') or 0):,.0f} MRR, "
+            f"{summary.get('clients') or 0} clients, "
+            f"{len(replies) if isinstance(replies, list) else 0} conversations needing review, "
+            f"and {(health.get('ok') or 0) + (health.get('running') or 0)} reporting agents online.\n\n"
+            "Automated outreach remains paused. Configure OpenRouter, Groq, Anthropic, or the local Ollama bridge to restore reasoning."
+        )
+        return JarvisChatResponse(response=answer, state="limited", context_updated_at=context["captured_at"])
 
 
 @app.post("/demos/create", response_model=DemoStatusResponse)
