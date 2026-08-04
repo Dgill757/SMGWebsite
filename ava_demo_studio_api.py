@@ -18,6 +18,7 @@ from jarvis_model_router import (
     configured_provider_names,
     provider_health_snapshot,
 )
+from jarvis_integrations import IntegrationUnavailable, execute_read_tool, integration_status
 from premium_website_generator_v2 import generate_world_class_roofing_site
 
 load_dotenv()
@@ -833,6 +834,36 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
             return f"I could not find pending action {task_id}."
         task["status"] = "denied"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
         return f"Denied {task_id}. Nothing was executed."
+    integration_plan = None
+    if "integration status" in lower or "what can you access" in lower or "which tools" in lower:
+        integration_plan = ("integrations_status", {})
+    elif "ghl" in lower and ("pipeline" in lower or "stage" in lower):
+        integration_plan = ("ghl_pipelines", {})
+    elif "ghl" in lower and ("find contact" in lower or "search contact" in lower):
+        query = re.sub(r"(?i).*?(find|search) contact(?:s)?(?: in)? ghl(?: for)?", "", message).strip(" :,.?")
+        integration_plan = ("ghl_search_contacts", {"query": query, "limit": 20})
+    elif any(phrase in lower for phrase in ("research the web", "research online", "search the internet", "web research")):
+        query = re.sub(r"(?i).*?(research the web|research online|search the internet|web research)(?: for| about)?", "", message).strip(" :,.?")
+        integration_plan = ("web_research", {"query": query, "limit": 5})
+    elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "schedule", "week")):
+        integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
+    elif any(phrase in lower for phrase in ("unread email", "unread mail", "check my inbox", "recent email")):
+        integration_plan = ("gmail_search", {"query": "is:unread", "limit": 10})
+    if integration_plan:
+        tool_name, tool_args = integration_plan
+        try:
+            observed = await execute_read_tool(tool_name, tool_args)
+            await _record_jarvis_event(channel, f"integration:{tool_name}", success=True)
+        except IntegrationUnavailable as exc:
+            await _record_jarvis_event(channel, f"integration:{tool_name}", success=False, error_class=exc.__class__.__name__)
+            return f"I could not run {tool_name}: {exc}"
+        raw = json.dumps(observed, default=str)[:18000]
+        try:
+            summary = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM,
+                messages=[{"role": "user", "content": f"Dan asked: {message}\n\nOBSERVED {tool_name} RESULT:\n{raw}\n\nAnswer concisely. Never claim an action beyond this result."}], max_tokens=900)
+            return summary.text
+        except JarvisProvidersUnavailable:
+            return raw[:3500]
     triggers = ("my computer", "local file", "locally", "git status", "read file", "find file", "search files", "list directory", "running process", "run script", "run command", "edit file", "write file")
     if not any(trigger in lower for trigger in triggers):
         return None
@@ -896,6 +927,11 @@ async def jarvis_health():
         "model": "automatic failover",
         "outreach": "paused",
     }
+
+
+@app.get("/jarvis/integrations/status", dependencies=[Depends(require_key)])
+async def jarvis_integrations_status():
+    return integration_status()
 
 
 @app.post("/jarvis/chat", response_model=JarvisChatResponse)
