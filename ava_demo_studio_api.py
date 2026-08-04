@@ -759,6 +759,21 @@ $497-$997/month plus setup, framed as as little as $16/day. The average roofing 
 Voice: direct, calm, useful, short sentences. No fluff. No em dashes. Explain technical details
 in plain English. Lead with the answer. Never invent live business facts when context is missing.
 
+Identity and behavior: Dan is your principal and you are his persistent chief of staff, operator,
+researcher, and technical copilot. Be warm, composed, lightly witty, and proactive without pretending
+to be human. Carry conversational context forward. Do not repeat the MRR snapshot unless Dan asks for
+financial status or it materially changes the answer. On phone calls, speak in natural sentences,
+usually under one hundred twenty words, and ask one useful follow-up when the request is ambiguous.
+
+Available controlled capabilities include live SummitOS reporting, Supabase prospect records,
+GoHighLevel contacts and pipeline health, Google Calendar events and availability, Gmail search and
+triage, Google Drive search, current web research, Telegram, Twilio phone and SMS, and an authenticated
+local-computer connector. Read tools may run immediately. Calendar, email, messaging, file writes, and
+computer commands must be proposed and explicitly approved before execution. When a capability is
+unavailable, name the exact missing integration or credential, give the shortest recovery step, and
+continue with any useful work that remains possible. Never replace a useful answer with a generic
+system-status speech.
+
 Safety: you may use the controlled tool router when it supplies an observed result. Never claim
 you sent a message, changed data, ran code, or performed an external action unless a tool result confirms it.
 Computer writes and commands require Dan's explicit approval. Destructive operations remain blocked.
@@ -942,7 +957,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
     elif any(phrase in lower for phrase in ("prepare me for my next meeting", "prep my next meeting", "meeting prep", "upcoming meeting brief")):
         query = re.sub(r"(?i).*?(prepare me for|prep|meeting prep|upcoming meeting brief)(?: my| for| on| about)?", "", message).strip(" :,.?") or "next meeting"
         integration_plan = ("meeting_prep", {"query": query})
-    elif any(phrase in lower for phrase in ("who should we reach out", "who should i reach out", "prospects without a website", "doesn't have a website", "do not have a website")):
+    elif ("reach out" in lower and any(term in lower for term in ("who", "business", "prospect", "lead", "company"))) or any(phrase in lower for phrase in ("prospects without a website", "doesn't have a website", "do not have a website")):
         integration_plan = ("prospects_without_website", {"limit": 10})
     elif any(phrase in lower for phrase in ("meeting brief on", "company brief on", "prospect brief on", "research prospect", "cold call brief")):
         query = re.sub(r"(?i).*?(meeting brief on|company brief on|prospect brief on|research prospect|cold call brief)(?: for| about| on)?", "", message).strip(" :,.?")
@@ -960,7 +975,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         integration_plan = ("web_research", {"query": query, "limit": 5})
     elif any(phrase in lower for phrase in ("when am i free", "calendar availability", "available times", "open time on my calendar")):
         integration_plan = ("calendar_availability", {"days": 7, "duration_minutes": 30})
-    elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "week", "agenda", "meetings")):
+    elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "week", "agenda", "meetings", "have", "on", "show", "check")):
         integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
     elif any(phrase in lower for phrase in ("triage my inbox", "clean up my inbox", "prioritize my email", "inbox priorities")):
         integration_plan = ("gmail_inbox_triage", {"limit": 25})
@@ -1006,6 +1021,36 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
                     lines.append(f"- {start:%A, %B %d, %I:%M %p} to {end:%I:%M %p}")
                 except (KeyError, ValueError, TypeError):
                     continue
+            return "\n".join(lines)
+        if tool_name == "calendar_upcoming" and isinstance(observed, dict):
+            events = observed.get("events") or []
+            active = []
+            for event in events:
+                attendees = event.get("attendees") or []
+                self_status = next((a.get("responseStatus") for a in attendees if a.get("self")), None)
+                if self_status != "declined":
+                    active.append(event)
+            if not active:
+                return "Your Google Calendar has no accepted or tentative events in the next seven days."
+            lines = ["You have these upcoming Google Calendar events:"]
+            for event in active[:8]:
+                raw_start = (event.get("start") or {}).get("dateTime") or (event.get("start") or {}).get("date")
+                try:
+                    when = datetime.fromisoformat(str(raw_start)).astimezone().strftime("%A, %B %d at %I:%M %p")
+                except (ValueError, TypeError):
+                    when = str(raw_start or "time unavailable")
+                lines.append(f"- {when}: {event.get('summary') or 'Untitled event'}")
+            return "\n".join(lines)
+        if tool_name == "prospects_without_website" and isinstance(observed, dict):
+            prospects = observed.get("prospects") or []
+            if not prospects:
+                return "I found no uncontacted prospects without websites in the current SummitOS result."
+            lines = ["These are the strongest uncontacted businesses without websites to review today. Outreach remains paused:"]
+            for row in prospects[:8]:
+                rating = row.get("review_rating")
+                reviews = row.get("review_count") or 0
+                location = ", ".join(x for x in (row.get("city"), row.get("state")) if x)
+                lines.append(f"- {row.get('company_name') or 'Unnamed business'}, {location or 'location unavailable'}, {rating or 'no'} rating, {reviews} reviews, phone {row.get('phone') or 'unavailable'}")
             return "\n".join(lines)
         raw = json.dumps(observed, default=str)[:24000]
         answer_rules = (
@@ -1170,13 +1215,14 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
         return JarvisChatResponse(response=answer, state="limited", context_updated_at=context["captured_at"], provider="deterministic")
 
 
-async def _jarvis_channel_answer(message: str, channel: str) -> str:
+async def _jarvis_channel_answer(message: str, channel: str, history: list[dict[str, str]] | None = None) -> str:
     """Shared brain for remote channels with controlled local action routing."""
     tool_answer = await _maybe_local_tool(message, channel)
     if tool_answer is not None:
         return tool_answer
     context = await _jarvis_live_context(AVA_API_KEY)
-    messages = [{"role": "user", "content": f"CHANNEL: {channel}\nLIVE CONTEXT:\n{json.dumps(context, default=str)[:18000]}\n\nREQUEST:\n{message}"}]
+    messages = list((history or [])[-8:])
+    messages.append({"role": "user", "content": f"CHANNEL: {channel}\nLIVE CONTEXT:\n{json.dumps(context, default=str)[:12000]}\n\nREQUEST:\n{message}"})
     try:
         result = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM, messages=messages, max_tokens=700)
         return result.text
@@ -1291,6 +1337,7 @@ async def jarvis_phone_ws(websocket: WebSocket):
     await websocket.accept()
     authenticated = False
     pin_digits = ""
+    conversation_history: list[dict[str, str]] = []
     allowed = {item.strip() for item in os.getenv("JARVIS_ALLOWED_CALLERS", "").split(",") if item.strip()}
     try:
         while True:
@@ -1318,7 +1365,12 @@ async def jarvis_phone_ws(websocket: WebSocket):
                 authenticated = True
                 await websocket.send_json({"type": "text", "token": "Identity confirmed. What do you need?", "last": True, "interruptible": True, "preemptible": True})
                 continue
-            answer = await _jarvis_channel_answer(utterance, "phone")
+            answer = await _jarvis_channel_answer(utterance, "phone", conversation_history)
+            conversation_history.extend([
+                {"role": "user", "content": utterance},
+                {"role": "assistant", "content": answer},
+            ])
+            conversation_history = conversation_history[-8:]
             await websocket.send_json({"type": "text", "token": answer, "last": True, "interruptible": True, "preemptible": True})
     except WebSocketDisconnect:
         pass

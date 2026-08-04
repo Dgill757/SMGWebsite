@@ -65,7 +65,7 @@ class JarvisProvidersUnavailable(RuntimeError):
 
 def configured_provider_names() -> list[str]:
     requested = os.getenv(
-        "JARVIS_PROVIDER_ORDER", "openrouter,groq,anthropic,ollama"
+        "JARVIS_PROVIDER_ORDER", "openai,gemini,groq,openrouter,anthropic,ollama"
     )
     return [item.strip().lower() for item in requested.split(",") if item.strip()]
 
@@ -113,6 +113,22 @@ async def ask_jarvis_model(
             continue
         started = time.perf_counter()
         try:
+            if provider == "openai" and os.getenv("OPENAI_API_KEY"):
+                result = await _openai_compatible(
+                    provider=provider,
+                    base_url="https://api.openai.com/v1",
+                    api_key=os.environ["OPENAI_API_KEY"],
+                    model=os.getenv("JARVIS_OPENAI_MODEL", "gpt-5-mini"),
+                    system=system, messages=messages, max_tokens=max_tokens,
+                ); _success(provider, round((time.perf_counter() - started) * 1000)); return result
+            if provider == "gemini" and os.getenv("GEMINI_API_KEY"):
+                result = await _openai_compatible(
+                    provider=provider,
+                    base_url="https://generativelanguage.googleapis.com/v1beta/openai",
+                    api_key=os.environ["GEMINI_API_KEY"],
+                    model=os.getenv("JARVIS_GEMINI_MODEL", "gemini-3.6-flash"),
+                    system=system, messages=messages, max_tokens=max_tokens,
+                ); _success(provider, round((time.perf_counter() - started) * 1000)); return result
             if provider == "openrouter" and os.getenv("OPENROUTER_API_KEY"):
                 result = await _openai_compatible(
                     provider=provider,
