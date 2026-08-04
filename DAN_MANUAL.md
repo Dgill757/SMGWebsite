@@ -100,6 +100,15 @@ SLACK_CHANNEL_ID=<channel id>
 
 This channel is private and allowlisted to Dan. Do not use it for prospect outreach.
 
+### Configure a dependable Jarvis reasoning provider
+
+The phone service cannot reach the PC's local Ollama server. Add at least one dependable cloud key in Railway. Recommended order:
+
+1. OpenAI: create a project API key at `https://platform.openai.com/api-keys`, enable billing/credits, then add `OPENAI_API_KEY` in Railway. Optional: `JARVIS_OPENAI_MODEL=gpt-5-mini`.
+2. Gemini: create a Gemini API key in Google AI Studio at `https://aistudio.google.com/app/apikey`, then add `GEMINI_API_KEY` in Railway. Optional: `JARVIS_GEMINI_MODEL=gemini-3.6-flash`.
+
+Do not use the Google OAuth refresh token as a Gemini API key. Do not paste either key into chat or commit it to GitHub. SummitOS provider order is OpenAI, Gemini, Groq, OpenRouter, then Anthropic.
+
 1. Create or open a Twilio account.
 2. Purchase a US number with **Voice** and **SMS** capabilities.
 3. Complete Twilio ConversationRelay onboarding and accept its Predictive/Generative AI terms.

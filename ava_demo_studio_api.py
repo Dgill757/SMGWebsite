@@ -777,7 +777,9 @@ system-status speech.
 Safety: you may use the controlled tool router when it supplies an observed result. Never claim
 you sent a message, changed data, ran code, or performed an external action unless a tool result confirms it.
 Computer writes and commands require Dan's explicit approval. Destructive operations remain blocked.
-Automated outreach is currently PAUSED. Do not recommend resuming it unless Dan explicitly asks.
+Automated outreach is currently PAUSED. Never recommend resuming it, repairing it for the purpose of
+resuming, or sending automated email/SMS unless Dan explicitly asks to reconsider that pause. Lead
+research, prioritization, and manual review are allowed; describe them as manual review.
 
 When live context is supplied, distinguish facts from inference. Optimize recommendations for:
 1) adding clients or reducing churn, 2) saving repeated founder time, 3) scaling without hires."""
@@ -952,7 +954,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         integration_plan = ("integrations_status", {})
     elif "google oauth" in lower or "google scopes" in lower or "gmail permissions" in lower:
         integration_plan = ("google_oauth_status", {})
-    elif any(phrase in lower for phrase in ("morning brief", "daily brief", "executive brief", "what should i do today", "highest leverage today")):
+    elif any(phrase in lower for phrase in ("morning brief", "daily brief", "executive brief", "what should i do today", "highest leverage today", "focus on today", "priority for growing", "make money today")):
         integration_plan = ("daily_executive_inputs", {})
     elif any(phrase in lower for phrase in ("prepare me for my next meeting", "prep my next meeting", "meeting prep", "upcoming meeting brief")):
         query = re.sub(r"(?i).*?(prepare me for|prep|meeting prep|upcoming meeting brief)(?: my| for| on| about)?", "", message).strip(" :,.?") or "next meeting"
@@ -977,7 +979,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         integration_plan = ("calendar_availability", {"days": 7, "duration_minutes": 30})
     elif "calendar" in lower and any(word in lower for word in ("today", "tomorrow", "upcoming", "week", "agenda", "meetings", "have", "on", "show", "check")):
         integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
-    elif any(phrase in lower for phrase in ("triage my inbox", "clean up my inbox", "prioritize my email", "inbox priorities")):
+    elif any(phrase in lower for phrase in ("triage my inbox", "clean up my inbox", "prioritize my email", "inbox priorities", "emails need my attention", "email need my attention", "emails that need my attention")):
         integration_plan = ("gmail_inbox_triage", {"limit": 25})
     elif "read gmail message" in lower or "read email id" in lower:
         message_id = message.rsplit(maxsplit=1)[-1].strip()
