@@ -8,13 +8,21 @@
 - Authenticated local connector for approved Windows folders, Git, processes, and gated commands
 - Telegram remote channel
 - Groq/OpenRouter model failover
+- Google Calendar, Gmail, and Drive offline OAuth (verified August 4, 2026)
+
+## Activate durable Jarvis actions
+
+Railway currently falls back to process memory because the operational tables have
+not yet been created. Open the `ava-studio` Supabase project, choose SQL Editor, paste
+the complete contents of `jarvis_supabase_migration.sql`, and run it once. The API
+will automatically begin persisting approvals, queued actions, receipts, and traces.
+
+Do not run this migration against Summit Finance OS, QualifyOS, or another project.
 
 ## Google Workspace: persistent offline access
 
-The Codex Google Calendar and Drive connectors are authenticated as
-`dangill@summitmarketinggroup.co`, but connector tokens cannot be exported to Railway.
-Gmail currently requires reauthentication. Jarvis therefore needs a dedicated Google
-OAuth web client with offline access.
+The Google Workspace OAuth connection for `dangill@summitmarketinggroup.co` is live.
+These are the recovery/setup steps if the refresh token is revoked or expires.
 
 1. Open Google Cloud Console and create or select the SummitOS project.
 2. Enable Gmail API, Google Calendar API, and Google Drive API.

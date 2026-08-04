@@ -19,6 +19,7 @@ from jarvis_model_router import (
     provider_health_snapshot,
 )
 from jarvis_integrations import IntegrationUnavailable, execute_read_tool, execute_write_tool, integration_status
+from jarvis_task_store import load_task as load_durable_task, list_tasks as list_durable_tasks, save_task as save_durable_task
 from premium_website_generator_v2 import generate_world_class_roofing_site
 
 load_dotenv()
@@ -826,7 +827,9 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
     lower = message.casefold().strip()
     if lower.startswith(("/approve ", "approve ")):
         task_id = message.split(maxsplit=1)[1].strip()
-        task = jarvis_connector_tasks.get(task_id)
+        task = jarvis_connector_tasks.get(task_id) or await load_durable_task(task_id)
+        if task:
+            jarvis_connector_tasks[task_id] = task
         if not task or task.get("status") != "awaiting_approval":
             return f"I could not find pending action {task_id}."
         if task.get("executor") == "cloud":
@@ -834,20 +837,25 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
                 task["status"] = "running"
                 task["result"] = await execute_write_tool(task["tool"], task["arguments"])
                 task["status"] = "completed"
+                task["completed_at"] = datetime.utcnow().isoformat() + "Z"
                 task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+                await save_durable_task(task)
                 await _record_jarvis_event(channel, f"action:{task['tool']}", success=True)
                 return f"Approved and completed {task_id}. Receipt: {json.dumps(task['result'], default=str)}"
             except IntegrationUnavailable as exc:
                 task["status"] = "failed"; task["error"] = str(exc)
+                await save_durable_task(task)
                 return f"Approval was recorded, but the action failed safely: {exc}"
-        task["status"] = "queued"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        task["status"] = "queued"; task["approved_at"] = datetime.utcnow().isoformat() + "Z"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        await save_durable_task(task)
         return f"Approved {task_id}. Your local connector will execute it and record the result."
     if lower.startswith(("/deny ", "deny ")):
         task_id = message.split(maxsplit=1)[1].strip()
-        task = jarvis_connector_tasks.get(task_id)
+        task = jarvis_connector_tasks.get(task_id) or await load_durable_task(task_id)
         if not task or task.get("status") != "awaiting_approval":
             return f"I could not find pending action {task_id}."
         task["status"] = "denied"; task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+        await save_durable_task(task)
         return f"Denied {task_id}. Nothing was executed."
     integration_plan = None
     calendar_write = (
@@ -869,15 +877,24 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         task_id = secrets.token_hex(12)
         arguments = plan.get("arguments") if isinstance(plan.get("arguments"), dict) else {}
         preview = f"Create Google Calendar event: {json.dumps(arguments, default=str)}"
+        trace_id = secrets.token_hex(16)
         jarvis_connector_tasks[task_id] = {
-            "id": task_id, "tool": "calendar_create_event", "arguments": arguments,
+            "id": task_id, "trace_id": trace_id, "actor": "dan", "channel": channel,
+            "tool": "calendar_create_event", "arguments": arguments,
             "risk": "external", "executor": "cloud", "preview": preview,
+            "idempotency_key": f"calendar:{task_id}",
             "status": "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z",
             "updated_at": datetime.utcnow().isoformat() + "Z",
         }
+        await save_durable_task(jarvis_connector_tasks[task_id])
         return f"I prepared this calendar action but have not executed it.\n\n{preview}\n\nApprove action {task_id} in the dashboard, or reply /approve {task_id}."
     if "integration status" in lower or "what can you access" in lower or "which tools" in lower:
         integration_plan = ("integrations_status", {})
+    elif any(phrase in lower for phrase in ("morning brief", "daily brief", "executive brief", "what should i do today", "highest leverage today")):
+        integration_plan = ("daily_executive_inputs", {})
+    elif any(phrase in lower for phrase in ("prepare me for my next meeting", "prep my next meeting", "meeting prep", "upcoming meeting brief")):
+        query = re.sub(r"(?i).*?(prepare me for|prep|meeting prep|upcoming meeting brief)(?: my| for| on| about)?", "", message).strip(" :,.?") or "next meeting"
+        integration_plan = ("meeting_prep", {"query": query})
     elif any(phrase in lower for phrase in ("who should we reach out", "who should i reach out", "prospects without a website", "doesn't have a website", "do not have a website")):
         integration_plan = ("prospects_without_website", {"limit": 10})
     elif any(phrase in lower for phrase in ("meeting brief on", "company brief on", "prospect brief on", "research prospect", "cold call brief")):
@@ -895,6 +912,9 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         integration_plan = ("calendar_upcoming", {"days": 7, "limit": 20})
     elif any(phrase in lower for phrase in ("unread email", "unread mail", "check my inbox", "recent email")):
         integration_plan = ("gmail_search", {"query": "is:unread", "limit": 10})
+    elif any(phrase in lower for phrase in ("search my drive", "find in drive", "google drive")):
+        query = re.sub(r"(?i).*?(search my drive|find in drive|google drive)(?: for)?", "", message).strip(" :,.?")
+        integration_plan = ("drive_search", {"query": query, "limit": 10})
     if integration_plan:
         tool_name, tool_args = integration_plan
         try:
@@ -942,9 +962,12 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
     task_id = secrets.token_hex(12)
     arguments = plan.get("arguments") if isinstance(plan.get("arguments"), dict) else {}
     preview = f"{tool}: {json.dumps(arguments, default=str)[:1000]}"
-    task = {"id": task_id, "tool": tool, "arguments": arguments, "risk": risk, "preview": preview,
+    task = {"id": task_id, "trace_id": secrets.token_hex(16), "actor": "dan", "channel": channel,
+            "tool": tool, "arguments": arguments, "risk": risk, "executor": "local",
+            "idempotency_key": f"local:{task_id}", "preview": preview,
             "status": "queued" if risk == "read" else "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z", "updated_at": datetime.utcnow().isoformat() + "Z"}
     jarvis_connector_tasks[task_id] = task
+    await save_durable_task(task)
     await _record_jarvis_event(channel, "tool_queued", success=True)
     if risk != "read":
         return f"Action {task_id} needs approval before I touch the computer.\n\n{preview}\n\nReply /approve {task_id} or /deny {task_id}."
@@ -1207,6 +1230,8 @@ async def connector_heartbeat(request: Request):
 @app.get("/jarvis/connector/tasks/next")
 async def connector_next_task(authorization: str = Header(default="")):
     _verify_connector(authorization)
+    for durable in await list_durable_tasks(50, "queued"):
+        jarvis_connector_tasks.setdefault(durable["id"], durable)
     eligible = [task for task in jarvis_connector_tasks.values() if task["status"] == "queued"]
     eligible.sort(key=lambda task: task["created_at"])
     if not eligible:
@@ -1214,22 +1239,29 @@ async def connector_next_task(authorization: str = Header(default="")):
     task = eligible[0]
     task["status"] = "running"
     task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+    await save_durable_task(task)
     return task
 
 
 @app.post("/jarvis/connector/tasks/{task_id}/result")
 async def connector_task_result(task_id: str, payload: JarvisConnectorTaskResult, authorization: str = Header(default="")):
     _verify_connector(authorization)
-    task = jarvis_connector_tasks.get(task_id)
+    task = jarvis_connector_tasks.get(task_id) or await load_durable_task(task_id)
     if not task:
         raise HTTPException(404, "Task not found")
     task.update(payload.model_dump(), updated_at=datetime.utcnow().isoformat() + "Z")
+    if payload.status == "completed":
+        task["completed_at"] = datetime.utcnow().isoformat() + "Z"
+    jarvis_connector_tasks[task_id] = task
+    await save_durable_task(task)
     return {"ok": True}
 
 
 @app.get("/jarvis/connector/status", dependencies=[Depends(require_key)])
 async def connector_status():
-    return {"heartbeat": jarvis_connector_heartbeat, "tasks": list(jarvis_connector_tasks.values())[-50:]}
+    durable = await list_durable_tasks(50)
+    tasks = durable or list(jarvis_connector_tasks.values())[-50:]
+    return {"heartbeat": jarvis_connector_heartbeat, "tasks": tasks, "durable": bool(durable)}
 
 
 @app.post("/jarvis/actions/request", dependencies=[Depends(require_key)])
@@ -1237,15 +1269,18 @@ async def cloud_request_action(payload: JarvisConnectorTaskRequest):
     risk = payload.risk if payload.risk in ("read", "write", "execute", "external") else "external"
     task_id = secrets.token_hex(12)
     preview = f"{payload.tool}: {json.dumps(payload.arguments, default=str)[:1000]}"
-    task = {"id": task_id, "tool": payload.tool, "arguments": payload.arguments, "risk": risk, "preview": preview,
+    task = {"id": task_id, "trace_id": secrets.token_hex(16), "actor": "dan", "channel": "dashboard",
+            "tool": payload.tool, "arguments": payload.arguments, "risk": risk, "executor": "local",
+            "idempotency_key": f"requested:{task_id}", "preview": preview,
             "status": "queued" if risk == "read" else "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z", "updated_at": datetime.utcnow().isoformat() + "Z"}
     jarvis_connector_tasks[task_id] = task
+    await save_durable_task(task)
     return task
 
 
 @app.post("/jarvis/actions/{task_id}/decision", dependencies=[Depends(require_key)])
 async def cloud_decide_action(task_id: str, payload: JarvisApprovalDecision):
-    task = jarvis_connector_tasks.get(task_id)
+    task = jarvis_connector_tasks.get(task_id) or await load_durable_task(task_id)
     if not task or task["status"] != "awaiting_approval":
         raise HTTPException(404, "Pending approval not found")
     if not payload.approved:
@@ -1255,6 +1290,7 @@ async def cloud_decide_action(task_id: str, payload: JarvisApprovalDecision):
         try:
             task["result"] = await execute_write_tool(task["tool"], task["arguments"])
             task["status"] = "completed"
+            task["completed_at"] = datetime.utcnow().isoformat() + "Z"
             await _record_jarvis_event("dashboard", f"action:{task['tool']}", success=True)
         except IntegrationUnavailable as exc:
             task["status"] = "failed"
@@ -1262,7 +1298,10 @@ async def cloud_decide_action(task_id: str, payload: JarvisApprovalDecision):
             await _record_jarvis_event("dashboard", f"action:{task['tool']}", success=False, error_class=exc.__class__.__name__)
     else:
         task["status"] = "queued"
+        task["approved_at"] = datetime.utcnow().isoformat() + "Z"
     task["updated_at"] = datetime.utcnow().isoformat() + "Z"
+    jarvis_connector_tasks[task_id] = task
+    await save_durable_task(task)
     return task
 
 

@@ -48,3 +48,13 @@ Operational note: Ollama `llama3.2:3b` is installed, but the machine had only ab
 - Added natural-language Google Calendar event planning plus explicit approval and Google receipt handling.
 - Production verification returned ten no-website prospects and a combined Teo Roofing brief. A test calendar proposal parsed tomorrow's 1–4 PM block correctly and was denied after verification, so no event was created.
 - Imported ignored local reference repositories for OpenClaw, GAIA, BrowserOS, and CoWork OS. No third-party executor or credentials were installed.
+
+## Deep research implementation
+
+- Read all 660 lines of `Codex/deep-research-report.md` and mapped its layered architecture to the existing SummitOS stack.
+- Verified production Google access: Calendar returned 11 upcoming events; Gmail returned 8 unread messages; Drive reports connected.
+- Added meeting preparation across Calendar, Gmail, Drive, GHL, SummitOS, and Firecrawl.
+- Added revenue-first daily executive briefing inputs across Calendar, Gmail, and uncontacted no-website prospects.
+- Added a Supabase-compatible durable action store with actor, channel, trace ID, executor, idempotency key, approval/completion times, result receipts, and in-memory fallback.
+- Expanded `jarvis_supabase_migration.sql`; the migration must still be run in the `ava-studio` Supabase SQL Editor.
+- Installed and validated private Codex skills: `summit-daily-executive-brief`, `summit-meeting-prep`, `summit-ghl-sales-ops`, and `summit-durable-workflow`.

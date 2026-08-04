@@ -177,6 +177,69 @@ async def gmail_search(query: str = "is:unread", limit: int = 10) -> dict:
     return {"query": query, "messages": messages}
 
 
+async def google_drive_search(query: str, limit: int = 10) -> dict:
+    token = await _google_access_token()
+    safe_query = query.replace("'", "\\'").strip()
+    params = {
+        "q": f"trashed = false and fullText contains '{safe_query}'" if safe_query else "trashed = false",
+        "pageSize": min(max(limit, 1), 25),
+        "orderBy": "modifiedTime desc",
+        "fields": "files(id,name,mimeType,modifiedTime,webViewLink,owners(displayName,emailAddress))",
+    }
+    response = await _request_with_retry("GET", "https://www.googleapis.com/drive/v3/files", headers={"Authorization": f"Bearer {token}"}, params=params)
+    return {"query": query, "files": response.json().get("files", [])}
+
+
+async def meeting_prep(query: str = "next meeting") -> dict:
+    """Assemble one observed meeting dossier across the connected business systems."""
+    calendar = await google_calendar_upcoming(30, 50)
+    events = calendar.get("events", [])
+    needle = query.casefold().replace("meeting brief", "").replace("meeting prep", "").strip(" :,.?")
+    generic = not needle or needle in {"next", "next meeting", "my next meeting", "upcoming"}
+    selected = None
+    if generic:
+        selected = events[0] if events else None
+    else:
+        selected = next((event for event in events if needle in str(event.get("summary", "")).casefold() or any(needle in str(a).casefold() for a in event.get("attendees", []))), None)
+    if not selected:
+        return {"query": query, "meeting": None, "calendar_events_checked": len(events), "message": "No matching upcoming calendar event was found."}
+    attendee_emails = [a.get("email") for a in selected.get("attendees", []) if isinstance(a, dict) and a.get("email")]
+    search_term = str(selected.get("summary") or needle or "").strip()
+    gmail_query = f'newer_than:2y "{search_term}"' if search_term else "newer_than:30d"
+    ghl_query = attendee_emails[0] if attendee_emails else search_term
+    results = await asyncio.gather(
+        gmail_search(gmail_query, 12),
+        ghl_search_contacts(ghl_query, 10),
+        google_drive_search(search_term, 10),
+        prospect_company_brief(search_term),
+        return_exceptions=True,
+    )
+    labels = ("gmail", "ghl", "drive", "company_intelligence")
+    dossier = {label: ({"unavailable": str(value)} if isinstance(value, Exception) else value) for label, value in zip(labels, results)}
+    return {
+        "meeting": selected,
+        "attendee_emails": attendee_emails,
+        **dossier,
+        "briefing_requirements": ["meeting objective", "relationship history", "open promises", "likely needs", "talking points", "objections", "next best action"],
+    }
+
+
+async def daily_executive_inputs() -> dict:
+    """Return observed inputs for a revenue-first daily briefing."""
+    results = await asyncio.gather(
+        google_calendar_upcoming(2, 25),
+        gmail_search("is:unread", 12),
+        prospects_without_website(10),
+        return_exceptions=True,
+    )
+    labels = ("calendar", "unread_email", "no_website_prospects")
+    return {
+        "captured_at": datetime.now(timezone.utc).isoformat(),
+        "outreach_paused": True,
+        **{label: ({"unavailable": str(value)} if isinstance(value, Exception) else value) for label, value in zip(labels, results)},
+    }
+
+
 READ_TOOLS = {
     "integrations_status": lambda args: integration_status(),
     "ghl_pipelines": lambda args: ghl_pipelines(),
@@ -186,6 +249,9 @@ READ_TOOLS = {
     "web_research": lambda args: web_research(str(args.get("query", "")), int(args.get("limit", 5))),
     "calendar_upcoming": lambda args: google_calendar_upcoming(int(args.get("days", 7)), int(args.get("limit", 20))),
     "gmail_search": lambda args: gmail_search(str(args.get("query", "is:unread")), int(args.get("limit", 10))),
+    "drive_search": lambda args: google_drive_search(str(args.get("query", "")), int(args.get("limit", 10))),
+    "meeting_prep": lambda args: meeting_prep(str(args.get("query", "next meeting"))),
+    "daily_executive_inputs": lambda args: daily_executive_inputs(),
 }
 
 WRITE_TOOLS = {
