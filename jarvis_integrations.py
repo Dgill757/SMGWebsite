@@ -248,9 +248,9 @@ async def gmail_search(query: str = "is:unread", limit: int = 10) -> dict:
     items = response.json().get("messages", [])
     messages = []
     for item in items:
-        detail = await _request_with_retry("GET", f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{item['id']}", headers=headers, params={"format": "metadata", "metadataHeaders": ["From", "Subject", "Date"]})
+        detail = await _request_with_retry("GET", f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{item['id']}", headers=headers, params={"format": "metadata", "metadataHeaders": ["From", "Subject", "Date", "List-Unsubscribe", "Precedence", "Auto-Submitted"]})
         data = detail.json(); meta = {h["name"].lower(): h["value"] for h in data.get("payload", {}).get("headers", [])}
-        messages.append({"id": data.get("id"), "thread_id": data.get("threadId"), "from": meta.get("from"), "subject": meta.get("subject"), "date": meta.get("date"), "snippet": data.get("snippet")})
+        messages.append({"id": data.get("id"), "thread_id": data.get("threadId"), "from": meta.get("from"), "subject": meta.get("subject"), "date": meta.get("date"), "snippet": data.get("snippet"), "mailing_list": bool(meta.get("list-unsubscribe")), "precedence": meta.get("precedence"), "auto_submitted": meta.get("auto-submitted")})
     return {"query": query, "messages": messages}
 
 
@@ -260,7 +260,8 @@ async def gmail_inbox_triage(limit: int = 25) -> dict:
     buckets = {"reply_now": [], "revenue_or_client": [], "calendar_or_meeting": [], "newsletter_or_automated": [], "other": []}
     for message in result.get("messages", []):
         text = " ".join(str(message.get(k) or "") for k in ("from", "subject", "snippet")).casefold()
-        if any(term in text for term in ("unsubscribe", "newsletter", "no-reply", "noreply", "notification")):
+        automated_headers = message.get("mailing_list") or str(message.get("precedence") or "").casefold() in {"bulk", "list", "junk"} or str(message.get("auto_submitted") or "").casefold() not in {"", "no"}
+        if automated_headers or any(term in text for term in ("unsubscribe", "newsletter", "no-reply", "noreply", "notification", "webinar", "limited time", "special offer", "sale ends", "digest", "your weekly", "free training")):
             bucket = "newsletter_or_automated"
         elif any(term in text for term in ("meeting", "calendar", "invite", "appointment", "reschedule")):
             bucket = "calendar_or_meeting"

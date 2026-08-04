@@ -31,7 +31,7 @@ GHL_BASE        = os.getenv("GHL_BASE_URL", "https://services.leadconnectorhq.co
 GHL_LOCATION    = os.getenv("GHL_LOCATION_ID", "u1lprxdJy1vmuaHEVJRM")
 SLACK_WEBHOOK   = os.getenv("SLACK_WEBHOOK_URL", "")
 AVA_API_URL     = os.getenv("AVA_API_URL", "https://ava-studio-api-production.up.railway.app")
-AVA_API_KEY     = os.getenv("AVA_API_KEY", os.getenv("AVA_API_KEY", ""))
+AVA_API_KEY     = os.getenv("AVA_API_KEY", "")
 VAULT_BASE      = r"C:\Users\DanGi\SummitVault\CLIENTS\ACTIVE"
 LOG_FILE        = r"C:\Users\DanGi\scripts\client_manager.log"
 
