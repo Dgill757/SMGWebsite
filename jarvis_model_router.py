@@ -88,8 +88,11 @@ async def _openai_compatible(
         "model": model,
         "messages": _openai_messages(system, messages),
         "temperature": 0.25,
-        "max_tokens": max_tokens,
     }
+    if provider == "openai":
+        payload["max_completion_tokens"] = max_tokens
+    else:
+        payload["max_tokens"] = max_tokens
     async with httpx.AsyncClient(timeout=75) as client:
         response = await client.post(
             f"{base_url.rstrip('/')}/chat/completions", headers=headers, json=payload

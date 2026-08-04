@@ -96,6 +96,7 @@ class SafetyAndFrontendTests(unittest.TestCase):
         self.assertIn('conversation_history', api)
         self.assertIn('provider == "openai"', router)
         self.assertIn('provider == "gemini"', router)
+        self.assertIn('payload["max_completion_tokens"]', router)
         self.assertIn('event.get("type") == "dtmf"', api)
         self.assertIn('validator.validate(public_ws_url', api)
 

@@ -959,7 +959,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
     elif any(phrase in lower for phrase in ("prepare me for my next meeting", "prep my next meeting", "meeting prep", "upcoming meeting brief")):
         query = re.sub(r"(?i).*?(prepare me for|prep|meeting prep|upcoming meeting brief)(?: my| for| on| about)?", "", message).strip(" :,.?") or "next meeting"
         integration_plan = ("meeting_prep", {"query": query})
-    elif ("reach out" in lower and any(term in lower for term in ("who", "business", "prospect", "lead", "company"))) or any(phrase in lower for phrase in ("prospects without a website", "doesn't have a website", "do not have a website")):
+    elif ("reach out" in lower and any(term in lower for term in ("who", "business", "prospect", "lead", "company"))) or any(phrase in lower for phrase in ("prospects without a website", "businesses without websites", "companies without websites", "doesn't have a website", "do not have a website")):
         integration_plan = ("prospects_without_website", {"limit": 10})
     elif any(phrase in lower for phrase in ("meeting brief on", "company brief on", "prospect brief on", "research prospect", "cold call brief")):
         query = re.sub(r"(?i).*?(meeting brief on|company brief on|prospect brief on|research prospect|cold call brief)(?: for| about| on)?", "", message).strip(" :,.?")
