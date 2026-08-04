@@ -891,6 +891,13 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         or (any(term in lower for term in ("text me", "send me a text", "send sms", "sms me")))
     )
     if cloud_action:
+        explicit_draft = re.search(
+            r"(?is)draft an email to\s+([^\s,;]+@[^\s,;]+)\s+with subject\s+(.+?)\s+and body\s+(.+?)(?:\.|$)",
+            message.strip(),
+        )
+        if explicit_draft:
+            arguments = {"to": explicit_draft.group(1), "subject": explicit_draft.group(2).strip(), "body": explicit_draft.group(3).strip()}
+            return await _queue_cloud_action(channel, "gmail_create_draft", arguments, f"Create Gmail draft to {arguments['to']} with subject: {arguments['subject']}")
         try:
             planned = await ask_jarvis_model(
                 anthropic_client=ai, system=JARVIS_CLOUD_ACTION_PLAN_SYSTEM,
@@ -987,6 +994,19 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
             else:
                 answer += " No required SummitOS Google scopes are missing."
             return answer
+        if tool_name == "calendar_availability" and isinstance(observed, dict):
+            slots = observed.get("available_slots") or []
+            if not slots:
+                return "I found no free business-hour slots in the requested calendar window."
+            lines = ["Your first free calendar openings (America/New_York) are:"]
+            for slot in slots[:8]:
+                try:
+                    start = datetime.fromisoformat(str(slot["start"])).astimezone()
+                    end = datetime.fromisoformat(str(slot["end"])).astimezone()
+                    lines.append(f"- {start:%A, %B %d, %I:%M %p} to {end:%I:%M %p}")
+                except (KeyError, ValueError, TypeError):
+                    continue
+            return "\n".join(lines)
         raw = json.dumps(observed, default=str)[:24000]
         answer_rules = (
             "Use only observed fields. Distinguish facts from hypotheses. Include real source URLs when public research is present; do not invent numeric footnotes. "
