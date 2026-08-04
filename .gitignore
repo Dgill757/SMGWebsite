@@ -39,3 +39,5 @@ vercel_deploy/.vercel/
 # Screenshots (80MB+ of Playwright captures)
 *.png
 screenshots/
+# Research repositories are local references, not SummitOS source.
+references/
