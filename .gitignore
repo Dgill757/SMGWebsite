@@ -41,3 +41,5 @@ vercel_deploy/.vercel/
 screenshots/
 # Research repositories are local references, not SummitOS source.
 references/
+
+.vercel
