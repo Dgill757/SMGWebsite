@@ -182,6 +182,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 .jarvis-orb:after{inset:44px;border-width:2px;box-shadow:0 0 28px rgba(59,232,255,.35),inset 0 0 22px rgba(59,232,255,.2);animation:jarvisPulse 3.2s ease-in-out infinite}
 .jarvis-core{width:78px;height:78px;border-radius:50%;background:radial-gradient(circle,#E7EEFA 0,var(--acc) 18%,rgba(59,232,255,.16) 55%,transparent 68%);box-shadow:0 0 44px var(--acc)}
 .jarvis-orb.thinking:before{border-color:var(--yel);animation-duration:1.5s}.jarvis-orb.thinking:after{border-color:var(--yel);box-shadow:0 0 36px rgba(255,176,32,.55)}
+.jarvis-orb.limited:before,.jarvis-orb.limited:after{border-color:var(--yel)}
 .jarvis-orb.error:before,.jarvis-orb.error:after{border-color:var(--red)}
 .jarvis-state{font:600 .68rem 'JetBrains Mono';letter-spacing:.2em;text-transform:uppercase;color:var(--acc);margin-top:22px}
 .jarvis-chat{display:flex;flex-direction:column;min-height:500px}
@@ -736,7 +737,7 @@ async function sendJarvis(){
     var response=await fetch(API+'/jarvis/chat',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({message:message,history:prior})});
     var data=await response.json().catch(function(){return{}});
     if(!response.ok)throw new Error(data.detail||('Request failed '+response.status));
-    jarvisAdd('assistant',data.response||'I could not produce a response.',true);setJarvisState('','Online');
+    jarvisAdd('assistant',data.response||'I could not produce a response.',true);setJarvisState(data.state==='limited'?'limited':'',data.state==='limited'?'Limited mode':'Online');
     txt('j-updated','Context updated '+new Date(data.context_updated_at||Date.now()).toLocaleTimeString([], {hour:'numeric',minute:'2-digit'}));
   }catch(err){jarvisAdd('assistant','I hit a connection problem: '+err.message,false);setJarvisState('error','Connection error')}
   finally{button.disabled=false;button.textContent='Send';input.focus()}

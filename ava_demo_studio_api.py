@@ -808,6 +808,24 @@ async def jarvis_chat(req: JarvisChatRequest, x_api_key: str = Header(default=""
             context_updated_at=context["captured_at"],
         )
     except anthropic.APIError as exc:
+        if "credit balance is too low" in str(exc).lower():
+            summary = context.get("ceo_summary") or {}
+            health = context.get("agent_health") or {}
+            replies = context.get("recent_replies") or []
+            answer = (
+                "I am connected to SummitOS, but the Anthropic API account is out of credits, "
+                "so conversational reasoning is temporarily limited.\n\n"
+                f"Live snapshot: ${float(summary.get('mrr') or 0):,.0f} MRR, "
+                f"{summary.get('clients') or 0} clients, "
+                f"{len(replies) if isinstance(replies, list) else 0} conversations in the reply queue, "
+                f"and {(health.get('ok') or 0) + (health.get('running') or 0)} reporting agents online.\n\n"
+                "Automated outreach is paused. Add Anthropic API credits to unlock full Jarvis answers."
+            )
+            return JarvisChatResponse(
+                response=answer,
+                state="limited",
+                context_updated_at=context["captured_at"],
+            )
         raise HTTPException(status_code=502, detail=f"Jarvis model unavailable: {exc.__class__.__name__}")
 
 
