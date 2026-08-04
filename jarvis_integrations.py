@@ -8,8 +8,10 @@ caller can require approval and idempotency before invoking them.
 from __future__ import annotations
 
 import asyncio
+import base64
 import os
 from datetime import datetime, timedelta, timezone
+from email.message import EmailMessage
 from zoneinfo import ZoneInfo
 from typing import Any
 
@@ -27,9 +29,11 @@ def integration_status() -> dict[str, dict[str, Any]]:
         "ghl": {"ready": bool(os.getenv("GHL_PRIVATE_TOKEN") and os.getenv("GHL_LOCATION_ID")), "capabilities": ["contacts", "pipelines", "opportunity_health", "conversations"]},
         "web_research": {"ready": bool(os.getenv("FIRECRAWL_API_KEY")), "capabilities": ["search", "scrape"]},
         "google_calendar": {"ready": google, "capabilities": ["upcoming_events", "availability", "create_event"]},
-        "gmail": {"ready": google, "capabilities": ["search", "read_metadata", "inbox_triage"]},
+        "gmail": {"ready": google, "capabilities": ["search", "read_full", "inbox_triage", "draft", "send_draft", "label", "archive", "mark_read", "trash"]},
         "google_drive": {"ready": google, "capabilities": ["search", "read"]},
-        "slack": {"ready": bool(os.getenv("SLACK_BOT_TOKEN") or os.getenv("SLACK_WEBHOOK_URL")), "capabilities": ["read", "send"]},
+        "slack": {"ready": bool(os.getenv("SLACK_BOT_TOKEN") or os.getenv("SLACK_WEBHOOK_URL")), "capabilities": ["history", "send"]},
+        "telegram": {"ready": bool(os.getenv("TELEGRAM_BOT_TOKEN") and os.getenv("TELEGRAM_ALLOWED_CHAT_IDS") and os.getenv("TELEGRAM_WEBHOOK_SECRET")), "capabilities": ["receive", "reply"]},
+        "twilio": {"ready": all(os.getenv(k) for k in ("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_NUMBER")), "capabilities": ["inbound_sms", "outbound_sms", "inbound_call", "outbound_call"]},
         "local_computer": {"ready": True, "capabilities": ["files", "git", "processes", "approved_commands"]},
     }
 
@@ -174,6 +178,18 @@ async def _google_access_token() -> str:
     return response.json()["access_token"]
 
 
+async def google_oauth_status() -> dict:
+    token = await _google_access_token()
+    response = await _request_with_retry("GET", "https://oauth2.googleapis.com/tokeninfo", params={"access_token": token})
+    granted = set(str(response.json().get("scope", "")).split())
+    required = {
+        "calendar": "https://www.googleapis.com/auth/calendar",
+        "gmail_modify": "https://www.googleapis.com/auth/gmail.modify",
+        "drive_readonly": "https://www.googleapis.com/auth/drive.readonly",
+    }
+    return {"granted_scopes": sorted(granted), "requirements": {name: scope in granted for name, scope in required.items()}, "missing_scopes": [scope for scope in required.values() if scope not in granted]}
+
+
 async def google_calendar_upcoming(days: int = 7, limit: int = 20) -> dict:
     token = await _google_access_token()
     now = datetime.now(timezone.utc)
@@ -252,6 +268,119 @@ async def gmail_search(query: str = "is:unread", limit: int = 10) -> dict:
         data = detail.json(); meta = {h["name"].lower(): h["value"] for h in data.get("payload", {}).get("headers", [])}
         messages.append({"id": data.get("id"), "thread_id": data.get("threadId"), "from": meta.get("from"), "subject": meta.get("subject"), "date": meta.get("date"), "snippet": data.get("snippet"), "mailing_list": bool(meta.get("list-unsubscribe")), "precedence": meta.get("precedence"), "auto_submitted": meta.get("auto-submitted")})
     return {"query": query, "messages": messages}
+
+
+def _gmail_body(payload: dict) -> str:
+    """Extract a bounded plain-text body from a Gmail payload."""
+    candidates = []
+    def walk(part: dict):
+        mime = part.get("mimeType", "")
+        data = (part.get("body") or {}).get("data")
+        if data and mime in {"text/plain", "text/html"}:
+            try:
+                decoded = base64.urlsafe_b64decode(data + "=" * (-len(data) % 4)).decode("utf-8", errors="replace")
+                candidates.append((0 if mime == "text/plain" else 1, decoded))
+            except (ValueError, TypeError):
+                pass
+        for child in part.get("parts", []) or []:
+            walk(child)
+    walk(payload or {})
+    if not candidates:
+        return ""
+    candidates.sort(key=lambda item: item[0])
+    return candidates[0][1][:20000]
+
+
+async def gmail_get_message(message_id: str) -> dict:
+    if not message_id:
+        raise IntegrationUnavailable("A Gmail message id is required")
+    token = await _google_access_token(); headers = {"Authorization": f"Bearer {token}"}
+    response = await _request_with_retry("GET", f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{message_id}", headers=headers, params={"format": "full"})
+    data = response.json(); meta = {h["name"].lower(): h["value"] for h in data.get("payload", {}).get("headers", [])}
+    return {"id": data.get("id"), "thread_id": data.get("threadId"), "from": meta.get("from"), "to": meta.get("to"), "cc": meta.get("cc"), "subject": meta.get("subject"), "date": meta.get("date"), "labels": data.get("labelIds", []), "body": _gmail_body(data.get("payload", {})), "snippet": data.get("snippet")}
+
+
+async def gmail_create_draft(arguments: dict) -> dict:
+    token = await _google_access_token()
+    recipient, subject, body = (str(arguments.get(k, "")).strip() for k in ("to", "subject", "body"))
+    if not recipient or "@" not in recipient or not subject or not body:
+        raise IntegrationUnavailable("Gmail draft requires a recipient email, subject, and body")
+    message = EmailMessage(); message["To"] = recipient; message["Subject"] = subject
+    if arguments.get("cc"): message["Cc"] = str(arguments["cc"])
+    message.set_content(body)
+    raw = base64.urlsafe_b64encode(message.as_bytes()).decode().rstrip("=")
+    response = await _request_with_retry("POST", "https://gmail.googleapis.com/gmail/v1/users/me/drafts", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json={"message": {"raw": raw, **({"threadId": arguments["thread_id"]} if arguments.get("thread_id") else {})}})
+    created = response.json()
+    return {"created": True, "draft_id": created.get("id"), "message_id": (created.get("message") or {}).get("id"), "to": recipient, "subject": subject}
+
+
+async def gmail_send_draft(arguments: dict) -> dict:
+    draft_id = str(arguments.get("draft_id", "")).strip()
+    if not draft_id:
+        raise IntegrationUnavailable("A Gmail draft id is required")
+    token = await _google_access_token()
+    response = await _request_with_retry("POST", "https://gmail.googleapis.com/gmail/v1/users/me/drafts/send", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json={"id": draft_id})
+    sent = response.json(); return {"sent": True, "message_id": sent.get("id"), "thread_id": sent.get("threadId"), "labels": sent.get("labelIds", [])}
+
+
+async def gmail_modify_message(arguments: dict) -> dict:
+    message_id = str(arguments.get("message_id", "")).strip()
+    if not message_id:
+        raise IntegrationUnavailable("A Gmail message id is required")
+    add = [str(x) for x in arguments.get("add_labels", [])][:20]; remove = [str(x) for x in arguments.get("remove_labels", [])][:20]
+    token = await _google_access_token()
+    response = await _request_with_retry("POST", f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{message_id}/modify", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json={"addLabelIds": add, "removeLabelIds": remove})
+    updated = response.json(); return {"modified": True, "message_id": updated.get("id"), "labels": updated.get("labelIds", [])}
+
+
+async def gmail_trash_message(arguments: dict) -> dict:
+    message_id = str(arguments.get("message_id", "")).strip()
+    if not message_id:
+        raise IntegrationUnavailable("A Gmail message id is required")
+    token = await _google_access_token()
+    response = await _request_with_retry("POST", f"https://gmail.googleapis.com/gmail/v1/users/me/messages/{message_id}/trash", headers={"Authorization": f"Bearer {token}"})
+    return {"trashed": True, "message_id": response.json().get("id")}
+
+
+async def gmail_create_label(arguments: dict) -> dict:
+    name = str(arguments.get("name", "")).strip()
+    if not name:
+        raise IntegrationUnavailable("A Gmail label name is required")
+    token = await _google_access_token()
+    response = await _request_with_retry("POST", "https://gmail.googleapis.com/gmail/v1/users/me/labels", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json={"name": name, "labelListVisibility": "labelShow", "messageListVisibility": "show"})
+    created = response.json(); return {"created": True, "label_id": created.get("id"), "name": created.get("name")}
+
+
+async def slack_history(limit: int = 20) -> dict:
+    token, channel = os.getenv("SLACK_BOT_TOKEN", ""), os.getenv("SLACK_CHANNEL_ID", "")
+    if not token or not channel:
+        raise IntegrationUnavailable("SLACK_BOT_TOKEN and SLACK_CHANNEL_ID are required")
+    response = await _request_with_retry("GET", "https://slack.com/api/conversations.history", headers={"Authorization": f"Bearer {token}"}, params={"channel": channel, "limit": min(max(limit, 1), 50)})
+    payload = response.json()
+    if not payload.get("ok"):
+        raise IntegrationUnavailable(f"Slack rejected history request: {payload.get('error', 'unknown')}")
+    return {"channel_id": channel, "messages": [{"ts": m.get("ts"), "user": m.get("user"), "text": m.get("text", "")[:2000]} for m in payload.get("messages", [])]}
+
+
+async def slack_send_message(arguments: dict) -> dict:
+    token = os.getenv("SLACK_BOT_TOKEN", ""); channel = str(arguments.get("channel_id") or os.getenv("SLACK_CHANNEL_ID", "")).strip(); message = str(arguments.get("message", "")).strip()
+    if not token or not channel or not message:
+        raise IntegrationUnavailable("Slack bot token, channel id, and message are required")
+    response = await _request_with_retry("POST", "https://slack.com/api/chat.postMessage", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json={"channel": channel, "text": message[:4000]})
+    payload = response.json()
+    if not payload.get("ok"):
+        raise IntegrationUnavailable(f"Slack rejected message: {payload.get('error', 'unknown')}")
+    return {"sent": True, "channel_id": payload.get("channel"), "timestamp": payload.get("ts")}
+
+
+async def twilio_send_sms(arguments: dict) -> dict:
+    sid, auth, sender = os.getenv("TWILIO_ACCOUNT_SID", ""), os.getenv("TWILIO_AUTH_TOKEN", ""), os.getenv("TWILIO_NUMBER", "")
+    destination = str(arguments.get("to", "")).strip(); message = str(arguments.get("message", "")).strip()
+    allowed = {x.strip() for x in os.getenv("JARVIS_ALLOWED_SMS_RECIPIENTS", os.getenv("DAN_PHONE_NUMBER", "")).split(",") if x.strip()}
+    if not sid or not auth or not sender or destination not in allowed or not message:
+        raise IntegrationUnavailable("Twilio is incomplete or the destination is not allowlisted")
+    response = await _request_with_retry("POST", f"https://api.twilio.com/2010-04-01/Accounts/{sid}/Messages.json", auth=(sid, auth), data={"To": destination, "From": sender, "Body": message[:1500]})
+    payload = response.json(); return {"sent": True, "message_sid": payload.get("sid"), "status": payload.get("status"), "to": destination}
 
 
 async def gmail_inbox_triage(limit: int = 25) -> dict:
@@ -342,6 +471,7 @@ async def daily_executive_inputs() -> dict:
 
 READ_TOOLS = {
     "integrations_status": lambda args: integration_status(),
+    "google_oauth_status": lambda args: google_oauth_status(),
     "ghl_pipelines": lambda args: ghl_pipelines(),
     "ghl_search_contacts": lambda args: ghl_search_contacts(str(args.get("query", "")), int(args.get("limit", 20))),
     "ghl_opportunity_health": lambda args: ghl_opportunity_health(int(args.get("limit", 100)), int(args.get("stale_days", 7))),
@@ -351,7 +481,9 @@ READ_TOOLS = {
     "calendar_upcoming": lambda args: google_calendar_upcoming(int(args.get("days", 7)), int(args.get("limit", 20))),
     "calendar_availability": lambda args: google_calendar_availability(int(args.get("days", 5)), int(args.get("duration_minutes", 30))),
     "gmail_search": lambda args: gmail_search(str(args.get("query", "is:unread")), int(args.get("limit", 10))),
+    "gmail_get_message": lambda args: gmail_get_message(str(args.get("message_id", ""))),
     "gmail_inbox_triage": lambda args: gmail_inbox_triage(int(args.get("limit", 25))),
+    "slack_history": lambda args: slack_history(int(args.get("limit", 20))),
     "drive_search": lambda args: google_drive_search(str(args.get("query", "")), int(args.get("limit", 10))),
     "meeting_prep": lambda args: meeting_prep(str(args.get("query", "next meeting"))),
     "daily_executive_inputs": lambda args: daily_executive_inputs(),
@@ -359,6 +491,13 @@ READ_TOOLS = {
 
 WRITE_TOOLS = {
     "calendar_create_event": google_calendar_create_event,
+    "gmail_create_draft": gmail_create_draft,
+    "gmail_send_draft": gmail_send_draft,
+    "gmail_modify_message": gmail_modify_message,
+    "gmail_trash_message": gmail_trash_message,
+    "gmail_create_label": gmail_create_label,
+    "slack_send_message": slack_send_message,
+    "twilio_send_sms": twilio_send_sms,
 }
 
 

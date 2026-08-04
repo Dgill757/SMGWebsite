@@ -4,7 +4,7 @@ Summit Voice AI | FastAPI + Firecrawl + Claude + Vercel
 Deploy to Railway.
 """
 
-import os, json, re, time, base64, httpx, asyncio, secrets
+import os, json, re, time, base64, httpx, asyncio, secrets, html as html_lib
 from datetime import datetime, timedelta
 from typing import Set
 from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request, Depends, Response
@@ -813,6 +813,19 @@ JARVIS_CALENDAR_PLAN_SYSTEM = """Convert Dan's calendar request into one propose
 {"tool":"calendar_create_event","arguments":{"summary":"...","start":"RFC3339 with offset","end":"RFC3339 with offset","time_zone":"America/New_York","description":"...","location":"","attendees":[],"reminder_minutes":15}}
 Use the supplied current date and America/New_York. Preserve explicit times and dates. A vacation block is an event covering the requested daytime range. If a required date or start time is genuinely missing, return {"tool":"none","missing":"what is needed"}. Do not invent attendee email addresses."""
 
+JARVIS_CLOUD_ACTION_PLAN_SYSTEM = """Translate Dan's explicit request into exactly one proposed external action. Return JSON only.
+Allowed schemas:
+{"tool":"gmail_create_draft","arguments":{"to":"email","subject":"subject","body":"complete draft","cc":"","thread_id":""}}
+{"tool":"gmail_send_draft","arguments":{"draft_id":"gmail draft id"}}
+{"tool":"gmail_modify_message","arguments":{"message_id":"gmail message id","add_labels":[],"remove_labels":[]}}
+Use Gmail system labels: remove INBOX to archive, remove UNREAD to mark read, add STARRED to star.
+{"tool":"gmail_trash_message","arguments":{"message_id":"gmail message id"}}
+{"tool":"gmail_create_label","arguments":{"name":"label name"}}
+{"tool":"slack_send_message","arguments":{"channel_id":"optional configured default","message":"complete message"}}
+{"tool":"twilio_send_sms","arguments":{"to":"E.164 allowlisted number","message":"complete message"}}
+If a required recipient, message id, draft id, phone number, subject, or content is missing, return {"tool":"none","missing":"specific missing information"}.
+Never invent identifiers or recipients. Draft means create a draft, never send. Delete email means move to Trash, never permanently delete. Preserve Dan's intended content and do not add claims."""
+
 
 def _extract_json_object(text: str) -> dict | None:
     try:
@@ -820,6 +833,20 @@ def _extract_json_object(text: str) -> dict | None:
         return json.loads(text[start:end + 1]) if start >= 0 and end > start else None
     except (ValueError, TypeError, json.JSONDecodeError):
         return None
+
+
+async def _queue_cloud_action(channel: str, tool: str, arguments: dict, preview: str, risk: str = "external") -> str:
+    task_id = secrets.token_hex(12); trace_id = secrets.token_hex(16)
+    task = {
+        "id": task_id, "trace_id": trace_id, "actor": "dan", "channel": channel,
+        "tool": tool, "arguments": arguments, "risk": risk, "executor": "cloud",
+        "preview": preview, "idempotency_key": f"{tool}:{task_id}",
+        "status": "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z",
+        "updated_at": datetime.utcnow().isoformat() + "Z",
+    }
+    jarvis_connector_tasks[task_id] = task
+    await save_durable_task(task)
+    return f"I prepared this action but have not executed it.\n\n{preview}\n\nApprove action {task_id} in the dashboard, or reply /approve {task_id}."
 
 
 async def _maybe_local_tool(message: str, channel: str) -> str | None:
@@ -858,6 +885,28 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         await save_durable_task(task)
         return f"Denied {task_id}. Nothing was executed."
     integration_plan = None
+    cloud_action = (
+        (any(term in lower for term in ("email", "gmail", "inbox")) and any(term in lower for term in ("draft", "send draft", "archive", "mark read", "star", "label", "trash", "delete")))
+        or ("slack" in lower and any(term in lower for term in ("send", "post", "message", "tell")))
+        or (any(term in lower for term in ("text me", "send me a text", "send sms", "sms me")))
+    )
+    if cloud_action:
+        try:
+            planned = await ask_jarvis_model(
+                anthropic_client=ai, system=JARVIS_CLOUD_ACTION_PLAN_SYSTEM,
+                messages=[{"role": "user", "content": f"REQUEST: {message}"}], max_tokens=1000,
+            )
+            plan = _extract_json_object(planned.text) or {}
+        except JarvisProvidersUnavailable:
+            return "I can prepare that action, but a reasoning provider is required to translate it safely."
+        tool = str(plan.get("tool", "")); arguments = plan.get("arguments") if isinstance(plan.get("arguments"), dict) else {}
+        allowed = {"gmail_create_draft", "gmail_send_draft", "gmail_modify_message", "gmail_trash_message", "gmail_create_label", "slack_send_message", "twilio_send_sms"}
+        if tool not in allowed:
+            return f"I need one detail before I can prepare that action: {plan.get('missing') or 'the exact recipient or item identifier'}."
+        safe_preview = json.dumps(arguments, default=str)
+        if tool == "gmail_create_draft" and arguments.get("body"):
+            safe_preview = json.dumps({**arguments, "body": str(arguments["body"])[:1200]}, default=str)
+        return await _queue_cloud_action(channel, tool, arguments, f"{tool}: {safe_preview}", "destructive" if tool == "gmail_trash_message" else "external")
     calendar_write = (
         ("calendar" in lower and any(term in lower for term in ("schedule", "add", "create", "block", "remind")))
         or any(term in lower for term in ("schedule a meeting", "block off", "time block", "put it on my calendar"))
@@ -874,22 +923,13 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
             return "I can create that calendar event after approval, but a reasoning provider is required to translate the natural-language date safely."
         if plan.get("tool") != "calendar_create_event":
             return f"I need one detail before I can prepare that calendar event: {plan.get('missing') or 'the date and start time'}."
-        task_id = secrets.token_hex(12)
         arguments = plan.get("arguments") if isinstance(plan.get("arguments"), dict) else {}
         preview = f"Create Google Calendar event: {json.dumps(arguments, default=str)}"
-        trace_id = secrets.token_hex(16)
-        jarvis_connector_tasks[task_id] = {
-            "id": task_id, "trace_id": trace_id, "actor": "dan", "channel": channel,
-            "tool": "calendar_create_event", "arguments": arguments,
-            "risk": "external", "executor": "cloud", "preview": preview,
-            "idempotency_key": f"calendar:{task_id}",
-            "status": "awaiting_approval", "created_at": datetime.utcnow().isoformat() + "Z",
-            "updated_at": datetime.utcnow().isoformat() + "Z",
-        }
-        await save_durable_task(jarvis_connector_tasks[task_id])
-        return f"I prepared this calendar action but have not executed it.\n\n{preview}\n\nApprove action {task_id} in the dashboard, or reply /approve {task_id}."
+        return await _queue_cloud_action(channel, "calendar_create_event", arguments, preview)
     if "integration status" in lower or "what can you access" in lower or "which tools" in lower:
         integration_plan = ("integrations_status", {})
+    elif "google oauth" in lower or "google scopes" in lower or "gmail permissions" in lower:
+        integration_plan = ("google_oauth_status", {})
     elif any(phrase in lower for phrase in ("morning brief", "daily brief", "executive brief", "what should i do today", "highest leverage today")):
         integration_plan = ("daily_executive_inputs", {})
     elif any(phrase in lower for phrase in ("prepare me for my next meeting", "prep my next meeting", "meeting prep", "upcoming meeting brief")):
@@ -917,6 +957,11 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
         integration_plan = ("calendar_availability", {"days": 7, "duration_minutes": 30})
     elif any(phrase in lower for phrase in ("triage my inbox", "clean up my inbox", "prioritize my email", "inbox priorities")):
         integration_plan = ("gmail_inbox_triage", {"limit": 25})
+    elif "read gmail message" in lower or "read email id" in lower:
+        message_id = message.rsplit(maxsplit=1)[-1].strip()
+        integration_plan = ("gmail_get_message", {"message_id": message_id})
+    elif "slack" in lower and any(term in lower for term in ("history", "recent", "what happened", "updates")):
+        integration_plan = ("slack_history", {"limit": 20})
     elif any(phrase in lower for phrase in ("unread email", "unread mail", "check my inbox", "recent email")):
         integration_plan = ("gmail_search", {"query": "is:unread", "limit": 10})
     elif any(phrase in lower for phrase in ("search my drive", "find in drive", "google drive")):
@@ -1155,6 +1200,22 @@ async def _validate_twilio_http(request: Request):
     return form
 
 
+@app.post("/jarvis/sms/webhook")
+async def jarvis_sms_webhook(request: Request):
+    form = await _validate_twilio_http(request)
+    sender = str(form.get("From", "")); text = str(form.get("Body", "")).strip()
+    allowed = {item.strip() for item in os.getenv("JARVIS_ALLOWED_CALLERS", "").split(",") if item.strip()}
+    if sender not in allowed:
+        xml = '<?xml version="1.0" encoding="UTF-8"?><Response><Message>This number is private.</Message></Response>'
+        return Response(content=xml, media_type="application/xml")
+    if not text:
+        answer = "Send me a business or system request."
+    else:
+        answer = await _jarvis_channel_answer(text, "sms")
+    xml = f'<?xml version="1.0" encoding="UTF-8"?><Response><Message>{html_lib.escape(answer[:1500])}</Message></Response>'
+    return Response(content=xml, media_type="application/xml")
+
+
 @app.post("/jarvis/phone/twiml")
 async def jarvis_phone_twiml(request: Request):
     form = await _validate_twilio_http(request)
@@ -1167,7 +1228,8 @@ async def jarvis_phone_twiml(request: Request):
     xml = (
         '<?xml version="1.0" encoding="UTF-8"?><Response><Connect>'
         f'<ConversationRelay url="{ws_url}" welcomeGreeting="JARVIS online. Please say your four digit PIN." '
-        'welcomeGreetingInterruptible="speech" interruptible="true" dtmfDetection="true" '
+        'welcomeGreetingInterruptible="speech" interruptible="speech" interruptSensitivity="high" '
+        'reportInputDuringAgentSpeech="speech" preemptible="true" speechTimeout="700" dtmfDetection="true" '
         'hints="Summit Voice AI,GoHighLevel,roofing,MRR" />'
         '</Connect></Response>'
     )
