@@ -111,12 +111,15 @@ class SafetyAndFrontendTests(unittest.TestCase):
         api = (ROOT / "ava_demo_studio_api.py").read_text(encoding="utf-8-sig")
         html = (ROOT / "vercel_deploy" / "index.html").read_text(encoding="utf-8-sig")
         migration = (ROOT / "prospect_workbench_migration.sql").read_text(encoding="utf-8-sig")
-        for route in ("/growth/plan", "/growth/daily-brief", "/prospects/{business_id}/profile", "/prospects/{business_id}/audit", "/prospects/{business_id}/notes", "/agents/verified-status", "/prospect-enrichment/enqueue", "/prospect-enrichment/run"):
+        for route in ("/growth/plan", "/growth/daily-brief", "/growth/benchmarks", "/executives/{role}/ask", "/prospects/{business_id}/profile", "/prospects/{business_id}/audit", "/prospects/{business_id}/notes", "/agents/verified-status", "/prospect-enrichment/enqueue", "/prospect-enrichment/run"):
             self.assertIn(route, api)
         self.assertIn('tool_name == "daily_executive_inputs"', api)
         self.assertIn('"automated_sending": "paused"', api)
         for capability in ("Run Full Website + Sales Audit", "Save + sync to GHL", "Add to Today\\'s Call List", "dial_to_conversation_rate"):
             self.assertIn(capability, html)
+        for capability in ("Revenue Mission Control", "Executive Cabinet", "catch-up dials", "MRR milestone", "askExecutive"):
+            self.assertIn(capability, html)
+        self.assertIn("(10000, 25000, 50000, 85000, 100000)", api)
         for table in ("prospect_intelligence", "prospect_notes", "prospect_call_list", "prospect_enrichment_jobs", "agent_runs"):
             self.assertIn("create table if not exists " + table, migration.lower())
 

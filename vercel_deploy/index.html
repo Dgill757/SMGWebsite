@@ -30,6 +30,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,18,.95
 .tab-btn.active{color:var(--acc)}
 .nav-r{display:flex;align-items:center;gap:16px;font-size:.78rem;color:var(--txt2);white-space:nowrap}
 .nav-r b{color:var(--txt)}
+.goal-grid{display:grid;grid-template-columns:repeat(5,minmax(150px,1fr));gap:10px;margin-bottom:18px}.goal-card{background:linear-gradient(145deg,var(--s1),#101b31);border:1px solid var(--bdr);border-radius:12px;padding:16px;text-align:left;cursor:pointer;color:var(--txt);transition:.18s transform,.18s border-color}.goal-card:hover,.goal-card:focus{transform:translateY(-2px);border-color:var(--acc);outline:none}.goal-card.active{border-color:var(--acc);box-shadow:0 0 0 1px #23d5ef55,0 10px 35px #00d9ff12}.goal-card .target{font-size:1.55rem;font-weight:800}.goal-progress{height:6px;border-radius:5px;background:var(--s2);overflow:hidden;margin:10px 0}.goal-progress span{display:block;height:100%;background:linear-gradient(90deg,var(--acc),var(--grn))}.funnel-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px}.funnel-step{background:var(--s2);border:1px solid var(--bdr);border-radius:10px;padding:12px;text-align:center}.funnel-step b{display:block;font-size:1.25rem;color:var(--acc)}.cabinet-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.exec-card{background:var(--s1);border:1px solid var(--bdr);border-radius:12px;padding:14px;cursor:pointer;color:var(--txt);text-align:left}.exec-card:hover,.exec-card.active{border-color:var(--acc)}.coach-log{min-height:180px;max-height:330px;overflow:auto;background:#080e1b;border:1px solid var(--bdr);border-radius:10px;padding:14px}.coach-msg{margin-bottom:12px;line-height:1.55;white-space:pre-wrap}.coach-msg.dan{color:var(--txt2)}.coach-msg.exec{color:var(--txt)}
 .nav-dot{width:7px;height:7px;border-radius:50%;background:var(--grn);display:inline-block;margin-right:4px;animation:pulse 2s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 /* ── MAIN ── */
@@ -200,6 +201,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 @media(max-width:1100px){.jarvis-shell{grid-template-columns:280px 1fr}.jarvis-side{grid-column:1/-1}.jarvis-orb{width:190px;height:190px}}
 @media(max-width:760px){.jarvis-shell{grid-template-columns:1fr}.jarvis-orb-zone{min-height:300px}.jarvis-chat{min-height:520px}.jarvis-log{max-height:420px}.jarvis-msg{max-width:94%}}
 @media(prefers-reduced-motion:reduce){.jarvis-orb:before,.jarvis-orb:after,.nav-dot{animation:none!important}}
+@media(max-width:1000px){.goal-grid{grid-template-columns:repeat(2,1fr)}.funnel-grid{grid-template-columns:repeat(3,1fr)}.cabinet-grid{grid-template-columns:repeat(2,1fr)}}
 </style></head>
 <body><div id="toast-wrap"></div><!-- LOGIN -->
 <div id="login">
@@ -226,6 +228,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
     <button class="tab-btn" data-tab="content" onclick="showTab('content')">Content</button>
     <button class="tab-btn" data-tab="clients" onclick="showTab('clients')">Clients</button>
     <button class="tab-btn" data-tab="demos" onclick="showTab('demos')">Demos</button>
+    <button class="tab-btn" data-tab="goals" onclick="showTab('goals')">Goals</button>
     <button class="tab-btn" data-tab="finance" onclick="showTab('finance')">Finance</button>
     <button class="tab-btn" data-tab="intel" onclick="showTab('intel')">Intel</button>
   </div>
@@ -315,7 +318,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
         <option value="">All Departments</option>
         <option>Sales</option><option>Marketing</option><option>Operations</option><option>Intelligence</option><option>Client Success</option>
       </select>
-      <button class="btn btn-acc btn-sm" onclick="openModal('m-deploy')">+ Deploy Agent</button>
+      <button class="btn btn-acc btn-sm" onclick="openModal('m-deploy')">+ Register Workflow</button>
     </div>
   </div>
   <div id="tm-agents" class="agent-grid"><div class="loading">Loading agents...</div></div>
@@ -411,7 +414,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
         <div class="fld"><label>Website URL</label><input id="dm-url" type="url" placeholder="https://theirwebsite.com"></div>
         <div class="fld"><label>GHL Contact ID (optional)</label><input id="dm-cid" type="text" placeholder="Leave blank for manual demo"></div>
         <div class="fld">
-          <label><input type="checkbox" id="dm-deliver" checked style="margin-right:6px">Send email + SMS after build</label>
+          <label><input type="checkbox" id="dm-deliver" disabled style="margin-right:6px">Send email + SMS after build <span class="yellow">(paused)</span></label>
         </div>
         <button class="btn btn-acc w100" style="justify-content:center;padding:11px" onclick="buildDemo()">Build Demo Site</button>
         <div id="dm-progress" style="display:none;margin-top:16px">
@@ -442,6 +445,27 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
       </div>
     </div>
   </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════
+     GOALS TAB
+═══════════════════════════════════════════════════════════════ -->
+<div id="pg-goals" class="tab-pane">
+  <div class="sec-hd"><div><h2>Revenue Mission Control</h2><div class="muted2" style="font-size:.75rem;margin-top:4px">Choose the summit. SummitOS recalculates every step from today to the deadline.</div></div><span id="go-persist" class="badge badge-grey">Loading</span></div>
+  <div id="go-milestones" class="goal-grid"><div class="loading">Calculating milestones...</div></div>
+  <div class="cards3">
+    <div class="card"><div class="stat-l">Current MRR</div><div class="stat-n acc" id="go-current">--</div><div class="muted2" id="go-gap"></div></div>
+    <div class="card"><div class="stat-l">Today's dial mission</div><div class="stat-n" id="go-dials">--</div><div class="muted2" id="go-catchup"></div></div>
+    <div class="card"><div class="stat-l">First-month cash opportunity</div><div class="stat-n green" id="go-cash">--</div><div class="muted2">MRR plus setup fees if required clients close</div></div>
+  </div>
+  <div class="card" style="margin-bottom:18px"><div class="sec-hd mb12"><h2>Funnel required to hit this milestone</h2><span class="badge badge-grey">Planning model, not a promise</span></div><div id="go-funnel" class="funnel-grid"></div><div id="go-assumptions" class="muted2" style="font-size:.74rem;margin-top:12px"></div></div>
+  <div class="cards2" style="align-items:start">
+    <div class="card"><div class="row mb12"><h2>Daily execution scoreboard</h2><span id="go-score" class="badge badge-acc ml-auto">0%</span></div><div id="go-message" style="color:var(--acc);font-weight:700;line-height:1.6;margin-bottom:12px"></div><div id="go-activities" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div><button class="btn btn-grn" style="margin-top:12px" onclick="saveGoalActivity()">Lock in today's numbers</button></div>
+    <div class="card"><div class="sec-hd mb12"><h2>Plan controls</h2></div><div class="cards2" style="margin:0"><div class="fld"><label>Deadline</label><input id="go-date" type="date"></div><div class="fld"><label>Monthly price</label><input id="go-price" type="number" min="1"></div><div class="fld"><label>Setup fee</label><input id="go-setup" type="number" min="0"></div><div class="fld"><label>Workdays/week</label><input id="go-workdays" type="number" min="1" max="7"></div><div class="fld"><label>Dial → conversation %</label><input id="go-connect" type="number" step=".1"></div><div class="fld"><label>Conversation → booking %</label><input id="go-book" type="number" step=".1"></div><div class="fld"><label>Show rate %</label><input id="go-show" type="number" step=".1"></div><div class="fld"><label>Close rate %</label><input id="go-close" type="number" step=".1"></div></div><button class="btn btn-acc" onclick="saveGoalPlan()">Save and recalculate</button></div>
+  </div>
+  <div class="sec-hd" style="margin-top:22px"><div><h2>Executive Cabinet</h2><div class="muted2" style="font-size:.74rem;margin-top:3px">Each executive is grounded in the same live company facts and owns a measurable function.</div></div></div>
+  <div id="go-cabinet" class="cabinet-grid"></div>
+  <div class="card" style="margin-top:12px"><div class="row mb12"><div><h2 id="go-exec-title">Ask the CEO</h2><div class="muted2" id="go-exec-owns"></div></div></div><div id="go-coach-log" class="coach-log"><div class="coach-msg exec">Choose an executive and ask a decision question.</div></div><div class="row" style="gap:8px;margin-top:10px"><textarea id="go-coach-input" style="flex:1;min-height:70px" placeholder="How do we reach the selected milestone faster without wasting cash?"></textarea><button id="go-coach-send" class="btn btn-acc" onclick="askExecutive()">Ask</button></div></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -725,7 +749,7 @@ async function loadHeader(){
 function showTab(t){
   document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===t)});
   document.querySelectorAll('.tab-pane').forEach(function(p){p.style.display=p.id==='pg-'+t?'block':'none'});
-  var loaders={jarvis:loadJarvis,team:loadTeam,pipeline:loadPipeline,content:loadContent,clients:loadClients,demos:loadDemos,finance:loadFinance,intel:loadIntel};
+  var loaders={jarvis:loadJarvis,team:loadTeam,pipeline:loadPipeline,content:loadContent,clients:loadClients,demos:loadDemos,goals:loadGoals,finance:loadFinance,intel:loadIntel};
   if(loaders[t])loaders[t]();
   if(t==='jarvis')history.replaceState(null,'','#jarvis');
 }
@@ -850,8 +874,9 @@ async function loadBrief(){
 
 // ── TEAM ──────────────────────────────────────────────────────────────────
 async function loadTeam(){
-  var [d,feed]=await Promise.all([get('/agents/status'),get('/activity/feed?limit=50')]);
+  var [d,feed]=await Promise.all([get('/agents/verified-status'),get('/activity/feed?limit=50')]);
   _allAgents=d.agents||[];
+  txt('tm-count',(d.verified_total||0)+' verified / '+(d.reported_total||0)+' reported');
   renderAgents(_allAgents);
   // Feed
   var events=feed.events||[];
@@ -859,19 +884,19 @@ async function loadTeam(){
   html('tm-feed',events.length?events.map(function(e){
     return'<div class="feed-item"><div class="feed-icon" style="background:var(--s2);color:var(--acc)">'+((e.agent_name||'?').charAt(0).toUpperCase())+'</div><div class="feed-body"><b style="font-size:.8rem">'+e.agent_name+'</b> <span class="muted2" style="font-size:.75rem">'+e.department+'</span><div style="font-size:.78rem;color:var(--txt2)">'+e.action+' — '+truncate(e.summary,80)+'</div></div><div><div class="feed-time">'+fmtTime(e.created_at)+'</div>'+statusBadge(e.outcome||'ok')+'</div></div>'
   }).join(''):'<div class="loading">No activity logged yet</div>');
-  // Default agents if none in API
-  if(!_allAgents.length){_allAgents=getDefaultAgents();renderAgents(_allAgents);}
+  if(!_allAgents.length)html('tm-agents','<div class="loading">No evidenced employee workflows are registered.</div>');
 }
 
 function renderAgents(agents){
-  txt('tm-count',agents.length+' employees');
+  if(!el('tm-count').textContent.includes('verified'))txt('tm-count',agents.filter(function(a){return a.verification==='verified'}).length+' verified / '+agents.length+' reported');
   if(!agents.length){html('tm-agents','<div class="loading">No agents registered</div>');return;}
   html('tm-agents',agents.map(function(a){
     var dc=dotColor(a.status);
     var bk=a.blockers&&a.blockers.length?'<div style="margin-top:8px;font-size:.73rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:6px;padding:6px 8px;color:var(--yel)">BLOCKED: '+a.blockers.join(', ')+'</div>':'';
     var hi=a.hot_items&&a.hot_items.length?'<div style="margin-top:6px;font-size:.73rem;color:var(--grn)">'+a.hot_items[0]+'</div>':'';
     var stale='';if(a.last_run&&a.last_run!=='Never'){var ageH=(Date.now()-new Date(a.last_run).getTime())/3600000;if(ageH>72)stale=' <span class="badge badge-red" style="font-size:.6rem">STALE '+Math.floor(ageH/24)+'d</span>';else if(ageH>36)stale=' <span class="badge badge-yel" style="font-size:.6rem">'+Math.floor(ageH)+'h</span>';}
-    return'<div class="ag-card"><div class="ag-hd"><div><div class="ag-name">'+a.agent_name+'</div><div class="ag-dept">'+a.department+'</div></div><div class="ag-dot '+dc+'"></div></div><div class="ag-out">'+truncate(a.output_summary,90)+'</div><div class="ag-meta">Last run: '+fmtTime(a.last_run)+stale+(a.next_run?' · Next: '+a.next_run:'')+'</div>'+bk+hi+'<div class="row mt8" style="gap:6px"><button class="btn btn-ghost btn-xs" onclick="viewAgentHistory(\''+a.agent_id+'\')">History</button>'+(a.status==='blocked'?'<button class="btn btn-grn btn-xs" onclick="unblockAgent(\''+a.agent_id+'\')">Unblock</button>':'')+'</div></div>'
+    var verified=a.verification==='verified';var evidence=a.evidence||{};
+    return'<div class="ag-card" style="border-color:'+(verified?'rgba(65,245,160,.28)':'var(--bdr)')+'"><div class="ag-hd"><div><div class="ag-name">'+esc(a.agent_name)+'</div><div class="ag-dept">'+esc(a.department)+'</div></div><span class="badge '+(verified?'badge-grn':'badge-grey')+'">'+(verified?'Verified':'Reported only')+'</span></div><div class="ag-out">'+esc(truncate(a.output_summary||'No output evidence',90))+'</div><div class="ag-meta">Last report: '+fmtTime(a.last_run)+stale+(a.next_run?' · Next: '+esc(a.next_run):'')+'</div>'+(verified?'<div style="font-size:.7rem;color:var(--grn);margin-top:7px">Evidence: '+esc(evidence.action||'completed run')+' · '+fmtTime(evidence.created_at)+'</div>':'<div style="font-size:.7rem;color:var(--yel);margin-top:7px">No fresh run evidence. Do not count as an active employee.</div>')+bk+hi+'<div class="row mt8" style="gap:6px"><button class="btn btn-ghost btn-xs" onclick="viewAgentHistory(\''+a.agent_id+'\')">Evidence history</button></div></div>'
   }).join(''));
 }
 
@@ -897,7 +922,7 @@ function unblockAgent(aid){
 async function deployAgent(){
   var name=el('dep-name').value.trim();
   if(!name){alert('Agent name required');return;}
-  var payload={agent_id:name.toLowerCase().replace(/\s+/g,'_'),agent_name:name,department:el('dep-dept').value,status:'ok',last_run:new Date().toISOString(),output_summary:el('dep-out').value||'New agent deployed',next_run:el('dep-next').value||'',blockers:[],hot_items:[]};
+  var payload={agent_id:name.toLowerCase().replace(/\s+/g,'_'),agent_name:name,department:el('dep-dept').value,status:'idle',last_run:'Never',output_summary:el('dep-out').value||'Workflow registered; awaiting first evidenced run',next_run:el('dep-next').value||'',blockers:[],hot_items:[]};
   await post('/agents/status',payload);
   closeModal('m-deploy');loadTeam();
 }
@@ -1222,6 +1247,33 @@ function copyDemoUrl(){
   if(_curDemoUrl)navigator.clipboard.writeText(_curDemoUrl).then(function(){alert('URL copied!')});
 }
 
+// ── GOALS + EXECUTIVE CABINET ───────────────────────────────────────────
+var _goalData={},_goalRole='ceo',_goalHistory=[];
+async function loadGoals(){
+  var data=await get('/growth/benchmarks');_goalData=data||{};var plan=data.selected_plan||{},settings=plan.settings||{};
+  txt('go-current',fmt$(data.current_mrr||0));txt('go-gap','Selected gap: '+fmt$(plan.gap||0));txt('go-dials',data.today_required_dials||0);txt('go-catchup',(data.catchup_dials_today||0)+' catch-up dials added from yesterday');txt('go-cash',fmt$(plan.projected_new_first_month_cash||0));
+  html('go-persist',plan.persistence_ready?'<span class="green">Live + saved</span>':'Run growth migration');
+  html('go-milestones',(data.milestones||[]).map(function(m){return '<button class="goal-card '+(+m.target_mrr===+data.selected_target?'active':'')+'" onclick="chooseGoal('+m.target_mrr+')"><div class="target">'+fmt$(m.target_mrr)+'</div><div class="muted2">MRR milestone</div><div class="goal-progress"><span style="width:'+m.progress_percent+'%"></span></div><div style="font-size:.72rem">'+m.progress_percent+'% there · '+m.clients_needed+' clients needed</div><div class="muted2" style="font-size:.68rem;margin-top:5px">'+m.dials_needed.toLocaleString()+' estimated dials</div></button>'}).join(''));
+  var funnel=[['Dials',plan.dials_needed],['Conversations',plan.conversations_needed],['Bookings',plan.bookings_needed],['Held demos',plan.held_meetings_needed],['New clients',plan.clients_needed],['New MRR',fmt$(plan.gap||0)]];
+  html('go-funnel',funnel.map(function(x){return '<div class="funnel-step"><b>'+x[1]+'</b><span class="muted2">'+x[0]+'</span></div>'}).join(''));
+  var a=data.assumed_rates||{},o=data.observed_rates||{};html('go-assumptions','Assumed: '+pct(a.dial_to_conversation_rate)+' connect · '+pct(a.conversation_to_booking_rate)+' booking · '+pct(a.show_rate)+' show · '+pct(a.close_rate)+' close. Observed 30-day rates: '+rateOrWaiting(o.dial_to_conversation_rate)+' / '+rateOrWaiting(o.conversation_to_booking_rate)+' / '+rateOrWaiting(o.show_rate)+' / '+rateOrWaiting(o.close_rate)+'.');
+  txt('go-message',data.message||plan.coach_message||'');txt('go-score',(plan.daily_score_percent||0)+'%');
+  var labels={dials:'Dials',conversations:'Live conversations',meetings_booked:'Meetings booked',demos_held:'Demos held',proposals:'Proposals',followups:'Follow-ups',content_published:'Content published',new_clients:'New clients',new_mrr:'New MRR'};var today=plan.today||{},goals=plan.daily_goals||{};
+  html('go-activities',Object.keys(labels).map(function(k){var g=goals[k]||goals[k==='content_published'?'content':k]||0;return '<div class="fld" style="margin:0"><label>'+labels[k]+(g?' / '+g:'')+'</label><input class="go-act" data-field="'+k+'" type="number" min="0" value="'+(today[k]||0)+'"></div>'}).join(''));
+  el('go-date').value=settings.target_date||'';el('go-price').value=settings.average_monthly_price||797;el('go-setup').value=settings.average_setup_fee||1500;el('go-workdays').value=settings.workdays_per_week||5;el('go-connect').value=100*(settings.dial_to_conversation_rate||.12);el('go-book').value=100*(settings.conversation_to_booking_rate||.20);el('go-show').value=100*(settings.show_rate||.8);el('go-close').value=100*(settings.close_rate||.25);
+  var cabinet=await get('/executives');renderCabinet(cabinet.executives||[]);
+}
+function pct(v){return ((+v||0)*100).toFixed(1)+'%'}function rateOrWaiting(v){return v==null?'awaiting data':pct(v)}
+async function chooseGoal(target){var s=Object.assign({},(_goalData.selected_plan||{}).settings||{}, {target_mrr:target});await saveGoalSettings(s,'Milestone selected');}
+function goalSettings(){var s=Object.assign({},(_goalData.selected_plan||{}).settings||{});s.target_mrr=+(_goalData.selected_target||10000);s.target_date=el('go-date').value;s.average_monthly_price=+el('go-price').value;s.average_setup_fee=+el('go-setup').value;s.workdays_per_week=+el('go-workdays').value;s.dial_to_conversation_rate=+el('go-connect').value/100;s.conversation_to_booking_rate=+el('go-book').value/100;s.show_rate=+el('go-show').value/100;s.close_rate=+el('go-close').value/100;return s}
+async function saveGoalSettings(s,msg){var r=await fetch(API+'/growth/settings',{method:'PUT',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(s)});var d=await r.json();toast(d.persistent?(msg||'Goal plan saved'):'Run growth_command_center_migration.sql first',d.persistent?'ok':'err');await loadGoals()}
+async function saveGoalPlan(){await saveGoalSettings(goalSettings(),'Goal plan recalculated')}
+async function saveGoalActivity(){var b={activity_date:new Date().toISOString().slice(0,10)};document.querySelectorAll('.go-act').forEach(function(i){b[i.dataset.field]=+i.value||0});var r=await fetch(API+'/growth/activity',{method:'PUT',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(b)});var d=await r.json();toast(d.persistent?'Today\'s execution saved':'Run growth migration first',d.persistent?'ok':'err');await loadGoals()}
+function renderCabinet(list){html('go-cabinet',list.map(function(e){return '<button class="exec-card '+(e.id===_goalRole?'active':'')+'" onclick="selectExecutive(\''+e.id+'\',\''+esc(e.title)+'\',\''+esc(e.owns.join(', '))+'\')"><div class="badge badge-acc">'+e.id.replace('_',' ').toUpperCase()+'</div><h3 style="margin:9px 0 5px">'+esc(e.title)+'</h3><div class="muted2" style="font-size:.72rem;line-height:1.5">Owns '+esc(e.owns.join(', '))+'</div><div style="font-size:.68rem;margin-top:8px;color:var(--txt3)">'+e.team.length+' direct workflows</div></button>'}).join(''));var current=list.find(function(x){return x.id===_goalRole})||list[0];if(current)selectExecutive(current.id,current.title,current.owns.join(', '),false)}
+function selectExecutive(id,title,owns,rerender){_goalRole=id;txt('go-exec-title','Ask the '+id.replace('_',' ').toUpperCase());txt('go-exec-owns',title+' · Owns '+owns);if(rerender!==false)document.querySelectorAll('.exec-card').forEach(function(c){c.classList.toggle('active',c.textContent.toLowerCase().indexOf(id.replace('_',' '))>=0)})}
+function addCoachMessage(kind,text){var box=el('go-coach-log'),d=document.createElement('div');d.className='coach-msg '+kind;d.textContent=(kind==='dan'?'DAN: ':'')+text;box.appendChild(d);box.scrollTop=box.scrollHeight}
+async function askExecutive(){var input=el('go-coach-input'),q=input.value.trim();if(!q)return;addCoachMessage('dan',q);input.value='';el('go-coach-send').disabled=true;try{var r=await fetch(API+'/executives/'+_goalRole+'/ask',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({question:q,history:_goalHistory.slice(-8)})});var d=await r.json();var answer=typeof d.response==='string'?d.response:JSON.stringify(d.response);addCoachMessage('exec',(d.title||_goalRole.toUpperCase())+': '+answer);_goalHistory.push({role:'user',content:q},{role:'assistant',content:answer})}catch(e){addCoachMessage('exec','Unable to reach this executive: '+e.message)}finally{el('go-coach-send').disabled=false}}
+
 // ── FINANCE ──────────────────────────────────────────────────────────────
 async function loadFinance(){
   var[sum,exps,clients,growth]=await Promise.all([get('/ceo/summary'),sGet('expenses','?active=eq.true&order=amount.desc'),get('/clients/list'),get('/growth/plan')]);
@@ -1288,7 +1340,7 @@ async function loadIntel(){
 // ── KEYBOARD SHORTCUTS ──────────────────────────────────────────────────
 document.addEventListener('keydown',function(e){
   if(el('app').style.display==='none')return;
-  if(e.altKey){var map={b:'brief',t:'team',p:'pipeline',c:'content',l:'clients',d:'demos',f:'finance',i:'intel'};if(map[e.key])showTab(map[e.key]);}
+  if(e.altKey){var map={b:'brief',t:'team',p:'pipeline',c:'content',l:'clients',d:'demos',g:'goals',f:'finance',i:'intel'};if(map[e.key])showTab(map[e.key]);}
 });
 // ── KEYBOARD SHORTCUTS (keep last) ──────────────────────────────────────
 // [already defined above]

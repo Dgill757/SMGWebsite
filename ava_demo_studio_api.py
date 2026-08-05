@@ -121,7 +121,7 @@ class CreateDemoRequest(BaseModel):
     website_url: str
     client_name: str
     widget_key: str | None = None
-    send_delivery: bool = True
+    send_delivery: bool = False
 
 class JarvisMessage(BaseModel):
     role: str
@@ -813,6 +813,10 @@ async def _record_jarvis_event(channel: str, event_type: str, *, provider: str |
     if not supa_url or not supa_key:
         return
     try:
+        # Global safety latch. Demo creation and GHL record updates may continue,
+        # but no prospect message may leave while outreach is paused.
+        if os.getenv("OUTREACH_PAUSED", "1").lower() not in ("0", "false", "no"):
+            req.send_delivery = False
         async with httpx.AsyncClient(timeout=5) as client:
             await client.post(f"{supa_url}/rest/v1/jarvis_events", headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}", "Content-Type": "application/json", "Prefer": "return=minimal"}, json={"channel": channel, "event_type": event_type, "provider": provider, "model": model, "latency_ms": latency_ms, "success": success, "error_class": error_class})
     except Exception:
@@ -1614,7 +1618,9 @@ async def dispatch_command(payload: dict, background_tasks: BackgroundTasks,
     cid     = payload.get("contact_id", "")
     name    = payload.get("company", "") or "Roofing Company"
     city    = payload.get("city", "")
-    deliver = payload.get("deliver", True)
+    deliver = payload.get("deliver", False)
+    if os.getenv("OUTREACH_PAUSED", "1").lower() not in ("0", "false", "no"):
+        deliver = False
 
     if url and not re.match(r"^https?://", url):
         raise HTTPException(status_code=400, detail="url must start with http:// or https://")
@@ -2250,6 +2256,11 @@ class DailyGrowthActivity(BaseModel):
     new_mrr: float = 0
 
 
+class ExecutiveQuestion(BaseModel):
+    question: str
+    history: list[dict] = []
+
+
 def _growth_defaults() -> dict:
     return GrowthSettingsUpdate(
         target_mrr=float(os.getenv("SUMMIT_GROWTH_TARGET_MRR", "10000")),
@@ -2427,6 +2438,84 @@ async def get_daily_growth_brief(x_api_key: str = Header(default="")):
         "enrichment": enrichment, "priorities": priorities, "integration_errors": integration_errors,
         "outreach": {"automated_sending": "paused"},
     }
+
+
+@app.get("/growth/benchmarks")
+async def get_growth_benchmarks(x_api_key: str = Header(default="")):
+    """Return comparable milestone funnels and honest daily catch-up pacing."""
+    verify_api_key(x_api_key)
+    base = await get_growth_plan(x_api_key)
+    settings = base.get("settings", {})
+    current_mrr = float(base.get("current_mrr", 0))
+    milestones = []
+    for target in (10000, 25000, 50000, 85000, 100000):
+        scenario_settings = {**settings, "target_mrr": target}
+        plan = _growth_plan(scenario_settings, current_mrr, base.get("today"), [])
+        milestones.append({key: plan.get(key) for key in (
+            "target_mrr", "gap", "clients_needed", "dials_needed", "conversations_needed", "bookings_needed",
+            "held_meetings_needed", "dials_per_workday", "bookings_per_workday", "held_meetings_per_workday",
+            "projected_new_setup_revenue", "projected_new_first_month_cash", "calendar_days", "workdays"
+        )} | {"progress_percent": round(min(100, 100 * current_mrr / target), 1)})
+    yesterday = (datetime.now().date() - timedelta(days=1)).isoformat()
+    yesterday_rows = await _growth_table("GET", "daily_growth_activity", query=f"?activity_date=eq.{yesterday}&limit=1") or []
+    yesterday_actual = yesterday_rows[0] if yesterday_rows else {"activity_date": yesterday}
+    yesterday_goal = int((base.get("daily_goals") or {}).get("dials", 0))
+    yesterday_dials = int(yesterday_actual.get("dials", 0) or 0)
+    missed_dials = max(0, yesterday_goal - yesterday_dials)
+    catchup = math.ceil(missed_dials / max(1, int(base.get("workdays", 1))))
+    actuals = base.get("period_actuals") or {}
+    observed = {
+        "dial_to_conversation_rate": round(actuals.get("conversations", 0) / actuals.get("dials", 1), 4) if actuals.get("dials", 0) else None,
+        "conversation_to_booking_rate": round(actuals.get("meetings_booked", 0) / actuals.get("conversations", 1), 4) if actuals.get("conversations", 0) else None,
+        "show_rate": round(actuals.get("demos_held", 0) / actuals.get("meetings_booked", 1), 4) if actuals.get("meetings_booked", 0) else None,
+        "close_rate": round(actuals.get("new_clients", 0) / actuals.get("demos_held", 1), 4) if actuals.get("demos_held", 0) else None,
+    }
+    return {"current_mrr": current_mrr, "selected_target": base.get("target_mrr"), "milestones": milestones,
+            "selected_plan": base, "yesterday": yesterday_actual, "missed_dials": missed_dials,
+            "catchup_dials_today": catchup, "today_required_dials": int(base.get("dials_per_workday", 0)) + catchup,
+            "observed_rates": observed, "assumed_rates": base.get("assumptions", {}),
+            "message": (f"Yesterday: {yesterday_dials} dials against a {yesterday_goal}-dial target. "
+                        f"Today: complete {int(base.get('dials_per_workday', 0)) + catchup} dials, including {catchup} catch-up dials.")}
+
+
+EXECUTIVE_CABINET = {
+    "ceo": {"title": "Chief Executive Officer", "owns": ["strategy", "priorities", "offers", "executive synthesis"], "team": ["CRO", "CMO", "COO", "CTO", "CFO", "Client Success"]},
+    "cro": {"title": "Chief Revenue Officer", "owns": ["pipeline", "prospecting", "sales coaching", "conversion"], "team": ["SDR", "BDR", "Appointment Setter", "Pipeline Manager"]},
+    "cmo": {"title": "Chief Marketing Officer", "owns": ["positioning", "content", "competitors", "demand generation"], "team": ["Research Analyst", "Content Generator", "Copywriter", "Graphic Designer"]},
+    "coo": {"title": "Chief Operating Officer", "owns": ["workflow reliability", "capacity", "cadence", "blockers"], "team": ["System Watchdog", "Data Analyst", "Morning Briefing"]},
+    "cto": {"title": "Chief Technology Officer", "owns": ["product roadmap", "architecture", "security", "new automations"], "team": ["Demo Builder", "Local Connector", "Integration Workers"]},
+    "cfo": {"title": "Chief Financial Officer", "owns": ["cash", "pricing", "margins", "budget", "runway"], "team": ["Finance Manager", "Revenue Analyst"]},
+    "client_success": {"title": "Chief Client Success Officer", "owns": ["onboarding", "retention", "outcomes", "expansion"], "team": ["Client Manager", "Customer Service", "Review Collector"]},
+}
+
+
+@app.get("/executives")
+async def get_executive_cabinet(x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    return {"executives": [{"id": key, **value} for key, value in EXECUTIVE_CABINET.items()]}
+
+
+@app.post("/executives/{role}/ask")
+async def ask_executive(role: str, payload: ExecutiveQuestion, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    role = role.lower()
+    if role not in EXECUTIVE_CABINET:
+        raise HTTPException(status_code=404, detail="Unknown executive role")
+    brief, benchmarks = await asyncio.gather(get_daily_growth_brief(x_api_key), get_growth_benchmarks(x_api_key))
+    executive = EXECUTIVE_CABINET[role]
+    system = (f"You are SummitOS's {executive['title']}. You advise Dan Gill III, solo founder of Summit Voice AI. "
+              f"You own: {', '.join(executive['owns'])}. Be direct, commercially practical, and evidence-led. "
+              "Lead with the decision. Separate facts, assumptions, and proposals. Never claim an action happened. "
+              "Recommend at most three ranked actions and explain the expected mechanism, not guaranteed revenue.")
+    context = json.dumps({"brief": brief, "benchmarks": benchmarks, "executive": executive}, default=str)[:22000]
+    messages = [*payload.history[-8:], {"role": "user", "content": f"LIVE OPERATING CONTEXT:\n{context}\n\nDAN'S QUESTION:\n{payload.question}"}]
+    try:
+        answer = await ask_jarvis_model(anthropic_client=ai, system=system, messages=messages, max_tokens=1600)
+        return {"role": role, "title": executive["title"], "response": answer.text, "provider": answer.provider,
+                "grounded_at": brief.get("generated_at"), "actions_completed": 0}
+    except JarvisProvidersUnavailable as exc:
+        return {"role": role, "title": executive["title"], "response": brief.get("priorities", []),
+                "provider": "deterministic_fallback", "provider_attempts": exc.attempts, "actions_completed": 0}
 
 
 @app.put("/growth/settings")
