@@ -2,7 +2,7 @@ import base64
 import os
 import pathlib
 import unittest
-from unittest.mock import AsyncMock, patch
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import jarvis_integrations as ji
 
@@ -50,9 +50,16 @@ class IntegrationContractTests(unittest.IsolatedAsyncioTestCase):
                 await ji.twilio_send_sms({"to": "+15552222222", "message": "hello"})
 
     async def test_slack_requires_token_and_channel(self):
-        with patch.dict(os.environ, {"SLACK_BOT_TOKEN": "", "SLACK_CHANNEL_ID": ""}, clear=False):
+        with patch.dict(os.environ, {"SLACK_BOT_TOKEN": "", "SLACK_WEBHOOK_URL": "", "SLACK_CHANNEL_ID": ""}, clear=False):
             with self.assertRaises(ji.IntegrationUnavailable):
                 await ji.slack_history()
+
+    async def test_slack_invalid_token_falls_back_to_configured_webhook(self):
+        rejected = MagicMock(); rejected.json.return_value = {"ok": False, "error": "invalid_auth"}
+        accepted = MagicMock(); accepted.text = "ok"
+        with patch.dict(os.environ, {"SLACK_BOT_TOKEN": "wrong", "SLACK_CHANNEL_ID": "C123", "SLACK_WEBHOOK_URL": "https://hooks.slack.com/services/test"}, clear=False), patch.object(ji, "_request_with_retry", new=AsyncMock(side_effect=[rejected, accepted])):
+            result = await ji.slack_send_message({"message": "hello", "thread_ts": "123.45"})
+        self.assertEqual(result["transport"], "webhook_fallback")
 
 
 class SafetyAndFrontendTests(unittest.TestCase):

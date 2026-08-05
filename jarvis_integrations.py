@@ -24,6 +24,10 @@ class IntegrationUnavailable(RuntimeError):
 
 def integration_status() -> dict[str, dict[str, Any]]:
     google = all(os.getenv(k) for k in ("GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REFRESH_TOKEN"))
+    slack_token = os.getenv("SLACK_BOT_TOKEN", "").strip()
+    slack_channel = os.getenv("SLACK_CHANNEL_ID", "").strip()
+    slack_webhook = os.getenv("SLACK_WEBHOOK_URL", "").strip()
+    slack_conversation_ready = slack_token.startswith("xoxb-") and bool(slack_channel and os.getenv("SLACK_SIGNING_SECRET"))
     return {
         "summitos": {"ready": bool(os.getenv("SUPABASE_URL") and os.getenv("SUPABASE_KEY")), "capabilities": ["brief", "clients", "agents", "leads"]},
         "ghl": {"ready": bool(os.getenv("GHL_PRIVATE_TOKEN") and os.getenv("GHL_LOCATION_ID")), "capabilities": ["contacts", "pipelines", "opportunity_health", "conversations"]},
@@ -31,7 +35,7 @@ def integration_status() -> dict[str, dict[str, Any]]:
         "google_calendar": {"ready": google, "capabilities": ["upcoming_events", "availability", "create_event"]},
         "gmail": {"ready": google, "capabilities": ["search", "read_full", "inbox_triage", "draft", "send_draft", "label", "archive", "mark_read", "trash"]},
         "google_drive": {"ready": google, "capabilities": ["search", "read"]},
-        "slack": {"ready": bool(os.getenv("SLACK_BOT_TOKEN") or os.getenv("SLACK_WEBHOOK_URL")), "capabilities": ["history", "send"]},
+        "slack": {"ready": slack_conversation_ready, "notifications_ready": slack_webhook.startswith("https://hooks.slack.com/"), "conversation_ready": slack_conversation_ready, "capabilities": ["history", "send", "channel_conversation"]},
         "telegram": {"ready": bool(os.getenv("TELEGRAM_BOT_TOKEN") and os.getenv("TELEGRAM_ALLOWED_CHAT_IDS") and os.getenv("TELEGRAM_WEBHOOK_SECRET")), "capabilities": ["receive", "reply"]},
         "twilio": {"ready": all(os.getenv(k) for k in ("TWILIO_ACCOUNT_SID", "TWILIO_AUTH_TOKEN", "TWILIO_NUMBER")), "capabilities": ["inbound_sms", "outbound_sms", "inbound_call", "outbound_call"]},
         "local_computer": {"ready": True, "capabilities": ["files", "git", "processes", "approved_commands"]},
@@ -364,16 +368,26 @@ async def slack_history(limit: int = 20) -> dict:
 
 async def slack_send_message(arguments: dict) -> dict:
     token = os.getenv("SLACK_BOT_TOKEN", ""); channel = str(arguments.get("channel_id") or os.getenv("SLACK_CHANNEL_ID", "")).strip(); message = str(arguments.get("message", "")).strip(); thread_ts = str(arguments.get("thread_ts") or "").strip()
-    if not token or not channel or not message:
-        raise IntegrationUnavailable("Slack bot token, channel id, and message are required")
+    webhook = os.getenv("SLACK_WEBHOOK_URL", "").strip()
+    if not channel or not message or (not token and not webhook):
+        raise IntegrationUnavailable("Slack bot token or webhook, channel id, and message are required")
     body = {"channel": channel, "text": message[:4000]}
     if thread_ts:
         body["thread_ts"] = thread_ts
-    response = await _request_with_retry("POST", "https://slack.com/api/chat.postMessage", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json=body)
-    payload = response.json()
-    if not payload.get("ok"):
-        raise IntegrationUnavailable(f"Slack rejected message: {payload.get('error', 'unknown')}")
-    return {"sent": True, "channel_id": payload.get("channel"), "timestamp": payload.get("ts")}
+    if token:
+        response = await _request_with_retry("POST", "https://slack.com/api/chat.postMessage", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json=body)
+        payload = response.json()
+        if payload.get("ok"):
+            return {"sent": True, "channel_id": payload.get("channel"), "timestamp": payload.get("ts"), "transport": "bot_token"}
+        if not webhook:
+            raise IntegrationUnavailable(f"Slack rejected message: {payload.get('error', 'unknown')}")
+    webhook_body = {"text": message[:4000]}
+    if thread_ts:
+        webhook_body["thread_ts"] = thread_ts
+    response = await _request_with_retry("POST", webhook, headers={"Content-Type": "application/json"}, json=webhook_body)
+    if response.text.strip() != "ok":
+        raise IntegrationUnavailable(f"Slack webhook rejected message: {response.text[:80] or 'unknown'}")
+    return {"sent": True, "channel_id": channel, "timestamp": None, "transport": "webhook_fallback"}
 
 
 async def twilio_send_sms(arguments: dict) -> dict:
