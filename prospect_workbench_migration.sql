@@ -57,14 +57,32 @@ create table if not exists prospect_call_list (
   completed_at timestamptz,
   unique(list_name, business_id)
 );
+create table if not exists prospect_enrichment_jobs (
+  id uuid primary key default gen_random_uuid(),
+  business_id uuid not null unique references scraped_businesses(id) on delete cascade,
+  status text not null default 'queued',
+  priority integer not null default 50,
+  attempts integer not null default 0,
+  max_attempts integer not null default 3,
+  requested_by text not null default 'automatic',
+  last_error text,
+  started_at timestamptz,
+  completed_at timestamptz,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+create index if not exists prospect_enrichment_queue on prospect_enrichment_jobs(status, priority desc, created_at);
 create index if not exists prospect_notes_business on prospect_notes(business_id, created_at desc);
 create index if not exists prospect_call_list_name on prospect_call_list(list_name, status, added_at desc);
 alter table prospect_intelligence enable row level security;
 alter table prospect_notes enable row level security;
 alter table prospect_call_list enable row level security;
+alter table prospect_enrichment_jobs enable row level security;
 drop policy if exists service_role_all on prospect_intelligence;
 drop policy if exists service_role_all on prospect_notes;
 drop policy if exists service_role_all on prospect_call_list;
+drop policy if exists service_role_all on prospect_enrichment_jobs;
 create policy service_role_all on prospect_intelligence for all using (true) with check (true);
 create policy service_role_all on prospect_notes for all using (true) with check (true);
 create policy service_role_all on prospect_call_list for all using (true) with check (true);
+create policy service_role_all on prospect_enrichment_jobs for all using (true) with check (true);

@@ -997,6 +997,7 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
             observed = await execute_read_tool(tool_name, tool_args)
             if tool_name == "daily_executive_inputs" and isinstance(observed, dict):
                 observed["summitos_live"] = await _jarvis_live_context(AVA_API_KEY)
+                observed["revenue_command_center"] = await get_daily_growth_brief(AVA_API_KEY)
             await _record_jarvis_event(channel, f"integration:{tool_name}", success=True)
         except IntegrationUnavailable as exc:
             await _record_jarvis_event(channel, f"integration:{tool_name}", success=False, error_class=exc.__class__.__name__)
@@ -2369,6 +2370,42 @@ async def get_growth_plan(x_api_key: str = Header(default="")):
             "settings": settings, "persistence_ready": persistent}
 
 
+@app.get("/growth/daily-brief")
+async def get_daily_growth_brief(x_api_key: str = Header(default="")):
+    """One grounded operating brief shared by Jarvis, Slack, and the dashboard."""
+    verify_api_key(x_api_key)
+    growth, summary = await asyncio.gather(get_growth_plan(x_api_key), get_ceo_analytics_summary(x_api_key))
+    verified, enrichment = await asyncio.gather(
+        get_verified_agent_status(x_api_key), prospect_enrichment_status(x_api_key)
+    )
+    calendar, inbox = {}, {}
+    integration_errors = []
+    for name, args in (("calendar_upcoming", {"days": 2, "limit": 10}), ("gmail_inbox_triage", {"limit": 25})):
+        try:
+            value = await execute_read_tool(name, args)
+            if name == "calendar_upcoming": calendar = value
+            else: inbox = value
+        except Exception as exc:
+            integration_errors.append({"integration": name, "error": exc.__class__.__name__})
+    events = calendar.get("events", []) if isinstance(calendar, dict) else []
+    inbox_buckets = inbox.get("buckets", {}) if isinstance(inbox, dict) else {}
+    reply_now = len(inbox_buckets.get("reply_now", [])) + len(inbox_buckets.get("revenue_or_client", []))
+    priorities = [
+        {"rank": 1, "action": growth["coach_message"], "cash_impact": "direct pipeline creation"},
+        {"rank": 2, "action": f"Respond to {reply_now} priority inbox conversations.", "cash_impact": "protect and advance revenue"},
+        {"rank": 3, "action": f"Review {enrichment['counts'].get('completed', 0)} enriched prospects and {enrichment['counts'].get('queued', 0)} queued prospects; automated sends remain paused.", "cash_impact": "prepare higher-quality manual calls"},
+    ]
+    return {
+        "generated_at": datetime.now().isoformat(), "source": "live_summitos",
+        "business": {"mrr": summary.get("mrr", 0), "clients": summary.get("clients", 0)},
+        "growth": growth, "calendar": {"next_48_hours": events}, "inbox": {"priority_count": reply_now, "buckets": inbox_buckets},
+        "agents": {"verified": verified.get("verified_total", 0), "reported": verified.get("reported_total", 0),
+                   "reported_only": verified.get("reported_only", 0)},
+        "enrichment": enrichment, "priorities": priorities, "integration_errors": integration_errors,
+        "outreach": {"automated_sending": "paused"},
+    }
+
+
 @app.put("/growth/settings")
 async def put_growth_settings(payload: GrowthSettingsUpdate, x_api_key: str = Header(default="")):
     verify_api_key(x_api_key)
@@ -2646,9 +2683,48 @@ class ProspectListInput(BaseModel):
     list_name: str = "Today's Call List"
 
 
+class ProspectEnrichmentRequest(BaseModel):
+    enqueue_limit: int = 100
+    run_limit: int = 10
+    since_hours: int = 48
+
+
 async def _prospect_business(business_id: str) -> dict | None:
     rows = await _growth_table("GET", "scraped_businesses", query=f"?id=eq.{business_id}&limit=1")
     return rows[0] if rows else None
+
+
+def _basic_prospect_brief(business: dict) -> dict:
+    """Free, instant pre-call value for every scraped record. No model call."""
+    company = business.get("company_name") or "this roofing company"
+    city = business.get("city") or "their market"; state = business.get("state") or ""
+    location = f"{city}, {state}".strip(", ")
+    rating = business.get("review_rating"); reviews = business.get("review_count")
+    has_site = bool(business.get("website"))
+    proof = f"They show a {rating} rating across {reviews} reviews." if rating and reviews else "Review strength is not yet verified."
+    offer = "AI call answering plus website conversion audit" if has_site else "Conversion-focused website plus AI call answering"
+    return {
+        "executive_summary": f"{company} is a roofing prospect in {location}. {proof}",
+        "likely_employee_range": "Unknown", "likely_employee_range_basis": "Requires a cited enrichment source.",
+        "strengths": [x for x in ["Existing website" if has_site else None, f"Google rating {rating}" if rating else None,
+                                  f"{reviews} reviews" if reviews else None] if x],
+        "revenue_leaks": ["Missed-call handling is unknown and should be tested in discovery.",
+                          "Website conversion requires a full audit." if has_site else "No website was found in the scraped record."],
+        "recommended_offer": offer,
+        "offer_reason": "Lead with revenue recovery from missed calls; use verified marketing gaps as supporting evidence.",
+        "cold_call_script": (f"Hi, is this the owner of {company}? Dan here. I was researching roofers around {location}. "
+                             "Quick question... what happens to a new-job call when everyone is on a roof or it comes in after hours? "
+                             "I built a system specifically for roofers that answers, qualifies, and books those callers. "
+                             "If there is a gap in the current process, would a fifteen-minute look be unreasonable?"),
+        "voicemail_script": f"Hi, this is Dan. I had one specific idea for {company} around capturing calls while the crew is busy. I will send my information. My number is on your caller ID.",
+        "email_subject": f"quick question about calls at {company.lower()}",
+        "email_body": (f"Hi,\n\nI was researching {company} in {location}. Quick question: what happens to new-job calls when everyone is busy or it is after hours?\n\n"
+                       "I built a system for roofers that answers, qualifies, and books those callers. If that is already covered, no problem. If not, I can show you in fifteen minutes.\n\nDan\ncalendly.com/aivoice/call"),
+        "sms_draft": f"hey, dan here. i was looking at {company}. quick question... who catches new-job calls when everyone is tied up or after hours?",
+        "discovery_questions": ["How many inbound calls arrive each week?", "What happens after hours?", "How quickly are missed calls followed up?", "What is an average booked job worth?"],
+        "objections": [{"objection": "We answer our calls", "response": "Great. I would only look for overflow, after-hours, and follow-up gaps."}],
+        "confidence_notes": ["Instant baseline profile. Run the full audit for verified website evidence and model-assisted personalization."],
+    }
 
 
 async def _pagespeed_audit(url: str) -> dict:
@@ -2757,7 +2833,10 @@ async def prospect_profile(business_id: str, x_api_key: str = Header(default="")
         raise HTTPException(status_code=404, detail="Prospect not found")
     intel_rows = await _growth_table("GET", "prospect_intelligence", query=f"?business_id=eq.{business_id}&order=updated_at.desc&limit=1")
     notes = await _growth_table("GET", "prospect_notes", query=f"?business_id=eq.{business_id}&order=created_at.desc&limit=50")
-    return {"business": business, "intelligence": intel_rows[0] if intel_rows else None, "notes": notes or []}
+    intelligence = intel_rows[0] if intel_rows else {"business_id": business_id, "pagespeed": {"available": False, "reason": "full_audit_not_run"},
+                                                     "website_snapshot": {"available": False},
+                                                     "sales_brief": _basic_prospect_brief(business), "baseline": True}
+    return {"business": business, "intelligence": intelligence, "notes": notes or []}
 
 
 @app.post("/prospects/{business_id}/audit")
@@ -2827,6 +2906,67 @@ async def get_prospect_lists(list_name: str = "Today's Call List", x_api_key: st
     by_id = {str(item.get("id")): item for item in (businesses or [])}
     return {"items": [{**row, "business": by_id.get(str(row.get("business_id")), {})} for row in rows],
             "list_name": list_name}
+
+
+@app.post("/prospect-enrichment/enqueue")
+async def enqueue_prospect_enrichment(payload: ProspectEnrichmentRequest, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    limit = min(500, max(1, payload.enqueue_limit)); cutoff = (datetime.now() - timedelta(hours=max(1, payload.since_hours))).isoformat()
+    prospects = await _growth_table("GET", "scraped_businesses", query=f"?scraped_at=gte.{cutoff}&order=scraped_at.desc&limit={limit}") or []
+    queued = 0
+    for business in prospects:
+        business_id = business.get("id")
+        if not business_id:
+            continue
+        existing = await _growth_table("GET", "prospect_enrichment_jobs", query=f"?business_id=eq.{business_id}&limit=1")
+        if existing:
+            queued += 1
+            continue
+        row = {"business_id": business.get("id"), "status": "queued", "priority": 100 if not business.get("website") else 50,
+               "attempts": 0, "max_attempts": 3, "requested_by": "automatic", "created_at": datetime.now().isoformat(), "updated_at": datetime.now().isoformat()}
+        if row["business_id"] and await _growth_table("POST", "prospect_enrichment_jobs", payload=row) is not None:
+            queued += 1
+    return {"status": "ok", "found": len(prospects), "queued_or_existing": queued, "outreach_sent": 0}
+
+
+async def _run_enrichment_job(job: dict, x_api_key: str) -> dict:
+    job_id = job.get("id"); business_id = str(job.get("business_id")); attempts = int(job.get("attempts", 0)) + 1
+    await _growth_table("PATCH", "prospect_enrichment_jobs", query=f"?id=eq.{job_id}",
+                        payload={"status": "running", "attempts": attempts, "started_at": datetime.now().isoformat(), "updated_at": datetime.now().isoformat()})
+    try:
+        result = await audit_prospect(business_id, x_api_key)
+        await _growth_table("PATCH", "prospect_enrichment_jobs", query=f"?id=eq.{job_id}",
+                            payload={"status": "completed", "completed_at": datetime.now().isoformat(), "updated_at": datetime.now().isoformat(), "last_error": None})
+        return {"business_id": business_id, "status": "completed", "persisted": result.get("persisted")}
+    except Exception as exc:
+        status = "failed" if attempts >= int(job.get("max_attempts", 3)) else "queued"
+        await _growth_table("PATCH", "prospect_enrichment_jobs", query=f"?id=eq.{job_id}",
+                            payload={"status": status, "last_error": exc.__class__.__name__, "updated_at": datetime.now().isoformat()})
+        return {"business_id": business_id, "status": status, "error": exc.__class__.__name__}
+
+
+@app.post("/prospect-enrichment/run")
+async def run_prospect_enrichment(payload: ProspectEnrichmentRequest, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    daily_limit = max(1, int(os.getenv("PROSPECT_ENRICHMENT_DAILY_LIMIT", "10")))
+    today = datetime.now().date().isoformat()
+    completed_today = await _growth_table("GET", "prospect_enrichment_jobs", query=f"?status=eq.completed&completed_at=gte.{today}T00:00:00&select=id") or []
+    allowance = max(0, daily_limit - len(completed_today)); run_limit = min(max(1, payload.run_limit), allowance)
+    if run_limit <= 0:
+        return {"status": "daily_budget_reached", "daily_limit": daily_limit, "completed_today": len(completed_today), "results": []}
+    jobs = await _growth_table("GET", "prospect_enrichment_jobs", query=f"?status=eq.queued&order=priority.desc,created_at.asc&limit={run_limit}") or []
+    results = []
+    for job in jobs:  # sequential by design: protects Firecrawl/PSI/model quotas
+        results.append(await _run_enrichment_job(job, x_api_key))
+    return {"status": "ok", "daily_limit": daily_limit, "completed_today": len(completed_today) + sum(r["status"] == "completed" for r in results), "results": results, "outreach_sent": 0}
+
+
+@app.get("/prospect-enrichment/status")
+async def prospect_enrichment_status(x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    rows = await _growth_table("GET", "prospect_enrichment_jobs", query="?order=updated_at.desc&limit=500") or []
+    counts = {status: sum(row.get("status") == status for row in rows) for status in ("queued", "running", "completed", "failed")}
+    return {"counts": counts, "recent": rows[:20], "daily_limit": int(os.getenv("PROSPECT_ENRICHMENT_DAILY_LIMIT", "10"))}
 
 
 @app.get("/businesses/stats")
