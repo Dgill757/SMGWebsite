@@ -890,7 +890,7 @@ async function loadBrief(){
   html('br-feed',events.length?events.map(function(e){return'<div class="feed-item"><div class="feed-icon" style="background:var(--s2)">'+((e.department||'?')[0])+'</div><div class="feed-body"><div style="font-weight:600;font-size:.8rem">'+e.agent_name+' — '+e.action+'</div><div style="font-size:.78rem;color:var(--txt2)">'+truncate(e.summary,100)+'</div></div><div class="feed-time">'+fmtTime(e.created_at)+'</div></div>'}).join(''):'<div class="loading">No activity yet</div>');
   // Health summary
   var health=await get('/agents/health-summary');
-  html('br-health','<div class="card-sm"><div class="stat-n">'+((health.ok||0)+(health.running||0))+'</div><div class="stat-l">Agents Online</div></div><div class="card-sm"><div class="stat-n yel">'+(health.blocked||0)+'</div><div class="stat-l">Agents Blocked</div></div><div class="card-sm"><div class="stat-n red">'+(health.error||0)+'</div><div class="stat-l">Agents Errored</div></div>');
+  html('br-health','<div class="card-sm"><div class="stat-n">'+((health.ok||0)+(health.running||0))+'</div><div class="stat-l">Workflows Reporting OK</div></div><div class="card-sm"><div class="stat-n yel">'+(health.blocked||0)+'</div><div class="stat-l">Workflows Blocked</div></div><div class="card-sm"><div class="stat-n red">'+(health.error||0)+'</div><div class="stat-l">Workflow Errors</div></div>');
 }
 
 // ── TEAM ──────────────────────────────────────────────────────────────────
@@ -911,7 +911,7 @@ async function loadTeam(){
 function renderAgents(agents){
   if(!agents.length){html('tm-agents','<div class="loading">No agents registered</div>');return;}
   html('tm-agents',agents.map(function(a){
-    var verified=a.workflow_verification==='verified', executive=a.department==='Executive';
+    var verified=a.workflow_verification==='verified', executive=a.leadership_level==='executive';
     var metrics=(a.metrics||[]).slice(0,3).map(function(k){return'<span>'+esc(k)+'</span>'}).join('');
     var blockers=a.blockers&&a.blockers.length?'<div style="font-size:.68rem;color:var(--yel);margin-top:8px">'+a.blockers.length+' active blocker'+(a.blockers.length===1?'':'s')+'</div>':'';
     return'<button class="ag-card employee-card" onclick="openEmployee(\''+a.id+'\')" style="text-align:left;color:var(--txt);border-color:'+(verified?'rgba(65,245,160,.28)':executive?'rgba(59,232,255,.3)':'var(--bdr)')+'"><div class="ag-hd"><div><div class="ag-name">'+esc(a.title)+'</div><div class="ag-dept">'+esc(a.department)+' · Reports to '+esc(a.reports_to)+'</div></div><span class="badge '+(verified?'badge-grn':executive?'badge-acc':'badge-grey')+'">'+(verified?'Workflow verified':executive?'Leadership':'Role ready')+'</span></div><div class="employee-mission">'+esc(a.mission)+'</div><div class="employee-kpis">'+metrics+'</div><div class="ag-meta" style="margin-top:10px">'+(a.certifications||[]).length+' internal competency standards · '+(a.team||[]).length+' direct roles</div>'+blockers+'<div class="row mt8"><span class="btn btn-ghost btn-xs">Open profile and talk</span></div></button>'
@@ -920,7 +920,7 @@ function renderAgents(agents){
 
 function filterTeam(){
   var f=el('tm-filter').value;
-  var filtered=f?_allAgents.filter(function(a){return a.department===f}):_allAgents;
+  var filtered=f?_allAgents.filter(function(a){return f==='Executive'?a.leadership_level==='executive':a.department===f}):_allAgents;
   renderAgents(filtered);
 }
 

@@ -2562,7 +2562,8 @@ async def _employee_directory(x_api_key: str) -> list[dict]:
         profile = {"id": employee_id, **base}
         status = status_map.get(employee_id, {})
         employees.append({
-            **profile, "status": status.get("status", "role_ready"),
+            **profile, "leadership_level": "executive" if employee_id in EXECUTIVE_IDS else "specialist",
+            "status": status.get("status", "role_ready"),
             "workflow_verification": status.get("verification", "no_matching_workflow"),
             "workflow_evidence": status.get("evidence"), "blockers": status.get("blockers", []),
             "last_run": status.get("last_run"), "next_run": status.get("next_run"),
@@ -2576,7 +2577,7 @@ async def get_employee_directory(x_api_key: str = Header(default="")):
     verify_api_key(x_api_key)
     employees = await _employee_directory(x_api_key)
     return {"employees": employees, "total": len(employees),
-            "executives": sum(1 for row in employees if row["department"] == "Executive"),
+            "executives": sum(1 for row in employees if row["leadership_level"] == "executive"),
             "company_context": COMPANY_CONTEXT, "generated_at": datetime.now().isoformat()}
 
 
