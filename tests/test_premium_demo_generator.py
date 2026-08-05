@@ -25,9 +25,12 @@ class PremiumDemoGeneratorTests(unittest.TestCase):
         response = AsyncMock()
         response.status_code = 200
         response.content = b'{}'
-        response.json = lambda: {"url": "summit-demo-acme-randomhash.vercel.app"}
+        response.json = lambda: {"id": "dpl_test", "url": "summit-demo-acme-randomhash.vercel.app", "alias": ["summit-demo-acme.vercel.app"]}
+        public_response = AsyncMock()
+        public_response.status_code = 200
         client = AsyncMock()
         client.__aenter__.return_value.post.return_value = response
+        client.__aenter__.return_value.get.return_value = public_response
         with patch("ava_demo_studio_api.httpx.AsyncClient", return_value=client):
             url = asyncio.run(deploy_to_vercel("acme", "<html></html>"))
         self.assertEqual(url, "https://summit-demo-acme.vercel.app")

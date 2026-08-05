@@ -515,10 +515,24 @@ async def deploy_to_vercel(slug: str, html: str) -> str:
             data = {}
         if r.status_code >= 400 or not data.get("url"):
             raise RuntimeError(f"Vercel deployment failed ({r.status_code}): {str(data)[:300]}")
-        # Vercel protects generated deployment URLs by default. The production
-        # project domain remains public and is the URL a prospect can open
-        # anonymously, so never return data['url'] here.
-        return f"https://{project_name}.vercel.app"
+        # Vercel protects the generated deployment URL. Its public production
+        # alias can also be truncated, so derive it from the deployment record
+        # instead of guessing from the project name.
+        deployment_id = data.get("id")
+        aliases = data.get("alias") or []
+        for _ in range(15):
+            if not aliases and deployment_id:
+                info = await client.get(f"https://api.vercel.com/v13/deployments/{deployment_id}", headers=headers)
+                if info.status_code == 200:
+                    aliases = (info.json() or {}).get("alias") or []
+            candidates = [str(value) for value in aliases if str(value).endswith(".vercel.app")]
+            for alias in candidates:
+                public_url = f"https://{alias}"
+                probe = await client.get(public_url, follow_redirects=False)
+                if probe.status_code == 200:
+                    return public_url
+            await asyncio.sleep(1)
+        raise RuntimeError("Vercel deployed the site but did not produce a public production alias")
 
 
 # â”€â”€ Step 6: Update GHL contact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
