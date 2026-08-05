@@ -519,7 +519,9 @@ async def deploy_to_vercel(slug: str, html: str) -> str:
         # alias can also be truncated, so derive it from the project target
         # instead of guessing from the project name.
         aliases = data.get("alias") or []
-        for _ in range(15):
+        # New Vercel projects can take 20-30 seconds to receive a routable
+        # production alias even after the deployment reports READY.
+        for _ in range(60):
             if not aliases:
                 info = await client.get(f"https://api.vercel.com/v9/projects/{project_name}", headers=headers)
                 if info.status_code == 200:
@@ -532,7 +534,7 @@ async def deploy_to_vercel(slug: str, html: str) -> str:
                 if probe.status_code == 200:
                     return public_url
             await asyncio.sleep(1)
-        raise RuntimeError("Vercel deployed the site but did not produce a public production alias")
+        raise RuntimeError("Vercel deployed the site but its public production alias was not routable after 60 seconds")
 
 
 # â”€â”€ Step 6: Update GHL contact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
