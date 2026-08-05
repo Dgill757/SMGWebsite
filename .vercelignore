@@ -1,0 +1,4 @@
+*
+!vercel.json
+!vercel_deploy/
+!vercel_deploy/index.html
