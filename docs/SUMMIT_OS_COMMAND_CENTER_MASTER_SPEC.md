@@ -75,8 +75,9 @@ Each executive governs named specialist workflows, may propose assignments, and 
 - [x] Calendar, Gmail, Slack, Telegram, SMS, phone, local connector, voice interruption, and approval infrastructure.
 - [x] Revenue settings and daily activity persistence.
 - [x] Prospect workbench, audits, scripts, notes, call lists, and enrichment queue.
-- [ ] Dedicated Goals page with milestone and catch-up math.
-- [ ] Executive cabinet with grounded role conversations and org ownership.
+- [x] Dedicated Goals page with milestone and catch-up math.
+- [x] Executive cabinet with grounded role conversations and org ownership.
+- [x] Weekday revenue accountability reminder with activity evidence.
 - [ ] Verified-run coverage for every scheduled employee.
 - [ ] Sourced competitor/ad/content intelligence with freshness.
 - [ ] Approval-based multi-channel content publishing with receipts.

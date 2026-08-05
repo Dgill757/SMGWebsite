@@ -19,3 +19,14 @@
 - Replaced the legacy morning script's hard-coded $4,466 / 9-client snapshot and removed its bulk manufactured employee-status updates.
 - Automated outreach remains paused; enrichment endpoints return `outreach_sent: 0`.
 - Validation: Python compilation passed; 16 unit tests passed, 1 obsolete voice test skipped.
+
+## Command Center goals and executive cabinet
+
+- Published the durable Command Center master specification.
+- Added the dedicated Goals tab with $10K, $25K, $50K, $85K, and $100K milestone comparisons.
+- Added funnel requirements, actual-versus-assumed conversion rates, yesterday catch-up pacing, editable plan controls, and a daily activity ledger.
+- Added grounded CEO, CRO, CMO, COO, CTO, CFO, and Client Success conversations.
+- Replaced the Team page's raw reported count with verified-versus-reported evidence.
+- Disabled demo email/SMS delivery in both UI and backend while outreach is paused.
+- Installed and exercised the weekday 5 PM Daily Revenue Coach scheduled task; internal Slack delivery succeeded and zero outreach was sent.
+- Production API and dashboard deployments succeeded. Production returned five milestones, seven executives, persistent settings, and the correct $797 / 2-client state.
