@@ -2210,6 +2210,10 @@ class GrowthSettingsUpdate(BaseModel):
     proposals_goal: int = 1
     followups_goal: int = 10
     content_goal: int = 1
+    dial_to_conversation_rate: float = .12
+    conversation_to_booking_rate: float = .20
+    show_rate: float = .80
+    close_rate: float = .25
 
 
 class DailyGrowthActivity(BaseModel):
@@ -2259,7 +2263,7 @@ async def _growth_settings() -> tuple[dict, bool]:
     return _growth_defaults(), False
 
 
-def _growth_plan(settings: dict, current_mrr: float, activity: dict | None = None) -> dict:
+def _growth_plan(settings: dict, current_mrr: float, activity: dict | None = None, history: list[dict] | None = None) -> dict:
     now = datetime.now().date()
     try:
         deadline = datetime.fromisoformat(str(settings["target_date"])).date()
@@ -2270,7 +2274,19 @@ def _growth_plan(settings: dict, current_mrr: float, activity: dict | None = Non
     gap = max(0.0, float(settings["target_mrr"]) - current_mrr)
     price = max(1.0, float(settings["average_monthly_price"]))
     clients_needed = math.ceil(gap / price)
-    meetings_needed = math.ceil(clients_needed / .25)  # editable assumptions come next
+    close_rate = min(1, max(.01, float(settings.get("close_rate", .25))))
+    show_rate = min(1, max(.01, float(settings.get("show_rate", .80))))
+    booking_rate = min(1, max(.01, float(settings.get("conversation_to_booking_rate", .20))))
+    connect_rate = min(1, max(.01, float(settings.get("dial_to_conversation_rate", .12))))
+    meetings_needed = math.ceil(clients_needed / close_rate)
+    bookings_needed = math.ceil(meetings_needed / show_rate)
+    conversations_needed = math.ceil(bookings_needed / booking_rate)
+    dials_needed = math.ceil(conversations_needed / connect_rate)
+    totals = {key: sum(float(row.get(key, 0) or 0) for row in (history or []))
+              for key in ("dials", "conversations", "meetings_booked", "demos_held", "proposals", "followups", "content_published", "new_clients", "new_mrr")}
+    remaining_dials = max(0, dials_needed - int(totals["dials"]))
+    remaining_bookings = max(0, bookings_needed - int(totals["meetings_booked"]))
+    remaining_meetings = max(0, meetings_needed - int(totals["demos_held"]))
     daily = activity or {}
     goals = {k[:-5]: int(v) for k, v in settings.items() if k.endswith("_goal")}
     completed = sum(min(1, float(daily.get(k, 0)) / max(1, goal)) for k, goal in goals.items())
@@ -2278,12 +2294,68 @@ def _growth_plan(settings: dict, current_mrr: float, activity: dict | None = Non
         "current_mrr": current_mrr, "target_mrr": float(settings["target_mrr"]), "gap": gap,
         "target_date": settings["target_date"], "calendar_days": calendar_days, "workdays": workdays,
         "average_monthly_price": price, "average_setup_fee": float(settings["average_setup_fee"]),
-        "clients_needed": clients_needed, "held_meetings_needed_at_25pct_close": meetings_needed,
-        "held_meetings_per_workday": round(meetings_needed / workdays, 1),
+        "clients_needed": clients_needed, "held_meetings_needed": meetings_needed,
+        "held_meetings_needed_at_25pct_close": meetings_needed,
+        "held_meetings_per_workday": round(remaining_meetings / workdays, 1),
+        "bookings_needed": bookings_needed, "conversations_needed": conversations_needed, "dials_needed": dials_needed,
+        "dials_per_workday": math.ceil(remaining_dials / workdays), "bookings_per_workday": round(remaining_bookings / workdays, 1),
+        "projected_new_setup_revenue": clients_needed * float(settings["average_setup_fee"]),
+        "projected_new_first_month_cash": clients_needed * (price + float(settings["average_setup_fee"])),
         "daily_goals": goals, "today": daily,
         "daily_score_percent": round(100 * completed / max(1, len(goals))),
-        "assumptions": {"held_meeting_close_rate": .25, "dial_to_held_meeting_rate": .02},
+        "period_actuals": totals,
+        "coach_message": (f"Today: complete {math.ceil(remaining_dials / workdays)} dials, book "
+                          f"{math.ceil(remaining_bookings / workdays)} meetings, and hold "
+                          f"{math.ceil(remaining_meetings / workdays)} demos. If you miss today, tomorrow's required pace increases automatically."),
+        "assumptions": {"dial_to_conversation_rate": connect_rate, "conversation_to_booking_rate": booking_rate,
+                        "show_rate": show_rate, "close_rate": close_rate},
     }
+
+
+def _agent_freshness_hours(agent: dict) -> int | None:
+    schedule = str(agent.get("next_run", "")).lower()
+    if "on demand" in schedule or "on trigger" in schedule:
+        return None
+    if "15 min" in schedule or "30 min" in schedule or "hour" in schedule:
+        return 3
+    if any(word in schedule for word in ("daily", "tomorrow", "am", "pm")):
+        return 36
+    if any(word in schedule for word in ("monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "mon", "tue", "wed", "thu", "fri")):
+        return 192
+    return 48
+
+
+@app.get("/agents/verified-status")
+async def get_verified_agent_status(x_api_key: str = Header(default="")):
+    """Separate reported status from evidenced, fresh employee output."""
+    verify_api_key(x_api_key)
+    agents = (await get_all_agent_status(x_api_key)).get("agents", [])
+    recent_events = await _growth_table("GET", "activity_log", query="?order=created_at.desc&limit=1000") or []
+    latest = {}
+    for event in recent_events:
+        agent_id = event.get("agent_id")
+        if agent_id and agent_id not in latest:
+            latest[agent_id] = event
+    now = datetime.now().astimezone()
+    verified = 0
+    enriched = []
+    for agent in agents:
+        event = latest.get(agent.get("agent_id")); hours_allowed = _agent_freshness_hours(agent)
+        evidence_age = None
+        if event and event.get("created_at"):
+            try:
+                stamp = datetime.fromisoformat(str(event["created_at"]).replace("Z", "+00:00"))
+                evidence_age = (now - stamp.astimezone()).total_seconds() / 3600
+            except ValueError:
+                pass
+        is_fresh = hours_allowed is None or (evidence_age is not None and evidence_age <= hours_allowed)
+        is_verified = bool(event and is_fresh and agent.get("status") in ("ok", "running", "idle"))
+        verified += int(is_verified)
+        enriched.append({**agent, "verification": "verified" if is_verified else "reported_only",
+                         "evidence": event, "evidence_age_hours": round(evidence_age, 1) if evidence_age is not None else None,
+                         "freshness_limit_hours": hours_allowed})
+    return {"agents": enriched, "reported_total": len(agents), "verified_total": verified,
+            "reported_only": len(agents) - verified, "generated_at": datetime.now().isoformat()}
 
 
 @app.get("/growth/plan")
@@ -2293,8 +2365,10 @@ async def get_growth_plan(x_api_key: str = Header(default="")):
     day = datetime.now().date().isoformat()
     activity_rows = await _growth_table("GET", "daily_growth_activity", query=f"?activity_date=eq.{day}&limit=1")
     activity = activity_rows[0] if activity_rows else {"activity_date": day}
+    period_start = (datetime.now().date() - timedelta(days=30)).isoformat()
+    history = await _growth_table("GET", "daily_growth_activity", query=f"?activity_date=gte.{period_start}&order=activity_date.asc")
     summary = await get_ceo_analytics_summary(x_api_key)
-    return {**_growth_plan(settings, float(summary.get("mrr", 0)), activity),
+    return {**_growth_plan(settings, float(summary.get("mrr", 0)), activity, history or []),
             "settings": settings, "persistence_ready": persistent}
 
 
@@ -2396,6 +2470,11 @@ async def get_ceo_analytics_summary(x_api_key: str = Header(default="")):
         summary["agents_ok"]      = sum(1 for a in agents if a.get("status") == "ok")
         summary["agents_blocked"] = sum(1 for a in agents if a.get("status") == "blocked")
         summary["agents_total"]   = len(agents)
+        summary["agents_reported"] = len(agents)
+        try:
+            summary["agents_verified"] = (await get_verified_agent_status(x_api_key)).get("verified_total", 0)
+        except Exception:
+            summary["agents_verified"] = 0
     # Get hot leads count
     if supa_url and supa_key:
         try:
@@ -2550,9 +2629,180 @@ async def get_business_analysis(contact_id: str, x_api_key: str = Header(default
                 timeout=10
             )
             rows = r.json() if r.status_code == 200 else []
-            return {"analysis": rows[0] if rows else None}
+            # Keep the legacy wrapper while also flattening the record. Several
+            # dashboard generations consumed the flat shape.
+            row = rows[0] if rows else None
+            return {"analysis": row, **(row or {})}
     except Exception as e:
         return {"analysis": None, "error": str(e)}
+
+
+# -- Revenue prospect workbench -----------------------------------------------
+class ProspectNoteInput(BaseModel):
+    note: str
+    outcome: str = "note"
+    called: bool = False
+    sync_to_ghl: bool = True
+
+
+class ProspectListInput(BaseModel):
+    list_name: str = "Today's Call List"
+
+
+async def _prospect_business(business_id: str) -> dict | None:
+    rows = await _growth_table("GET", "scraped_businesses", query=f"?id=eq.{business_id}&limit=1")
+    return rows[0] if rows else None
+
+
+async def _pagespeed_audit(url: str) -> dict:
+    if not url:
+        return {"available": False, "reason": "no_website"}
+    target = url if url.startswith(("http://", "https://")) else "https://" + url
+    params = [("url", target), ("strategy", "mobile")]
+    for category in ("performance", "accessibility", "best-practices", "seo"):
+        params.append(("category", category))
+    if os.getenv("PAGESPEED_API_KEY"):
+        params.append(("key", os.environ["PAGESPEED_API_KEY"]))
+    try:
+        async with httpx.AsyncClient(timeout=90) as client:
+            response = await client.get("https://www.googleapis.com/pagespeedonline/v5/runPagespeed", params=params)
+        if response.status_code != 200:
+            return {"available": False, "reason": f"HTTP {response.status_code}"}
+        data = response.json(); lighthouse = data.get("lighthouseResult", {})
+        categories = lighthouse.get("categories", {}); audits = lighthouse.get("audits", {})
+        opportunities = []
+        for key, item in audits.items():
+            saving = item.get("details", {}).get("overallSavingsMs", 0) if isinstance(item.get("details"), dict) else 0
+            if saving and item.get("score") is not None and item.get("score", 1) < .9:
+                opportunities.append({"id": key, "title": item.get("title"), "savings_ms": round(saving)})
+        opportunities.sort(key=lambda x: x["savings_ms"], reverse=True)
+        return {"available": True, "url": target,
+                "scores": {key.replace("best-practices", "best_practices"): round(float(value.get("score") or 0) * 100)
+                           for key, value in categories.items()},
+                "core_metrics": {key: {"title": audits.get(key, {}).get("title"), "display": audits.get(key, {}).get("displayValue")}
+                                 for key in ("largest-contentful-paint", "interaction-to-next-paint", "cumulative-layout-shift", "first-contentful-paint")},
+                "opportunities": opportunities[:8], "fetched_at": datetime.now().isoformat()}
+    except Exception as exc:
+        return {"available": False, "reason": exc.__class__.__name__}
+
+
+async def _website_marketing_snapshot(url: str) -> dict:
+    if not url or not os.getenv("FIRECRAWL_API_KEY"):
+        return {"available": False, "reason": "no_website" if not url else "firecrawl_not_configured"}
+    target = url if url.startswith(("http://", "https://")) else "https://" + url
+    try:
+        async with httpx.AsyncClient(timeout=60) as client:
+            response = await client.post("https://api.firecrawl.dev/v2/scrape",
+                headers={"Authorization": f"Bearer {os.environ['FIRECRAWL_API_KEY']}", "Content-Type": "application/json"},
+                json={"url": target, "formats": ["markdown"], "onlyMainContent": True})
+        data = response.json().get("data", {}) if response.status_code == 200 else {}
+        return {"available": bool(data), "url": target, "title": data.get("metadata", {}).get("title"),
+                "description": data.get("metadata", {}).get("description"), "content": (data.get("markdown") or "")[:8000]}
+    except Exception as exc:
+        return {"available": False, "reason": exc.__class__.__name__}
+
+
+async def _prospect_drafts(business: dict, page: dict, site: dict) -> dict:
+    facts = {key: business.get(key) for key in ("company_name", "city", "state", "website", "review_rating", "review_count", "owner_name")}
+    prompt = f"""Create an evidence-grounded pre-call brief for this roofing prospect.
+Known facts: {json.dumps(facts)}
+PageSpeed: {json.dumps(page)[:5000]}
+Website snapshot: {json.dumps(site)[:7000]}
+
+Return JSON only with keys: executive_summary, likely_employee_range, likely_employee_range_basis,
+strengths (array), revenue_leaks (array), recommended_offer, offer_reason, cold_call_script,
+voicemail_script, email_subject, email_body, sms_draft, discovery_questions (array), objections (array of objects with objection and response), confidence_notes (array).
+Never invent facts. Label estimates. Email and SMS are drafts only. Use Dan's direct, human roofing-owner voice. No em dash."""
+    try:
+        result = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM,
+            messages=[{"role": "user", "content": prompt}], max_tokens=1800)
+        text = result.text.strip(); match = re.search(r"\{.*\}", text, re.S)
+        if match:
+            return json.loads(match.group(0))
+    except Exception as exc:
+        return {"executive_summary": "AI drafting was unavailable. The verified profile data is still available.",
+                "confidence_notes": [exc.__class__.__name__]}
+    return {"executive_summary": "Drafting returned an invalid format.", "confidence_notes": ["invalid_model_json"]}
+
+
+@app.get("/prospects/{business_id}/profile")
+async def prospect_profile(business_id: str, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    business = await _prospect_business(business_id)
+    if not business:
+        raise HTTPException(status_code=404, detail="Prospect not found")
+    intel_rows = await _growth_table("GET", "prospect_intelligence", query=f"?business_id=eq.{business_id}&order=updated_at.desc&limit=1")
+    notes = await _growth_table("GET", "prospect_notes", query=f"?business_id=eq.{business_id}&order=created_at.desc&limit=50")
+    return {"business": business, "intelligence": intel_rows[0] if intel_rows else None, "notes": notes or []}
+
+
+@app.post("/prospects/{business_id}/audit")
+async def audit_prospect(business_id: str, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    business = await _prospect_business(business_id)
+    if not business:
+        raise HTTPException(status_code=404, detail="Prospect not found")
+    page, site = await asyncio.gather(_pagespeed_audit(business.get("website", "")),
+                                      _website_marketing_snapshot(business.get("website", "")))
+    drafts = await _prospect_drafts(business, page, site)
+    row = {"business_id": business_id, "ghl_contact_id": business.get("ghl_contact_id"),
+           "pagespeed": page, "website_snapshot": site, "sales_brief": drafts,
+           "updated_at": datetime.now().isoformat()}
+    saved = await _growth_table("POST", "prospect_intelligence", payload=row)
+    await _record_jarvis_event("dashboard", "prospect_audit", success=True)
+    return {"status": "ok", "persisted": saved is not None, "intelligence": row}
+
+
+@app.post("/prospects/{business_id}/notes")
+async def add_prospect_note(business_id: str, payload: ProspectNoteInput, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    business = await _prospect_business(business_id)
+    if not business:
+        raise HTTPException(status_code=404, detail="Prospect not found")
+    row = {"business_id": business_id, "ghl_contact_id": business.get("ghl_contact_id"), "note": payload.note.strip(),
+           "outcome": payload.outcome, "called": payload.called, "created_at": datetime.now().isoformat()}
+    if not row["note"]:
+        raise HTTPException(status_code=400, detail="Note is required")
+    saved = await _growth_table("POST", "prospect_notes", payload=row)
+    ghl_synced = False; contact_id = business.get("ghl_contact_id")
+    if payload.sync_to_ghl and contact_id and GHL_TOKEN:
+        for attempt in range(3):
+            try:
+                async with httpx.AsyncClient(timeout=20) as client:
+                    response = await client.post(f"{GHL_BASE}/contacts/{contact_id}/notes",
+                        headers={"Authorization": f"Bearer {GHL_TOKEN}", "Version": "2021-07-28", "Content-Type": "application/json"},
+                        json={"body": f"SummitOS [{payload.outcome}]: {row['note']}"})
+                if response.status_code in (200, 201):
+                    ghl_synced = True; break
+            except Exception:
+                pass
+            if attempt < 2:
+                await asyncio.sleep(5)
+    return {"status": "ok", "persisted": saved is not None, "ghl_synced": ghl_synced, "note": row}
+
+
+@app.post("/prospects/{business_id}/call-list")
+async def add_prospect_to_call_list(business_id: str, payload: ProspectListInput, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    business = await _prospect_business(business_id)
+    if not business:
+        raise HTTPException(status_code=404, detail="Prospect not found")
+    row = {"list_name": payload.list_name.strip() or "Today's Call List", "business_id": business_id,
+           "ghl_contact_id": business.get("ghl_contact_id"), "status": "queued", "added_at": datetime.now().isoformat()}
+    saved = await _growth_table("POST", "prospect_call_list", payload=row)
+    return {"status": "ok" if saved is not None else "migration_required", "item": row}
+
+
+@app.get("/prospect-lists")
+async def get_prospect_lists(list_name: str = "Today's Call List", x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    rows = await _growth_table("GET", "prospect_call_list", query=f"?list_name=eq.{list_name}&order=added_at.desc&limit=200")
+    rows = rows or []
+    ids = [str(row.get("business_id")) for row in rows if row.get("business_id")]
+    businesses = await _growth_table("GET", "scraped_businesses", query=f"?id=in.({','.join(ids)})") if ids else []
+    by_id = {str(item.get("id")): item for item in (businesses or [])}
+    return {"items": [{**row, "business": by_id.get(str(row.get("business_id")), {})} for row in rows],
+            "list_name": list_name}
 
 
 @app.get("/businesses/stats")

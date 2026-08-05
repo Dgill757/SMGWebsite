@@ -107,6 +107,23 @@ class SafetyAndFrontendTests(unittest.TestCase):
         expected = {"calendar_create_event", "gmail_create_draft", "gmail_send_draft", "gmail_modify_message", "gmail_trash_message", "gmail_create_label", "slack_send_message", "twilio_send_sms"}
         self.assertTrue(expected.issubset(ji.WRITE_TOOLS))
 
+    def test_revenue_and_prospect_workbenches_are_wired(self):
+        api = (ROOT / "ava_demo_studio_api.py").read_text(encoding="utf-8-sig")
+        html = (ROOT / "vercel_deploy" / "index.html").read_text(encoding="utf-8-sig")
+        migration = (ROOT / "prospect_workbench_migration.sql").read_text(encoding="utf-8-sig")
+        for route in ("/growth/plan", "/prospects/{business_id}/profile", "/prospects/{business_id}/audit", "/prospects/{business_id}/notes", "/agents/verified-status"):
+            self.assertIn(route, api)
+        for capability in ("Run Full Website + Sales Audit", "Save + sync to GHL", "Add to Today\\'s Call List", "dial_to_conversation_rate"):
+            self.assertIn(capability, html)
+        for table in ("prospect_intelligence", "prospect_notes", "prospect_call_list", "agent_runs"):
+            self.assertIn("create table if not exists " + table, migration.lower())
+
+    def test_local_agent_credentials_are_not_hardcoded(self):
+        logger = pathlib.Path(r"C:\Users\DanGi\scripts\activity_logger.py").read_text(encoding="utf-8-sig")
+        intel = pathlib.Path(r"C:\Users\DanGi\scripts\business_intel_agent.py").read_text(encoding="utf-8-sig")
+        self.assertNotIn('SUPA_KEY = os.getenv("SUPABASE_KEY", "eyJ', logger)
+        self.assertNotIn('GHL_PRIVATE_TOKEN",  "pit-', intel)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -345,6 +345,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
         <h2 id="pp-biz-title">Select a date</h2>
         <div class="gap8">
           <span id="pp-biz-count" class="badge badge-acc"></span>
+          <button class="btn btn-grn btn-sm" onclick="showTodayCallList()">Today's Call List</button>
           <input id="pp-search" type="text" placeholder="Search..." oninput="filterBiz()" style="background:var(--s2);border:1px solid var(--bdr);border-radius:7px;padding:5px 10px;color:var(--txt);font-size:.78rem;font-family:inherit;width:180px">
         </div>
       </div>
@@ -359,24 +360,6 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
         <span id="pp-page" class="muted2" style="font-size:.78rem"></span>
         <button class="btn btn-ghost btn-sm" id="pp-next" onclick="bizPage(1)" style="display:none">Next →</button>
       </div>
-    </div>
-  </div>
-  <div class="sec-hd" style="margin-top:20px"><h2>30-Day Revenue Command Center</h2><span id="gr-persist" class="badge badge-grey">Loading</span></div>
-  <div class="cards2">
-    <div class="card">
-      <div class="cards2" style="margin-bottom:0">
-        <div class="fld"><label>MRR Goal</label><input id="gr-target" type="number" min="797" step="100"></div>
-        <div class="fld"><label>Target Date</label><input id="gr-date" type="date"></div>
-        <div class="fld"><label>Average Monthly Price</label><input id="gr-price" type="number" min="1"></div>
-        <div class="fld"><label>Average Setup Fee</label><input id="gr-setup" type="number" min="0"></div>
-      </div>
-      <button class="btn btn-acc" onclick="saveGrowthSettings()">Save Revenue Plan</button>
-      <div id="gr-math" style="font-size:.82rem;color:var(--txt2);line-height:1.8;margin-top:14px"></div>
-    </div>
-    <div class="card">
-      <div class="row mb12"><h2>Today's Scorecard</h2><span id="gr-score" class="badge badge-acc ml-auto">0%</span></div>
-      <div id="gr-activities" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div>
-      <button class="btn btn-grn" style="margin-top:12px" onclick="saveGrowthActivity()">Save Today's Activity</button>
     </div>
   </div>
 </div>
@@ -465,6 +448,28 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
      FINANCE TAB
 ═══════════════════════════════════════════════════════════════ -->
 <div id="pg-finance" class="tab-pane">
+  <div class="sec-hd"><h2>30-Day Revenue Command Center</h2><span id="gr-persist" class="badge badge-grey">Loading</span></div>
+  <div class="cards2">
+    <div class="card">
+      <div class="cards2" style="margin-bottom:0">
+        <div class="fld"><label>MRR Goal</label><input id="gr-target" type="number" min="797" step="100"></div>
+        <div class="fld"><label>Target Date</label><input id="gr-date" type="date"></div>
+        <div class="fld"><label>Average Monthly Price</label><input id="gr-price" type="number" min="1"></div>
+        <div class="fld"><label>Average Setup Fee</label><input id="gr-setup" type="number" min="0"></div>
+        <div class="fld"><label>Dial to Conversation %</label><input id="gr-connect" type="number" min="1" max="100" step=".1"></div>
+        <div class="fld"><label>Conversation to Booking %</label><input id="gr-book" type="number" min="1" max="100" step=".1"></div>
+        <div class="fld"><label>Show Rate %</label><input id="gr-show" type="number" min="1" max="100" step=".1"></div>
+        <div class="fld"><label>Close Rate %</label><input id="gr-close" type="number" min="1" max="100" step=".1"></div>
+      </div>
+      <button class="btn btn-acc" onclick="saveGrowthSettings()">Save Revenue Plan</button>
+      <div id="gr-math" style="font-size:.82rem;color:var(--txt2);line-height:1.8;margin-top:14px"></div>
+    </div>
+    <div class="card">
+      <div class="row mb12"><h2>Today's Scorecard</h2><span id="gr-score" class="badge badge-acc ml-auto">0%</span></div>
+      <div id="gr-activities" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div>
+      <button class="btn btn-grn" style="margin-top:12px" onclick="saveGrowthActivity()">Save Today's Activity</button>
+    </div>
+  </div>
   <div class="cards3" style="margin-bottom:20px">
     <div class="card" style="text-align:center">
       <div style="font-size:.78rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px">Current MRR</div>
@@ -713,7 +718,7 @@ function initDash(){
 // ── Header ─────────────────────────────────────────────────────────────────
 async function loadHeader(){
   var s=await get('/ceo/summary');
-  txt('hMRR',fmt$(s.mrr));txt('hClients',s.clients||0);txt('hAgents',s.agents_total||27);
+  txt('hMRR',fmt$(s.mrr));txt('hClients',s.clients||0);txt('hAgents',(s.agents_verified||0)+' verified / '+(s.agents_reported||s.agents_total||0));
 }
 
 // ── Tab nav ─────────────────────────────────────────────────────────────────
@@ -1242,17 +1247,17 @@ async function loadFinance(){
 var _growthPlan={};
 function renderGrowthPlan(g){
   _growthPlan=g||{};var s=g.settings||{};
-  if(el('gr-target')){el('gr-target').value=s.target_mrr||10000;el('gr-date').value=s.target_date||'';el('gr-price').value=s.average_monthly_price||797;el('gr-setup').value=s.average_setup_fee||1500;}
+  if(el('gr-target')){el('gr-target').value=s.target_mrr||10000;el('gr-date').value=s.target_date||'';el('gr-price').value=s.average_monthly_price||797;el('gr-setup').value=s.average_setup_fee||1500;el('gr-connect').value=100*(s.dial_to_conversation_rate||.12);el('gr-book').value=100*(s.conversation_to_booking_rate||.20);el('gr-show').value=100*(s.show_rate||.80);el('gr-close').value=100*(s.close_rate||.25);}
   var p=g.persistence_ready;
   html('gr-persist',p?'<span class="green">Saved to Supabase</span>':'Run growth migration');
-  html('gr-math','Gap: <b>'+fmt$(g.gap)+'</b> ... need <b>'+g.clients_needed+' clients</b> at '+fmt$(g.average_monthly_price)+'/month.<br>At a 25% held-demo close rate: <b>'+g.held_meetings_needed_at_25pct_close+' held demos</b>, or '+g.held_meetings_per_workday+' per workday. Assumptions are planning inputs, not promises.');
+  html('gr-math','<div style="color:var(--acc);font-weight:700;margin-bottom:6px">'+esc(g.coach_message||'')+'</div>Gap: <b>'+fmt$(g.gap)+'</b> ... need <b>'+g.clients_needed+' clients</b> at '+fmt$(g.average_monthly_price)+'/month.<br>Required pace: <b>'+g.dials_per_workday+' dials</b>, '+g.bookings_per_workday+' bookings, and '+g.held_meetings_per_workday+' held demos per workday.<br>If achieved: '+fmt$(g.projected_new_setup_revenue)+' setup revenue and '+fmt$(g.projected_new_first_month_cash)+' first-month cash. Assumptions are adjustable planning inputs, not promises.');
   txt('gr-score',(g.daily_score_percent||0)+'%');
   var labels={dials:'Dials',conversations:'Live conversations',meetings_booked:'Meetings booked',demos_held:'Demos held',proposals:'Proposals',followups:'Tailored follow-ups',content:'Content published'};
   var today=g.today||{},goals=g.daily_goals||{};
   html('gr-activities',Object.keys(labels).map(function(k){var field=k==='content'?'content_published':k;return '<div class="fld" style="margin:0"><label>'+labels[k]+' / '+(goals[k]||0)+'</label><input class="gr-act" data-field="'+field+'" type="number" min="0" value="'+(today[field]||0)+'"></div>'}).join(''));
 }
 async function saveGrowthSettings(){
-  var s=Object.assign({},_growthPlan.settings||{}, {target_mrr:+el('gr-target').value,target_date:el('gr-date').value,average_monthly_price:+el('gr-price').value,average_setup_fee:+el('gr-setup').value});
+  var s=Object.assign({},_growthPlan.settings||{}, {target_mrr:+el('gr-target').value,target_date:el('gr-date').value,average_monthly_price:+el('gr-price').value,average_setup_fee:+el('gr-setup').value,dial_to_conversation_rate:+el('gr-connect').value/100,conversation_to_booking_rate:+el('gr-book').value/100,show_rate:+el('gr-show').value/100,close_rate:+el('gr-close').value/100});
   var r=await fetch(API+'/growth/settings',{method:'PUT',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(s)});var d=await r.json();toast(d.persistent?'Revenue plan saved':'Run growth_command_center_migration.sql first',d.persistent?'ok':'err');loadFinance();
 }
 async function saveGrowthActivity(){
@@ -1539,7 +1544,7 @@ async function showSDR(contactId,bizId){
   openModal('m-sdr');
   txt('m-sdr-title','Loading...');
   html('m-sdr-body','<div style="text-align:center;padding:40px;color:var(--txt2)">Pulling intelligence...</div>');
-  var b={};var a={};
+  var b={};var a={};var profile={};var intel=null;
   try{
     var res=await Promise.all([
       sGet('scraped_businesses','?id=eq.'+bizId+'&limit=1'),
@@ -1864,13 +1869,14 @@ async function showSDR(contactId,bizId){
   openModal('m-sdr');
   txt('m-sdr-title','Loading Intel...');
   html('m-sdr-body','<div style="text-align:center;padding:40px;color:var(--txt2)">Pulling business intelligence...</div>');
-  var b={};var a={};
+  var b={};var a={};var profile={};var intel=null;
   try{
     var res=await Promise.all([
       sGet('scraped_businesses','?id=eq.'+bizId+'&limit=1'),
-      contactId?get('/businesses/analysis/'+contactId).catch(function(){return{};}):Promise.resolve({})
+      contactId?get('/businesses/analysis/'+contactId).catch(function(){return{};}):Promise.resolve({}),
+      get('/prospects/'+bizId+'/profile').catch(function(){return{};})
     ]);
-    b=(res[0]||[])[0]||{};a=res[1]||{};
+    b=(res[0]||[])[0]||{};a=res[1]||{};profile=res[2]||{};intel=profile.intelligence||null;
   }catch(e){b={};}
 
   var prob=_sdrProb(b);
@@ -1929,8 +1935,24 @@ async function showSDR(contactId,bizId){
     o+='</div>';
   }
 
+  /* Verified website audit and complete pre-call pack */
+  if(intel){
+    var ps=intel.pagespeed||{},sb=intel.sales_brief||{},scores=ps.scores||{};
+    o+='<div class="card-sm" style="margin:14px 0"><div style="font-size:.7rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Verified Website Audit</div>';
+    o+='<div class="gap8" style="flex-wrap:wrap"><span class="badge badge-acc">Performance '+(scores.performance==null?'--':scores.performance)+'</span><span class="badge badge-grn">SEO '+(scores.seo==null?'--':scores.seo)+'</span><span class="badge badge-grey">Accessibility '+(scores.accessibility==null?'--':scores.accessibility)+'</span><span class="badge badge-grey">Best Practices '+(scores.best_practices==null?'--':scores.best_practices)+'</span></div>';
+    if(sb.executive_summary)o+='<p style="font-size:.83rem;line-height:1.6;color:var(--txt2);margin-top:10px">'+esc(sb.executive_summary)+'</p>';
+    if(sb.cold_call_script)o+='<div style="margin-top:12px"><b>Cold-call script</b><div class="call-opener" style="margin-top:6px;white-space:pre-wrap">'+esc(sb.cold_call_script)+'</div></div>';
+    if(sb.email_body)o+='<div style="margin-top:12px"><b>Draft email: '+esc(sb.email_subject||'')+'</b><div style="white-space:pre-wrap;font-size:.8rem;color:var(--txt2);margin-top:6px">'+esc(sb.email_body)+'</div></div>';
+    if(sb.sms_draft)o+='<div style="margin-top:12px"><b>Draft SMS</b><div style="font-size:.8rem;color:var(--txt2);margin-top:6px">'+esc(sb.sms_draft)+'</div></div>';
+    o+='</div>';
+  }
+
+  o+='<div class="card-sm" style="margin:14px 0"><div style="font-size:.7rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Call Notes and CRM</div><div class="fld"><textarea id="prospect-note" placeholder="What happened on the call? Objections, next step, timing..."></textarea></div><div class="row" style="flex-wrap:wrap"><select id="prospect-outcome" style="background:var(--s2);color:var(--txt);border:1px solid var(--bdr);padding:7px;border-radius:7px"><option value="note">Note</option><option value="called_no_answer">Called, no answer</option><option value="conversation">Conversation</option><option value="appointment_set">Appointment set</option><option value="follow_up">Follow up</option><option value="not_interested">Not interested</option></select><button class="btn btn-grn btn-sm" onclick="saveProspectNote(\''+bizId+'\',\''+contactId+'\')">Save + sync to GHL</button></div></div>';
+
   /* Action buttons — including Request Build */
   o+='<div class="intel-actions">';
+  o+='<button class="btn btn-grn btn-sm" onclick="runProspectAudit(\''+bizId+'\',\''+contactId+'\')">Run Full Website + Sales Audit</button>';
+  o+='<button class="btn btn-ghost btn-sm" onclick="addToCallList(\''+bizId+'\')">Add to Today\'s Call List</button>';
   if(phone)o+='<a href="tel:'+phone+'" class="btn btn-acc btn-sm">&#128222; Call '+name.split(' ')[0]+'</a>';
   if(!hw){
     o+='<button class="btn btn-acc btn-sm" style="background:var(--grn);border-color:var(--grn)" onclick="requestBuildFromSDR(\''+bizId+'\',\''+encodeURIComponent(name)+'\',\''+encodeURIComponent(phone)+'\',\''+encodeURIComponent(email)+'\',\''+encodeURIComponent(b.city||'')+'\',\''+encodeURIComponent(b.state||'')+'\',\'\','+( rating||'null')+','+rc+','+prob+',\''+encodeURIComponent(top.n)+'\',\''+encodeURIComponent(opener.replace(/\'/g,''))+'\',\''+encodeURIComponent(mapsUrl)+'\')">&#9889; Queue for Website Build</button>';
@@ -1942,6 +1964,22 @@ async function showSDR(contactId,bizId){
   o+='</div>';
 
   html('m-sdr-body',o);
+}
+
+async function runProspectAudit(bizId,contactId){
+  html('m-sdr-body','<div class="loading">Running Google PageSpeed, website research, and generating the pre-call pack. This can take about a minute...</div>');
+  var r=await post('/prospects/'+bizId+'/audit',{});
+  if(r&&r.intelligence){toast('Prospect audit complete','ok');showSDR(contactId,bizId);}else{toast('Audit failed. Check the website and provider status.','err');showSDR(contactId,bizId);}
+}
+async function addToCallList(bizId){var r=await post('/prospects/'+bizId+'/call-list',{list_name:"Today's Call List"});toast(r&&r.status==='ok'?'Added to today\'s call list':'Run the prospect migration first',r&&r.status==='ok'?'ok':'err');}
+async function showTodayCallList(){
+  openModal('m-sdr');txt('m-sdr-title',"Today's Call List");html('m-sdr-body','<div class="loading">Loading...</div>');var d=await get('/prospect-lists');var items=d.items||[];
+  html('m-sdr-body',items.length?items.map(function(item){var b=item.business||{};return '<div class="card-sm" style="margin-bottom:8px"><div class="row"><div><b>'+esc(b.company_name||'Unknown')+'</b><div class="muted2" style="font-size:.75rem">'+esc((b.city||'')+(b.state?', '+b.state:''))+' '+esc(b.phone||'')+'</div></div><button class="btn btn-acc btn-xs ml-auto" onclick="showSDR(\''+(b.ghl_contact_id||item.ghl_contact_id||'')+'\',\''+item.business_id+'\')">Open Pre-Call Profile</button></div></div>'}).join(''):'<div class="loading">Your call list is empty. Add prospects from the Pipeline.</div>');
+}
+async function saveProspectNote(bizId,contactId){
+  var note=el('prospect-note').value.trim();if(!note){toast('Add a note first','err');return;}
+  var outcome=el('prospect-outcome').value;var r=await post('/prospects/'+bizId+'/notes',{note:note,outcome:outcome,called:outcome.indexOf('called')===0||outcome==='conversation'||outcome==='appointment_set',sync_to_ghl:true});
+  if(r&&r.status==='ok'){toast(r.ghl_synced?'Saved and synced to GHL':'Saved locally. GHL sync needs attention',r.ghl_synced?'ok':'');el('prospect-note').value='';}else toast('Could not save note. Run the prospect migration.','err');
 }
 
 /* v8: Fix content approval — GHL Social needs OAuth, use deep-link instead */

@@ -236,3 +236,20 @@ Run this exact sequence without refreshing or repairing anything mid-demo:
 13. Confirm scraper contacts increased while outbound email/SMS remained zero.
 
 Only after every item passes should the system be described as ready for a high-stakes external demo.
+
+## 9. Enable the verified-agent and prospect workbench
+
+This is the only manual step for the current phase.
+
+1. Open the SummitOS Supabase project.
+2. Open **SQL Editor** and create a new query.
+3. Open `C:\Users\DanGi\Downloads\SummitVoiceAI\SummitOS\prospect_workbench_migration.sql`.
+4. Copy the entire file into the SQL Editor and click **Run** once.
+5. Refresh SummitOS.
+6. Open **Finance**. Change the monthly price, setup fee, conversion assumptions, and deadline; click **Save Revenue Plan**.
+7. Open **Pipeline**, choose any real business, and click **SDR Intel**.
+8. Click **Run Full Website + Sales Audit**. For businesses with websites, confirm PageSpeed scores and the pre-call drafts appear.
+9. Add the prospect to **Today's Call List**.
+10. Add a harmless test note, select **Note**, and click **Save + sync to GHL**. Verify the note appears on the same GHL contact.
+
+Do not enable `CONTENT_PUBLISHING_ENABLED` or any outreach-sending task during this test. Drafting, research, call lists, and notes are enabled; automated outreach remains paused.
