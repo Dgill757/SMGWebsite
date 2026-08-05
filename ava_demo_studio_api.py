@@ -3096,7 +3096,8 @@ async def get_businesses_stats(x_api_key: str = Header(default="")):
     verify_api_key(x_api_key)
     supa_url = os.getenv("SUPABASE_URL", "")
     supa_key = os.getenv("SUPABASE_KEY", "")
-    stats = {"total": 5386, "contacted": 5386, "analyzed": 0, "needs_website": 0, "hot_prospects": 0}
+    stats = {"total": 0, "contacted": 0, "analyzed": 0, "needs_website": 0, "hot_prospects": 0,
+             "contacted_definition": "historical records with outreach_sent=true", "outreach_paused": True}
     if supa_url and supa_key:
         try:
             async with httpx.AsyncClient() as client:
@@ -3107,6 +3108,13 @@ async def get_businesses_stats(x_api_key: str = Header(default="")):
                 cr = r.headers.get("content-range", "")
                 if "/" in cr:
                     stats["total"] = int(cr.split("/")[-1])
+                # Historical outreach count. Do not equate GHL creation with contact.
+                rc = await client.get(f"{supa_url}/rest/v1/scraped_businesses?outreach_sent=eq.true&select=id",
+                    headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}",
+                             "Prefer": "count=exact", "Range": "0-0"}, timeout=8)
+                crc = rc.headers.get("content-range", "")
+                if "/" in crc:
+                    stats["contacted"] = int(crc.split("/")[-1])
                 # Analyzed
                 r2 = await client.get(f"{supa_url}/rest/v1/business_analysis?select=id",
                     headers={"apikey": supa_key, "Authorization": f"Bearer {supa_key}",

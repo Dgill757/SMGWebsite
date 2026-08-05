@@ -60,6 +60,10 @@ class SafetyAndFrontendTests(unittest.TestCase):
         paths = [pathlib.Path(r"C:\Users\DanGi\outreach\daily_outreach.py"), pathlib.Path(r"C:\Users\DanGi\scripts\ghl_daily_outreach.py"), pathlib.Path(r"C:\Users\DanGi\scripts\ghl_followup.py")]
         for path in paths:
             self.assertIn("OUTREACH_PAUSED = True", path.read_text(encoding="utf-8-sig"), str(path))
+        api = (ROOT / "ava_demo_studio_api.py").read_text(encoding="utf-8-sig")
+        dashboard = (ROOT / "vercel_deploy" / "index.html").read_text(encoding="utf-8-sig")
+        self.assertIn("send_delivery: bool = False", api)
+        self.assertIn('id="dm-deliver" disabled', dashboard)
 
     def test_lead_only_scraper_still_creates_contacts(self):
         source = pathlib.Path(r"C:\Users\DanGi\outreach\daily_outreach.py").read_text(encoding="utf-8-sig")
