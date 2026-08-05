@@ -500,8 +500,9 @@ async def deploy_to_vercel(slug: str, html: str) -> str:
         "Authorization": f"Bearer {VERCEL_TOKEN}",
         "Content-Type": "application/json",
     }
+    project_name = f"summit-demo-{slug}"
     payload = {
-        "name": f"summit-demo-{slug}",
+        "name": project_name,
         "files": [{"file": "index.html", "data": encoded, "encoding": "base64"}],
         "projectSettings": {"framework": None},
         "target": "production",
@@ -512,8 +513,12 @@ async def deploy_to_vercel(slug: str, html: str) -> str:
             data = r.json() if r.content else {}
         except Exception:
             data = {}
-        url = data.get("url", f"summit-demo-{slug}.vercel.app")
-        return f"https://{url}"
+        if r.status_code >= 400 or not data.get("url"):
+            raise RuntimeError(f"Vercel deployment failed ({r.status_code}): {str(data)[:300]}")
+        # Vercel protects generated deployment URLs by default. The production
+        # project domain remains public and is the URL a prospect can open
+        # anonymously, so never return data['url'] here.
+        return f"https://{project_name}.vercel.app"
 
 
 # â”€â”€ Step 6: Update GHL contact â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€

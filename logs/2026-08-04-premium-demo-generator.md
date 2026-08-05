@@ -9,3 +9,4 @@
 - Added a deployment quality gate and generator regression tests.
 - Updated the SummitOS Demos interface. Delivery remains disabled and outreach remains paused.
 - Rendered desktop and narrow-screen QA captures locally. Corrected preview/navigation overlap and narrow-screen stat layout discovered during rendering.
+- End-to-end QA found Vercel's generated deployment URL was authentication-protected. The deployer now returns the public production project domain and fails explicitly on Vercel API errors.

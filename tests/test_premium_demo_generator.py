@@ -1,6 +1,9 @@
 import unittest
+import asyncio
+from unittest.mock import AsyncMock, patch
 
 from premium_website_generator_v2 import generate_world_class_roofing_site, validate_demo_html
+from ava_demo_studio_api import deploy_to_vercel
 
 
 def _brand(**overrides):
@@ -18,6 +21,16 @@ def _brand(**overrides):
 
 
 class PremiumDemoGeneratorTests(unittest.TestCase):
+    def test_vercel_returns_public_production_domain_not_protected_deployment_url(self):
+        response = AsyncMock()
+        response.status_code = 200
+        response.content = b'{}'
+        response.json = lambda: {"url": "summit-demo-acme-randomhash.vercel.app"}
+        client = AsyncMock()
+        client.__aenter__.return_value.post.return_value = response
+        with patch("ava_demo_studio_api.httpx.AsyncClient", return_value=client):
+            url = asyncio.run(deploy_to_vercel("acme", "<html></html>"))
+        self.assertEqual(url, "https://summit-demo-acme.vercel.app")
     def test_demo_passes_quality_gate_without_invented_proof(self):
         brand = _brand()
         document = generate_world_class_roofing_site(brand)
