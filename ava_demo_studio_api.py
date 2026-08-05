@@ -516,15 +516,15 @@ async def deploy_to_vercel(slug: str, html: str) -> str:
         if r.status_code >= 400 or not data.get("url"):
             raise RuntimeError(f"Vercel deployment failed ({r.status_code}): {str(data)[:300]}")
         # Vercel protects the generated deployment URL. Its public production
-        # alias can also be truncated, so derive it from the deployment record
+        # alias can also be truncated, so derive it from the project target
         # instead of guessing from the project name.
-        deployment_id = data.get("id")
         aliases = data.get("alias") or []
         for _ in range(15):
-            if not aliases and deployment_id:
-                info = await client.get(f"https://api.vercel.com/v13/deployments/{deployment_id}", headers=headers)
+            if not aliases:
+                info = await client.get(f"https://api.vercel.com/v9/projects/{project_name}", headers=headers)
                 if info.status_code == 200:
-                    aliases = (info.json() or {}).get("alias") or []
+                    project = info.json() or {}
+                    aliases = (((project.get("targets") or {}).get("production") or {}).get("alias") or [])
             candidates = [str(value) for value in aliases if str(value).endswith(".vercel.app")]
             for alias in candidates:
                 public_url = f"https://{alias}"
