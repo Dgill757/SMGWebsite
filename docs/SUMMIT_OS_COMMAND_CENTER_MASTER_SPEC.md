@@ -83,7 +83,17 @@ Each executive governs named specialist workflows, may propose assignments, and 
 - [ ] Approval-based multi-channel content publishing with receipts.
 - [ ] Client health and expansion scorecards based on real outcome data.
 - [ ] Full cross-channel regression suite and production observability.
-- [ ] External-demo certification based on recorded evidence.
+- [x] Premium website concept generator uses source-site assets first, verified claims only, an inert preview form, mobile navigation, reduced-motion support, and a deployment quality gate.
+- [ ] External-demo certification based on recorded evidence from a real prospect build and Dan's final visual approval.
+
+## Premium Roofing Demo Standard
+
+- Existing-site path: Firecrawl captures content and image candidates; the model router extracts brand facts and verbatim proof. Real logos and imagery take priority.
+- No-site path: CRM facts seed the concept. Unknown history, credentials, reviews, guarantees, response times, and project proof stay unknown.
+- Every result visibly says it is a website concept, and curated stock photography is never represented as completed client work.
+- Preview forms do not transmit data. CRM wiring happens only after approval.
+- Available directions are Premium Modern, Bold Editorial, and Heritage and Trust.
+- Deployment is blocked unless the generated document passes identity, disclosure, mobile, accessibility, semantic, conversion, fabrication, and document-depth checks.
 
 ## Definition of done
 

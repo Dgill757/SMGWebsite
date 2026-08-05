@@ -407,16 +407,17 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 <div id="pg-demos" class="tab-pane">
   <div class="cards2" style="align-items:start">
     <div>
-      <div class="sec-hd mb12"><h2>Build New Demo Site</h2></div>
+      <div class="sec-hd mb12"><h2>Build Premium Website Concept</h2></div>
       <div class="demo-form">
-        <p style="font-size:.82rem;color:var(--txt2);margin-bottom:16px">Firecrawl scrapes the site, Claude extracts branding, generates a custom homepage + marketing audit, deploys to Vercel.</p>
+        <p style="font-size:.82rem;color:var(--txt2);margin-bottom:16px">Uses the prospect's real site assets when available, routes analysis through the configured model stack, verifies every claim, runs a quality gate, and deploys a private concept link. It never contacts the prospect automatically.</p>
         <div class="fld"><label>Company Name</label><input id="dm-name" type="text" placeholder="Apex Roofing Solutions"></div>
-        <div class="fld"><label>Website URL</label><input id="dm-url" type="url" placeholder="https://theirwebsite.com"></div>
+        <div class="fld"><label>Current Website URL (optional)</label><input id="dm-url" type="url" placeholder="https://theirwebsite.com"></div>
+        <div class="fld"><label>Design Direction</label><select id="dm-direction"><option value="premium-modern">Premium modern</option><option value="bold-editorial">Bold editorial</option><option value="heritage-trust">Heritage and trust</option></select></div>
         <div class="fld"><label>GHL Contact ID (optional)</label><input id="dm-cid" type="text" placeholder="Leave blank for manual demo"></div>
         <div class="fld">
           <label><input type="checkbox" id="dm-deliver" disabled style="margin-right:6px">Send email + SMS after build <span class="yellow">(paused)</span></label>
         </div>
-        <button class="btn btn-acc w100" style="justify-content:center;padding:11px" onclick="buildDemo()">Build Demo Site</button>
+        <button class="btn btn-acc w100" style="justify-content:center;padding:11px" onclick="buildDemo()">Create Safe Preview</button>
         <div id="dm-progress" style="display:none;margin-top:16px">
           <div class="row mb12"><span id="dm-status" class="muted"></span><span id="dm-pct" class="ml-auto acc" style="font-weight:700"></span></div>
           <div class="prog-bar"><div class="prog-fill" id="dm-bar" style="width:0%"></div></div>
@@ -1206,7 +1207,7 @@ async function loadFreeSites(){
 
 async function buildDemo(){
   var name=el('dm-name').value.trim();var url=el('dm-url').value.trim();
-  if(!name||!url){alert('Company name and website URL required');return;}
+  if(!name){alert('Company name is required');return;}
   show('dm-progress');
   html('dm-link','');hide('dm-link');
   txt('dm-status','Starting...');txt('dm-pct','0%');el('dm-bar').style.width='0%';
@@ -1214,8 +1215,9 @@ async function buildDemo(){
   html('dm-dots',Array(10).fill('<div class="step-dot"></div>').join(''));
   var cid=el('dm-cid').value.trim()||null;
   var deliver=el('dm-deliver').checked;
-  var res=await post('/demos/create',{client_name:name,website_url:url,contact_id:cid,send_delivery:deliver});
-  if(!res.demo_id){txt('dm-status','Error — could not start build');toast('Build failed to start — check Anthropic credits','err');return;}
+  var direction=el('dm-direction').value;
+  var res=await post('/demos/create',{client_name:name,website_url:url,contact_id:cid,send_delivery:deliver,design_direction:direction});
+  if(!res.demo_id){txt('dm-status','Error — could not start build');toast('Build failed to start — check provider and deployment status','err');return;}
   toast('Demo build started ✓','ok');
   var demoId=res.demo_id;_activeDemoId=demoId;
   // Save to Supabase

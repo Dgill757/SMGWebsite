@@ -7,6 +7,7 @@ Deploy to Railway.
 import os, json, re, time, base64, httpx, asyncio, secrets, math, html as html_lib
 from datetime import datetime, timedelta
 from typing import Set
+from urllib.parse import urljoin
 from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request, Depends, Response
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -20,7 +21,7 @@ from jarvis_model_router import (
 )
 from jarvis_integrations import IntegrationUnavailable, execute_read_tool, execute_write_tool, integration_status
 from jarvis_task_store import load_task as load_durable_task, list_tasks as list_durable_tasks, save_task as save_durable_task
-from premium_website_generator_v2 import generate_world_class_roofing_site
+from premium_website_generator_v2 import generate_world_class_roofing_site, validate_demo_html
 
 load_dotenv()
 
@@ -122,6 +123,7 @@ class CreateDemoRequest(BaseModel):
     client_name: str
     widget_key: str | None = None
     send_delivery: bool = False
+    design_direction: str = "premium-modern"
 
 class JarvisMessage(BaseModel):
     role: str
@@ -237,15 +239,31 @@ async def scrape_website(url: str) -> dict:
             data = r.json()
         except Exception:
             data = {}
+        html_source = data.get("data", {}).get("html", "") or ""
+        metadata = data.get("data", {}).get("metadata", {}) or {}
+        raw_images = re.findall(r'''(?:src|content)=["']([^"']+\.(?:png|jpe?g|webp|avif)(?:\?[^"']*)?)["']''', html_source, re.I)
+        image_candidates = [urljoin(url, value) for value in raw_images if not value.startswith("data:")]
+        for key in ("ogImage", "og:image", "image", "favicon"):
+            value = metadata.get(key)
+            if isinstance(value, str) and value.startswith("http"):
+                image_candidates.insert(0, value)
         return {
             "markdown": data.get("data", {}).get("markdown", "") or "",
-            "html":     data.get("data", {}).get("html", "") or "",
-            "metadata": data.get("data", {}).get("metadata", {}) or {},
+            "html": html_source, "metadata": metadata,
+            "images": sorted(list(dict.fromkeys(image_candidates)), key=lambda value: ("logo" not in value.lower(), value))[:30],
         }
 
 
 # â”€â”€ Step 2: Extract brand identity â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-async def extract_brand(markdown: str, company_name: str) -> dict:
+async def extract_brand(markdown: str, company_name: str, images: list[str] | None = None) -> dict:
+    fallback = {
+        "company_name": company_name, "tagline": "A better roof starts with a clear plan",
+        "primary_color": "#0D1F3C", "secondary_color": "#F97316",
+        "services": ["Roof Replacement", "Storm Damage Repair", "Roof Repair", "Roof Inspections", "Gutters", "Commercial Roofing"],
+        "city": "", "state": "", "phone": "", "logo_url": "", "testimonials": [],
+        "about": f"A premium website concept prepared for {company_name}. Final business claims require owner approval.",
+        "review_count": 0, "years_in_business": 0, "has_website": True, "source_images": images or [],
+    }
     prompt = f"""Analyze this roofing company website and return ONLY valid JSON (no markdown fences):
 {{
   "company_name": "{company_name}",
@@ -257,6 +275,7 @@ async def extract_brand(markdown: str, company_name: str) -> dict:
   "state": "state abbreviation",
   "phone": "phone number or empty string",
   "logo_url": "full logo image URL or empty string",
+  "testimonials": [{"quote":"verbatim customer quote","name":"name as written"}],
   "about": "2 sentence description of the company",
   "review_count": 0,
   "years_in_business": 0,
@@ -265,37 +284,33 @@ async def extract_brand(markdown: str, company_name: str) -> dict:
 
 Website content (first 3000 chars):
 {markdown[:3000]}
+
+Candidate image URLs found on the site:
+{json.dumps((images or [])[:15])}
+
+Never invent testimonials, certifications, ratings, review counts, years, guarantees, or service availability. Use zero or an empty array when not explicitly present.
 """
-    msg = ai.messages.create(
-        model="claude-haiku-4-5-20251001",
-        max_tokens=500,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    raw = msg.content[0].text.strip()
+    try:
+        model_result = await ask_jarvis_model(
+            anthropic_client=ai,
+            system="Extract only evidence present in the supplied business website. Return strict JSON and never invent claims.",
+            messages=[{"role": "user", "content": prompt}], max_tokens=700,
+        )
+    except Exception:
+        return fallback
+    raw = model_result.text.strip()
     raw = raw.replace("```json", "").replace("```", "").strip()
     # Extract just the JSON object in case Claude adds trailing text
     m = re.search(r'\{.*\}', raw, re.DOTALL)
     if m:
         raw = m.group(0)
     try:
-        return json.loads(raw)
+        result = json.loads(raw)
+        result["source_images"] = images or []
+        return result
     except Exception:
         # Fallback: return sensible defaults so the demo build continues
-        return {
-            "company_name": company_name,
-            "tagline": "Quality Roofing You Can Trust",
-            "primary_color": "#1A1A2E",
-            "secondary_color": "#E8B84B",
-            "services": ["Roof Replacement", "Storm Damage Repair", "Gutters", "Inspections"],
-            "city": "Your City",
-            "state": "",
-            "phone": "",
-            "logo_url": "",
-            "about": f"{company_name} is a trusted roofing contractor delivering quality work and honest service.",
-            "review_count": 0,
-            "years_in_business": 0,
-            "has_website": True,
-        }
+        return fallback
 
 
 # â”€â”€ Step 3: Generate marketing audit â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -332,12 +347,21 @@ LENGTH: 450-550 words. Every sentence earns its place.
 END WITH: "Your personalized demo is ready. We rebuilt your homepage with a live AI voice receptionist already installed."
 DO NOT: Mention pricing. Do not say "we offer" or use any sales language."""
 
-    msg = ai.messages.create(
-        model="claude-sonnet-4-6",
-        max_tokens=1200,
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return msg.content[0].text
+    try:
+        result = await ask_jarvis_model(
+            anthropic_client=ai,
+            system="You are Summit Voice AI's evidence-first roofing conversion analyst. Clearly label industry assumptions and never present them as observed facts about a prospect.",
+            messages=[{"role": "user", "content": prompt}], max_tokens=1200,
+        )
+        return result.text
+    except Exception:
+        return (
+            f"WEBSITE CONVERSION BRIEF: {company}\n\n"
+            "The premium concept emphasizes clear services, mobile calls to action, and a short estimate path. "
+            "Any reviews, credentials, response-time promises, project images, and service-area claims still require owner verification.\n\n"
+            "INDUSTRY ASSUMPTION: Roofing businesses can lose revenue when calls go unanswered, but no missed-call volume or revenue loss has been observed for this company.\n\n"
+            "NEXT STEPS: Verify the company proof, connect the approved form to CRM, test mobile speed, and review the concept with the owner."
+        )
 
 
 # â”€â”€ Step 4: Build homepage HTML â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -627,7 +651,7 @@ async def run_audit_task(audit_id: str, url: str, company: str, contact_id: str 
         store.update({"step": 1, "status": "scraping", "message": "Crawling website"})
         scraped = await scrape_website(url)
         store.update({"step": 2, "status": "building", "message": "Extracting brand"})
-        brand = await extract_brand(scraped["markdown"], company or "Roofing Company")
+        brand = await extract_brand(scraped["markdown"], company or "Roofing Company", scraped.get("images"))
         contact = {}
         if contact_id:
             async with httpx.AsyncClient(timeout=15) as client:
@@ -673,38 +697,38 @@ async def build_demo_task(demo_id: str, req: CreateDemoRequest):
             update(1, "scraping", "Crawling website with Firecrawl")
             scraped = await scrape_website(req.website_url)
             update(2, "building", "Extracting brand identity")
-            brand = await extract_brand(scraped["markdown"], req.client_name)
+            brand = await extract_brand(scraped["markdown"], req.client_name, scraped.get("images"))
         else:
-            # No website -- generate brand identity from GHL contact data via Claude Haiku
+            # No website: use only verified CRM fields. The website generator adds
+            # proposed conversion copy without pretending it is business proof.
             update(1, "building", "No website -- generating brand identity from company info")
             city_v  = contact.get("city", "")
             state_v = contact.get("state", "")
             phone_v = contact.get("phone", "")
-            owner_v = contact.get("firstName", "")
             reviews_v = int(contact.get("customFields", {}).get("google_reviews", 0) or 0)
-            _bp = (
-                f'Return ONLY valid JSON (no markdown) for this roofing brand: '
-                f'{{"company_name":"{req.client_name}","tagline":"compelling 6-8 word tagline",'
-                f'"primary_color":"#0D1F3C","secondary_color":"#F97316",'
-                f'"services":["Roof Replacement","Storm Damage Repair","Roof Repair","Gutters & Downspouts","New Construction","Emergency Service"],'
-                f'"city":"{city_v}","state":"{state_v}","phone":"{phone_v}",'
-                f'"about":"2-sentence description of {req.client_name} as a trusted local roofer in {city_v}. They are known for quality work and honest pricing.",'
-                f'"review_count":{reviews_v},"years_in_business":10,'
-                f'"nearby_cities":["{city_v}","Greater {city_v}","Metro Area","Surrounding Communities"]}}'
-            )
-            _msg = ai.messages.create(
-                model="claude-haiku-4-5-20251001", max_tokens=700,
-                messages=[{"role": "user", "content": _bp}]
-            )
-            _raw = _msg.content[0].text.strip().replace("```json","").replace("```","").strip()
-            brand = json.loads(_raw)
+            brand = {
+                "company_name": req.client_name,
+                "tagline": "A better roof starts with a clear plan",
+                "primary_color": "#0D1F3C", "secondary_color": "#F97316",
+                "services": ["Roof Replacement", "Storm Damage Repair", "Roof Repair", "Roof Inspections", "Gutters", "Commercial Roofing"],
+                "city": city_v, "state": state_v, "phone": phone_v,
+                "about": f"A premium website concept prepared for {req.client_name}. Final company history, credentials, and project proof require owner approval.",
+                "review_count": reviews_v, "years_in_business": 0,
+                "nearby_cities": [city_v] if city_v else [],
+                "logo_url": "", "source_images": [], "testimonials": [], "has_website": False,
+            }
             update(2, "building", "Brand identity generated from company data")
 
         update(3, "building", "Generating marketing audit")
         audit = await generate_audit(brand, contact)
 
-        update(4, "building", "Building optimized homepage (template cloner)")
+        brand["design_direction"] = req.design_direction
+        update(4, "building", "Building evidence-safe premium concept")
         html = generate_world_class_roofing_site(brand, req.widget_key)
+        quality = validate_demo_html(html, brand)
+        brand["quality_gate"] = quality
+        if not quality["passed"]:
+            raise RuntimeError(f"Demo quality gate failed ({quality['score']}): {', '.join(quality['issues'])}")
 
         update(5, "deploying", "Deploying to Vercel")
         slug = re.sub(r"[^a-z0-9]", "-", req.client_name.lower())[:28].strip("-")
