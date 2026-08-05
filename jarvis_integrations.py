@@ -363,10 +363,13 @@ async def slack_history(limit: int = 20) -> dict:
 
 
 async def slack_send_message(arguments: dict) -> dict:
-    token = os.getenv("SLACK_BOT_TOKEN", ""); channel = str(arguments.get("channel_id") or os.getenv("SLACK_CHANNEL_ID", "")).strip(); message = str(arguments.get("message", "")).strip()
+    token = os.getenv("SLACK_BOT_TOKEN", ""); channel = str(arguments.get("channel_id") or os.getenv("SLACK_CHANNEL_ID", "")).strip(); message = str(arguments.get("message", "")).strip(); thread_ts = str(arguments.get("thread_ts") or "").strip()
     if not token or not channel or not message:
         raise IntegrationUnavailable("Slack bot token, channel id, and message are required")
-    response = await _request_with_retry("POST", "https://slack.com/api/chat.postMessage", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json={"channel": channel, "text": message[:4000]})
+    body = {"channel": channel, "text": message[:4000]}
+    if thread_ts:
+        body["thread_ts"] = thread_ts
+    response = await _request_with_retry("POST", "https://slack.com/api/chat.postMessage", headers={"Authorization": f"Bearer {token}", "Content-Type": "application/json"}, json=body)
     payload = response.json()
     if not payload.get("ok"):
         raise IntegrationUnavailable(f"Slack rejected message: {payload.get('error', 'unknown')}")

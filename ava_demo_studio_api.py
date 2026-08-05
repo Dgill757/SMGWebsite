@@ -4,7 +4,7 @@ Summit Voice AI | FastAPI + Firecrawl + Claude + Vercel
 Deploy to Railway.
 """
 
-import os, json, re, time, base64, httpx, asyncio, secrets, math, html as html_lib
+import os, json, re, time, base64, httpx, asyncio, secrets, math, html as html_lib, hashlib, hmac
 from datetime import datetime, timedelta
 from typing import Set
 from urllib.parse import urljoin
@@ -56,6 +56,8 @@ VERCEL_PROJECT = os.getenv("VERCEL_PROJECT_NAME", "ava-demo-studio")
 AVA_API_KEY    = os.getenv("AVA_API_KEY", "")
 
 demo_store: dict = {}
+_slack_seen_events: dict[str, float] = {}
+_slack_conversations: dict[str, list[dict[str, str]]] = {}
 
 
 # â”€â”€ Auth helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
@@ -1312,6 +1314,67 @@ async def _jarvis_channel_answer(message: str, channel: str, history: list[dict[
             f"{summary.get('clients') or 0} clients, and {int(businesses.get('total') or 0):,} scraped businesses. "
             "Automated outreach is paused."
         )
+
+
+def _verify_slack_request(raw_body: bytes, timestamp: str, signature: str) -> bool:
+    """Validate Slack's v0 HMAC signature and reject replayed requests."""
+    secret = os.getenv("SLACK_SIGNING_SECRET", "")
+    if not secret or not timestamp or not signature:
+        return False
+    try:
+        if abs(time.time() - int(timestamp)) > 300:
+            return False
+    except (TypeError, ValueError):
+        return False
+    base = b"v0:" + timestamp.encode("utf-8") + b":" + raw_body
+    expected = "v0=" + hmac.new(secret.encode("utf-8"), base, hashlib.sha256).hexdigest()
+    return hmac.compare_digest(expected, signature)
+
+
+async def _answer_slack_event(event: dict, event_id: str) -> None:
+    channel = str(event.get("channel") or "")
+    user = str(event.get("user") or "")
+    text = re.sub(r"<@[A-Z0-9]+>", "", str(event.get("text") or ""), flags=re.I).strip()
+    thread_ts = str(event.get("thread_ts") or event.get("ts") or "")
+    if not channel or not user or not text or event.get("bot_id") or event.get("subtype"):
+        return
+    allowed_channels = {x.strip() for x in os.getenv("SLACK_ALLOWED_CHANNEL_IDS", os.getenv("SLACK_CHANNEL_ID", "")).split(",") if x.strip()}
+    allowed_users = {x.strip() for x in os.getenv("SLACK_ALLOWED_USER_IDS", "").split(",") if x.strip()}
+    if channel not in allowed_channels or user not in allowed_users:
+        return
+    conversation_key = f"{channel}:{thread_ts}"
+    history = _slack_conversations.setdefault(conversation_key, [])[-8:]
+    answer = await _jarvis_channel_answer(text, "slack", history)
+    history.extend(({"role": "user", "content": text}, {"role": "assistant", "content": answer}))
+    _slack_conversations[conversation_key] = history[-12:]
+    await execute_write_tool("slack_send_message", {"channel_id": channel, "message": answer, "thread_ts": thread_ts})
+    await _record_jarvis_event("slack", "chat", success=True)
+
+
+@app.post("/jarvis/slack/events")
+async def jarvis_slack_events(request: Request, background_tasks: BackgroundTasks):
+    raw = await request.body()
+    if not _verify_slack_request(raw, request.headers.get("x-slack-request-timestamp", ""), request.headers.get("x-slack-signature", "")):
+        raise HTTPException(status_code=401, detail="Invalid Slack signature")
+    try:
+        payload = json.loads(raw)
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=400, detail="Invalid JSON")
+    if payload.get("type") == "url_verification":
+        return {"challenge": payload.get("challenge", "")}
+    event_id = str(payload.get("event_id") or "")
+    now = time.time()
+    for key, seen_at in list(_slack_seen_events.items()):
+        if now - seen_at > 600:
+            _slack_seen_events.pop(key, None)
+    if event_id and event_id in _slack_seen_events:
+        return {"ok": True, "duplicate": True}
+    if event_id:
+        _slack_seen_events[event_id] = now
+    event = payload.get("event") or {}
+    if event.get("type") in {"app_mention", "message"}:
+        background_tasks.add_task(_answer_slack_event, event, event_id)
+    return {"ok": True}
 
 
 @app.post("/jarvis/telegram/webhook")
