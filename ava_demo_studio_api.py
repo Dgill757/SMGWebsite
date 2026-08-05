@@ -1326,6 +1326,39 @@ async def jarvis_phone_twiml(request: Request):
     return Response(content=xml, media_type="application/xml")
 
 
+def _phone_speech_chunks(text: str, max_chars: int = 240) -> list[str]:
+    """Normalize markdown and stream bounded, natural TTS tokens to ConversationRelay."""
+    clean = re.sub(r"\[(.*?)\]\([^)]*\)", r"\1", str(text or ""))
+    clean = re.sub(r"(?m)^\s*[-*#]+\s*", "", clean)
+    clean = clean.replace("**", "").replace("`", "")
+    clean = re.sub(r"\s+", " ", clean).strip()
+    if not clean:
+        return ["I did not receive an answer. Please ask me again."]
+    sentences = re.split(r"(?<=[.!?])\s+", clean)
+    chunks: list[str] = []
+    for sentence in sentences:
+        sentence = sentence.strip()
+        while len(sentence) > max_chars:
+            cut = max(sentence.rfind(" ", 0, max_chars), 1)
+            chunks.append(sentence[:cut].strip())
+            sentence = sentence[cut:].strip()
+        if sentence:
+            if chunks and len(chunks[-1]) + len(sentence) + 1 <= max_chars:
+                chunks[-1] += " " + sentence
+            else:
+                chunks.append(sentence)
+    return chunks[:20]
+
+
+async def _send_phone_answer(websocket: WebSocket, answer: str):
+    chunks = _phone_speech_chunks(answer)
+    for index, chunk in enumerate(chunks):
+        await websocket.send_json({
+            "type": "text", "token": chunk, "last": index == len(chunks) - 1,
+            "interruptible": True, "preemptible": True,
+        })
+
+
 @app.websocket("/jarvis/phone/ws")
 async def jarvis_phone_ws(websocket: WebSocket):
     supplied = websocket.query_params.get("s", "")
@@ -1344,6 +1377,11 @@ async def jarvis_phone_ws(websocket: WebSocket):
     try:
         while True:
             event = json.loads(await websocket.receive_text())
+            if event.get("type") == "error":
+                description = str(event.get("description") or "ConversationRelay error")[:300]
+                print(f"[JARVIS PHONE] {description}")
+                await _record_jarvis_event("phone", "conversation_relay_error", success=False, error_class=description[:120])
+                continue
             if event.get("type") == "setup" and event.get("from") not in allowed:
                 await websocket.send_json({"type": "end", "handoffData": '{"reason":"caller-not-allowed"}'})
                 continue
@@ -1353,7 +1391,7 @@ async def jarvis_phone_ws(websocket: WebSocket):
                 pin_digits = (pin_digits + str(event.get("digit", "")))[-4:]
                 if pin_digits == os.getenv("JARVIS_PHONE_PIN", ""):
                     authenticated = True
-                    await websocket.send_json({"type": "text", "token": "Identity confirmed. What do you need?", "last": True, "interruptible": True, "preemptible": True})
+                    await _send_phone_answer(websocket, "Identity confirmed. What do you need?")
                 continue
             if event.get("type") != "prompt" or not event.get("last", True):
                 continue
@@ -1362,10 +1400,10 @@ async def jarvis_phone_ws(websocket: WebSocket):
                 word_digits = {"zero": "0", "one": "1", "two": "2", "three": "3", "four": "4", "five": "5", "six": "6", "seven": "7", "eight": "8", "nine": "9"}
                 digits = "".join(re.findall(r"\d", utterance)) or "".join(word_digits.get(word, "") for word in re.findall(r"[a-z]+", utterance.casefold()))
                 if digits != os.getenv("JARVIS_PHONE_PIN", ""):
-                    await websocket.send_json({"type": "text", "token": "That PIN is incorrect. Try again.", "last": True, "interruptible": True, "preemptible": True})
+                    await _send_phone_answer(websocket, "That PIN is incorrect. Try again.")
                     continue
                 authenticated = True
-                await websocket.send_json({"type": "text", "token": "Identity confirmed. What do you need?", "last": True, "interruptible": True, "preemptible": True})
+                await _send_phone_answer(websocket, "Identity confirmed. What do you need?")
                 continue
             answer = await _jarvis_channel_answer(utterance, "phone", conversation_history)
             conversation_history.extend([
@@ -1373,7 +1411,7 @@ async def jarvis_phone_ws(websocket: WebSocket):
                 {"role": "assistant", "content": answer},
             ])
             conversation_history = conversation_history[-8:]
-            await websocket.send_json({"type": "text", "token": answer, "last": True, "interruptible": True, "preemptible": True})
+            await _send_phone_answer(websocket, answer)
     except WebSocketDisconnect:
         pass
 
