@@ -518,7 +518,9 @@ async def deploy_to_vercel(slug: str, html: str) -> str:
         # Vercel protects the generated deployment URL. Its public production
         # alias can also be truncated, so derive it from the project target
         # instead of guessing from the project name.
-        aliases = data.get("alias") or []
+        # The create-deployment response may contain protected deployment
+        # aliases. Ignore them and query only the production target aliases.
+        aliases: list[str] = []
         # New Vercel projects on this account can take over a minute to receive
         # a routable production alias even after deployment reports READY.
         for _ in range(180):
