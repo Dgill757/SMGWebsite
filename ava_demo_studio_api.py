@@ -2913,7 +2913,10 @@ async def enqueue_prospect_enrichment(payload: ProspectEnrichmentRequest, x_api_
     verify_api_key(x_api_key)
     limit = min(500, max(1, payload.enqueue_limit)); cutoff = (datetime.now() - timedelta(hours=max(1, payload.since_hours))).isoformat()
     prospects = await _growth_table("GET", "scraped_businesses", query=f"?scraped_at=gte.{cutoff}&order=scraped_at.desc&limit={limit}") or []
+    if not prospects:  # bootstrap older inventory when scraping has not run recently
+        prospects = await _growth_table("GET", "scraped_businesses", query=f"?order=scraped_at.desc&limit={limit}") or []
     queued = 0
+    storage_available = True
     for business in prospects:
         business_id = business.get("id")
         if not business_id:
@@ -2924,9 +2927,13 @@ async def enqueue_prospect_enrichment(payload: ProspectEnrichmentRequest, x_api_
             continue
         row = {"business_id": business.get("id"), "status": "queued", "priority": 100 if not business.get("website") else 50,
                "attempts": 0, "max_attempts": 3, "requested_by": "automatic", "created_at": datetime.now().isoformat(), "updated_at": datetime.now().isoformat()}
-        if row["business_id"] and await _growth_table("POST", "prospect_enrichment_jobs", payload=row) is not None:
+        saved = await _growth_table("POST", "prospect_enrichment_jobs", payload=row)
+        if saved is None:
+            storage_available = False
+        else:
             queued += 1
-    return {"status": "ok", "found": len(prospects), "queued_or_existing": queued, "outreach_sent": 0}
+    return {"status": "ok" if storage_available else "migration_required", "found": len(prospects),
+            "queued_or_existing": queued, "outreach_sent": 0}
 
 
 async def _run_enrichment_job(job: dict, x_api_key: str) -> dict:
@@ -2964,9 +2971,11 @@ async def run_prospect_enrichment(payload: ProspectEnrichmentRequest, x_api_key:
 @app.get("/prospect-enrichment/status")
 async def prospect_enrichment_status(x_api_key: str = Header(default="")):
     verify_api_key(x_api_key)
-    rows = await _growth_table("GET", "prospect_enrichment_jobs", query="?order=updated_at.desc&limit=500") or []
+    stored = await _growth_table("GET", "prospect_enrichment_jobs", query="?order=updated_at.desc&limit=500")
+    rows = stored or []
     counts = {status: sum(row.get("status") == status for row in rows) for status in ("queued", "running", "completed", "failed")}
-    return {"counts": counts, "recent": rows[:20], "daily_limit": int(os.getenv("PROSPECT_ENRICHMENT_DAILY_LIMIT", "10"))}
+    return {"counts": counts, "recent": rows[:20], "daily_limit": int(os.getenv("PROSPECT_ENRICHMENT_DAILY_LIMIT", "10")),
+            "persistence_ready": stored is not None}
 
 
 @app.get("/businesses/stats")
