@@ -253,3 +253,14 @@ This is the only manual step for the current phase.
 10. Add a harmless test note, select **Note**, and click **Save + sync to GHL**. Verify the note appears on the same GHL contact.
 
 Do not enable `CONTENT_PUBLISHING_ENABLED` or any outreach-sending task during this test. Drafting, research, call lists, and notes are enabled; automated outreach remains paused.
+
+## 10. Activate the automatic research queue (new)
+
+The migration is safe to run again. The latest version adds the new `prospect_enrichment_jobs` table that was not present in the earlier checklist.
+
+1. Open Supabase SQL Editor for SummitOS.
+2. Copy the current `prospect_workbench_migration.sql` into a new query and click **Run**.
+3. No existing prospect, note, list, or audit data is deleted.
+4. The local scheduled task **Summit Prospect Enrichment** will then research up to 10 prospects per day.
+5. This worker creates intelligence and scripts only. It sends zero emails and zero SMS messages.
+6. Ask Jarvis: `Give me my executive brief and today's revenue plan.` Confirm it reports $797 MRR, 2 clients, calendar/inbox facts, and that outreach is paused.
