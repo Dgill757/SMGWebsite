@@ -2102,13 +2102,14 @@ async def update_agent_status(payload: AgentStatusUpdate, x_api_key: str = Heade
 @app.get("/agents/status")
 async def get_all_agent_status(x_api_key: str = Header(default="")):
     verify_api_key(x_api_key)
-    if agent_status_store:
-        return {"agents": list(agent_status_store.values()), "updated_at": datetime.now().isoformat(), "source": "memory"}
-    # Fall back to Supabase if memory is empty (after Railway restart)
+    # Always merge persistence. Returning memory alone made the fleet shrink to
+    # whichever workers had reported since the latest Railway restart.
     supa_agents = await _supabase_get_agents()
     for a in supa_agents:
-        agent_status_store[a["agent_id"]] = a
-    return {"agents": supa_agents, "updated_at": datetime.now().isoformat(), "source": "supabase"}
+        if a.get("agent_id") not in agent_status_store:
+            agent_status_store[a["agent_id"]] = a
+    return {"agents": list(agent_status_store.values()), "updated_at": datetime.now().isoformat(),
+            "source": "memory+supabase"}
 
 
 @app.get("/agents/status/{agent_id}")
@@ -2122,11 +2123,7 @@ async def get_agent_status(agent_id: str, x_api_key: str = Header(default="")):
 @app.get("/agents/health-summary")
 async def get_agent_health_summary(x_api_key: str = Header(default="")):
     verify_api_key(x_api_key)
-    if not agent_status_store:
-        for agent in await _supabase_get_agents():
-            if agent.get("agent_id"):
-                agent_status_store[agent["agent_id"]] = agent
-    agents = list(agent_status_store.values())
+    agents = (await get_all_agent_status(x_api_key)).get("agents", [])
     ok    = sum(1 for a in agents if a["status"] == "ok")
     err   = sum(1 for a in agents if a["status"] == "error")
     blk   = sum(1 for a in agents if a["status"] == "blocked")
