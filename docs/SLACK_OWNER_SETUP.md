@@ -32,7 +32,7 @@ For local scheduled reports, also add only `SLACK_WEBHOOK_URL` to the ignored lo
 ## Enable and test events
 
 1. Return to **Event Subscriptions**. The request URL must be `https://ava-studio-api-production.up.railway.app/jarvis/slack/events` and show **Verified**.
-2. Under **Subscribe to bot events**, confirm `app_mention` and `message.channels`.
+2. Under **Subscribe to bot events**, keep `app_mention`. Remove `message.channels` if it is present; Jarvis intentionally processes mentions only so a channel message cannot produce duplicate answers.
 3. Reinstall the app if Slack shows a banner saying scopes changed.
 4. In the channel, send `@SummitOS Jarvis what should I focus on today?`
 5. Jarvis should answer in a thread. Continue in that thread to preserve context.

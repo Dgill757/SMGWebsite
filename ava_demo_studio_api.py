@@ -1362,17 +1362,22 @@ async def jarvis_slack_events(request: Request, background_tasks: BackgroundTask
         raise HTTPException(status_code=400, detail="Invalid JSON")
     if payload.get("type") == "url_verification":
         return {"challenge": payload.get("challenge", "")}
+    event = payload.get("event") or {}
     event_id = str(payload.get("event_id") or "")
+    fingerprint = ":".join(str(event.get(key) or "") for key in ("channel", "user", "client_msg_id", "ts"))
     now = time.time()
     for key, seen_at in list(_slack_seen_events.items()):
         if now - seen_at > 600:
             _slack_seen_events.pop(key, None)
-    if event_id and event_id in _slack_seen_events:
+    if (event_id and event_id in _slack_seen_events) or (fingerprint and fingerprint in _slack_seen_events):
         return {"ok": True, "duplicate": True}
     if event_id:
         _slack_seen_events[event_id] = now
-    event = payload.get("event") or {}
-    if event.get("type") in {"app_mention", "message"}:
+    if fingerprint:
+        _slack_seen_events[fingerprint] = now
+    # Channel mentions arrive as app_mention. Ignoring the parallel message.channels
+    # delivery prevents one human message from producing two model answers.
+    if event.get("type") == "app_mention":
         background_tasks.add_task(_answer_slack_event, event, event_id)
     return {"ok": True}
 
