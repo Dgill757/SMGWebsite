@@ -1055,6 +1055,29 @@ async def _maybe_local_tool(message: str, channel: str) -> str | None:
                 location = ", ".join(x for x in (row.get("city"), row.get("state")) if x)
                 lines.append(f"- {row.get('company_name') or 'Unnamed business'}, {location or 'location unavailable'}, {rating or 'no'} rating, {reviews} reviews, phone {row.get('phone') or 'unavailable'}")
             return "\n".join(lines)
+        if tool_name == "daily_executive_inputs" and isinstance(observed, dict):
+            brief = observed.get("revenue_command_center") or {}
+            business, growth = brief.get("business", {}), brief.get("growth", {})
+            agents, inbox = brief.get("agents", {}), brief.get("inbox", {})
+            events = brief.get("calendar", {}).get("next_48_hours", [])
+            priorities = brief.get("priorities", [])
+            lines = [
+                f"First: {priorities[0].get('action') if priorities else growth.get('coach_message', 'Work the highest-value open sales opportunity.')}",
+                "",
+                f"Current position: ${float(business.get('mrr', 0)):,.0f} MRR from {business.get('clients', 0)} active clients. "
+                f"Your target is ${float(growth.get('target_mrr', 0)):,.0f}; the remaining gap is ${float(growth.get('gap', 0)):,.0f}.",
+                f"Today's required pace: {growth.get('dials_per_workday', 0)} dials, {growth.get('bookings_per_workday', 0)} bookings, "
+                f"and {growth.get('held_meetings_per_workday', 0)} held demos.",
+                f"Operations: {inbox.get('priority_count', 0)} priority inbox conversations, {len(events)} calendar events in the next 48 hours, "
+                f"and {agents.get('verified', 0)} of {agents.get('reported', 0)} reporting employees have fresh evidence.",
+                "Automated outreach is paused. Prospect research, call preparation, notes, and manual call lists remain active.",
+            ]
+            if len(priorities) > 1:
+                lines.extend(["", "Next priorities:", *[f"{item.get('rank')}. {item.get('action')}" for item in priorities[1:]]])
+            errors = brief.get("integration_errors") or []
+            if errors:
+                lines.append("Unavailable live inputs: " + ", ".join(item.get("integration", "unknown") for item in errors) + ".")
+            return "\n".join(lines)
         raw = json.dumps(observed, default=str)[:24000]
         answer_rules = (
             "Use only observed fields. Distinguish facts from hypotheses. Include real source URLs when public research is present; do not invent numeric footnotes. "
