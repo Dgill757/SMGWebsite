@@ -22,6 +22,7 @@ from jarvis_model_router import (
 from jarvis_integrations import IntegrationUnavailable, execute_read_tool, execute_write_tool, integration_status
 from jarvis_task_store import load_task as load_durable_task, list_tasks as list_durable_tasks, save_task as save_durable_task
 from premium_website_generator_v2 import generate_world_class_roofing_site, validate_demo_html
+from summitos_employee_registry import COMPANY_CONTEXT, EMPLOYEE_REGISTRY, employee_system_prompt, resolve_employee_id
 
 load_dotenv()
 
@@ -2525,15 +2526,89 @@ async def get_growth_benchmarks(x_api_key: str = Header(default="")):
                         f"Today: complete {int(base.get('dials_per_workday', 0)) + catchup} dials, including {catchup} catch-up dials.")}
 
 
+EXECUTIVE_IDS = ("ceo", "cro", "cmo", "coo", "cto", "cfo", "client_success")
 EXECUTIVE_CABINET = {
-    "ceo": {"title": "Chief Executive Officer", "owns": ["strategy", "priorities", "offers", "executive synthesis"], "team": ["CRO", "CMO", "COO", "CTO", "CFO", "Client Success"]},
-    "cro": {"title": "Chief Revenue Officer", "owns": ["pipeline", "prospecting", "sales coaching", "conversion"], "team": ["SDR", "BDR", "Appointment Setter", "Pipeline Manager"]},
-    "cmo": {"title": "Chief Marketing Officer", "owns": ["positioning", "content", "competitors", "demand generation"], "team": ["Research Analyst", "Content Generator", "Copywriter", "Graphic Designer"]},
-    "coo": {"title": "Chief Operating Officer", "owns": ["workflow reliability", "capacity", "cadence", "blockers"], "team": ["System Watchdog", "Data Analyst", "Morning Briefing"]},
-    "cto": {"title": "Chief Technology Officer", "owns": ["product roadmap", "architecture", "security", "new automations"], "team": ["Demo Builder", "Local Connector", "Integration Workers"]},
-    "cfo": {"title": "Chief Financial Officer", "owns": ["cash", "pricing", "margins", "budget", "runway"], "team": ["Finance Manager", "Revenue Analyst"]},
-    "client_success": {"title": "Chief Client Success Officer", "owns": ["onboarding", "retention", "outcomes", "expansion"], "team": ["Client Manager", "Customer Service", "Review Collector"]},
+    key: {"title": EMPLOYEE_REGISTRY[key]["title"], "owns": EMPLOYEE_REGISTRY[key]["responsibilities"],
+          "team": EMPLOYEE_REGISTRY[key]["team"], "mission": EMPLOYEE_REGISTRY[key]["mission"],
+          "metrics": EMPLOYEE_REGISTRY[key]["metrics"]}
+    for key in EXECUTIVE_IDS
 }
+
+
+def _employee_resume(employee_id: str, profile: dict, status: dict | None = None) -> dict:
+    status = status or {}
+    evidence = status.get("evidence") or {}
+    return {
+        "summary": profile["mission"],
+        "current_assignment": status.get("output_summary") or "Role is defined; awaiting a fresh evidenced workflow run.",
+        "last_evidenced_result": evidence.get("summary") or evidence.get("action"),
+        "last_run": status.get("last_run"), "next_run": status.get("next_run"),
+        "qualifications": [item["name"] for item in profile["certifications"]],
+        "scope_note": "AI role résumé based on configured responsibilities and observed SummitOS evidence; not human employment history.",
+    }
+
+
+async def _employee_directory(x_api_key: str) -> list[dict]:
+    verified = await get_verified_agent_status(x_api_key)
+    status_rows = verified.get("agents", [])
+    status_map = {}
+    for row in status_rows:
+        keys = {resolve_employee_id(str(row.get("agent_id") or "")), resolve_employee_id(str(row.get("agent_name") or ""))}
+        for key in keys:
+            if key and key not in status_map:
+                status_map[key] = row
+    employees = []
+    for employee_id, base in EMPLOYEE_REGISTRY.items():
+        profile = {"id": employee_id, **base}
+        status = status_map.get(employee_id, {})
+        employees.append({
+            **profile, "status": status.get("status", "role_ready"),
+            "workflow_verification": status.get("verification", "no_matching_workflow"),
+            "workflow_evidence": status.get("evidence"), "blockers": status.get("blockers", []),
+            "last_run": status.get("last_run"), "next_run": status.get("next_run"),
+            "resume": _employee_resume(employee_id, profile, status),
+        })
+    return employees
+
+
+@app.get("/employees")
+async def get_employee_directory(x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    employees = await _employee_directory(x_api_key)
+    return {"employees": employees, "total": len(employees),
+            "executives": sum(1 for row in employees if row["department"] == "Executive"),
+            "company_context": COMPANY_CONTEXT, "generated_at": datetime.now().isoformat()}
+
+
+@app.get("/employees/{employee_id}")
+async def get_employee_profile(employee_id: str, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    employee_id = resolve_employee_id(employee_id)
+    employees = await _employee_directory(x_api_key)
+    profile = next((row for row in employees if row["id"] == employee_id), None)
+    if not profile:
+        raise HTTPException(status_code=404, detail="Unknown SummitOS employee")
+    return {"employee": profile, "company_context": COMPANY_CONTEXT}
+
+
+@app.post("/employees/{employee_id}/chat")
+async def chat_with_employee(employee_id: str, payload: ExecutiveQuestion, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    employee_id = resolve_employee_id(employee_id)
+    profile = EMPLOYEE_REGISTRY.get(employee_id)
+    if not profile:
+        raise HTTPException(status_code=404, detail="Unknown SummitOS employee")
+    brief, benchmarks = await asyncio.gather(get_daily_growth_brief(x_api_key), get_growth_benchmarks(x_api_key))
+    context = json.dumps({"brief": brief, "benchmarks": benchmarks, "employee": {"id": employee_id, **profile}}, default=str)[:24000]
+    messages = [*payload.history[-12:], {"role": "user", "content": f"LIVE OPERATING CONTEXT:\n{context}\n\nDAN'S QUESTION:\n{payload.question}"}]
+    try:
+        answer = await ask_jarvis_model(anthropic_client=ai, system=employee_system_prompt(employee_id, profile), messages=messages, max_tokens=1800)
+        return {"employee_id": employee_id, "title": profile["title"], "response": answer.text,
+                "provider": answer.provider, "model": answer.model, "grounded_at": brief.get("generated_at"), "actions_completed": 0}
+    except JarvisProvidersUnavailable as exc:
+        return {"employee_id": employee_id, "title": profile["title"],
+                "response": f"My reasoning providers are unavailable. My current mission is: {profile['mission']} Current verified priorities: {json.dumps(brief.get('priorities', []), default=str)}",
+                "provider": "deterministic_fallback", "provider_attempts": exc.attempts, "actions_completed": 0}
 
 
 @app.get("/executives")
@@ -2548,21 +2623,8 @@ async def ask_executive(role: str, payload: ExecutiveQuestion, x_api_key: str = 
     role = role.lower()
     if role not in EXECUTIVE_CABINET:
         raise HTTPException(status_code=404, detail="Unknown executive role")
-    brief, benchmarks = await asyncio.gather(get_daily_growth_brief(x_api_key), get_growth_benchmarks(x_api_key))
-    executive = EXECUTIVE_CABINET[role]
-    system = (f"You are SummitOS's {executive['title']}. You advise Dan Gill III, solo founder of Summit Voice AI. "
-              f"You own: {', '.join(executive['owns'])}. Be direct, commercially practical, and evidence-led. "
-              "Lead with the decision. Separate facts, assumptions, and proposals. Never claim an action happened. "
-              "Recommend at most three ranked actions and explain the expected mechanism, not guaranteed revenue.")
-    context = json.dumps({"brief": brief, "benchmarks": benchmarks, "executive": executive}, default=str)[:22000]
-    messages = [*payload.history[-8:], {"role": "user", "content": f"LIVE OPERATING CONTEXT:\n{context}\n\nDAN'S QUESTION:\n{payload.question}"}]
-    try:
-        answer = await ask_jarvis_model(anthropic_client=ai, system=system, messages=messages, max_tokens=1600)
-        return {"role": role, "title": executive["title"], "response": answer.text, "provider": answer.provider,
-                "grounded_at": brief.get("generated_at"), "actions_completed": 0}
-    except JarvisProvidersUnavailable as exc:
-        return {"role": role, "title": executive["title"], "response": brief.get("priorities", []),
-                "provider": "deterministic_fallback", "provider_attempts": exc.attempts, "actions_completed": 0}
+    result = await chat_with_employee(role, payload, x_api_key)
+    return {"role": role, **result}
 
 
 @app.put("/growth/settings")

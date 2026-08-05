@@ -21,8 +21,8 @@ h1,h2,h3,.nav-logo,.lbox .logo{font-family:'Chakra Petch','Inter',sans-serif;let
 /* ── APP ── */
 #app{display:none}
 /* ── NAVBAR ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,18,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 20px}
-.nav-l{display:flex;align-items:center;gap:0}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(13,13,18,.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;gap:12px}
+.nav-l{display:flex;align-items:center;gap:0;min-width:0;overflow-x:auto;scrollbar-width:thin}
 .nav-logo{font-weight:800;font-size:1rem;letter-spacing:-.02em;margin-right:24px;white-space:nowrap}
 .nav-logo span{color:var(--acc)}
 .tab-btn{background:none;border:none;color:var(--txt3);font-family:inherit;font-size:.8rem;font-weight:600;padding:6px 12px;cursor:pointer;border-radius:6px;letter-spacing:.06em;text-transform:uppercase;transition:all .15s;white-space:nowrap}
@@ -106,6 +106,7 @@ main{margin-top:52px;padding:24px;max-width:1400px;margin-left:auto;margin-right
 .dot-off{background:var(--txt3)}
 .ag-out{font-size:.78rem;color:var(--txt2);margin-bottom:8px;line-height:1.5}
 .ag-meta{font-size:.7rem;color:var(--txt3)}
+.employee-card{cursor:pointer;transition:transform .16s,border-color .16s}.employee-card:hover{transform:translateY(-2px);border-color:var(--acc)!important}.employee-mission{font-size:.76rem;color:var(--txt2);line-height:1.55;min-height:58px}.employee-kpis{display:flex;flex-wrap:wrap;gap:5px;margin-top:9px}.employee-kpis span{font-size:.62rem;background:var(--s2);color:var(--txt3);border-radius:20px;padding:3px 7px}.profile-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.profile-section{background:var(--s2);border:1px solid var(--bdr);border-radius:10px;padding:14px}.profile-section h4{font:700 .82rem 'Chakra Petch';margin-bottom:8px;color:var(--acc)}.profile-section ul{padding-left:18px;color:var(--txt2);font-size:.78rem;line-height:1.65}.employee-chat{height:260px;overflow:auto;background:#080e1b;border:1px solid var(--bdr);border-radius:9px;padding:12px;margin:12px 0}.employee-chat .coach-msg{font-size:.8rem}.cert-row{display:flex;justify-content:space-between;gap:10px;padding:7px 0;border-bottom:1px solid var(--bdr);font-size:.75rem}
 /* ── CONTENT GRID ── */
 .ct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
 .ct-card{background:var(--s1);border:1px solid var(--bdr);border-radius:12px;padding:16px;cursor:pointer;transition:border-color .15s}
@@ -222,20 +223,20 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
   <div class="nav-l">
     <div class="nav-logo"><span>S</span> SUMMIT OS</div>
     <button class="tab-btn" data-tab="jarvis" onclick="showTab('jarvis')">Jarvis</button>
+    <button class="tab-btn" data-tab="goals" onclick="showTab('goals')">Revenue Goals</button>
     <button class="tab-btn active" data-tab="brief" onclick="showTab('brief')">Brief</button>
     <button class="tab-btn" data-tab="team" onclick="showTab('team')">Team</button>
     <button class="tab-btn" data-tab="pipeline" onclick="showTab('pipeline')">Pipeline</button>
     <button class="tab-btn" data-tab="content" onclick="showTab('content')">Content</button>
     <button class="tab-btn" data-tab="clients" onclick="showTab('clients')">Clients</button>
     <button class="tab-btn" data-tab="demos" onclick="showTab('demos')">Demos</button>
-    <button class="tab-btn" data-tab="goals" onclick="showTab('goals')">Goals</button>
     <button class="tab-btn" data-tab="finance" onclick="showTab('finance')">Finance</button>
     <button class="tab-btn" data-tab="intel" onclick="showTab('intel')">Intel</button>
   </div>
   <div class="nav-r">
     <span>MRR <b id="hMRR">--</b></span>
     <span>Clients <b id="hClients">--</b></span>
-    <span><span class="nav-dot"></span><b id="hAgents">27</b> agents</span>
+    <span><span class="nav-dot"></span><b id="hAgents">0</b> verified workflows</span>
     <span id="hTime" class="mono"></span>
   </div>
 </nav>
@@ -303,7 +304,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
       <div id="br-feed" style="max-height:340px;overflow-y:auto"><div class="loading">Loading...</div></div>
     </div>
   </div>
-  <div class="sec-hd" style="margin-top:4px"><h2>Agent Health</h2></div>
+  <div class="sec-hd" style="margin-top:4px"><h2>Workflow Health</h2></div>
   <div id="br-health" class="cards3"><div class="loading">Loading...</div></div>
 </div>
 
@@ -316,7 +317,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
     <div class="gap8">
       <select id="tm-filter" onchange="filterTeam()" style="background:var(--s2);border:1px solid var(--bdr);border-radius:7px;padding:6px 10px;color:var(--txt);font-size:.78rem;font-family:inherit">
         <option value="">All Departments</option>
-        <option>Sales</option><option>Marketing</option><option>Operations</option><option>Intelligence</option><option>Client Success</option>
+        <option>Executive</option><option>Revenue</option><option>Marketing</option><option>Operations</option><option>Technology</option><option>Finance</option><option>Client Success</option>
       </select>
       <button class="btn btn-acc btn-sm" onclick="openModal('m-deploy')">+ Register Workflow</button>
     </div>
@@ -602,6 +603,25 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
   </div>
 </div>
 
+<!-- Employee Profile + Conversation Modal -->
+<div class="modal-bg" id="m-employee">
+  <div class="modal modal-wide" style="max-width:980px">
+    <button class="mclose" onclick="closeModal('m-employee')">×</button>
+    <div class="row mb12" style="padding-right:35px"><div><span id="ep-dept" class="badge badge-acc"></span><h3 id="ep-title" style="font-size:1.25rem;margin:9px 0 3px"></h3><div id="ep-report" class="muted2" style="font-size:.75rem"></div></div><span id="ep-status" class="badge badge-grey ml-auto"></span></div>
+    <div id="ep-mission" style="font-size:.88rem;line-height:1.65;margin-bottom:14px"></div>
+    <div class="profile-grid">
+      <div class="profile-section"><h4>Responsibilities</h4><ul id="ep-responsibilities"></ul></div>
+      <div class="profile-section"><h4>Goals and Metrics</h4><ul id="ep-metrics"></ul></div>
+      <div class="profile-section"><h4>Decision Rights</h4><ul id="ep-rights"></ul></div>
+      <div class="profile-section"><h4>Internal Certifications</h4><div id="ep-certs"></div></div>
+    </div>
+    <div class="profile-section" style="margin-top:14px"><h4>AI Role Résumé and Evidence</h4><div id="ep-resume" class="muted" style="font-size:.78rem;line-height:1.65"></div></div>
+    <div class="sec-hd" style="margin-top:18px;margin-bottom:4px"><h2 id="ep-chat-title">Conversation</h2><button class="btn btn-ghost btn-xs" onclick="clearEmployeeChat()">Clear conversation</button></div>
+    <div id="ep-chat" class="employee-chat"></div>
+    <div class="row"><textarea id="ep-input" placeholder="Ask this employee a question..." style="flex:1;min-height:58px;background:var(--s2);border:1px solid var(--bdr);border-radius:8px;padding:10px;color:var(--txt);font-family:inherit" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();askEmployee()}"></textarea><button id="ep-send" class="btn btn-acc" onclick="askEmployee()">Ask</button></div>
+  </div>
+</div>
+
 <!-- Add Client Modal -->
 <div class="modal-bg" id="m-add-client">
   <div class="modal">
@@ -681,7 +701,7 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
 var API='https://ava-studio-api-production.up.railway.app';
 var KEY='';// set at login; validated server-side by Railway
 var _activeDemoId=null, _bizDate=null, _bizOffset=0, _bizTotal=0, _bizLimit=50;
-var _allContent=[], _allBiz=[], _allAgents=[];
+var _allContent=[], _allBiz=[], _allAgents=[], _employeeId='', _employeeProfile=null, _employeeHistory={};
 var _jarvisHistory=[];
 var _jarvisRecognition=null,_jarvisListening=false,_jarvisAlwaysListening=false,_jarvisVoice=true,_jarvisSpeaking=false,_jarvisOrbState='idle',_jarvisSpeechLevel=0;
 var _jarvisStream=null,_jarvisRecorder=null,_jarvisChunks=[],_jarvisAudio=null,_jarvisVadTimer=null,_jarvisSegmentTimer=null,_jarvisLastVoice=0,_jarvisSegmentStarted=0,_jarvisSpeechDetected=false,_jarvisSegmentPeak=0,_jarvisTranscriptionQueue=[],_jarvisTranscribing=false,_jarvisResumeAfterReply=false,_jarvisLastTranscript='',_jarvisLastTranscriptAt=0,_jarvisLastSpokenText='',_jarvisSpeechEndedAt=0,_jarvisHotUntil=0,_jarvisChatAbort=null,_jarvisVoiceAbort=null,_jarvisSpeechGeneration=0;
@@ -743,7 +763,7 @@ function initDash(){
 // ── Header ─────────────────────────────────────────────────────────────────
 async function loadHeader(){
   var s=await get('/ceo/summary');
-  txt('hMRR',fmt$(s.mrr));txt('hClients',s.clients||0);txt('hAgents',(s.agents_verified||0)+' verified / '+(s.agents_reported||s.agents_total||0));
+  txt('hMRR',fmt$(s.mrr));txt('hClients',s.clients||0);txt('hAgents',(s.agents_verified||0)+' / '+(s.agents_reported||s.agents_total||0));
 }
 
 // ── Tab nav ─────────────────────────────────────────────────────────────────
@@ -875,9 +895,9 @@ async function loadBrief(){
 
 // ── TEAM ──────────────────────────────────────────────────────────────────
 async function loadTeam(){
-  var [d,feed]=await Promise.all([get('/agents/verified-status'),get('/activity/feed?limit=50')]);
-  _allAgents=d.agents||[];
-  txt('tm-count',(d.verified_total||0)+' verified / '+(d.reported_total||0)+' reported');
+  var [d,feed]=await Promise.all([get('/employees'),get('/activity/feed?limit=50')]);
+  _allAgents=d.employees||[];
+  txt('tm-count',(d.executives||0)+' executives · '+(d.total||0)+' defined roles');
   renderAgents(_allAgents);
   // Feed
   var events=feed.events||[];
@@ -885,19 +905,16 @@ async function loadTeam(){
   html('tm-feed',events.length?events.map(function(e){
     return'<div class="feed-item"><div class="feed-icon" style="background:var(--s2);color:var(--acc)">'+((e.agent_name||'?').charAt(0).toUpperCase())+'</div><div class="feed-body"><b style="font-size:.8rem">'+e.agent_name+'</b> <span class="muted2" style="font-size:.75rem">'+e.department+'</span><div style="font-size:.78rem;color:var(--txt2)">'+e.action+' — '+truncate(e.summary,80)+'</div></div><div><div class="feed-time">'+fmtTime(e.created_at)+'</div>'+statusBadge(e.outcome||'ok')+'</div></div>'
   }).join(''):'<div class="loading">No activity logged yet</div>');
-  if(!_allAgents.length)html('tm-agents','<div class="loading">No evidenced employee workflows are registered.</div>');
+  if(!_allAgents.length)html('tm-agents','<div class="loading">No employee roles are registered.</div>');
 }
 
 function renderAgents(agents){
-  if(!el('tm-count').textContent.includes('verified'))txt('tm-count',agents.filter(function(a){return a.verification==='verified'}).length+' verified / '+agents.length+' reported');
   if(!agents.length){html('tm-agents','<div class="loading">No agents registered</div>');return;}
   html('tm-agents',agents.map(function(a){
-    var dc=dotColor(a.status);
-    var bk=a.blockers&&a.blockers.length?'<div style="margin-top:8px;font-size:.73rem;background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.15);border-radius:6px;padding:6px 8px;color:var(--yel)">BLOCKED: '+a.blockers.join(', ')+'</div>':'';
-    var hi=a.hot_items&&a.hot_items.length?'<div style="margin-top:6px;font-size:.73rem;color:var(--grn)">'+a.hot_items[0]+'</div>':'';
-    var stale='';if(a.last_run&&a.last_run!=='Never'){var ageH=(Date.now()-new Date(a.last_run).getTime())/3600000;if(ageH>72)stale=' <span class="badge badge-red" style="font-size:.6rem">STALE '+Math.floor(ageH/24)+'d</span>';else if(ageH>36)stale=' <span class="badge badge-yel" style="font-size:.6rem">'+Math.floor(ageH)+'h</span>';}
-    var verified=a.verification==='verified';var evidence=a.evidence||{};
-    return'<div class="ag-card" style="border-color:'+(verified?'rgba(65,245,160,.28)':'var(--bdr)')+'"><div class="ag-hd"><div><div class="ag-name">'+esc(a.agent_name)+'</div><div class="ag-dept">'+esc(a.department)+'</div></div><span class="badge '+(verified?'badge-grn':'badge-grey')+'">'+(verified?'Verified':'Reported only')+'</span></div><div class="ag-out">'+esc(truncate(a.output_summary||'No output evidence',90))+'</div><div class="ag-meta">Last report: '+fmtTime(a.last_run)+stale+(a.next_run?' · Next: '+esc(a.next_run):'')+'</div>'+(verified?'<div style="font-size:.7rem;color:var(--grn);margin-top:7px">Evidence: '+esc(evidence.action||'completed run')+' · '+fmtTime(evidence.created_at)+'</div>':'<div style="font-size:.7rem;color:var(--yel);margin-top:7px">No fresh run evidence. Do not count as an active employee.</div>')+bk+hi+'<div class="row mt8" style="gap:6px"><button class="btn btn-ghost btn-xs" onclick="viewAgentHistory(\''+a.agent_id+'\')">Evidence history</button></div></div>'
+    var verified=a.workflow_verification==='verified', executive=a.department==='Executive';
+    var metrics=(a.metrics||[]).slice(0,3).map(function(k){return'<span>'+esc(k)+'</span>'}).join('');
+    var blockers=a.blockers&&a.blockers.length?'<div style="font-size:.68rem;color:var(--yel);margin-top:8px">'+a.blockers.length+' active blocker'+(a.blockers.length===1?'':'s')+'</div>':'';
+    return'<button class="ag-card employee-card" onclick="openEmployee(\''+a.id+'\')" style="text-align:left;color:var(--txt);border-color:'+(verified?'rgba(65,245,160,.28)':executive?'rgba(59,232,255,.3)':'var(--bdr)')+'"><div class="ag-hd"><div><div class="ag-name">'+esc(a.title)+'</div><div class="ag-dept">'+esc(a.department)+' · Reports to '+esc(a.reports_to)+'</div></div><span class="badge '+(verified?'badge-grn':executive?'badge-acc':'badge-grey')+'">'+(verified?'Workflow verified':executive?'Leadership':'Role ready')+'</span></div><div class="employee-mission">'+esc(a.mission)+'</div><div class="employee-kpis">'+metrics+'</div><div class="ag-meta" style="margin-top:10px">'+(a.certifications||[]).length+' internal competency standards · '+(a.team||[]).length+' direct roles</div>'+blockers+'<div class="row mt8"><span class="btn btn-ghost btn-xs">Open profile and talk</span></div></button>'
   }).join(''));
 }
 
@@ -905,6 +922,26 @@ function filterTeam(){
   var f=el('tm-filter').value;
   var filtered=f?_allAgents.filter(function(a){return a.department===f}):_allAgents;
   renderAgents(filtered);
+}
+
+function listItems(items){return(items||[]).map(function(x){return'<li>'+esc(x)+'</li>'}).join('')}
+async function openEmployee(id){
+  var d=await get('/employees/'+id),a=d.employee||{};_employeeId=id;_employeeProfile=a;
+  txt('ep-dept',a.department||'');txt('ep-title',a.title||id);txt('ep-report','Reports to '+(a.reports_to||'Dan Gill III')+' · Transparent AI operating role');
+  txt('ep-status',a.workflow_verification==='verified'?'Workflow verified':'Role defined');txt('ep-mission',a.mission||'');
+  html('ep-responsibilities',listItems(a.responsibilities));html('ep-metrics',listItems(a.metrics));html('ep-rights',listItems(a.decision_rights));
+  html('ep-certs',(a.certifications||[]).map(function(c){return'<div class="cert-row"><span>'+esc(c.name)+'</span><span class="green">'+esc(c.status.replace('_',' '))+'</span></div>'}).join(''));
+  var r=a.resume||{};html('ep-resume','<b>Professional summary:</b> '+esc(r.summary||'')+'<br><b>Current assignment:</b> '+esc(r.current_assignment||'')+'<br><b>Last evidenced result:</b> '+esc(r.last_evidenced_result||'Awaiting fresh evidence')+'<br><span class="muted2">'+esc(r.scope_note||'')+'</span>');
+  txt('ep-chat-title','Talk to the '+(a.title||id));loadEmployeeHistory();openModal('m-employee');setTimeout(function(){el('ep-input').focus()},100);
+}
+function employeeHistoryKey(){return'summit-employee-chat-'+_employeeId}
+function loadEmployeeHistory(){try{_employeeHistory[_employeeId]=JSON.parse(localStorage.getItem(employeeHistoryKey())||'[]')}catch(e){_employeeHistory[_employeeId]=[]}renderEmployeeHistory()}
+function renderEmployeeHistory(){var history=_employeeHistory[_employeeId]||[];html('ep-chat',history.length?history.map(function(m){return'<div class="coach-msg '+(m.role==='user'?'dan':'exec')+'">'+(m.role==='user'?'<b>DAN:</b> ':'')+esc(m.content)+'</div>'}).join(''):'<div class="muted2" style="font-size:.78rem">Start a dedicated conversation. This role uses its own mission, responsibilities, scorecard, decision rights, and live SummitOS context.</div>');el('ep-chat').scrollTop=el('ep-chat').scrollHeight}
+function saveEmployeeHistory(){try{localStorage.setItem(employeeHistoryKey(),JSON.stringify((_employeeHistory[_employeeId]||[]).slice(-30)))}catch(e){}}
+function clearEmployeeChat(){_employeeHistory[_employeeId]=[];saveEmployeeHistory();renderEmployeeHistory()}
+async function askEmployee(){
+  var input=el('ep-input'),question=input.value.trim();if(!question||!_employeeId)return;var history=_employeeHistory[_employeeId]||[];history.push({role:'user',content:question});_employeeHistory[_employeeId]=history;input.value='';renderEmployeeHistory();saveEmployeeHistory();el('ep-send').disabled=true;el('ep-send').textContent='Thinking';
+  try{var res=await fetch(API+'/employees/'+_employeeId+'/chat',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({question:question,history:history.slice(-12)})});var data=await res.json();if(!res.ok)throw new Error(data.detail||'Employee unavailable');history.push({role:'assistant',content:typeof data.response==='string'?data.response:JSON.stringify(data.response)});saveEmployeeHistory();renderEmployeeHistory()}catch(err){history.push({role:'assistant',content:'I could not complete that response: '+err.message});renderEmployeeHistory()}finally{el('ep-send').disabled=false;el('ep-send').textContent='Ask'}
 }
 
 function viewAgentHistory(aid){
@@ -1250,7 +1287,7 @@ function copyDemoUrl(){
 }
 
 // ── GOALS + EXECUTIVE CABINET ───────────────────────────────────────────
-var _goalData={},_goalRole='ceo',_goalHistory=[];
+var _goalData={},_goalRole='ceo',_goalHistories={};
 async function loadGoals(){
   var data=await get('/growth/benchmarks');_goalData=data||{};var plan=data.selected_plan||{},settings=plan.settings||{};
   txt('go-current',fmt$(data.current_mrr||0));txt('go-gap','Selected gap: '+fmt$(plan.gap||0));txt('go-dials',data.today_required_dials||0);txt('go-catchup',(data.catchup_dials_today||0)+' catch-up dials added from yesterday');txt('go-cash',fmt$(plan.projected_new_first_month_cash||0));
@@ -1271,10 +1308,12 @@ function goalSettings(){var s=Object.assign({},(_goalData.selected_plan||{}).set
 async function saveGoalSettings(s,msg){var r=await fetch(API+'/growth/settings',{method:'PUT',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(s)});var d=await r.json();toast(d.persistent?(msg||'Goal plan saved'):'Run growth_command_center_migration.sql first',d.persistent?'ok':'err');await loadGoals()}
 async function saveGoalPlan(){await saveGoalSettings(goalSettings(),'Goal plan recalculated')}
 async function saveGoalActivity(){var b={activity_date:new Date().toISOString().slice(0,10)};document.querySelectorAll('.go-act').forEach(function(i){b[i.dataset.field]=+i.value||0});var r=await fetch(API+'/growth/activity',{method:'PUT',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(b)});var d=await r.json();toast(d.persistent?'Today\'s execution saved':'Run growth migration first',d.persistent?'ok':'err');await loadGoals()}
-function renderCabinet(list){html('go-cabinet',list.map(function(e){return '<button class="exec-card '+(e.id===_goalRole?'active':'')+'" onclick="selectExecutive(\''+e.id+'\',\''+esc(e.title)+'\',\''+esc(e.owns.join(', '))+'\')"><div class="badge badge-acc">'+e.id.replace('_',' ').toUpperCase()+'</div><h3 style="margin:9px 0 5px">'+esc(e.title)+'</h3><div class="muted2" style="font-size:.72rem;line-height:1.5">Owns '+esc(e.owns.join(', '))+'</div><div style="font-size:.68rem;margin-top:8px;color:var(--txt3)">'+e.team.length+' direct workflows</div></button>'}).join(''));var current=list.find(function(x){return x.id===_goalRole})||list[0];if(current)selectExecutive(current.id,current.title,current.owns.join(', '),false)}
-function selectExecutive(id,title,owns,rerender){_goalRole=id;txt('go-exec-title','Ask the '+id.replace('_',' ').toUpperCase());txt('go-exec-owns',title+' · Owns '+owns);if(rerender!==false)document.querySelectorAll('.exec-card').forEach(function(c){c.classList.toggle('active',c.textContent.toLowerCase().indexOf(id.replace('_',' '))>=0)})}
+function renderCabinet(list){html('go-cabinet',list.map(function(e){return '<button class="exec-card '+(e.id===_goalRole?'active':'')+'" data-role="'+e.id+'" onclick="selectExecutive(\''+e.id+'\',\''+esc(e.title)+'\',\''+esc(e.owns.join(', '))+'\')"><div class="badge badge-acc">'+e.id.replace('_',' ').toUpperCase()+'</div><h3 style="margin:9px 0 5px">'+esc(e.title)+'</h3><div class="muted2" style="font-size:.72rem;line-height:1.5">'+esc(e.mission||('Owns '+e.owns.join(', ')))+'</div><div style="font-size:.68rem;margin-top:8px;color:var(--txt3)">'+e.team.length+' direct roles · Click to talk</div></button>'}).join(''));var current=list.find(function(x){return x.id===_goalRole})||list[0];if(current)selectExecutive(current.id,current.title,current.owns.join(', '),false)}
+function goalHistoryKey(){return'summit-executive-chat-'+_goalRole}
+function loadGoalHistory(){try{_goalHistories[_goalRole]=JSON.parse(localStorage.getItem(goalHistoryKey())||'[]')}catch(e){_goalHistories[_goalRole]=[]}html('go-coach-log','');(_goalHistories[_goalRole]||[]).forEach(function(m){addCoachMessage(m.role==='user'?'dan':'exec',m.content)})}
+function selectExecutive(id,title,owns,rerender){_goalRole=id;txt('go-exec-title','Ask the '+id.replace('_',' ').toUpperCase());txt('go-exec-owns',title+' · Owns '+owns);loadGoalHistory();if(rerender!==false)document.querySelectorAll('.exec-card').forEach(function(c){c.classList.toggle('active',c.dataset.role===id)})}
 function addCoachMessage(kind,text){var box=el('go-coach-log'),d=document.createElement('div');d.className='coach-msg '+kind;d.textContent=(kind==='dan'?'DAN: ':'')+text;box.appendChild(d);box.scrollTop=box.scrollHeight}
-async function askExecutive(){var input=el('go-coach-input'),q=input.value.trim();if(!q)return;addCoachMessage('dan',q);input.value='';el('go-coach-send').disabled=true;try{var r=await fetch(API+'/executives/'+_goalRole+'/ask',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({question:q,history:_goalHistory.slice(-8)})});var d=await r.json();var answer=typeof d.response==='string'?d.response:JSON.stringify(d.response);addCoachMessage('exec',(d.title||_goalRole.toUpperCase())+': '+answer);_goalHistory.push({role:'user',content:q},{role:'assistant',content:answer})}catch(e){addCoachMessage('exec','Unable to reach this executive: '+e.message)}finally{el('go-coach-send').disabled=false}}
+async function askExecutive(){var input=el('go-coach-input'),q=input.value.trim();if(!q)return;var history=_goalHistories[_goalRole]||[];history.push({role:'user',content:q});addCoachMessage('dan',q);input.value='';el('go-coach-send').disabled=true;try{var r=await fetch(API+'/employees/'+_goalRole+'/chat',{method:'POST',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify({question:q,history:history.slice(-12)})});var d=await r.json();var answer=typeof d.response==='string'?d.response:JSON.stringify(d.response);addCoachMessage('exec',(d.title||_goalRole.toUpperCase())+': '+answer);history.push({role:'assistant',content:answer});try{localStorage.setItem(goalHistoryKey(),JSON.stringify(history.slice(-30)))}catch(e){}}catch(e){addCoachMessage('exec','Unable to reach this executive: '+e.message)}finally{el('go-coach-send').disabled=false}}
 
 // ── FINANCE ──────────────────────────────────────────────────────────────
 async function loadFinance(){
