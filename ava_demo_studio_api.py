@@ -4,7 +4,7 @@ Summit Voice AI | FastAPI + Firecrawl + Claude + Vercel
 Deploy to Railway.
 """
 
-import os, json, re, time, base64, httpx, asyncio, secrets, html as html_lib
+import os, json, re, time, base64, httpx, asyncio, secrets, math, html as html_lib
 from datetime import datetime, timedelta
 from typing import Set
 from fastapi import FastAPI, HTTPException, BackgroundTasks, WebSocket, WebSocketDisconnect, Header, Request, Depends, Response
@@ -2192,6 +2192,130 @@ async def log_activity_event(
         except Exception:
             pass
     return {"status": "ok"}
+
+
+# -- Revenue command center ----------------------------------------------------
+# Defaults keep the dashboard useful before the optional Supabase migration is
+# applied. Once the tables exist, settings and daily activity persist normally.
+class GrowthSettingsUpdate(BaseModel):
+    target_mrr: float = 10000
+    target_date: str = "2026-09-03"
+    average_monthly_price: float = 797
+    average_setup_fee: float = 1500
+    workdays_per_week: int = 5
+    dials_goal: int = 120
+    conversations_goal: int = 15
+    meetings_booked_goal: int = 3
+    demos_held_goal: int = 2
+    proposals_goal: int = 1
+    followups_goal: int = 10
+    content_goal: int = 1
+
+
+class DailyGrowthActivity(BaseModel):
+    activity_date: str | None = None
+    dials: int = 0
+    conversations: int = 0
+    meetings_booked: int = 0
+    demos_held: int = 0
+    proposals: int = 0
+    followups: int = 0
+    content_published: int = 0
+    new_clients: int = 0
+    new_mrr: float = 0
+
+
+def _growth_defaults() -> dict:
+    return GrowthSettingsUpdate(
+        target_mrr=float(os.getenv("SUMMIT_GROWTH_TARGET_MRR", "10000")),
+        target_date=os.getenv("SUMMIT_GROWTH_TARGET_DATE", "2026-09-03"),
+        average_monthly_price=float(os.getenv("SUMMIT_AVERAGE_MONTHLY_PRICE", "797")),
+        average_setup_fee=float(os.getenv("SUMMIT_AVERAGE_SETUP_FEE", "1500")),
+    ).dict()
+
+
+async def _growth_table(method: str, table: str, *, query: str = "", payload: dict | None = None):
+    url, key = os.getenv("SUPABASE_URL", ""), os.getenv("SUPABASE_KEY", "")
+    if not url or not key:
+        return None
+    headers = {"apikey": key, "Authorization": f"Bearer {key}", "Content-Type": "application/json"}
+    if method != "GET":
+        headers["Prefer"] = "resolution=merge-duplicates,return=representation"
+    try:
+        async with httpx.AsyncClient() as client:
+            response = await client.request(method, f"{url}/rest/v1/{table}{query}", headers=headers,
+                                            json=payload, timeout=10)
+            if response.status_code not in (200, 201, 204, 206):
+                return None
+            return response.json() if response.content else []
+    except Exception:
+        return None
+
+
+async def _growth_settings() -> tuple[dict, bool]:
+    rows = await _growth_table("GET", "growth_settings", query="?id=eq.owner&limit=1")
+    if rows:
+        return {**_growth_defaults(), **rows[0]}, True
+    return _growth_defaults(), False
+
+
+def _growth_plan(settings: dict, current_mrr: float, activity: dict | None = None) -> dict:
+    now = datetime.now().date()
+    try:
+        deadline = datetime.fromisoformat(str(settings["target_date"])).date()
+    except ValueError:
+        deadline = now
+    calendar_days = max(1, (deadline - now).days + 1)
+    workdays = max(1, round(calendar_days * min(7, max(1, int(settings["workdays_per_week"]))) / 7))
+    gap = max(0.0, float(settings["target_mrr"]) - current_mrr)
+    price = max(1.0, float(settings["average_monthly_price"]))
+    clients_needed = math.ceil(gap / price)
+    meetings_needed = math.ceil(clients_needed / .25)  # editable assumptions come next
+    daily = activity or {}
+    goals = {k[:-5]: int(v) for k, v in settings.items() if k.endswith("_goal")}
+    completed = sum(min(1, float(daily.get(k, 0)) / max(1, goal)) for k, goal in goals.items())
+    return {
+        "current_mrr": current_mrr, "target_mrr": float(settings["target_mrr"]), "gap": gap,
+        "target_date": settings["target_date"], "calendar_days": calendar_days, "workdays": workdays,
+        "average_monthly_price": price, "average_setup_fee": float(settings["average_setup_fee"]),
+        "clients_needed": clients_needed, "held_meetings_needed_at_25pct_close": meetings_needed,
+        "held_meetings_per_workday": round(meetings_needed / workdays, 1),
+        "daily_goals": goals, "today": daily,
+        "daily_score_percent": round(100 * completed / max(1, len(goals))),
+        "assumptions": {"held_meeting_close_rate": .25, "dial_to_held_meeting_rate": .02},
+    }
+
+
+@app.get("/growth/plan")
+async def get_growth_plan(x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    settings, persistent = await _growth_settings()
+    day = datetime.now().date().isoformat()
+    activity_rows = await _growth_table("GET", "daily_growth_activity", query=f"?activity_date=eq.{day}&limit=1")
+    activity = activity_rows[0] if activity_rows else {"activity_date": day}
+    summary = await get_ceo_analytics_summary(x_api_key)
+    return {**_growth_plan(settings, float(summary.get("mrr", 0)), activity),
+            "settings": settings, "persistence_ready": persistent}
+
+
+@app.put("/growth/settings")
+async def put_growth_settings(payload: GrowthSettingsUpdate, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    row = {"id": "owner", **payload.dict(), "updated_at": datetime.now().isoformat()}
+    saved = await _growth_table("POST", "growth_settings", payload=row)
+    return {"status": "ok" if saved is not None else "migration_required", "settings": row,
+            "persistent": saved is not None}
+
+
+@app.put("/growth/activity")
+async def put_growth_activity(payload: DailyGrowthActivity, x_api_key: str = Header(default="")):
+    verify_api_key(x_api_key)
+    row = payload.dict()
+    row["activity_date"] = row.get("activity_date") or datetime.now().date().isoformat()
+    row["updated_at"] = datetime.now().isoformat()
+    saved = await _growth_table("POST", "daily_growth_activity", payload=row)
+    return {"status": "ok" if saved is not None else "migration_required", "activity": row,
+            "persistent": saved is not None}
 
 
 @app.get("/content/recent")

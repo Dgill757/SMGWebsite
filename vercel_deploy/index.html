@@ -361,6 +361,24 @@ a{color:var(--acc);text-decoration:none}a:hover{text-decoration:underline}
       </div>
     </div>
   </div>
+  <div class="sec-hd" style="margin-top:20px"><h2>30-Day Revenue Command Center</h2><span id="gr-persist" class="badge badge-grey">Loading</span></div>
+  <div class="cards2">
+    <div class="card">
+      <div class="cards2" style="margin-bottom:0">
+        <div class="fld"><label>MRR Goal</label><input id="gr-target" type="number" min="797" step="100"></div>
+        <div class="fld"><label>Target Date</label><input id="gr-date" type="date"></div>
+        <div class="fld"><label>Average Monthly Price</label><input id="gr-price" type="number" min="1"></div>
+        <div class="fld"><label>Average Setup Fee</label><input id="gr-setup" type="number" min="0"></div>
+      </div>
+      <button class="btn btn-acc" onclick="saveGrowthSettings()">Save Revenue Plan</button>
+      <div id="gr-math" style="font-size:.82rem;color:var(--txt2);line-height:1.8;margin-top:14px"></div>
+    </div>
+    <div class="card">
+      <div class="row mb12"><h2>Today's Scorecard</h2><span id="gr-score" class="badge badge-acc ml-auto">0%</span></div>
+      <div id="gr-activities" style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px"></div>
+      <button class="btn btn-grn" style="margin-top:12px" onclick="saveGrowthActivity()">Save Today's Activity</button>
+    </div>
+  </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════
@@ -1201,8 +1219,8 @@ function copyDemoUrl(){
 
 // ── FINANCE ──────────────────────────────────────────────────────────────
 async function loadFinance(){
-  var[sum,exps,clients]=await Promise.all([get('/ceo/summary'),sGet('expenses','?active=eq.true&order=amount.desc'),get('/clients/list')]);
-  var mrr=sum.mrr||0;var target=50000;
+  var[sum,exps,clients,growth]=await Promise.all([get('/ceo/summary'),sGet('expenses','?active=eq.true&order=amount.desc'),get('/clients/list'),get('/growth/plan')]);
+  var mrr=sum.mrr||0;var target=growth.target_mrr||50000;
   txt('fn-mrr',fmt$(mrr));
   el('fn-prog').style.width=Math.min(100,mrr/target*100)+'%';
   txt('fn-pct',((mrr/target*100).toFixed(1))+'% of target — Gap: '+fmt$(target-mrr));
@@ -1218,6 +1236,28 @@ async function loadFinance(){
   // Clients list
   var cl=(clients.clients||[]);
   html('fn-clients',cl.map(function(c){return'<div class="row"><span style="font-size:.82rem;font-weight:600">'+c.company_name+'</span><span class="ml-auto muted" style="font-size:.82rem">'+fmt$(c.mrr)+'/mo</span><span class="badge badge-grn" style="margin-left:8px;font-size:.65rem">'+c.plan+'</span></div>'}).join(''));
+  renderGrowthPlan(growth);
+}
+
+var _growthPlan={};
+function renderGrowthPlan(g){
+  _growthPlan=g||{};var s=g.settings||{};
+  if(el('gr-target')){el('gr-target').value=s.target_mrr||10000;el('gr-date').value=s.target_date||'';el('gr-price').value=s.average_monthly_price||797;el('gr-setup').value=s.average_setup_fee||1500;}
+  var p=g.persistence_ready;
+  html('gr-persist',p?'<span class="green">Saved to Supabase</span>':'Run growth migration');
+  html('gr-math','Gap: <b>'+fmt$(g.gap)+'</b> ... need <b>'+g.clients_needed+' clients</b> at '+fmt$(g.average_monthly_price)+'/month.<br>At a 25% held-demo close rate: <b>'+g.held_meetings_needed_at_25pct_close+' held demos</b>, or '+g.held_meetings_per_workday+' per workday. Assumptions are planning inputs, not promises.');
+  txt('gr-score',(g.daily_score_percent||0)+'%');
+  var labels={dials:'Dials',conversations:'Live conversations',meetings_booked:'Meetings booked',demos_held:'Demos held',proposals:'Proposals',followups:'Tailored follow-ups',content:'Content published'};
+  var today=g.today||{},goals=g.daily_goals||{};
+  html('gr-activities',Object.keys(labels).map(function(k){var field=k==='content'?'content_published':k;return '<div class="fld" style="margin:0"><label>'+labels[k]+' / '+(goals[k]||0)+'</label><input class="gr-act" data-field="'+field+'" type="number" min="0" value="'+(today[field]||0)+'"></div>'}).join(''));
+}
+async function saveGrowthSettings(){
+  var s=Object.assign({},_growthPlan.settings||{}, {target_mrr:+el('gr-target').value,target_date:el('gr-date').value,average_monthly_price:+el('gr-price').value,average_setup_fee:+el('gr-setup').value});
+  var r=await fetch(API+'/growth/settings',{method:'PUT',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(s)});var d=await r.json();toast(d.persistent?'Revenue plan saved':'Run growth_command_center_migration.sql first',d.persistent?'ok':'err');loadFinance();
+}
+async function saveGrowthActivity(){
+  var b={activity_date:new Date().toISOString().slice(0,10)};document.querySelectorAll('.gr-act').forEach(function(i){b[i.dataset.field]=+i.value||0});
+  var r=await fetch(API+'/growth/activity',{method:'PUT',headers:{'x-api-key':KEY,'Content-Type':'application/json'},body:JSON.stringify(b)});var d=await r.json();toast(d.persistent?'Activity saved':'Run growth_command_center_migration.sql first',d.persistent?'ok':'err');loadFinance();
 }
 
 async function saveExpense(){
@@ -1285,8 +1325,8 @@ async function saveEditExpense(){
 }
 async function deleteExpense(id){if(!confirm('Delete this expense?'))return;await sDel('expenses','id=eq.'+id);loadFinance();}
 async function loadFinance(){
-  var[sum,exps,clients]=await Promise.all([get('/ceo/summary'),sGet('expenses','?order=amount.desc'),get('/clients/list')]);
-  var mrr=sum.mrr||0;var target=50000;
+  var[sum,exps,clients,growth]=await Promise.all([get('/ceo/summary'),sGet('expenses','?order=amount.desc'),get('/clients/list'),get('/growth/plan')]);
+  var mrr=sum.mrr||0;var target=growth.target_mrr||50000;
   txt('fn-mrr',fmt$(mrr));el('fn-prog').style.width=Math.min(100,mrr/target*100)+'%';
   txt('fn-pct',((mrr/target*100).toFixed(1))+'% of target — Gap: '+fmt$(target-mrr));
   var rows=[{p:'Now',c:sum.clients||0,m:mrr},{p:'+1 Month',c:(sum.clients||0)+4,m:mrr+4*497},{p:'+3 Months',c:(sum.clients||0)+12,m:mrr+12*497},{p:'+6 Months',c:(sum.clients||0)+28,m:mrr+28*497},{p:'+12 Months',c:(sum.clients||0)+60,m:mrr+60*497},{p:'+18 Months',c:101,m:50000}];
@@ -1297,6 +1337,7 @@ async function loadFinance(){
     return'<tr style="opacity:'+(e.active===false?'.45':'1')+'"><td style="font-weight:600">'+e.name+'</td><td><span class="badge badge-grey" style="font-size:.65rem">'+e.category+'</span></td><td class="acc">'+fmt$(e.amount)+'</td><td class="muted2">'+e.frequency+'</td><td><div class="gap8"><button class="btn btn-ghost btn-xs" onclick="openEditExpense(\''+e.id+'\')">Edit</button>'+(e.active!==false?'<button class="btn btn-ghost btn-xs" onclick="toggleExpense(\''+e.id+'\',false)">Pause</button>':'<button class="btn btn-ghost btn-xs" onclick="toggleExpense(\''+e.id+'\',true)">Unpause</button>')+'<button class="btn btn-red btn-xs" onclick="deleteExpense(\''+e.id+'\')">Del</button></div></td></tr>'
   }).join(''):'<tr><td colspan="5" class="loading">No expenses yet</td></tr>');
   html('fn-clients',(clients.clients||[]).map(function(c){return'<div class="row"><span style="font-size:.82rem;font-weight:600">'+c.company_name+'</span><span class="ml-auto muted" style="font-size:.82rem">'+fmt$(c.mrr)+'/mo</span><span class="badge badge-grn" style="margin-left:8px;font-size:.65rem">'+c.plan+'</span></div>'}).join(''));
+  renderGrowthPlan(growth);
 }
 var CH={'linkedin':{c:'#0A66C2',icon:'in',ok:false,note:'Connect in GHL Social Planner'},'twitter':{c:'#000',icon:'X',ok:false,note:'Connect in GHL Social Planner → X/Twitter'},'blog':{c:'#6366F1',icon:'B',ok:false,note:'Needs WordPress API key for summitvoiceai.com'},'email':{c:'#22C55E',icon:'✉',ok:true,note:'Sends via GHL email campaigns'},'research':{c:'#F59E0B',icon:'R',ok:true,note:'Stored in library'},'image':{c:'#EC4899',icon:'IMG',ok:false,note:'Download and post manually'}};
 function typeBadge(t){var ch=CH[(t||'').toLowerCase()]||{c:'#555',icon:'?',ok:false,note:''};return'<span class="badge" style="background:'+ch.c+'22;color:'+ch.c+';font-size:.65rem;border:1px solid '+ch.c+'44">'+(ch.ok?'<span style="color:var(--grn)">●</span> ':'<span style="color:var(--yel)">●</span> ')+ch.icon+' '+(t||'').toUpperCase()+'</span>';}
