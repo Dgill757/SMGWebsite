@@ -2713,16 +2713,43 @@ Return JSON only with keys: executive_summary, likely_employee_range, likely_emp
 strengths (array), revenue_leaks (array), recommended_offer, offer_reason, cold_call_script,
 voicemail_script, email_subject, email_body, sms_draft, discovery_questions (array), objections (array of objects with objection and response), confidence_notes (array).
 Never invent facts. Label estimates. Email and SMS are drafts only. Use Dan's direct, human roofing-owner voice. No em dash."""
-    try:
-        result = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM,
-            messages=[{"role": "user", "content": prompt}], max_tokens=1800)
-        text = result.text.strip(); match = re.search(r"\{.*\}", text, re.S)
-        if match:
-            return json.loads(match.group(0))
-    except Exception as exc:
-        return {"executive_summary": "AI drafting was unavailable. The verified profile data is still available.",
-                "confidence_notes": [exc.__class__.__name__]}
-    return {"executive_summary": "Drafting returned an invalid format.", "confidence_notes": ["invalid_model_json"]}
+    last_error = "invalid_model_json"
+    for attempt in range(2):
+        try:
+            request_text = prompt if attempt == 0 else ("Return a valid JSON object only. No markdown. Use the exact requested keys. "
+                                                        "Keep every string under 900 characters.\n" + prompt)
+            result = await ask_jarvis_model(anthropic_client=ai, system=JARVIS_SYSTEM,
+                messages=[{"role": "user", "content": request_text}], max_tokens=1800)
+            text = result.text.strip(); match = re.search(r"\{.*\}", text, re.S)
+            if match:
+                return json.loads(match.group(0), strict=False)
+        except Exception as exc:
+            last_error = exc.__class__.__name__
+    company = business.get("company_name") or "your company"; city = business.get("city") or "your market"
+    rating = business.get("review_rating"); reviews = business.get("review_count")
+    review_fact = f"Your {rating} rating across {reviews} reviews stands out." if rating and reviews else "I found your company while researching local roofers."
+    has_site = bool(business.get("website")); page_scores = page.get("scores", {}) if page.get("available") else {}
+    weakest = min(page_scores, key=page_scores.get) if page_scores else None
+    website_angle = (f"The clearest verified website opportunity is {weakest.replace('_', ' ')} at {page_scores[weakest]}/100."
+                     if weakest else "The website audit needs a PageSpeed API key before making a performance claim.")
+    return {
+        "executive_summary": f"{company} is a roofing prospect in {city}. {review_fact} {website_angle}",
+        "likely_employee_range": "Unknown", "likely_employee_range_basis": "No verified employee source was available.",
+        "strengths": [x for x in ["Existing website" if has_site else None, f"Google rating {rating}" if rating else None,
+                                  f"{reviews} Google reviews" if reviews else None] if x],
+        "revenue_leaks": ["Unanswered inbound calls cannot be verified remotely; ask during discovery.", website_angle],
+        "recommended_offer": "AI call answering and follow-up" if has_site else "Website plus AI call answering",
+        "offer_reason": "Lead with missed-call revenue recovery, then use verified website findings as supporting evidence.",
+        "cold_call_script": (f"Hi, is this the owner of {company}? Dan here. {review_fact} I work with roofing companies on the calls that arrive when the crew is busy or after hours. "
+                             "I do not want to assume you are missing calls. How are calls handled when nobody can pick up? If there is a gap, I can show you a short system that answers, qualifies, and books those callers. Would a fifteen-minute look be unreasonable?"),
+        "voicemail_script": f"Hi, this is Dan. I was researching {company} and had one specific idea for capturing calls that hit while the crew is busy. I will send my information. My number is on your caller ID.",
+        "email_subject": f"quick question about calls at {company.lower()}",
+        "email_body": (f"Hi,\n\nI was researching {company}. {review_fact}\n\nQuick question: what happens to new-job calls when everyone is on a roof or it is after hours? "
+                       "I built a system for roofers that answers, qualifies, and books those callers. If that is already covered, no problem. If not, I can show you in fifteen minutes.\n\nDan\ncalendly.com/aivoice/call"),
+        "sms_draft": f"hey, dan here. i was looking at {company}. quick question... who catches new-job calls when everyone is tied up or after hours?",
+        "discovery_questions": ["How many inbound calls arrive in a normal week?", "What happens after hours or when the team is on a job?", "How quickly are missed calls followed up?", "What is an average booked roofing job worth?"],
+        "objections": [{"objection": "We answer our calls", "response": "That is good. I would only look for the overflow, after-hours, and follow-up gaps your current process does not cover."}],
+        "confidence_notes": ["Fallback draft used because model JSON was invalid.", last_error, "Employee count was not estimated without a source."]}
 
 
 @app.get("/prospects/{business_id}/profile")
