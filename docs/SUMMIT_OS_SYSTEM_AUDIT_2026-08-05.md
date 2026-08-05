@@ -2,7 +2,7 @@
 
 ## Executive result
 
-SummitOS has a working production API, correct owner-verified revenue truth, active Google/GHL/Telegram/Twilio/local-computer adapters, and a functioning safety latch that keeps automated outreach paused. It is not accurate to describe every stored scheduled job as a reliable autonomous employee. The dashboard now separates 29 defined AI operating roles from workflow execution evidence.
+SummitOS has a working production API, correct owner-verified revenue truth, active Google/GHL/Telegram/Twilio/local-computer adapters, and a functioning safety latch that keeps automated outreach paused. It is not accurate to describe every stored scheduled job as a reliable autonomous employee. The dashboard now separates 31 defined AI operating roles from workflow execution evidence.
 
 ## Production truth verified
 
@@ -30,7 +30,7 @@ The Windows scheduler most recently reported a nonzero result for CEO Report, Cl
 
 ## Employee operating system
 
-SummitOS now defines 29 transparent AI operating roles, including CEO, CRO, CMO, COO, CTO, CFO, and Chief Client Success Officer. Every role contains:
+SummitOS now defines 31 transparent AI operating roles, including CEO, CRO, CMO, COO, CTO, CFO, and Chief Client Success Officer. Every role contains:
 
 - a dedicated identity and system prompt;
 - Dan, Summit Voice AI, Ava, ICP, pricing, and revenue-goal context;
