@@ -1,0 +1,150 @@
+
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import Index from "./pages/Index";
+import Industries from "./pages/Industries";
+import IndustryPage from "./pages/IndustryPage";
+import Articles from "./pages/Articles";
+import ArticleDetail from "./pages/ArticleDetail";
+import NotFound from "./pages/NotFound";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import CookiePolicy from "./pages/CookiePolicy";
+import GDPRCompliance from "./pages/GDPRCompliance";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
+import { FinalCTA } from "./components/FinalCTA";
+import GlobalAtmosphere from "./components/ui/GlobalAtmosphere";
+import AmbientBackground from "./components/AmbientBackground";
+
+// ScrollToTop component to ensure proper scrolling behavior
+const ScrollToTop = () => {
+  const { pathname, hash } = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // If there's no hash, scroll to the top
+    if (!hash) {
+      window.scrollTo(0, 0);
+    } else {
+      // If there's a hash, try to scroll to the element
+      setTimeout(() => {
+        const element = document.getElementById(hash.slice(1));
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+        } else if (pathname === '/') {
+          // If on homepage and element not found, remove the hash
+          navigate('/', { replace: true });
+          window.scrollTo(0, 0);
+        }
+      }, 100);
+    }
+  }, [pathname, hash, navigate]);
+
+  return null;
+};
+
+const HomeAlertBar = () => {
+  const { pathname } = useLocation();
+
+  if (pathname !== "/") {
+    return null;
+  }
+
+  return (
+    <div
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: '40px',
+        zIndex: 200,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'rgba(18, 0, 0, 0.97)',
+        borderBottom: '1px solid rgba(239,68,68,0.22)',
+        padding: '0 12px',
+        backdropFilter: 'blur(8px)',
+      }}
+    >
+      <span
+        style={{
+          fontSize: 'clamp(0.58rem, 2.4vw, 0.72rem)',
+          letterSpacing: 'clamp(0.03em, 0.5vw, 0.09em)',
+          fontWeight: 700,
+          color: 'rgba(252,165,165,0.95)',
+          textAlign: 'center',
+          whiteSpace: 'nowrap',
+          lineHeight: 1,
+        }}
+      >
+        THE AVERAGE ROOFING COMPANY MISSES 67% OF THEIR CALLS
+      </span>
+    </div>
+  );
+};
+
+const HomeFinalCTA = () => {
+  const { pathname } = useLocation();
+
+  if (pathname !== "/") {
+    return null;
+  }
+
+  return <FinalCTA />;
+};
+
+const queryClient = new QueryClient();
+
+const App = () => {
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      document.documentElement.style.setProperty('--mouse-x', `${e.clientX}px`);
+      document.documentElement.style.setProperty('--mouse-y', `${e.clientY}px`);
+    };
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <AmbientBackground />
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <GlobalAtmosphere />
+          <div className="bg-drift-layer" aria-hidden="true" />
+          <div className="min-h-screen text-foreground overflow-x-hidden">
+            <ScrollToTop />
+            <HomeAlertBar />
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/industries" element={<Industries />} />
+              <Route path="/industries/:industrySlug" element={<IndustryPage />} />
+              <Route path="/articles" element={<Articles />} />
+              <Route path="/articles/:slug" element={<ArticleDetail />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/cookie-policy" element={<CookiePolicy />} />
+              <Route path="/gdpr-compliance" element={<GDPRCompliance />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            <HomeFinalCTA />
+            <Footer />
+          </div>
+        </BrowserRouter>
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+};
+
+export default App;
