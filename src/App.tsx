@@ -4,18 +4,21 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, Suspense, lazy } from "react";
 import Index from "./pages/Index";
-import Industries from "./pages/Industries";
-import IndustryPage from "./pages/IndustryPage";
-import Articles from "./pages/Articles";
-import ArticleDetail from "./pages/ArticleDetail";
 import NotFound from "./pages/NotFound";
-import TermsOfService from "./pages/TermsOfService";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import CookiePolicy from "./pages/CookiePolicy";
-import GDPRCompliance from "./pages/GDPRCompliance";
 import Navbar from "./components/Navbar";
+
+// Secondary routes are code-split so their JS (including IndustryPage's large
+// per-industry data set) never ships in the bundle a homepage visitor loads.
+const Industries = lazy(() => import("./pages/Industries"));
+const IndustryPage = lazy(() => import("./pages/IndustryPage"));
+const Articles = lazy(() => import("./pages/Articles"));
+const ArticleDetail = lazy(() => import("./pages/ArticleDetail"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
+const GDPRCompliance = lazy(() => import("./pages/GDPRCompliance"));
 import Footer from "./components/Footer";
 import { FinalCTA } from "./components/FinalCTA";
 import GlobalAtmosphere from "./components/ui/GlobalAtmosphere";
@@ -125,19 +128,21 @@ const App = () => {
             <ScrollToTop />
             <HomeAlertBar />
             <Navbar />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/industries" element={<Industries />} />
-              <Route path="/industries/:industrySlug" element={<IndustryPage />} />
-              <Route path="/articles" element={<Articles />} />
-              <Route path="/articles/:slug" element={<ArticleDetail />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/cookie-policy" element={<CookiePolicy />} />
-              <Route path="/gdpr-compliance" element={<GDPRCompliance />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense fallback={<div style={{ minHeight: '60vh' }} />}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/industries" element={<Industries />} />
+                <Route path="/industries/:industrySlug" element={<IndustryPage />} />
+                <Route path="/articles" element={<Articles />} />
+                <Route path="/articles/:slug" element={<ArticleDetail />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/cookie-policy" element={<CookiePolicy />} />
+                <Route path="/gdpr-compliance" element={<GDPRCompliance />} />
+                {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
             <HomeFinalCTA />
             <Footer />
           </div>
