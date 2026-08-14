@@ -3,25 +3,25 @@ import React, { useRef, useEffect, useState } from 'react';
 // ── Video data — swap YouTube IDs when real demos are ready ──────────────────
 const VIDEOS = [
   {
-    src: '/Demo-videos/Roofing-Demo.mp4',
+    src: '/Demo-videos/Roofing-Demo-compressed.mp4',
     title: 'AI Roofing Demo',
     tag: 'Home Services',
     accent: '#F472B6',
   },
   {
-    src: '/Demo-videos/Deck-Landscaping-demo.mp4',
+    src: '/Demo-videos/Deck-Landscaping-demo-compressed.mp4',
     title: 'AI Deck & Landscaping Demo',
     tag: 'Home Services',
     accent: '#7C3AED',
   },
   {
-    src: '/Demo-videos/Pool-Demo.mp4',
+    src: '/Demo-videos/Pool-Demo-compressed.mp4',
     title: 'AI Pool Demo',
     tag: 'Home Services',
     accent: '#FBBF24',
   },
   {
-    src: '/Demo-videos/Real-Estate-Demo.mp4',
+    src: '/Demo-videos/Real-Estate-Demo-compressed.mp4',
     title: 'AI Realtor Demo',
     tag: 'Real Estate',
     accent: '#00D9FF',
