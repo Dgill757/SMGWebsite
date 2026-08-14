@@ -41,8 +41,8 @@ const ProblemStatementSection = ({ problems, industryName }: ProblemStatementSec
                     <div className="md:col-span-2">
                       <p className="text-muted-foreground">{problem.description}</p>
                     </div>
-                    <div className="bg-voiceai-primary/10 rounded-lg p-4 flex flex-col items-center justify-center">
-                      <p className="text-3xl font-bold text-voiceai-primary">{problem.statistic}</p>
+                    <div className="glass rounded-lg p-4 flex flex-col items-center justify-center" style={{ boxShadow: '0 0 0 1px rgba(0,217,255,0.12)' }}>
+                      <p className="text-3xl font-bold" style={{ color: '#00D9FF' }}>{problem.statistic}</p>
                       <p className="text-xs text-muted-foreground text-center">Industry Impact</p>
                     </div>
                   </div>

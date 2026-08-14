@@ -17,7 +17,7 @@ const CtaSection = ({
   buttonText
 }: CtaSectionProps) => {
   return (
-    <section className="py-20 bg-gradient-to-b from-voiceai-primary/20 to-voiceai-secondary/20">
+    <section className="py-20" style={{ background: 'linear-gradient(180deg, rgba(0,217,255,0.10), rgba(124,58,237,0.10))' }}>
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="heading-md mb-6">
@@ -28,9 +28,9 @@ const CtaSection = ({
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="glassmorphism rounded-xl p-6 shadow-lg border border-white/20 flex flex-col">
-              <div className="mx-auto mb-4 p-3 rounded-full bg-voiceai-primary/10">
-                <Calendar className="h-6 w-6 text-voiceai-primary" />
+            <div className="glass card-hover-lift rounded-xl p-6 flex flex-col">
+              <div className="mx-auto mb-4 p-3 rounded-full" style={{ background: 'rgba(0,217,255,0.1)' }}>
+                <Calendar className="h-6 w-6" style={{ color: '#00D9FF' }} />
               </div>
               <h3 className="font-semibold text-lg mb-2 text-white">Schedule Consultation</h3>
               <p className="text-sm text-white/70 mb-6">Book a 30-minute call with our solutions team</p>
@@ -45,9 +45,9 @@ const CtaSection = ({
               </a>
             </div>
 
-            <div className="glassmorphism rounded-xl p-6 shadow-lg border border-white/20 flex flex-col">
-              <div className="mx-auto mb-4 p-3 rounded-full bg-voiceai-primary/10">
-                <PhoneCall className="h-6 w-6 text-voiceai-primary" />
+            <div className="glass card-hover-lift rounded-xl p-6 flex flex-col">
+              <div className="mx-auto mb-4 p-3 rounded-full" style={{ background: 'rgba(0,217,255,0.1)' }}>
+                <PhoneCall className="h-6 w-6" style={{ color: '#00D9FF' }} />
               </div>
               <h3 className="font-semibold text-lg mb-2 text-white">Request Demo</h3>
               <p className="text-sm text-white/70 mb-6">See our AI in action with a personalized demo</p>
@@ -62,13 +62,13 @@ const CtaSection = ({
               </a>
             </div>
 
-            <div className="glassmorphism rounded-xl p-6 shadow-lg border border-white/20 flex flex-col">
-              <div className="mx-auto mb-4 p-3 rounded-full bg-voiceai-primary/10">
-                <Calculator className="h-6 w-6 text-voiceai-primary" />
+            <div className="glass card-hover-lift rounded-xl p-6 flex flex-col">
+              <div className="mx-auto mb-4 p-3 rounded-full" style={{ background: 'rgba(0,217,255,0.1)' }}>
+                <Calculator className="h-6 w-6" style={{ color: '#00D9FF' }} />
               </div>
               <h3 className="font-semibold text-lg mb-2 text-white">Calculate ROI</h3>
               <p className="text-sm text-white/70 mb-6">See how much you can save with SummitVoiceAI</p>
-              <a href="#roi-calculator" className="mt-auto btn-secondary w-full text-center">
+              <a href="#roi-calculator" className="mt-auto btn-outline w-full text-center">
                 Calculate Now
               </a>
             </div>

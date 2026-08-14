@@ -55,13 +55,13 @@ const UseCaseExamplesSection = ({ useCases }: UseCaseExamplesSectionProps) => {
 
 const ConversationFlow = ({ useCase }: { useCase: UseCase }) => {
   return (
-    <div className="bg-gradient-to-br from-voiceai-dark/80 to-black/60 border border-white/10 rounded-xl p-6 shadow-2xl shadow-voiceai-primary/20 overflow-hidden">
+    <div className="glass card-hover-lift rounded-xl p-6 overflow-hidden">
       <div className="text-lg font-semibold mb-6 pb-2 border-b border-white/20 text-center text-white">
         Conversation Flow
       </div>
       <div className="space-y-4">
         {useCase.steps.map((step, idx) => (
-          <motion.div 
+          <motion.div
             key={idx}
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -69,12 +69,15 @@ const ConversationFlow = ({ useCase }: { useCase: UseCase }) => {
             viewport={{ once: true }}
             className={`flex gap-3 ${step.type === 'ai' ? 'justify-start' : 'justify-end'}`}
           >
-            <div 
-              className={`max-w-[80%] p-3 rounded-lg shadow-lg ${
-                step.type === 'ai' 
-                  ? 'bg-voiceai-primary text-white rounded-bl-none' 
-                  : 'bg-blue-600 text-white rounded-br-none'
+            <div
+              className={`max-w-[80%] p-3 rounded-lg shadow-lg text-white ${
+                step.type === 'ai' ? 'rounded-bl-none' : 'rounded-br-none'
               }`}
+              style={{
+                background: step.type === 'ai'
+                  ? 'linear-gradient(135deg, #00D9FF, #7C3AED)'
+                  : 'rgba(255,255,255,0.08)',
+              }}
             >
               <div className="text-xs mb-1 opacity-80">
                 {step.type === 'ai' ? 'VoiceAI Assistant' : 'Customer'}
@@ -93,10 +96,10 @@ const UseCaseInfo = ({ useCase }: { useCase: UseCase }) => {
     <div>
       <h3 className="text-xl font-bold mb-3">{useCase.title}</h3>
       <p className="text-muted-foreground mb-6">{useCase.description}</p>
-      
-      <div className="bg-voiceai-primary/10 rounded-lg p-4 mb-6">
+
+      <div className="glass rounded-lg p-4 mb-6">
         <div className="flex items-center gap-2 mb-2">
-          <Check className="text-voiceai-primary" />
+          <Check style={{ color: '#00D9FF' }} />
           <h4 className="font-semibold">Outcome</h4>
         </div>
         <p>{useCase.outcome}</p>

@@ -1,10 +1,26 @@
 
-import React, { useEffect } from 'react';
-import { motion } from "framer-motion";
+import React, { useEffect, useRef } from 'react';
+import { motion, useInView } from "framer-motion";
 import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { SEO, getOrganizationSchema } from '@/lib/seo';
 import { getIndustryName } from '@/data/industryStats';
+import { PricingPaths } from '@/components/PricingPaths';
+
+function FadeUp({ children, delay = 0, className = '' }: {
+  children: React.ReactNode; delay?: number; className?: string;
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  return (
+    <motion.div ref={ref} className={className}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}>
+      {children}
+    </motion.div>
+  );
+}
 
 const Industries = () => {
   useEffect(() => {
@@ -102,12 +118,12 @@ const Industries = () => {
       <div className="pt-28 pb-20 bg-background">
         <div className="container mx-auto px-4">
           <h1 className="heading-lg text-center mb-4">
-            <span style={{ 
-              background: 'linear-gradient(135deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
+            <span style={{
+              background: 'linear-gradient(135deg, #00D9FF, #7C3AED)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              color: '#7C3AED'
+              color: '#00D9FF'
             }}>Industries We Service</span> with <span className="text-white">Voice AI Solutions</span>
           </h1>
           <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
@@ -115,30 +131,37 @@ const Industries = () => {
           </p>
         </div>
 
-        <section className="py-20 bg-background">
-          <div className="container mx-auto px-4">
+        <section className="py-20 bg-background" style={{ position: 'relative', overflow: 'hidden' }}>
+          <PricingPaths />
+          <div className="container mx-auto px-4" style={{ position: 'relative' }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {industries.map((industry, index) => (
-                <motion.div 
+                <FadeUp
                   key={index}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="bg-gradient-to-br from-voiceai-dark/60 to-black/50 border border-white/10 rounded-xl p-6 shadow-2xl hover:shadow-voiceai-primary/20 hover:-translate-y-1 transition-all duration-300 backdrop-blur-lg"
+                  delay={(index % 3) * 0.12}
+                  className="glass card-hover-lift rounded-xl p-6"
                 >
-                  <div className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-lg bg-gradient-to-r from-voiceai-primary to-voiceai-secondary text-white shadow-lg">
+                  <div
+                    className="inline-flex items-center justify-center w-12 h-12 mb-4 rounded-lg text-white shadow-lg"
+                    style={{ background: 'linear-gradient(135deg, #00D9FF, #7C3AED)', position: 'relative', zIndex: 1 }}
+                  >
                     {industry.icon}
                   </div>
-                  <h3 className="text-xl font-bold mb-2 text-white">
+                  <h3 className="text-xl font-bold mb-2 text-white" style={{ position: 'relative', zIndex: 1 }}>
                     {industry.title}
                   </h3>
-                  <p className="text-white/80 mb-4 leading-relaxed">
+                  <p className="text-white/80 mb-4 leading-relaxed" style={{ position: 'relative', zIndex: 1 }}>
                     {industry.description}
                   </p>
-                  <Link to={industry.link} className="inline-flex items-center font-bold text-white bg-gradient-to-r from-voiceai-primary to-voiceai-secondary px-4 py-2 rounded-lg hover:scale-105 transition-transform shadow-lg" onClick={() => window.scrollTo(0, 0)}>
+                  <Link
+                    to={industry.link}
+                    className="inline-flex items-center font-bold text-white px-4 py-2 rounded-lg hover:scale-105 transition-transform shadow-lg"
+                    style={{ background: 'linear-gradient(135deg, #00D9FF, #7C3AED)', position: 'relative', zIndex: 1 }}
+                    onClick={() => window.scrollTo(0, 0)}
+                  >
                     Learn More <ChevronRight className="w-4 h-4 ml-1" />
                   </Link>
-                </motion.div>
+                </FadeUp>
               ))}
             </div>
           </div>

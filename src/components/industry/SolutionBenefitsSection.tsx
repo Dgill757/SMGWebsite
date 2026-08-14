@@ -19,7 +19,12 @@ const SolutionBenefitsSection = ({ benefits, comparisons }: SolutionBenefitsSect
     <section className="py-20">
       <div className="container mx-auto px-4">
         <h2 className="heading-md text-center mb-4">
-          The <span className="text-gradient">SummitVoiceAI</span> Solution
+          The <span style={{
+            background: 'linear-gradient(135deg, #00D9FF, #7C3AED)',
+            WebkitBackgroundClip: 'text',
+            WebkitTextFillColor: 'transparent',
+            backgroundClip: 'text',
+          }}>SummitVoiceAI</span> Solution
         </h2>
         <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-12">
           Transform your business with AI voice technology designed specifically for your industry
@@ -31,7 +36,7 @@ const SolutionBenefitsSection = ({ benefits, comparisons }: SolutionBenefitsSect
             <ul className="space-y-4">
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-start">
-                  <div className="mr-4 mt-1 text-voiceai-primary">
+                  <div className="mr-4 mt-1" style={{ color: '#00D9FF' }}>
                     <CheckCircle className="h-5 w-5" />
                   </div>
                   <p>{benefit}</p>
@@ -61,8 +66,8 @@ const SolutionBenefitsSection = ({ benefits, comparisons }: SolutionBenefitsSect
                           <XCircle className="h-5 w-5 inline text-red-500" />}
                       </td>
                       <td className="px-4 py-3 text-center">
-                        {item.voiceAI ? 
-                          <CheckCircle className="h-5 w-5 inline text-voiceai-primary" /> : 
+                        {item.voiceAI ?
+                          <CheckCircle className="h-5 w-5 inline" style={{ color: '#00D9FF' }} /> :
                           <XCircle className="h-5 w-5 inline text-muted-foreground" />}
                       </td>
                     </tr>
@@ -73,7 +78,7 @@ const SolutionBenefitsSection = ({ benefits, comparisons }: SolutionBenefitsSect
           </div>
         </div>
 
-        <div className="glassmorphism rounded-xl p-8 max-w-5xl mx-auto border border-white/20">
+        <div className="glass rounded-xl p-8 max-w-5xl mx-auto">
           <h3 className="text-xl font-semibold mb-6 text-center text-white">Calculate Your Potential ROI</h3>
           <ROICalculator />
         </div>

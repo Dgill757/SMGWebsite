@@ -26,7 +26,7 @@ const IndustryStatsSection = ({ stats, industryName, keywords }: IndustryStatsPr
           Industry Stats & Proof
         </h2>
         <p className="text-center text-muted-foreground max-w-2xl mx-auto mb-10">
-          See why businesses choose <span className="font-semibold text-voiceai-primary">SummitVoiceAI</span> for their {industryName.toLowerCase()} voice assistant solution
+          See why businesses choose <span className="font-semibold" style={{ color: '#00D9FF' }}>SummitVoiceAI</span> for their {industryName.toLowerCase()} voice assistant solution
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -36,16 +36,16 @@ const IndustryStatsSection = ({ stats, industryName, keywords }: IndustryStatsPr
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              className="glassmorphism rounded-xl p-6 shadow-lg hover:shadow-xl transition-all border border-white/20 relative overflow-hidden group"
+              className="glass card-hover-lift rounded-xl p-6 relative overflow-hidden group"
             >
               {/* Subtle glow effect on hover */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-voiceai-primary/0 via-voiceai-primary/5 to-voiceai-secondary/0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-xl blur-xl" />
-              
+              <div className="absolute -inset-0.5 opacity-0 group-hover:opacity-100 transition-opacity duration-700 rounded-xl blur-xl" style={{ background: 'linear-gradient(90deg, rgba(0,217,255,0), rgba(0,217,255,0.06), rgba(124,58,237,0))' }} />
+
               <div className="relative">
                 <h3 className="text-lg font-medium text-white/70 mb-1">
                   {stat.metric}
                 </h3>
-                <div className="text-2xl font-bold mb-3 text-voiceai-primary">
+                <div className="text-2xl font-bold mb-3" style={{ color: '#00D9FF' }}>
                   {stat.value}
                 </div>
                 <div className="flex flex-col justify-between h-full">

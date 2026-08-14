@@ -1767,8 +1767,8 @@ const industriesData = {
 
 // Helper component for the hero section
 const IconWithCircle = ({ icon }: { icon: React.ReactNode }) => (
-  <div className="h-24 w-24 rounded-full bg-voiceai-primary/10 flex items-center justify-center">
-    <div className="text-voiceai-primary">{icon}</div>
+  <div className="h-24 w-24 rounded-full flex items-center justify-center" style={{ background: 'rgba(0,217,255,0.1)' }}>
+    <div style={{ color: '#00D9FF' }}>{icon}</div>
   </div>
 );
 
@@ -1852,8 +1852,8 @@ const IndustryPage = () => {
           <div className="max-w-5xl mx-auto">
             <div className="flex flex-col lg:flex-row items-center gap-10">
               <div className="lg:w-2/3 space-y-6">
-                <div className="inline-flex items-center gap-2 bg-voiceai-primary/10 text-voiceai-primary px-4 py-2 rounded-full">
-                  <span className="animate-pulse rounded-full w-2 h-2 bg-voiceai-primary"></span>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full" style={{ background: 'rgba(0,217,255,0.1)', color: '#00D9FF' }}>
+                  <span className="animate-pulse rounded-full w-2 h-2" style={{ background: '#00D9FF' }}></span>
                   <span className="text-sm font-medium">Industry Solution</span>
                 </div>
                 

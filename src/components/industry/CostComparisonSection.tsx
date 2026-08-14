@@ -37,7 +37,7 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
           {/* First card - 1-Year Costs */}
-          <div className="bg-gradient-to-br from-voiceai-dark/80 to-black/60 border border-white/10 rounded-xl p-6 shadow-2xl shadow-voiceai-primary/20 pb-8">
+          <div className="glass card-hover-lift rounded-xl p-6 pb-8">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg text-white">1-Year Costs</h3>
             </div>
@@ -47,49 +47,49 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
                 <div className="text-center text-white">Human Staff</div>
                 <div className="text-center text-white">Voice AI</div>
               </div>
-              
+
               {costs.yearly.map((item, index) => (
                 <div key={index} className="grid grid-cols-3 items-center">
                   <div className="flex items-center gap-2">
-                    <span className="text-voiceai-primary">{item.icon}</span>
+                    <span style={{ color: '#00D9FF' }}>{item.icon}</span>
                     <span className="text-white/90">{item.title}</span>
                   </div>
                   <div className="text-center text-white">{item.human}</div>
-                  <div className="text-center text-voiceai-primary font-semibold">{item.ai}</div>
+                  <div className="text-center font-semibold" style={{ color: '#00D9FF' }}>{item.ai}</div>
                 </div>
               ))}
-              
+
               <div className="grid grid-cols-3 font-bold pt-4 border-t border-white/20">
                 <div className="text-white">Total</div>
                 <div className="text-center text-white">${calculateTotal(costs.yearly, 'human')}</div>
-                <div className="text-center text-voiceai-primary">${calculateTotal(costs.yearly, 'ai')}</div>
+                <div className="text-center" style={{ color: '#00D9FF' }}>${calculateTotal(costs.yearly, 'ai')}</div>
               </div>
             </div>
           </div>
 
           {/* Second card - 3-Year Projection */}
-          <div className="bg-gradient-to-br from-voiceai-dark/80 to-black/60 border border-white/10 rounded-xl p-6 shadow-2xl shadow-voiceai-secondary/20 pb-8">
+          <div className="glass card-hover-lift rounded-xl p-6 pb-8">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg text-white">3-Year Projection</h3>
             </div>
             <div className="flex flex-col h-full justify-between">
               <div className="space-y-6">
-                <ComparisonBar 
-                  label="Human Staff" 
-                  value={parseInt(costs.threeYear.human.replace(/[^0-9]/g, ''))} 
-                  color="bg-gray-400" 
+                <ComparisonBar
+                  label="Human Staff"
+                  value={parseInt(costs.threeYear.human.replace(/[^0-9]/g, ''))}
+                  color="bg-gray-400"
                   textColor="text-white"
                 />
-                <ComparisonBar 
-                  label="SummitVoiceAI" 
-                  value={parseInt(costs.threeYear.ai.replace(/[^0-9]/g, ''))} 
-                  color="bg-voiceai-primary" 
-                  textColor="text-voiceai-primary"
+                <ComparisonBar
+                  label="SummitVoiceAI"
+                  value={parseInt(costs.threeYear.ai.replace(/[^0-9]/g, ''))}
+                  color="bg-[#00D9FF]"
+                  textColor="text-[#00D9FF]"
                 />
               </div>
               <div className="mt-6 pb-2 text-center">
                 <p className="font-semibold text-white">Estimated 3-Year Savings:</p>
-                <p className="text-2xl font-bold text-voiceai-primary mt-4">
+                <p className="text-2xl font-bold mt-4" style={{ color: '#00D9FF' }}>
                   ${calculateSavings(costs.threeYear.human, costs.threeYear.ai)}
                 </p>
               </div>
@@ -97,28 +97,28 @@ const CostComparisonSection = ({ costs }: CostComparisonProps) => {
           </div>
 
           {/* Third card - 5-Year Projection */}
-          <div className="bg-gradient-to-br from-voiceai-dark/80 to-black/60 border border-white/10 rounded-xl p-6 shadow-2xl shadow-voiceai-accent/20 pb-8">
+          <div className="glass card-hover-lift rounded-xl p-6 pb-8">
             <div className="text-center mb-4">
               <h3 className="font-bold text-lg text-white">5-Year Projection</h3>
             </div>
             <div className="flex flex-col h-full justify-between">
               <div className="space-y-6">
-                <ComparisonBar 
-                  label="Human Staff" 
-                  value={parseInt(costs.fiveYear.human.replace(/[^0-9]/g, ''))} 
-                  color="bg-gray-400" 
+                <ComparisonBar
+                  label="Human Staff"
+                  value={parseInt(costs.fiveYear.human.replace(/[^0-9]/g, ''))}
+                  color="bg-gray-400"
                   textColor="text-white"
                 />
-                <ComparisonBar 
-                  label="SummitVoiceAI" 
-                  value={parseInt(costs.fiveYear.ai.replace(/[^0-9]/g, ''))} 
-                  color="bg-voiceai-primary" 
-                  textColor="text-voiceai-primary"
+                <ComparisonBar
+                  label="SummitVoiceAI"
+                  value={parseInt(costs.fiveYear.ai.replace(/[^0-9]/g, ''))}
+                  color="bg-[#00D9FF]"
+                  textColor="text-[#00D9FF]"
                 />
               </div>
               <div className="mt-6 pb-2 text-center">
                 <p className="font-semibold text-white">Estimated 5-Year Savings:</p>
-                <p className="text-2xl font-bold text-voiceai-primary mt-4">
+                <p className="text-2xl font-bold mt-4" style={{ color: '#00D9FF' }}>
                   ${calculateSavings(costs.fiveYear.human, costs.fiveYear.ai)}
                 </p>
               </div>

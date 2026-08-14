@@ -71,7 +71,7 @@ const Articles: React.FC = () => {
           {/* Articles Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
             {articles.map((article) => (
-              <Card key={article.slug} className="group hover:shadow-lg transition-all duration-300 h-full flex flex-col">
+              <Card key={article.slug} className="glass card-hover-lift group h-full flex flex-col">
                 {article.thumbnail && (
                   <div className="relative overflow-hidden rounded-t-lg">
                     <img

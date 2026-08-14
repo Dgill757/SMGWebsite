@@ -73,7 +73,7 @@ const GDPRCompliance: React.FC = () => {
         To exercise any of these rights, email us at:
       </p>
       <p className="mb-6">
-        📧 <a href="mailto:dan@summitmktggroup.com" className="text-voiceai-primary hover:underline">dan@summitmktggroup.com</a>
+        📧 <a href="mailto:dan@summitmktggroup.com" className="hover:underline" style={{ color: '#00D9FF' }}>dan@summitmktggroup.com</a>
       </p>
       
       <h2 className="text-2xl font-semibold mt-8 mb-4">5. Data Transfers Outside the EU</h2>
@@ -118,10 +118,10 @@ const GDPRCompliance: React.FC = () => {
         Founder & Data Protection Contact
       </p>
       <p className="mb-4">
-        Email: <a href="mailto:dan@summitmktggroup.com" className="text-voiceai-primary hover:underline">dan@summitmktggroup.com</a>
+        Email: <a href="mailto:dan@summitmktggroup.com" className="hover:underline" style={{ color: '#00D9FF' }}>dan@summitmktggroup.com</a>
       </p>
       <p className="mb-6">
-        Website: <a href="https://www.summitmktggroup.com" className="text-voiceai-primary hover:underline">www.summitmktggroup.com</a>
+        Website: <a href="https://www.summitmktggroup.com" className="hover:underline" style={{ color: '#00D9FF' }}>www.summitmktggroup.com</a>
       </p>
       
       <h2 className="text-2xl font-semibold mt-8 mb-4">9. Lodging a Complaint</h2>

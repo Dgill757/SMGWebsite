@@ -106,10 +106,10 @@ const CookiePolicy: React.FC = () => {
         Founder, Summit AI
       </p>
       <p className="mb-4">
-        Email: <a href="mailto:dan@summitmktggroup.com" className="text-voiceai-primary hover:underline">dan@summitmktggroup.com</a>
+        Email: <a href="mailto:dan@summitmktggroup.com" className="hover:underline" style={{ color: '#00D9FF' }}>dan@summitmktggroup.com</a>
       </p>
       <p className="mb-6">
-        Website: <a href="https://www.summitmktggroup.com" className="text-voiceai-primary hover:underline">www.summitmktggroup.com</a>
+        Website: <a href="https://www.summitmktggroup.com" className="hover:underline" style={{ color: '#00D9FF' }}>www.summitmktggroup.com</a>
       </p>
     </PolicyLayout>
   );
