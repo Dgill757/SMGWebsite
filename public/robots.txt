@@ -8,7 +8,11 @@ Disallow: /admin/
 Disallow: /api/
 Disallow: *.json$
 
-Sitemap: https://summitaivoice.com/sitemap.xml
+Sitemap: https://www.summitvoiceai.com/sitemap.xml
+
+# AI assistant / LLM-facing summary (llms.txt convention)
+# https://llmstxt.org
+Allow: /llms.txt
 
 # Search engine bot configuration
 User-agent: Googlebot

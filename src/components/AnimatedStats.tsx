@@ -1,5 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react';
 import NumberFlow from '@number-flow/react';
+import { motion, useInView } from 'framer-motion';
+
+function FadeUp({ children, delay = 0, className = '' }: {
+  children: React.ReactNode; delay?: number; className?: string;
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  return (
+    <motion.div ref={ref} className={className}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}>
+      {children}
+    </motion.div>
+  );
+}
 
 interface StatItem {
   end: number;
@@ -15,7 +31,7 @@ const stats: StatItem[] = [
     prefix: '$',
     suffix: 'M+',
     label: 'Client Revenue Recovered',
-    subLabel: 'In client revenue recovered annually',
+    subLabel: 'In annual revenue across active clients',
   },
   {
     end: 582,
@@ -32,7 +48,7 @@ const stats: StatItem[] = [
   {
     end: 42,
     suffix: '+',
-    label: 'Active Clients',
+    label: 'Active Companies',
     subLabel: 'Roofing, home services & more',
   },
 ];
@@ -162,7 +178,9 @@ export function AnimatedStats() {
           }}
         >
           {stats.map((stat, i) => (
-            <AnimatedStatCard key={i} stat={stat} delay={i * 150} />
+            <FadeUp key={i} delay={i * 0.1}>
+              <AnimatedStatCard stat={stat} delay={i * 150} />
+            </FadeUp>
           ))}
         </div>
 
@@ -184,10 +202,10 @@ export function AnimatedStats() {
               lineHeight: 1.7,
             }}
           >
-            🏆 <strong style={{ color: 'rgba(255,255,255,0.9)' }}>Teo Roofing</strong> - 582 appointments booked in 12 months via Ava.
-            At a 55% close rate on $12K-$32K jobs, that&apos;s{' '}
+            🏆 <strong style={{ color: 'rgba(255,255,255,0.9)' }}>Teo Roofing</strong> — 582 appointments booked in 12 months via Ava.
+            At a 55% close rate averaging $13,100/job, that&apos;s{' '}
             <strong style={{ color: '#00D9FF' }}>$4,190,400+ in recovered revenue</strong>.
-            {' '}From one AI receptionist.
+            {' '}From one AI receptionist. Now replicated across 42+ companies.
           </p>
         </div>
       </div>

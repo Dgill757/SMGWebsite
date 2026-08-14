@@ -1,80 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://summitaivoice.com/</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries/home-services</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/home-services</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries/real-estate</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/real-estate</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries/law-firms</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/legal</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries/accounting</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/professional-services</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries/healthcare</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/healthcare</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries/automotive</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/automotive</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/industries/landscaping</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/landscaping</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/privacy-policy</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/industries/customer-service</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/articles</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/articles/voice-ai-revolution-roofing</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/privacy-policy</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/terms-of-service</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/terms-of-service</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/cookie-policy</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/cookie-policy</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
   <url>
-    <loc>https://summitaivoice.com/gdpr-compliance</loc>
-    <lastmod>2024-01-20</lastmod>
+    <loc>https://www.summitvoiceai.com/gdpr-compliance</loc>
+    <lastmod>2026-08-13</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>

@@ -134,7 +134,7 @@ const STATS = [
   { value: '7', label: 'Calls Answered Per Day', sub: 'Per active client - every call, every time' },
   { value: '3', label: 'Appointments Booked Daily', sub: '~45% of answered calls convert to bookings' },
   { value: '$11,500', label: 'Avg. Job Value Captured', sub: 'Based on roofing industry averages' },
-  { value: 'As little as $16/day', label: 'Total Cost of Ava', sub: 'Less than your morning coffee run - cancel anytime' },
+  { value: 'As little as $16/day', label: 'Total Cost of Ava', sub: 'vs. $180+/day for a receptionist' },
 ];
 
 function useInView(ref: React.RefObject<Element>, threshold = 0.1) {

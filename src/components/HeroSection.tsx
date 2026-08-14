@@ -209,16 +209,31 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
             fontSize: 'clamp(1rem, 2vw, 1.2rem)',
             lineHeight: 1.65,
             color: 'rgba(255,255,255,0.62)',
-            marginBottom: '2.5rem',
+            marginBottom: '1.25rem',
             maxWidth: 520,
             fontWeight: 400,
           }}>
-            Ava answers every call, books appointments, and syncs with your CRM
-            {' '}&mdash; 24/7, at a fraction of the cost of a receptionist.
+            Ava answers every call 24/7, books appointments automatically, follows up
+            with unsold estimates, reactivates old leads &mdash; and syncs everything
+            to your CRM. At a fraction of the cost of a receptionist.
+          </p>
+
+          {/* Social proof line */}
+          <p style={{
+            fontSize: '0.82rem',
+            fontStyle: 'italic',
+            color: 'rgba(0,217,255,0.75)',
+            margin: '0 0 24px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '7px',
+          }}>
+            🏆 Teo Roofing booked 582 appointments in 12 months.
+            That's $4.1M+ recovered from one AI receptionist.
           </p>
 
           {/* CTAs */}
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '3rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
             <button
               onClick={() => setCalendarOpen(true)}
               className="btn-primary"
@@ -234,6 +249,22 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 See How It Works &rarr;</span>
             </button>
+          </div>
+
+          {/* Trust pills */}
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+            {['No credit card required', 'Live in 48–72 hours', 'Cancel anytime'].map((pill) => (
+              <span key={pill} style={{
+                fontSize: '0.78rem',
+                color: 'rgba(255,255,255,0.45)',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '0.4rem',
+                fontWeight: 500,
+              }}>
+                <span style={{ color: '#00D9FF' }}>✓</span>{pill}
+              </span>
+            ))}
           </div>
 
           {/* Feature Pills */}

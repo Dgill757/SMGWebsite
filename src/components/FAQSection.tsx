@@ -3,27 +3,27 @@ import React, { useState, useRef, useEffect } from 'react';
 const FAQS = [
   {
     q: 'Will Ava sound robotic to my roofing customers?',
-    a: 'No. Ava uses the same AI voice technology trusted by Fortune 500 companies. Most callers never realize they\'re talking to AI - they just experience a fast, professional, helpful conversation. You can hear Ava live on this page right now.',
+    a: 'No. Ava uses the same voice AI trusted by Fortune 500 companies. Most callers never realize they\'re talking to AI — they experience a fast, professional, helpful conversation. You can hear Ava live on this page right now.',
   },
   {
     q: 'What happens when a customer calls after hours or during a storm?',
-    a: 'Ava answers in under 1 second, 24/7/365 - including Sunday nights, holidays, and peak storm season when your phones are ringing non-stop. Every call answered. Every lead captured. Every appointment booked automatically.',
+    a: 'Ava answers in under 1 second, 24/7/365 — including Sunday nights, holidays, and peak storm season when your phones won\'t stop ringing. Every call answered. Every lead captured. Every appointment booked automatically.',
   },
   {
-    q: 'How does Ava sync with ServiceTitan or my CRM?',
-    a: 'Ava integrates with ServiceTitan, Jobber, HubSpot, GoHighLevel, and 5,000+ other tools via Zapier and Make.com. Every call note, lead, and booked appointment syncs automatically. Zero manual data entry.',
+    q: 'How does Ava sync with ServiceTitan or my existing CRM?',
+    a: 'Ava integrates with ServiceTitan, Jobber, HubSpot, GoHighLevel, and 5,000+ other tools via Zapier and Make. Every call note, lead, and booked appointment syncs automatically. Zero manual data entry.',
   },
   {
     q: 'How long does setup take for my roofing company?',
-    a: 'Most clients are live within 48-72 hours. We handle everything - voice training, CRM integration, call routing, and scheduling rules. You don\'t touch a line of code.',
+    a: 'Most clients are live within 48–72 hours. We handle everything — voice training, CRM integration, call routing, and scheduling rules. You don\'t touch a line of code.',
   },
   {
     q: 'What\'s the ROI compared to hiring a receptionist?',
-    a: 'A full-time receptionist costs $45,000-$65,000/year and still misses after-hours calls. Ava costs a fraction of that, answers 100% of calls, and pays for itself the moment it books the first job your receptionist would have missed. Teo Roofing recovered $4.1M+ in year one.',
+    a: 'A full-time receptionist costs $45,000–$65,000/year and still misses after-hours calls. Ava costs as little as $16/day, answers 100% of calls, and pays for itself the moment it books the first job your receptionist would have missed. Teo Roofing recovered $4.1M+ in year one.',
   },
   {
-    q: 'I\'m not a roofing company - can Ava still work for my business?',
-    a: 'Absolutely. We serve home service businesses, healthcare clinics, real estate teams, pool companies, landscapers, and more. If you have inbound calls and leads you\'re losing, Ava solves that - regardless of your industry.',
+    q: 'I\'m not a roofing company — can Ava still work for my business?',
+    a: 'Absolutely. We serve home service businesses, healthcare clinics, real estate teams, pool companies, landscapers, and more. If you have inbound calls and leads you\'re losing, Ava solves that — regardless of your industry.',
   },
 ];
 

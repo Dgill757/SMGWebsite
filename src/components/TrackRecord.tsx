@@ -1,4 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+
+function FadeUp({ children, delay = 0, className = '' }: {
+  children: React.ReactNode; delay?: number; className?: string;
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  return (
+    <motion.div ref={ref} className={className}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}>
+      {children}
+    </motion.div>
+  );
+}
 
 function CountUp({ end, prefix = '', suffix = '', delay = 0 }: {
   end: number; prefix?: string; suffix?: string; delay?: number;
@@ -98,34 +114,35 @@ export function TrackRecord() {
           className="tr-grid"
         >
           {items.map((item, i) => (
-            <div
-              key={i}
-              style={{
-                padding: '40px 20px',
-                background: 'rgba(0,8,16,0.85)',
-                textAlign: 'center',
-              }}
-            >
+            <FadeUp key={i} delay={i * 0.18}>
               <div
                 style={{
-                  fontSize: 'clamp(1.6rem, 3.5vw, 2.6rem)',
-                  fontWeight: 900,
-                  color: '#00D9FF',
-                  letterSpacing: '-0.02em',
-                  lineHeight: 1,
-                  marginBottom: '10px',
-                  textShadow: '0 0 24px rgba(0,217,255,0.35)',
+                  padding: '40px 20px',
+                  background: 'rgba(0,8,16,0.85)',
+                  textAlign: 'center',
                 }}
               >
-                <CountUp end={item.end} prefix={item.prefix || ''} suffix={item.suffix || ''} delay={i * 200} />
+                <div
+                  style={{
+                    fontSize: 'clamp(1.6rem, 3.5vw, 2.6rem)',
+                    fontWeight: 900,
+                    color: '#00D9FF',
+                    letterSpacing: '-0.02em',
+                    lineHeight: 1,
+                    marginBottom: '10px',
+                    textShadow: '0 0 24px rgba(0,217,255,0.35)',
+                  }}
+                >
+                  <CountUp end={item.end} prefix={item.prefix || ''} suffix={item.suffix || ''} delay={i * 200} />
+                </div>
+                <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: '4px' }}>
+                  {item.label}
+                </div>
+                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', fontWeight: 500 }}>
+                  {item.sub}
+                </div>
               </div>
-              <div style={{ fontSize: '0.85rem', fontWeight: 700, color: 'rgba(255,255,255,0.85)', marginBottom: '4px' }}>
-                {item.label}
-              </div>
-              <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', fontWeight: 500 }}>
-                {item.sub}
-              </div>
-            </div>
+            </FadeUp>
           ))}
         </div>
 

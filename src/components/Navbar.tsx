@@ -73,7 +73,20 @@ const Navbar: React.FC = () => {
         {/* Desktop Nav */}
         <div className="hidden md:flex items-center gap-1">
           {navLinks.map(({ label, id }) => (
-            <a key={id} href={`#${id}`} onClick={(e) => scrollTo(id, e)} className="nav-link">{label}</a>
+            <React.Fragment key={id}>
+              <a href={`#${id}`} onClick={(e) => scrollTo(id, e)} className="nav-link">{label}</a>
+              {id === 'pricing' && (
+                <a
+                  href="https://revenuerecovery.summitvoiceai.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="nav-link"
+                  style={{ color: '#00D9FF' }}
+                >
+                  Revenue Recovery ↗
+                </a>
+              )}
+            </React.Fragment>
           ))}
           <Link to="/industries" className="nav-link" style={{ textDecoration: 'none' }}>Who We Serve</Link>
           <Link to="/articles" className="nav-link" style={{ textDecoration: 'none' }}>Articles</Link>
@@ -114,8 +127,22 @@ const Navbar: React.FC = () => {
           <div style={{ maxWidth: 1280, margin: '0 auto', padding: '0.5rem 1.5rem 1rem' }}
             className="flex flex-col gap-1">
             {navLinks.map(({ label, id }) => (
-              <a key={id} href={`#${id}`} onClick={(e) => scrollTo(id, e)}
-                className="nav-link" style={{ padding: '0.75rem 1rem', display: 'block' }}>{label}</a>
+              <React.Fragment key={id}>
+                <a href={`#${id}`} onClick={(e) => scrollTo(id, e)}
+                  className="nav-link" style={{ padding: '0.75rem 1rem', display: 'block' }}>{label}</a>
+                {id === 'pricing' && (
+                  <a
+                    href="https://revenuerecovery.summitvoiceai.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="nav-link"
+                    style={{ padding: '0.75rem 1rem', display: 'block', color: '#00D9FF' }}
+                    onClick={() => setMenuOpen(false)}
+                  >
+                    Revenue Recovery ↗
+                  </a>
+                )}
+              </React.Fragment>
             ))}
             <Link to="/industries" className="nav-link" onClick={() => setMenuOpen(false)}
               style={{ padding: '0.75rem 1rem', display: 'block', textDecoration: 'none' }}>Who We Serve</Link>

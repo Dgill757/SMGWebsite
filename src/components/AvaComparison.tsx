@@ -1,4 +1,20 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+
+function FadeUp({ children, delay = 0, className = '' }: {
+  children: React.ReactNode; delay?: number; className?: string;
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  return (
+    <motion.div ref={ref} className={className}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}>
+      {children}
+    </motion.div>
+  );
+}
 
 const before = [
   { icon: '📵', text: 'Calls go to voicemail after hours' },
@@ -15,7 +31,7 @@ const after = [
   { icon: '🏆', text: 'You get the job before they even hang up' },
   { icon: '🔄', text: 'Auto-syncs to ServiceTitan, HubSpot, GHL' },
   { icon: '🌙', text: '24/7/365 - Ava never sleeps or calls in sick' },
-  { icon: '📊', text: 'Full call analytics and ROI dashboard' },
+  { icon: '💵', text: 'Costs as little as $16/day vs. $180+/day for a receptionist' },
 ];
 
 export function AvaComparison() {
@@ -83,123 +99,127 @@ export function AvaComparison() {
         }}
         className="comparison-grid"
       >
-        <div
-          style={{
-            background: 'rgba(239,68,68,0.05)',
-            border: '1px solid rgba(239,68,68,0.2)',
-            borderRadius: '20px',
-            padding: '32px',
-          }}
-        >
+        <FadeUp delay={0}>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              marginBottom: '28px',
+              background: 'rgba(239,68,68,0.05)',
+              border: '1px solid rgba(239,68,68,0.2)',
+              borderRadius: '20px',
+              padding: '32px',
             }}
           >
             <div
               style={{
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                background: '#EF4444',
-                boxShadow: '0 0 10px rgba(239,68,68,0.6)',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                color: 'rgba(239,68,68,0.9)',
-                textTransform: 'uppercase',
-              }}
-            >
-              Without Ava
-            </span>
-          </div>
-          {before.map((item, i) => (
-            <div
-              key={i}
-              style={{
                 display: 'flex',
-                gap: '14px',
-                alignItems: 'flex-start',
-                marginBottom: i < before.length - 1 ? '16px' : 0,
-                padding: '12px 14px',
-                borderRadius: '10px',
-                background: 'rgba(239,68,68,0.04)',
+                alignItems: 'center',
+                gap: '10px',
+                marginBottom: '28px',
               }}
             >
-              <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{item.icon}</span>
-              <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
-                {item.text}
+              <div
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  background: '#EF4444',
+                  boxShadow: '0 0 10px rgba(239,68,68,0.6)',
+                }}
+              />
+              <span
+                style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  color: 'rgba(239,68,68,0.9)',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Without Ava
               </span>
             </div>
-          ))}
-        </div>
+            {before.map((item, i) => (
+              <div
+                key={i}
+                style={{
+                  display: 'flex',
+                  gap: '14px',
+                  alignItems: 'flex-start',
+                  marginBottom: i < before.length - 1 ? '16px' : 0,
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  background: 'rgba(239,68,68,0.04)',
+                }}
+              >
+                <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{item.icon}</span>
+                <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.65)', lineHeight: 1.5 }}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        </FadeUp>
 
-        <div
-          style={{
-            background: 'rgba(0,217,255,0.04)',
-            border: '1px solid rgba(0,217,255,0.25)',
-            borderRadius: '20px',
-            padding: '32px',
-            boxShadow: '0 0 40px rgba(0,217,255,0.06)',
-          }}
-        >
+        <FadeUp delay={0.15}>
           <div
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '10px',
-              marginBottom: '28px',
+              background: 'rgba(0,217,255,0.04)',
+              border: '1px solid rgba(0,217,255,0.25)',
+              borderRadius: '20px',
+              padding: '32px',
+              boxShadow: '0 0 40px rgba(0,217,255,0.06)',
             }}
           >
             <div
               style={{
-                width: '10px',
-                height: '10px',
-                borderRadius: '50%',
-                background: '#00D9FF',
-                boxShadow: '0 0 10px rgba(0,217,255,0.8)',
-                animation: 'pulse 2s ease-in-out infinite',
-              }}
-            />
-            <span
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                letterSpacing: '0.1em',
-                color: '#00D9FF',
-                textTransform: 'uppercase',
-              }}
-            >
-              With Ava
-            </span>
-          </div>
-          {after.map((item, i) => (
-            <div
-              key={i}
-              style={{
                 display: 'flex',
-                gap: '14px',
-                alignItems: 'flex-start',
-                marginBottom: i < after.length - 1 ? '16px' : 0,
-                padding: '12px 14px',
-                borderRadius: '10px',
-                background: 'rgba(0,217,255,0.03)',
+                alignItems: 'center',
+                gap: '10px',
+                marginBottom: '28px',
               }}
             >
-              <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{item.icon}</span>
-              <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>
-                {item.text}
+              <div
+                style={{
+                  width: '10px',
+                  height: '10px',
+                  borderRadius: '50%',
+                  background: '#00D9FF',
+                  boxShadow: '0 0 10px rgba(0,217,255,0.8)',
+                  animation: 'pulse 2s ease-in-out infinite',
+                }}
+              />
+              <span
+                style={{
+                  fontSize: '0.8rem',
+                  fontWeight: 700,
+                  letterSpacing: '0.1em',
+                  color: '#00D9FF',
+                  textTransform: 'uppercase',
+                }}
+              >
+                With Ava
               </span>
             </div>
-          ))}
-        </div>
+            {after.map((item, i) => (
+              <div
+                key={i}
+                style={{
+                  display: 'flex',
+                  gap: '14px',
+                  alignItems: 'flex-start',
+                  marginBottom: i < after.length - 1 ? '16px' : 0,
+                  padding: '12px 14px',
+                  borderRadius: '10px',
+                  background: 'rgba(0,217,255,0.03)',
+                }}
+              >
+                <span style={{ fontSize: '1.1rem', flexShrink: 0 }}>{item.icon}</span>
+                <span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.85)', lineHeight: 1.5 }}>
+                  {item.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        </FadeUp>
       </div>
 
       <style>{`

@@ -1,0 +1,88 @@
+# Summit Voice AI
+
+> Summit Voice AI builds "Ava," a done-for-you AI voice receptionist and revenue recovery
+> automation system. Ava answers every inbound call in under 1 second, 24/7/365, qualifies
+> and books the caller directly onto the calendar, follows up on unsold estimates, reactivates
+> old leads sitting in the CRM, and requests reviews after the job is done — all without a
+> human touching it. Summit Voice AI is built and operated by Summit Marketing Group,
+> founded by Dan Gill.
+
+## What we do
+
+Summit Voice AI installs the Summit Revenue Recovery System™: an AI voice agent (Ava) plus
+a connected set of automations — missed-call recovery, speed-to-lead follow-up, SMS/email
+nurture, database reactivation campaigns, and a review-generation workflow — wired directly
+into the client's existing CRM and calendar. The core premise: most businesses lose more
+revenue to missed calls, slow follow-up, and dead CRM leads than they do to a lack of new
+leads. Summit Voice AI's job is to recover that leakage before the client spends more money
+generating new opportunities.
+
+The mechanism is called the Revenue Recovery Loop™: Capture → Respond → Follow Up →
+Reactivate → Book → Review → Optimize.
+
+## Who we serve
+
+Primary focus: **roofing contractors** in the United States, typically $1M–$10M+ in annual
+revenue, owner-operated with 1–10 employees.
+
+Also actively serving: home services businesses (HVAC, plumbing, landscaping, pool and spa
+companies), real estate teams and brokerages, healthcare and dental practices, law firms and
+legal services, automotive service businesses, and other professional services companies
+with high call volume and time-sensitive leads. Service area is nationwide across the United
+States.
+
+## Pricing
+
+Three tiers, all month-to-month with a one-time implementation fee:
+
+- **SummitVoice AI Capture™** — $697/month + $1,500 implementation. Entry tier: 24/7 AI
+  receptionist, lead qualification, calendar booking, call summaries, basic CRM integration,
+  missed-call recovery, monthly reporting.
+- **Summit Revenue Recovery System™** — $1,497/month + $3,000 implementation (flagship /
+  most popular). Everything in Capture, plus advanced missed-call recovery, speed-to-lead
+  follow-up, SMS/email nurturing, the Estimate Rescue System™, a Review Growth Engine,
+  website conversational AI, CRM/calendar workflow automation, an initial database
+  reactivation campaign, a Revenue Recovery Scorecard, monthly optimization, quarterly
+  reactivation campaigns, and the Revenue Recovery Script Vault. Annual prepay: $16,500 +
+  implementation.
+- **Summit AI Growth Engine™** — $2,497/month + $5,000 implementation. Everything in Revenue
+  Recovery, plus outbound AI calling, multiple concurrent campaigns, larger database
+  programs, multi-location support, advanced custom integrations, additional AI agents,
+  higher usage allowances, priority support, and a monthly strategy session.
+
+## Documented results
+
+- Teo Roofing: 582 appointments booked in 12 months via Ava. At a 55% close rate averaging
+  $13,100/job, that is $4,190,400+ in recovered revenue from a single AI receptionist.
+- 42+ active roofing and home-service businesses on the platform.
+- $84M+ in client revenue recovered annually across active clients.
+- 100% call answer rate, under 1 second average answer time.
+- A roofing database reactivation campaign of ~4,000 existing leads produced ~294
+  appointments and ~$200,000 in attributable reported revenue (broader engagement across
+  the same campaign reached ~600 appointments total).
+
+Named clients: Teo Roofing, Stonewall Roofing, Black Label Roofing, Impact Roofing, Proof
+Roofing.
+
+## Implementation guarantee
+
+If the client completes onboarding, provides required access, and meets agreed
+prerequisites, and Summit has not deployed the agreed Revenue Recovery infrastructure
+within 30 days, Summit continues implementation at no management fee until the agreed
+system is live. If after the first 60 days Summit cannot point to measurable recovered
+conversations, appointments, opportunities, or documented improvements in
+response/follow-up performance, Summit will personally review the account and build an
+additional recovery campaign at Summit's cost. Terms and prerequisites apply — this is a
+deployment guarantee, not a guarantee of leads, appointments, sales, or revenue.
+
+## Key pages
+
+- Main site: https://www.summitvoiceai.com
+- Pricing: https://www.summitvoiceai.com/pricing
+- Industries served: https://www.summitvoiceai.com/industries
+- Revenue Recovery landing page (roofing-focused offer): https://revenuerecovery.summitvoiceai.com
+
+## Contact
+
+Booking a live conversation with Ava or a strategy call is the primary call to action across
+the site — use the "Talk to Ava" or "Book a Strategy Call" buttons on the pages above.

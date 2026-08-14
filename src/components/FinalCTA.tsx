@@ -1,4 +1,20 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+
+function FadeUp({ children, delay = 0, className = '' }: {
+  children: React.ReactNode; delay?: number; className?: string;
+}) {
+  const ref = useRef(null);
+  const inView = useInView(ref, { once: true, margin: '-60px' });
+  return (
+    <motion.div ref={ref} className={className}
+      initial={{ opacity: 0, y: 28 }}
+      animate={inView ? { opacity: 1, y: 0 } : {}}
+      transition={{ duration: 0.6, delay, ease: [0.23, 1, 0.32, 1] }}>
+      {children}
+    </motion.div>
+  );
+}
 
 export function FinalCTA() {
   const handleDemo = () => {
@@ -28,6 +44,7 @@ export function FinalCTA() {
           background: 'radial-gradient(ellipse 70% 50% at 50% 50%, rgba(0,217,255,0.07) 0%, transparent 70%)',
         }}
       />
+      <FadeUp delay={0}>
       <div style={{ position: 'relative', zIndex: 1, maxWidth: '680px', margin: '0 auto' }}>
         <p style={{ fontSize: '0.7rem', letterSpacing: '0.14em', fontWeight: 700, color: 'rgba(0,217,255,0.65)', marginBottom: '16px', textTransform: 'uppercase' }}>
           Your Next Move
@@ -108,6 +125,7 @@ export function FinalCTA() {
           ))}
         </div>
       </div>
+      </FadeUp>
     </section>
   );
 }
