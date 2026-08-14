@@ -1,16 +1,12 @@
-﻿import React, { lazy, Suspense, useState, useEffect, useRef } from 'react';
-import CalendarDialog from './CalendarDialog';
+import React, { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react';
 
 // Lazy-loaded so the Three.js bundle is code-split and only evaluated in the
-// browser Ã¢â‚¬â€ the Vite equivalent of Next.js `dynamic(() => import(...), { ssr: false })`.
+// browser — the Vite equivalent of Next.js `dynamic(() => import(...), { ssr: false })`.
 const AvaParticleHero = lazy(() => import('./ava/AvaParticleHero'));
 
-interface HeroSectionProps {
-  calendarOpen: boolean;
-  setCalendarOpen: (open: boolean) => void;
-}
+const SPOTLIGHT_R = 240;
 
-const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen }) => {
+const HeroSection: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const heroRef      = useRef<HTMLDivElement>(null);
   const highlightRef = useRef<HTMLDivElement>(null);
@@ -18,7 +14,80 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
   const lerpRef      = useRef({ x: 0.5, y: 0.5 });
   const rafCursorRef = useRef(0);
 
-  // Cursor-follow parallax highlight over Ava face region
+  // ── Cursor spotlight reveal state (cyan "Ava answered" world beneath cursor) ──
+  const canvasRef  = useRef<HTMLCanvasElement>(null);
+  const revealRef  = useRef<HTMLDivElement>(null);
+  const spotMouseRef  = useRef({ x: -999, y: -999 });
+  const spotSmoothRef = useRef({ x: -999, y: -999 });
+  const spotRafRef    = useRef(0);
+
+  const sizeCanvas = useCallback(() => {
+    const c = canvasRef.current;
+    if (!c) return;
+    c.width  = window.innerWidth;
+    c.height = window.innerHeight;
+  }, []);
+
+  const spotlightTick = useCallback(() => {
+    const c = canvasRef.current;
+    const r = revealRef.current;
+    if (!c || !r) { spotRafRef.current = requestAnimationFrame(spotlightTick); return; }
+    const ctx = c.getContext('2d');
+    if (!ctx) { spotRafRef.current = requestAnimationFrame(spotlightTick); return; }
+
+    spotSmoothRef.current.x += (spotMouseRef.current.x - spotSmoothRef.current.x) * 0.09;
+    spotSmoothRef.current.y += (spotMouseRef.current.y - spotSmoothRef.current.y) * 0.09;
+
+    const { x, y } = spotSmoothRef.current;
+    ctx.clearRect(0, 0, c.width, c.height);
+
+    const grad = ctx.createRadialGradient(x, y, 0, x, y, SPOTLIGHT_R);
+    grad.addColorStop(0,    'rgba(255,255,255,1)');
+    grad.addColorStop(0.4,  'rgba(255,255,255,1)');
+    grad.addColorStop(0.65, 'rgba(255,255,255,0.72)');
+    grad.addColorStop(0.82, 'rgba(255,255,255,0.28)');
+    grad.addColorStop(0.94, 'rgba(255,255,255,0.06)');
+    grad.addColorStop(1,    'rgba(255,255,255,0)');
+
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(x, y, SPOTLIGHT_R, 0, Math.PI * 2);
+    ctx.fill();
+
+    const url = c.toDataURL();
+    r.style.maskImage       = `url(${url})`;
+    r.style.webkitMaskImage = `url(${url})`;
+    r.style.maskSize        = '100% 100%';
+    r.style.webkitMaskSize  = '100% 100%';
+
+    spotRafRef.current = requestAnimationFrame(spotlightTick);
+  }, []);
+
+  useEffect(() => {
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    sizeCanvas();
+    window.addEventListener('resize', sizeCanvas);
+
+    const onMove = (e: MouseEvent) => {
+      spotMouseRef.current = { x: e.clientX, y: e.clientY };
+    };
+    const onLeave = () => { spotMouseRef.current = { x: -999, y: -999 }; };
+
+    if (!reduced) {
+      window.addEventListener('mousemove', onMove, { passive: true });
+      window.addEventListener('mouseleave', onLeave);
+      spotRafRef.current = requestAnimationFrame(spotlightTick);
+    }
+
+    return () => {
+      window.removeEventListener('resize', sizeCanvas);
+      window.removeEventListener('mousemove', onMove);
+      window.removeEventListener('mouseleave', onLeave);
+      cancelAnimationFrame(spotRafRef.current);
+    };
+  }, [sizeCanvas, spotlightTick]);
+
+  // Cursor-follow parallax highlight over Ava face region (existing particle system)
   useEffect(() => {
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reduced) return;
@@ -52,12 +121,11 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
     };
   }, []);
 
-  // Track scroll to dissolve Ava as section leaves viewport
+  // Track scroll to dissolve Ava as section leaves viewport (existing particle system)
   useEffect(() => {
     const handleScroll = () => {
       if (!heroRef.current) return;
       const rect = heroRef.current.getBoundingClientRect();
-      // Dissolve over the first 60% of viewport height of scrolling away
       const progress = Math.max(0, Math.min(1, -rect.top / (window.innerHeight * 0.6)));
       setScrollProgress(progress);
     };
@@ -65,9 +133,18 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const scrollToDemo = (e: React.MouseEvent) => {
+  const handleTalkToAva = () => {
+    const section = document.getElementById('experience-ava');
+    if (section) section.scrollIntoView({ behavior: 'smooth' });
+    setTimeout(() => {
+      const btn = document.querySelector('.wcw-state-container') as HTMLElement;
+      if (btn) btn.click();
+    }, 700);
+  };
+
+  const scrollToHowItWorks = (e: React.MouseEvent) => {
     e.preventDefault();
-    document.getElementById('experience-ava')?.scrollIntoView({ behavior: 'smooth' });
+    document.getElementById('how-it-works')?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
@@ -87,7 +164,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         paddingBottom: 0,
       }}
     >
-      {/* Ambient glow behind Ava Ã¢â‚¬â€ breathing glow tied to hero-breathe animation */}
+      {/* Ambient glow behind Ava — breathing glow tied to hero-breathe animation */}
       <div
         className="hero-glow-breathe"
         style={{
@@ -104,7 +181,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         }}
       />
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Ava Particle Canvas (full-section overlay, pointer-events none on canvas) Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* ── Ava Particle Canvas (full-section overlay, pointer-events none on canvas) ── */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -120,7 +197,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           />
         </Suspense>
 
-        {/* Cursor-follow highlight Ã¢â‚¬â€ radial glow that lerps toward mouse over Ava face */}
+        {/* Cursor-follow highlight — radial glow that lerps toward mouse over Ava face */}
         <div
           ref={highlightRef}
           aria-hidden="true"
@@ -139,44 +216,66 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
         />
       </div>
 
-      {/* Text protection gradient Ã¢â‚¬â€ dark-left fade so particles don't bleed into copy */}
+      {/* Text protection gradient — dark-left fade so particles don't bleed into copy */}
       <div style={{
         position: 'absolute',
         inset: 0,
-        zIndex: 1,
+        zIndex: 2,
         background: 'linear-gradient(to right, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.50) 28%, rgba(0,0,0,0.14) 52%, transparent 68%)',
         pointerEvents: 'none',
       }} />
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Hero Content Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* ── Cursor spotlight reveal: default state = dark "missed call", cursor reveals cyan "Ava answered" world ── */}
+      {/* Hidden mask-source canvas — never painted directly, only used to compute the reveal div's mask-image */}
+      <canvas
+        ref={canvasRef}
+        className="hero-spotlight-canvas"
+        aria-hidden="true"
+      />
+      <div
+        ref={revealRef}
+        className="hero-spotlight-reveal"
+        aria-hidden="true"
+        style={{
+          background: `
+            radial-gradient(ellipse 60% 70% at 65% 45%,
+              rgba(0,217,255,0.14) 0%,
+              rgba(0,217,255,0.07) 40%,
+              transparent 75%),
+            radial-gradient(ellipse 40% 50% at 70% 38%,
+              rgba(124,58,237,0.10) 0%,
+              transparent 70%)
+          `,
+        }}
+      />
+
+      {/* ── Hero Content ── */}
       <div style={{
         position: 'relative',
-        zIndex: 2,
+        zIndex: 10,
         maxWidth: 1280,
         width: '100%',
         margin: '0 auto',
         padding: '0 1.5rem',
         paddingTop: '7rem',
         paddingBottom: '6rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '3rem',
       }}
-        className="hero-content flex-col lg:flex-row"
+        className="hero-content"
       >
-        {/* Left: Text */}
         <div style={{ flex: '1', minWidth: 0, maxWidth: 640 }}>
-          {/* Live badge */}
-          <div style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '0.6rem',
-            background: 'rgba(0,200,220,0.10)',
-            border: '1px solid rgba(0,200,220,0.30)',
-            borderRadius: 999,
-            padding: '0.45rem 1.1rem',
-            marginBottom: '2rem',
-          }}>
+          {/* Trust badge — liquid glass */}
+          <div
+            className="hero-fade glass"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.6rem',
+              borderRadius: 999,
+              padding: '0.45rem 1.1rem',
+              marginBottom: '2rem',
+              animationDelay: '0s',
+            }}
+          >
             <span style={{
               width: 8, height: 8, borderRadius: '50%',
               background: '#00D9FF',
@@ -190,77 +289,91 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           </div>
 
           {/* Headline */}
-          <h1 style={{
-            fontWeight: 900,
-            fontSize: 'clamp(2.6rem, 5.5vw, 4.8rem)',
-            lineHeight: 1.06,
-            letterSpacing: '-0.035em',
-            marginBottom: '1.5rem',
-            background: 'linear-gradient(135deg, #ffffff 0%, #ffffff 40%, #00D9FF 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-            backgroundClip: 'text',
-          }}>
+          <h1
+            className="hero-rise"
+            style={{
+              animationDelay: '0.06s',
+              fontWeight: 900,
+              fontSize: 'clamp(2.6rem, 5.5vw, 4.8rem)',
+              lineHeight: 1.06,
+              letterSpacing: '-0.035em',
+              marginBottom: '1.5rem',
+              background: 'linear-gradient(135deg, #ffffff 0%, #ffffff 40%, #00D9FF 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>
             Every Missed Call Is a Job Going to Your Competitor
           </h1>
 
           {/* Sub-headline */}
-          <p style={{
-            fontSize: 'clamp(1rem, 2vw, 1.2rem)',
-            lineHeight: 1.65,
-            color: 'rgba(255,255,255,0.62)',
-            marginBottom: '1.25rem',
-            maxWidth: 520,
-            fontWeight: 400,
-          }}>
+          <p
+            className="hero-rise"
+            style={{
+              animationDelay: '0.14s',
+              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+              lineHeight: 1.65,
+              color: 'rgba(255,255,255,0.62)',
+              marginBottom: '1.25rem',
+              maxWidth: 520,
+              fontWeight: 400,
+            }}>
             Ava answers every call 24/7, books appointments automatically, follows up
             with unsold estimates, reactivates old leads &mdash; and syncs everything
             to your CRM. At a fraction of the cost of a receptionist.
           </p>
 
           {/* Social proof line */}
-          <p style={{
-            fontSize: '0.82rem',
-            fontStyle: 'italic',
-            color: 'rgba(0,217,255,0.75)',
-            margin: '0 0 24px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '7px',
-          }}>
+          <p
+            className="hero-rise"
+            style={{
+              animationDelay: '0.18s',
+              fontSize: '0.82rem',
+              fontStyle: 'italic',
+              color: 'rgba(0,217,255,0.75)',
+              margin: '0 0 24px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '7px',
+            }}>
             🏆 Teo Roofing booked 582 appointments in 12 months.
             That's $4.1M+ recovered from one AI receptionist.
           </p>
 
           {/* CTAs */}
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+          <div
+            className="hero-rise"
+            style={{ animationDelay: '0.22s', display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}
+          >
             <button
-              onClick={() => setCalendarOpen(true)}
-              className="btn-primary"
+              onClick={handleTalkToAva}
+              className="btn-primary hero-cta-pulse"
               style={{ padding: '1rem 2.2rem', fontSize: '1rem' }}
             >
-              <span>Talk to Ava Now &mdash; It's Free</span>
+              <span>🎙️ Talk to Ava Now &mdash; It's Free</span>
             </button>
             <button
-              onClick={scrollToDemo}
-              className="btn-outline"
-              style={{ padding: '1rem 2.2rem', fontSize: '1rem' }}
+              onClick={scrollToHowItWorks}
+              className="btn-outline glass"
+              style={{ padding: '1rem 2.2rem', fontSize: '1rem', border: 'none' }}
             >
               <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 See How It Works &rarr;</span>
             </button>
           </div>
 
-          {/* Trust pills */}
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
+          {/* Trust pills — liquid glass */}
+          <div className="hero-fade" style={{ animationDelay: '0.34s', display: 'flex', gap: '1rem', flexWrap: 'wrap', marginBottom: '1.5rem' }}>
             {['No credit card required', 'Live in 48–72 hours', 'Cancel anytime'].map((pill) => (
-              <span key={pill} style={{
+              <span key={pill} className="glass" style={{
                 fontSize: '0.78rem',
-                color: 'rgba(255,255,255,0.45)',
+                color: 'rgba(255,255,255,0.5)',
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '0.4rem',
                 fontWeight: 500,
+                padding: '5px 14px',
+                borderRadius: 999,
               }}>
                 <span style={{ color: '#00D9FF' }}>✓</span>{pill}
               </span>
@@ -268,7 +381,7 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           </div>
 
           {/* Feature Pills */}
-          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+          <div className="hero-fade" style={{ animationDelay: '0.4s', display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             {[
               'Never Miss a Call',
               'Auto Scheduling',
@@ -292,94 +405,28 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
               </div>
             ))}
           </div>
-        </div>
 
-        {/* Right: stats floating cards (desktop only) */}
-        <div className="hidden lg:flex" style={{ flex: '0 0 auto', width: 320, position: 'relative', height: 420 }}>
-          {/* Stat card 1 */}
-          <div className="stat-drift" style={{
-            position: 'absolute', top: 0, right: 0,
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.09)',
-            borderRadius: 20,
-            padding: '1.5rem',
-            backdropFilter: 'blur(20px)',
-            width: 240,
-            animation: 'stat-float 11s ease-in-out infinite',
+          {/* Cursor hint — invites the spotlight discovery interaction */}
+          <p className="hero-fade" style={{
+            animationDelay: '1.2s',
+            fontSize: '0.68rem',
+            color: 'rgba(255,255,255,0.2)',
+            marginTop: '1.5rem',
+            letterSpacing: '0.08em',
+            fontStyle: 'italic',
           }}>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.5rem', fontWeight: 500, letterSpacing: '0.06em' }}>
-              MONTHLY SAVINGS
-            </div>
-            <div style={{
-              fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.04em',
-              background: 'linear-gradient(135deg,#7C3AED,#3B82F6)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>
-              $8,500<span style={{ fontSize: '1.2rem' }}>/mo</span>
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.4rem' }}>
-              vs. traditional staff
-            </div>
-          </div>
-          {/* Stat card 2 */}
-          <div className="stat-drift" style={{
-            position: 'absolute', bottom: 40, left: 0,
-            background: 'rgba(255,255,255,0.04)',
-            border: '1px solid rgba(255,255,255,0.09)',
-            borderRadius: 20,
-            padding: '1.5rem',
-            backdropFilter: 'blur(20px)',
-            width: 220,
-            animation: 'stat-float 13s ease-in-out infinite',
-            animationDelay: '2.5s',
-          }}>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.45)', marginBottom: '0.5rem', fontWeight: 500, letterSpacing: '0.06em' }}>
-              CALLS CAPTURED
-            </div>
-            <div style={{
-              fontSize: '2.5rem', fontWeight: 900, letterSpacing: '-0.04em',
-              background: 'linear-gradient(135deg,#F472B6,#7C3AED)',
-              WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
-            }}>
-              100%
-            </div>
-            <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.4rem' }}>
-              every call answered
-            </div>
-          </div>
-          {/* Stat card 3 */}
-          <div className="stat-drift" style={{
-            position: 'absolute', top: 140, right: 20,
-            background: 'rgba(124,58,237,0.12)',
-            border: '1px solid rgba(124,58,237,0.25)',
-            borderRadius: 16,
-            padding: '1rem 1.2rem',
-            backdropFilter: 'blur(20px)',
-            animation: 'stat-float 9s ease-in-out infinite',
-            animationDelay: '4.5s',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <div style={{
-                width: 8, height: 8, borderRadius: '50%', background: '#22C55E',
-                boxShadow: '0 0 8px rgba(34,197,94,0.8)',
-                animation: 'pulse-glow 2s ease-in-out infinite',
-              }} />
-              <span style={{ fontSize: '0.8rem', color: '#22C55E', fontWeight: 600 }}>Ava is live</span>
-            </div>
-            <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.55)', marginTop: '0.3rem' }}>
-              Handling calls 24/7
-            </div>
-          </div>
+            ↖ Move your cursor to see what changes when Ava answers
+          </p>
         </div>
       </div>
 
-      {/* Ã¢â€â‚¬Ã¢â€â‚¬ Scroll Indicator Ã¢â€â‚¬Ã¢â€â‚¬ */}
+      {/* ── Scroll Indicator ── */}
       <div style={{
         position: 'absolute',
         bottom: '2.5rem',
         left: '50%',
         transform: 'translateX(-50%)',
-        zIndex: 3,
+        zIndex: 11,
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
@@ -401,11 +448,8 @@ const HeroSection: React.FC<HeroSectionProps> = ({ calendarOpen, setCalendarOpen
           }} />
         </div>
       </div>
-
-      <CalendarDialog open={calendarOpen} setOpen={setCalendarOpen} />
     </section>
   );
 };
 
 export default HeroSection;
-

@@ -81,7 +81,7 @@ const Index = () => {
       />
 
       <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden', paddingTop: 'var(--page-top)' }}>
-        <HeroSection calendarOpen={calendarOpen} setCalendarOpen={setCalendarOpen} />
+        <HeroSection />
         <IntegrationMarquee />
         <AvaComparison />
         <AnimatedStats />

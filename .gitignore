@@ -15,6 +15,10 @@ dist-ssr
 # Landing page is its own separate git repo/deployment
 summitvoiceai-landing/
 
+# Staging folder for landing-page source images (already copied into
+# summitvoiceai-landing/client/public/images/, not needed in this repo)
+summitvoiceai-assets/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

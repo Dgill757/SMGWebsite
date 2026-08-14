@@ -329,7 +329,7 @@ function PortraitCloud({
 // ── GLBPortrait ────────────────────────────────────────────────────────────────
 // Must be rendered inside GLBErrorBoundary + Suspense so failures are caught.
 function GLBPortrait({ isMobile, mouseRef }: { isMobile: boolean; mouseRef: MouseRef }) {
-  const { scene } = useGLTF('/ava-face.glb')
+  const { scene } = useGLTF('/Ava.glb')
 
   const mesh = useMemo((): THREE.Mesh | null => {
     let found: THREE.Mesh | null = null
