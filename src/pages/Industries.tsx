@@ -74,7 +74,7 @@ const Industries = () => {
         "@type": "Service",
         "name": industry.title,
         "description": industry.description,
-        "url": `https://summitaivoice.com${industry.link}`
+        "url": `https://www.summitvoiceai.com${industry.link}`
       }
     }))
   };

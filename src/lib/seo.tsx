@@ -12,22 +12,21 @@ interface SEOProps {
   schema?: object | object[];
 }
 
-const defaultTitle = "SummitVoiceAI - #1 AI Voice Assistant for Service Businesses";
-const defaultDescription = "Transform your service business with SummitVoiceAI's cutting-edge AI voice assistant. Capture every call, qualify leads, and book appointments 24/7 with our advanced voice AI technology.";
+const defaultTitle = "Summit Voice AI — AI Voice Receptionist for Roofing Companies";
+const defaultDescription = "Ava answers every call 24/7, books roofing appointments automatically, and syncs your CRM. Trusted by 42+ roofing companies. $84M+ in client revenue recovered annually. Try Ava free — no credit card required.";
 const defaultKeywords = [
-  "voice AI",
-  "AI receptionist",
-  "AI voice assistant",
-  "virtual receptionist",
-  "AI call answering",
-  "automated scheduling",
-  "lead qualification",
-  "business voice AI",
-  "CRM integration",
-  "24/7 call handling"
+  "ai receptionist for roofing companies",
+  "voice ai roofing",
+  "missed call recovery roofing",
+  "ai call answering roofing",
+  "roofing lead follow up automation",
+  "summit voice ai",
+  "ava ai receptionist",
+  "roofing crm automation",
+  "24/7 roofing receptionist"
 ];
 const defaultOgImage = "/images/og-image.jpg";
-const siteUrl = "https://summitaivoice.com";
+const siteUrl = "https://www.summitvoiceai.com";
 
 export const SEO: React.FC<SEOProps> = ({
   title = defaultTitle,

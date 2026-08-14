@@ -59,23 +59,18 @@ const Index = () => {
   return (
     <>
       <SEO
-        title="SummitVoiceAI - #1 Voice AI for Service Businesses | Best Voice AI Company in United States"
-        description="Transform your service business with SummitVoiceAI's cutting-edge voice AI technology. The best voice AI receptionist automation for service-based businesses. Never miss calls, automate scheduling, qualify leads 24/7. Number one voice AI company in United States."
+        title="Summit Voice AI — AI Voice Receptionist for Roofing Companies"
+        description="Ava answers every call 24/7, books roofing appointments automatically, and syncs your CRM. Trusted by 42+ roofing companies. $84M+ in client revenue recovered annually. Try Ava free — no credit card required."
         keywords={[
-          'voice AI', 'voice AI service-based business', 'best voice AI for businesses',
-          'voice AI receptionist', 'voice AI automation', 'number one voice AI company in United States',
-          'AI voice assistant', 'virtual receptionist', 'voice AI for business', 'AI call answering',
-          'automated scheduling', '24/7 call handling', 'lead qualification AI', 'phone automation',
-          'business voice assistant', 'AI receptionist', 'voice AI technology', 'automated phone system',
-          'AI phone answering service', 'voice automation software', 'intelligent voice assistant',
-          'conversational AI', 'voice AI solutions', 'AI customer service', 'voice recognition AI',
-          'smart phone assistant', 'voice AI platform', 'business phone AI', 'automated call handling',
-          'voice AI integration', 'AI powered receptionist', 'voice AI for service companies',
-          'professional voice AI', 'enterprise voice AI', 'voice AI software', 'AI voice technology',
-          'automated appointment booking', 'voice AI scheduling', 'AI call management',
-          'voice AI lead capture', 'intelligent call routing', 'voice AI analytics', 'AI phone support',
-          'voice AI customer service', 'automated voice response', 'voice AI CRM integration',
-          'AI telephone assistant', 'voice AI for small business', 'commercial voice AI', 'voice AI ROI',
+          'ai receptionist for roofing companies', 'voice ai roofing', 'missed call recovery roofing',
+          'ai call answering roofing', 'roofing lead follow up automation', 'summit voice ai',
+          'ava ai receptionist', 'roofing crm automation', '24/7 roofing receptionist',
+          'pool company ai receptionist', 'lawn care ai answering service', 'hvac ai receptionist',
+          'real estate ai lead response', 'law firm ai receptionist', 'home service business ai',
+          'ai receptionist canada', 'us and canada ai voice agent', 'revenue recovery roofing',
+          'roofing appointment booking ai', 'service business automation',
+          'estimate follow up automation', 'database reactivation roofing',
+          'google review automation roofing', 'voice AI', 'AI receptionist', 'virtual receptionist',
         ]}
         schema={[getOrganizationSchema(), getFAQSchema(faqs)]}
       />
