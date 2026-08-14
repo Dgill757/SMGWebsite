@@ -77,6 +77,7 @@ const Articles: React.FC = () => {
                     <img
                       src={article.thumbnail}
                       alt={article.title}
+                      loading="lazy"
                       className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   </div>

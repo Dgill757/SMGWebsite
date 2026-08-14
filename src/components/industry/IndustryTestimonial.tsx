@@ -48,9 +48,10 @@ const IndustryTestimonial = ({
               
               <div className="absolute inset-0 flex flex-col justify-center items-center p-8 text-white text-center">
                 <div className="w-24 h-24 rounded-full border-4 border-white/30 overflow-hidden mb-4">
-                  <img 
-                    src={image} 
+                  <img
+                    src={image}
                     alt={name}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                   />
                 </div>

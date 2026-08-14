@@ -1,18 +1,11 @@
-import React, { lazy, Suspense, useState, useEffect, useRef, useCallback } from 'react';
-
-// Lazy-loaded so the Three.js bundle is code-split and only evaluated in the
-// browser — the Vite equivalent of Next.js `dynamic(() => import(...), { ssr: false })`.
-const AvaParticleHero = lazy(() => import('./ava/AvaParticleHero'));
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { AvaWaveform } from '@/components/AvaWaveform';
 
 const SPOTLIGHT_R = 240;
 
 const HeroSection: React.FC = () => {
   const [scrollProgress, setScrollProgress] = useState(0);
   const heroRef      = useRef<HTMLDivElement>(null);
-  const highlightRef = useRef<HTMLDivElement>(null);
-  const cursorRef    = useRef({ x: 0.5, y: 0.5 });
-  const lerpRef      = useRef({ x: 0.5, y: 0.5 });
-  const rafCursorRef = useRef(0);
 
   // ── Cursor spotlight reveal state (cyan "Ava answered" world beneath cursor) ──
   const canvasRef  = useRef<HTMLCanvasElement>(null);
@@ -87,41 +80,7 @@ const HeroSection: React.FC = () => {
     };
   }, [sizeCanvas, spotlightTick]);
 
-  // Cursor-follow parallax highlight over Ava face region (existing particle system)
-  useEffect(() => {
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (reduced) return;
-
-    const onMove = (e: MouseEvent) => {
-      cursorRef.current = {
-        x: e.clientX / window.innerWidth,
-        y: e.clientY / window.innerHeight,
-      };
-    };
-    window.addEventListener('mousemove', onMove, { passive: true });
-
-    const tick = () => {
-      const LERP = 0.055;
-      lerpRef.current.x += (cursorRef.current.x - lerpRef.current.x) * LERP;
-      lerpRef.current.y += (cursorRef.current.y - lerpRef.current.y) * LERP;
-      if (highlightRef.current) {
-        const MAX = 9; // max px translate
-        const tx = (lerpRef.current.x - 0.5) * MAX * 2;
-        const ty = (lerpRef.current.y - 0.5) * MAX * 2;
-        highlightRef.current.style.transform =
-          `translate(calc(-50% + ${tx.toFixed(2)}px), calc(-50% + ${ty.toFixed(2)}px))`;
-      }
-      rafCursorRef.current = requestAnimationFrame(tick);
-    };
-    rafCursorRef.current = requestAnimationFrame(tick);
-
-    return () => {
-      cancelAnimationFrame(rafCursorRef.current);
-      window.removeEventListener('mousemove', onMove);
-    };
-  }, []);
-
-  // Track scroll to dissolve Ava as section leaves viewport (existing particle system)
+  // Track scroll to fade the scroll indicator as the section leaves viewport
   useEffect(() => {
     const handleScroll = () => {
       if (!heroRef.current) return;
@@ -164,59 +123,10 @@ const HeroSection: React.FC = () => {
         paddingBottom: 0,
       }}
     >
-      {/* Ambient glow behind Ava — breathing glow tied to hero-breathe animation */}
-      <div
-        className="hero-glow-breathe"
-        style={{
-          position: 'absolute',
-          inset: 0,
-          zIndex: 0,
-          background: [
-            'radial-gradient(ellipse 45% 65% at 68% 48%, rgba(0,220,255,0.13) 0%, transparent 70%)',
-            'radial-gradient(ellipse 26% 38% at 66% 45%, rgba(0,180,255,0.09) 0%, transparent 55%)',
-            'radial-gradient(ellipse 20% 30% at 70% 52%, rgba(0,220,255,0.07) 0%, transparent 60%)',
-          ].join(', '),
-          pointerEvents: 'none',
-          animation: 'hero-breathe 9s ease-in-out infinite',
-        }}
-      />
+      {/* ── Ava — abstract voice waveform, pure canvas, no Three.js ── */}
+      <AvaWaveform />
 
-      {/* ── Ava Particle Canvas (full-section overlay, pointer-events none on canvas) ── */}
-      <div style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 1,
-        opacity: 1 - scrollProgress * 0.8,
-        transition: 'opacity 0.1s linear',
-        pointerEvents: scrollProgress > 0.5 ? 'none' : 'auto',
-      }}>
-        <Suspense fallback={<div style={{ width: '100%', height: '100%', background: '#000' }} />}>
-          <AvaParticleHero
-            scrollProgress={scrollProgress}
-            className="w-full h-full"
-          />
-        </Suspense>
-
-        {/* Cursor-follow highlight — radial glow that lerps toward mouse over Ava face */}
-        <div
-          ref={highlightRef}
-          aria-hidden="true"
-          style={{
-            position: 'absolute',
-            top: '44%',
-            left: '67%',
-            width: 340,
-            height: 340,
-            borderRadius: '50%',
-            background: 'radial-gradient(circle, rgba(0,217,255,0.10) 0%, rgba(0,217,255,0.03) 45%, transparent 68%)',
-            transform: 'translate(-50%, -50%)',
-            pointerEvents: 'none',
-            willChange: 'transform',
-          }}
-        />
-      </div>
-
-      {/* Text protection gradient — dark-left fade so particles don't bleed into copy */}
+      {/* Text protection gradient — dark-left fade so waveform doesn't bleed into copy */}
       <div style={{
         position: 'absolute',
         inset: 0,
@@ -415,7 +325,7 @@ const HeroSection: React.FC = () => {
             letterSpacing: '0.08em',
             fontStyle: 'italic',
           }}>
-            ↖ Move your cursor to see what changes when Ava answers
+            ↖ Move your cursor through the wave — watch Ava's signal respond
           </p>
         </div>
       </div>

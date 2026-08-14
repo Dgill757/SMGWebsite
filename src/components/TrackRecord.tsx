@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { TrackRecordParticles } from '@/components/TrackRecordParticles';
 
 function FadeUp({ children, delay = 0, className = '' }: {
   children: React.ReactNode; delay?: number; className?: string;
@@ -59,12 +60,14 @@ export function TrackRecord() {
   return (
     <section
       style={{
+        position: 'relative',
         padding: '80px 24px',
         borderTop: '1px solid rgba(0,217,255,0.07)',
         background: 'linear-gradient(180deg, rgba(0,217,255,0.025) 0%, transparent 100%)',
       }}
     >
-      <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
+      <TrackRecordParticles />
+      <div style={{ position: 'relative', zIndex: 1, maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
         <p
           style={{
             fontSize: '0.7rem',

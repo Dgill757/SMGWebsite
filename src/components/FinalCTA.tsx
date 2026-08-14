@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
+import { FinalCTAShader } from '@/components/FinalCTAShader';
 
 function FadeUp({ children, delay = 0, className = '' }: {
   children: React.ReactNode; delay?: number; className?: string;
@@ -36,6 +37,7 @@ export function FinalCTA() {
         borderTop: '1px solid rgba(255,255,255,0.05)',
       }}
     >
+      <FinalCTAShader />
       <div
         style={{
           position: 'absolute',

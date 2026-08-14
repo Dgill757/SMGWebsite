@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense, lazy } from 'react';
 import { useLocation } from 'react-router-dom';
 import HeroSection from '@/components/HeroSection';
 import RevenueSection from '@/components/RevenueSection';
@@ -7,7 +7,6 @@ import UseCases from '@/components/UseCases';
 import TestimonialsSection from '@/components/TestimonialsSection';
 import MissedCallCalculator from '@/components/ROICalculator';
 import HowAvaWorks from '@/components/HowAvaWorks';
-import DemoCallsSection from '@/components/DemoCallsSection';
 import PricingSection from '@/components/PricingSection';
 import FAQSection from '@/components/FAQSection';
 import CalendarDialog from '@/components/CalendarDialog';
@@ -16,9 +15,16 @@ import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 import { IntegrationMarquee } from '@/components/IntegrationMarquee';
 import { AvaComparison } from '@/components/AvaComparison';
-import { AnimatedStats } from '@/components/AnimatedStats';
-import { RoofingTestimonials } from '@/components/RoofingTestimonials';
-import { TrackRecord } from '@/components/TrackRecord';
+import { VoxelDivider } from '@/components/VoxelDivider';
+
+// Below-the-fold, non-critical sections — code-split so they don't block
+// initial render/hydration of the hero and above-the-fold content.
+const AnimatedStats = lazy(() => import('@/components/AnimatedStats').then(m => ({ default: m.AnimatedStats })));
+const TrackRecord = lazy(() => import('@/components/TrackRecord').then(m => ({ default: m.TrackRecord })));
+const RoofingTestimonials = lazy(() => import('@/components/RoofingTestimonials').then(m => ({ default: m.RoofingTestimonials })));
+const DemoCallsSection = lazy(() => import('@/components/DemoCallsSection'));
+
+const SectionFallback = () => <div style={{ height: 400 }} />;
 
 const Index = () => {
   const location = useLocation();
@@ -77,10 +83,15 @@ const Index = () => {
 
       <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden', paddingTop: 'var(--page-top)' }}>
         <HeroSection />
+        <VoxelDivider />
         <IntegrationMarquee />
         <AvaComparison />
-        <AnimatedStats />
-        <TrackRecord />
+        <Suspense fallback={<SectionFallback />}>
+          <AnimatedStats />
+        </Suspense>
+        <Suspense fallback={<SectionFallback />}>
+          <TrackRecord />
+        </Suspense>
         <Widget />
         <RevenueSection />
         <HowItWorks />
@@ -89,9 +100,13 @@ const Index = () => {
           <HowAvaWorks />
         </SectionErrorBoundary>
         <SectionErrorBoundary label="DemoCallsSection">
-          <DemoCallsSection />
+          <Suspense fallback={<SectionFallback />}>
+            <DemoCallsSection />
+          </Suspense>
         </SectionErrorBoundary>
-        <RoofingTestimonials />
+        <Suspense fallback={<SectionFallback />}>
+          <RoofingTestimonials />
+        </Suspense>
         <TestimonialsSection />
         <MissedCallCalculator />
         <PricingSection onOpenCalendar={() => setCalendarOpen(true)} />

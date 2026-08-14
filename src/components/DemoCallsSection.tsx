@@ -28,13 +28,13 @@ const VIDEOS = [
   },
 ];
 
-function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
+function useInView(ref: React.RefObject<Element>, threshold = 0.1, rootMargin = '0px') {
   const [inView, setInView] = useState(false);
   useEffect(() => {
     const el = ref.current; if (!el) return;
-    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold });
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setInView(true); obs.disconnect(); } }, { threshold, rootMargin });
     obs.observe(el); return () => obs.disconnect();
-  }, [ref, threshold]);
+  }, [ref, threshold, rootMargin]);
   return inView;
 }
 
@@ -69,20 +69,39 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, tag, accent, delay, i
         willChange: 'transform',
       }}
     >
-      {/* 16:9 Local Video */}
+      {/* 16:9 Local Video — not mounted with a src until the section scrolls near viewport,
+          so none of the 4 large demo files are fetched on initial page load */}
       <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#000' }}>
-        <video
-          src={`${src}#t=0.1`}
-          title={title}
-          controls
-          preload="metadata"
-          playsInline
-          style={{
-            position: 'absolute', top: 0, left: 0,
-            width: '100%', height: '100%',
-            objectFit: 'cover',
-          }}
-        />
+        {inView ? (
+          <video
+            src={`${src}#t=0.1`}
+            title={title}
+            controls
+            preload="none"
+            playsInline
+            style={{
+              position: 'absolute', top: 0, left: 0,
+              width: '100%', height: '100%',
+              objectFit: 'cover',
+            }}
+          />
+        ) : (
+          <div style={{
+            position: 'absolute', inset: 0,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            background: '#000',
+          }}>
+            <div style={{
+              width: 54, height: 54, borderRadius: '50%',
+              background: `${accent}18`, border: `1px solid ${accent}35`,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill={accent}>
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Card footer */}
@@ -120,7 +139,7 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, tag, accent, delay, i
 // ── Main section ─────────────────────────────────────────────────────────────
 const DemoCallsSection: React.FC = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
-  const inView = useInView(sectionRef);
+  const inView = useInView(sectionRef, 0.1, '200px');
 
   return (
     <section
