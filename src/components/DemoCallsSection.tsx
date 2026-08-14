@@ -4,24 +4,28 @@ import React, { useRef, useEffect, useState } from 'react';
 const VIDEOS = [
   {
     src: '/Demo-videos/Roofing-Demo-compressed.mp4',
+    poster: '/Demo-videos/Roofing-Demo-poster.jpg',
     title: 'AI Roofing Demo',
     tag: 'Home Services',
     accent: '#F472B6',
   },
   {
     src: '/Demo-videos/Deck-Landscaping-demo-compressed.mp4',
+    poster: '/Demo-videos/Deck-Landscaping-demo-poster.jpg',
     title: 'AI Deck & Landscaping Demo',
     tag: 'Home Services',
     accent: '#7C3AED',
   },
   {
     src: '/Demo-videos/Pool-Demo-compressed.mp4',
+    poster: '/Demo-videos/Pool-Demo-poster.jpg',
     title: 'AI Pool Demo',
     tag: 'Home Services',
     accent: '#FBBF24',
   },
   {
     src: '/Demo-videos/Real-Estate-Demo-compressed.mp4',
+    poster: '/Demo-videos/Real-Estate-Demo-poster.jpg',
     title: 'AI Realtor Demo',
     tag: 'Real Estate',
     accent: '#00D9FF',
@@ -40,6 +44,7 @@ function useInView(ref: React.RefObject<Element>, threshold = 0.1, rootMargin = 
 
 interface VideoCardProps {
   src: string;
+  poster: string;
   title: string;
   tag: string;
   accent: string;
@@ -47,7 +52,7 @@ interface VideoCardProps {
   inView: boolean;
 }
 
-const VideoCard: React.FC<VideoCardProps> = ({ src, title, tag, accent, delay, inView }) => {
+const VideoCard: React.FC<VideoCardProps> = ({ src, poster, title, tag, accent, delay, inView }) => {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -69,12 +74,15 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, tag, accent, delay, i
         willChange: 'transform',
       }}
     >
-      {/* 16:9 Local Video — not mounted with a src until the section scrolls near viewport,
-          so none of the 4 large demo files are fetched on initial page load */}
+      {/* 16:9 Local Video — the poster thumbnail (a small JPG) shows immediately;
+          the actual <video> isn't mounted with a src until the section scrolls
+          near viewport, so none of the 4 large demo files are fetched on initial
+          page load. The poster attribute also means no black flash once it mounts. */}
       <div style={{ position: 'relative', paddingBottom: '56.25%', background: '#000' }}>
         {inView ? (
           <video
             src={`${src}#t=0.1`}
+            poster={poster}
             title={title}
             controls
             preload="none"
@@ -89,14 +97,26 @@ const VideoCard: React.FC<VideoCardProps> = ({ src, title, tag, accent, delay, i
           <div style={{
             position: 'absolute', inset: 0,
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            background: '#000',
           }}>
+            <img
+              src={poster}
+              alt={title}
+              loading="lazy"
+              style={{
+                position: 'absolute', inset: 0,
+                width: '100%', height: '100%',
+                objectFit: 'cover',
+              }}
+            />
             <div style={{
+              position: 'relative',
               width: 54, height: 54, borderRadius: '50%',
-              background: `${accent}18`, border: `1px solid ${accent}35`,
+              background: `${accent}33`,
+              backdropFilter: 'blur(4px)',
+              border: `1px solid ${accent}60`,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill={accent}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff">
                 <polygon points="5 3 19 12 5 21 5 3"/>
               </svg>
             </div>
