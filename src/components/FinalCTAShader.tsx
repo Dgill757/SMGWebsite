@@ -44,6 +44,7 @@ export function FinalCTAShader() {
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     let raf = 0;
+    let visible = false;
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio||1,1.5);
@@ -85,20 +86,32 @@ export function FinalCTAShader() {
       gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     };
 
-    if (reduced) {
-      // Render a single static frame instead of a continuous animation loop
-      renderFrame(0);
-    } else {
-      const tick = (now: number) => {
-        renderFrame(now);
-        raf = requestAnimationFrame(tick);
-      };
-      raf = requestAnimationFrame(tick);
-    }
+    const tick = (now: number) => {
+      renderFrame(now);
+      if (visible && !reduced) raf = requestAnimationFrame(tick);
+    };
+
+    // The shader sits at the very bottom of a long page — only spend GPU/CPU
+    // on it while it's actually scrolled into view, not from initial mount.
+    const io = new IntersectionObserver(([entry]) => {
+      const wasVisible = visible;
+      visible = entry.isIntersecting;
+      if (visible && !wasVisible) {
+        if (reduced) {
+          renderFrame(0);
+        } else {
+          raf = requestAnimationFrame(tick);
+        }
+      } else if (!visible) {
+        cancelAnimationFrame(raf);
+      }
+    }, { rootMargin: '200px' });
+    io.observe(canvas);
 
     return () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(raf);
+      io.disconnect();
       gl.deleteProgram(prog);
     };
   }, []);

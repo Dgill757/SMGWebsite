@@ -81,6 +81,7 @@ export function AvaWaveform() {
     if (!canvas || !container) return;
 
     const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let visible = false;
 
     resize();
     const obs = new ResizeObserver(resize);
@@ -151,13 +152,25 @@ export function AvaWaveform() {
       ctx.lineWidth   = 1;
       ctx.stroke();
 
-      rafRef.current = requestAnimationFrame(tick);
+      if (visible) rafRef.current = requestAnimationFrame(tick);
     };
 
-    rafRef.current = requestAnimationFrame(tick);
+    // Hero scrolls out of view on a long homepage — stop the 5-wave sine
+    // computation (5 * ~600 points every frame) once it's no longer visible.
+    const io = new IntersectionObserver(([entry]) => {
+      const wasVisible = visible;
+      visible = entry.isIntersecting;
+      if (visible && !wasVisible) {
+        rafRef.current = requestAnimationFrame(tick);
+      } else if (!visible) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    }, { rootMargin: '150px' });
+    io.observe(container);
 
     return () => {
       obs.disconnect();
+      io.disconnect();
       container.removeEventListener('mousemove', onMove);
       container.removeEventListener('mouseleave', onLeave);
       cancelAnimationFrame(rafRef.current);

@@ -10,6 +10,7 @@ export function TrackRecordParticles() {
     if (!ctx) return;
 
     let raf = 0;
+    let visible = false;
     const mouse = { x: -999, y: -999 };
 
     class Particle {
@@ -86,14 +87,24 @@ export function TrackRecordParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach(p => { p.update(); p.draw(); });
       connect();
-      raf = requestAnimationFrame(animate);
+      if (visible) raf = requestAnimationFrame(animate);
     };
-    animate();
+
+    // O(n^2) connect() pass is real work every frame — only pay for it while
+    // this section is actually on screen, not from the moment it mounts.
+    const io = new IntersectionObserver(([entry]) => {
+      const wasVisible = visible;
+      visible = entry.isIntersecting;
+      if (visible && !wasVisible) animate();
+      else if (!visible) cancelAnimationFrame(raf);
+    }, { rootMargin: '150px' });
+    io.observe(canvas);
 
     return () => {
       canvas.removeEventListener('mousemove', onMove);
       canvas.removeEventListener('mouseleave', onLeave);
       window.removeEventListener('resize', resize);
+      io.disconnect();
       cancelAnimationFrame(raf);
     };
   }, []);
