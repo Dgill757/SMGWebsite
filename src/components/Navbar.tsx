@@ -56,8 +56,8 @@ const Navbar: React.FC = () => {
           <img
             src="/assets/summitvoiceai-logo-gradient.png"
             alt="SummitVoiceAI"
-            width={1070}
-            height={260}
+            width={420}
+            height={102}
             loading="eager"
             decoding="async"
             className="logo-gradient"
