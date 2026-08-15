@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 function FloatingPaths({ position }: { position: number }) {
-  const paths = Array.from({ length: 28 }, (_, i) => ({
+  const paths = Array.from({ length: 10 }, (_, i) => ({
     id: i,
     d: `M-${380-i*5*position} -${189+i*6}C-${380-i*5*position} -${189+i*6} -${312-i*5*position} ${216-i*6} ${152-i*5*position} ${343-i*6}C${616-i*5*position} ${470-i*6} ${684-i*5*position} ${875-i*6} ${684-i*5*position} ${875-i*6}`,
     width: 0.4 + i * 0.025,

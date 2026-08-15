@@ -1,5 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { PricingPaths } from '@/components/PricingPaths';
 
 interface PricingSectionProps { onOpenCalendar: () => void; }
 
@@ -85,7 +84,6 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
     <section ref={sectionRef} id="pricing"
       style={{ position: 'relative', background: '#07070A', padding: '7rem 0', overflow: 'hidden' }}
     >
-      <PricingPaths />
       <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
         <div style={{ position: 'absolute', width: 800, height: 600, top: '50%', left: '50%', transform: 'translate(-50%,-55%)', background: 'radial-gradient(ellipse, rgba(124,58,237,0.07) 0%, transparent 60%)' }} />
       </div>

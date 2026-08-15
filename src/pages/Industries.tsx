@@ -5,7 +5,6 @@ import { Wrench, Home, Building2, Scale, Car, Calculator, Scissors, Headphones, 
 import { Link } from 'react-router-dom';
 import { SEO, getOrganizationSchema } from '@/lib/seo';
 import { getIndustryName } from '@/data/industryStats';
-import { PricingPaths } from '@/components/PricingPaths';
 
 function FadeUp({ children, delay = 0, className = '' }: {
   children: React.ReactNode; delay?: number; className?: string;
@@ -132,7 +131,6 @@ const Industries = () => {
         </div>
 
         <section className="py-20 bg-background" style={{ position: 'relative', overflow: 'hidden' }}>
-          <PricingPaths />
           <div className="container mx-auto px-4" style={{ position: 'relative' }}>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {industries.map((industry, index) => (
