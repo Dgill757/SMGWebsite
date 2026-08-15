@@ -15,7 +15,6 @@ import SectionErrorBoundary from '@/components/SectionErrorBoundary';
 import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
 import { IntegrationMarquee } from '@/components/IntegrationMarquee';
 import { AvaComparison } from '@/components/AvaComparison';
-import { VoxelDivider } from '@/components/VoxelDivider';
 
 // Below-the-fold, non-critical sections — code-split so they don't block
 // initial render/hydration of the hero and above-the-fold content.
@@ -83,7 +82,6 @@ const Index = () => {
 
       <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden', paddingTop: 'var(--page-top)' }}>
         <HeroSection />
-        <VoxelDivider />
         <IntegrationMarquee />
         <AvaComparison />
         <Suspense fallback={<SectionFallback />}>
