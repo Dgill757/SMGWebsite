@@ -131,7 +131,7 @@ export default {
 			},
 			backgroundImage: {
 				'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-				'neural-pattern': 'url("/neural-pattern.svg")',
+					'neural-pattern': 'radial-gradient(circle at 1px 1px, rgba(255,255,255,.18) 1px, transparent 0)',
 				'hero-gradient': 'linear-gradient(90deg, #7C3AED 0%, #3B82F6 50%, #F472B6 100%)',
 			}
 		}

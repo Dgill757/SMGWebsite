@@ -25,7 +25,7 @@ const defaultKeywords = [
   "roofing crm automation",
   "24/7 roofing receptionist"
 ];
-const defaultOgImage = "/images/og-image.jpg";
+const defaultOgImage = "/assets/summitvoiceai-logo-gradient.png";
 const siteUrl = "https://www.summitvoiceai.com";
 
 export const SEO: React.FC<SEOProps> = ({
