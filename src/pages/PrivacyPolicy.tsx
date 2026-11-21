@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Link } from 'react-router-dom';
 import PolicyLayout from '@/components/PolicyLayout';
 
 const PrivacyPolicy: React.FC = () => {
@@ -56,7 +57,22 @@ const PrivacyPolicy: React.FC = () => {
         We may utilize third-party AI models strictly for processing tasks initiated by you (e.g., voice transcriptions or chatbot logic). These services do not retain or reuse your data beyond each request. We do not sell, rent, or share your information with any third parties for advertising or marketing.
       </p>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">5. Your Rights</h2>
+      <h2 className="text-2xl font-semibold mt-8 mb-4">5. Text Messages (SMS)</h2>
+      <p className="mb-4">
+        We send text messages only to people who agreed to receive them, or who texted or called us first and asked for a reply. The types of messages and the full program terms are in our{' '}
+        <Link to="/sms-terms" className="hover:underline" style={{ color: '#00D9FF' }}>SMS Terms</Link>.
+      </p>
+      <p className="mb-4">
+        Consent to texts is not a condition of buying anything from us. Message frequency varies. Message and data rates may apply. You can stop texts at any time by replying STOP, and get help by replying HELP.
+      </p>
+      <p className="mb-4">
+        <strong>Mobile information will not be shared with third parties or affiliates for marketing or promotional purposes.</strong> Text messaging originator opt-in data and consent will not be shared with any third parties. We use service providers, such as our messaging platform and phone carriers, only to deliver messages and support the program.
+      </p>
+      <p className="mb-6">
+        When you check the text message box on a form, we keep a record of your consent: the time, the page, the wording shown, your phone number and your IP address. We keep your opt-out history so we can honor it.
+      </p>
+
+      <h2 className="text-2xl font-semibold mt-8 mb-4">6. Your Rights</h2>
       <p className="mb-4">
         You are in control of your data. You may:
       </p>
@@ -67,12 +83,12 @@ const PrivacyPolicy: React.FC = () => {
         <li>Request complete deletion of your stored data if no longer using our services.</li>
       </ul>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">6. Updates to This Policy</h2>
+      <h2 className="text-2xl font-semibold mt-8 mb-4">7. Updates to This Policy</h2>
       <p className="mb-6">
         We may occasionally update this Privacy Policy to reflect changes in our operations or legal requirements. When we do, we'll post the updates on our website and notify you directly when necessary.
       </p>
       
-      <h2 className="text-2xl font-semibold mt-8 mb-4">7. Contact Us</h2>
+      <h2 className="text-2xl font-semibold mt-8 mb-4">8. Contact Us</h2>
       <p className="mb-4">
         Have questions or need to make a request?
       </p>
