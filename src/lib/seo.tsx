@@ -1,6 +1,9 @@
 
 import React from 'react';
 import { Helmet } from 'react-helmet-async';
+import { useLocation } from 'react-router-dom';
+import { COMPANY } from '@/data/company';
+import { ROUTE_META, SITE_URL } from '@/data/seoRoutes';
 
 interface SEOProps {
   title?: string;
@@ -12,8 +15,8 @@ interface SEOProps {
   schema?: object | object[];
 }
 
-const defaultTitle = "Summit Voice AI — AI Voice Receptionist for Roofing Companies";
-const defaultDescription = "Ava answers every call 24/7, books roofing appointments automatically, and syncs your CRM. Trusted by 42+ roofing companies. $84M+ in client revenue recovered annually. Try Ava free — no credit card required.";
+const defaultTitle = ROUTE_META['/'].title;
+const defaultDescription = ROUTE_META['/'].description;
 const defaultKeywords = [
   "ai receptionist for roofing companies",
   "voice ai roofing",
@@ -25,23 +28,26 @@ const defaultKeywords = [
   "roofing crm automation",
   "24/7 roofing receptionist"
 ];
-const defaultOgImage = "/assets/summitvoiceai-logo-gradient.png";
-const siteUrl = "https://www.summitvoiceai.com";
+const defaultOgImage = "/lovable-uploads/c99219ee-c2be-4e58-a89a-ddb88e9a7695.png";
+const siteUrl = SITE_URL;
 
 export const SEO: React.FC<SEOProps> = ({
   title = defaultTitle,
   description = defaultDescription,
   keywords = defaultKeywords,
   ogImage = defaultOgImage,
-  canonical = "",
+  canonical,
   noIndex = false,
   schema
 }) => {
+  const { pathname } = useLocation();
   const metaTitle = title;
   const metaDescription = description;
   const metaKeywords = keywords.join(", ");
   const metaOgImage = ogImage.startsWith('http') ? ogImage : `${siteUrl}${ogImage.startsWith('/') ? '' : '/'}${ogImage}`;
-  const canonicalUrl = canonical ? `${siteUrl}${canonical.startsWith('/') ? '' : '/'}${canonical}` : siteUrl;
+  const canonicalPath = canonical ?? pathname;
+  const trimmedPath = canonicalPath.replace(/\/+$/, '');
+  const canonicalUrl = trimmedPath ? `${siteUrl}${trimmedPath.startsWith('/') ? '' : '/'}${trimmedPath}` : siteUrl;
   
   // Handle schema being either a single object or an array of objects
   const schemaArray = schema ? (Array.isArray(schema) ? schema : [schema]) : [];
@@ -73,9 +79,6 @@ export const SEO: React.FC<SEOProps> = ({
       {/* Robots */}
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
       
-      {/* Version Tag */}
-      <meta name="version" content="v10.0.0" />
-      
       {/* Schema.org JSON-LD */}
       {schemaArray.map((schemaObj, index) => (
         <script 
@@ -87,10 +90,6 @@ export const SEO: React.FC<SEOProps> = ({
         />
       ))}
       
-      {/* HTML Comment for Version */}
-      <script type="application/comment">
-        {/* Powered by SummitVoiceAI v10.0.0 */}
-      </script>
     </Helmet>
   );
 };
@@ -100,9 +99,11 @@ export const getOrganizationSchema = () => {
   return {
     "@context": "https://schema.org",
     "@type": "Organization",
-    "name": "SummitVoiceAI",
+    "@id": `${siteUrl}/#organization`,
+    "name": "Summit Voice AI",
+    "alternateName": "SummitVoiceAI",
     "url": siteUrl,
-    "logo": `${siteUrl}/images/logo.png`,
+    "logo": `${siteUrl}/lovable-uploads/c99219ee-c2be-4e58-a89a-ddb88e9a7695.png`,
     "sameAs": [
       "https://www.facebook.com/daniel.gill.iii",
       "https://x.com/SMG_Biz_Growth",
@@ -111,11 +112,36 @@ export const getOrganizationSchema = () => {
     ],
     "contactPoint": {
       "@type": "ContactPoint",
-      "telephone": "+12404740668",
+      "telephone": "+17573295913",
+      "email": COMPANY.supportEmail,
       "contactType": "customer service",
       "availableLanguage": ["English"]
     },
-    "description": "SummitVoiceAI provides AI voice assistant solutions for service businesses, handling calls, scheduling appointments, and qualifying leads 24/7."
+    "description": "Summit Voice AI builds AI call answering and lead follow-up for roofing and home service contractors."
+  };
+};
+
+// LocalBusiness (ProfessionalService) schema. Address and phone come from COMPANY and need Dan's confirmation.
+export const getLocalBusinessSchema = () => {
+  return {
+    "@context": "https://schema.org",
+    "@type": "ProfessionalService",
+    "@id": `${siteUrl}/#localbusiness`,
+    "name": "Summit Voice AI",
+    "url": siteUrl,
+    "image": `${siteUrl}/lovable-uploads/c99219ee-c2be-4e58-a89a-ddb88e9a7695.png`,
+    "telephone": "+17573295913",
+    "email": COMPANY.supportEmail,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "12410 Milestone Center Drive #600",
+      "addressLocality": "Germantown",
+      "addressRegion": "MD",
+      "postalCode": "20876",
+      "addressCountry": "US"
+    },
+    "areaServed": { "@type": "Country", "name": "United States" },
+    "description": "AI call answering and lead follow-up for roofing and home service contractors."
   };
 };
 
@@ -133,11 +159,10 @@ export const getServiceSchema = (
     "description": description,
     "provider": {
       "@type": "Organization",
-      "name": "SummitVoiceAI",
+      "name": "Summit Voice AI",
       "url": siteUrl
     },
     "url": `${siteUrl}/industries/${industryName.toLowerCase().replace(/\s+/g, '-')}`,
-    "image": `${siteUrl}/images/industries/${industryName.toLowerCase().replace(/\s+/g, '-')}.jpg`,
     "areaServed": {
       "@type": "Country",
       "name": areaName

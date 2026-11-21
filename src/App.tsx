@@ -19,15 +19,26 @@ const TermsOfService = lazy(() => import("./pages/TermsOfService"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const CookiePolicy = lazy(() => import("./pages/CookiePolicy"));
 const GDPRCompliance = lazy(() => import("./pages/GDPRCompliance"));
+const SmsTerms = lazy(() => import("./pages/SmsTerms"));
+const VerticalLanding = lazy(() => import("./pages/VerticalLanding"));
+const FreeWebsitePreview = lazy(() => import("./pages/FreeWebsitePreview"));
+const RevenueLeakAudit = lazy(() => import("./pages/RevenueLeakAudit"));
 import Footer from "./components/Footer";
 import { FinalCTA } from "./components/FinalCTA";
 import GlobalAtmosphere from "./components/ui/GlobalAtmosphere";
 import AmbientBackground from "./components/AmbientBackground";
+import LeadDialogProvider from "./components/leads/LeadDialogProvider";
+import { captureAttribution } from "./lib/attribution";
 
 // ScrollToTop component to ensure proper scrolling behavior
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
   const navigate = useNavigate();
+
+  // Record UTM, click ids, referrer and landing page for lead attribution.
+  useEffect(() => {
+    captureAttribution();
+  }, [pathname]);
 
   useEffect(() => {
     // If there's no hash, scroll to the top
@@ -122,6 +133,7 @@ const App = () => {
         <Toaster />
         <Sonner />
         <BrowserRouter>
+          <LeadDialogProvider>
           <GlobalAtmosphere />
           <div className="bg-drift-layer" aria-hidden="true" />
           <div className="min-h-screen text-foreground overflow-x-hidden">
@@ -139,6 +151,10 @@ const App = () => {
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/cookie-policy" element={<CookiePolicy />} />
                 <Route path="/gdpr-compliance" element={<GDPRCompliance />} />
+                <Route path="/sms-terms" element={<SmsTerms />} />
+                <Route path="/for/:vertical" element={<VerticalLanding />} />
+                <Route path="/free-website-preview" element={<FreeWebsitePreview />} />
+                <Route path="/revenue-leak-audit" element={<RevenueLeakAudit />} />
                 {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -146,6 +162,7 @@ const App = () => {
             <HomeFinalCTA />
             <Footer />
           </div>
+          </LeadDialogProvider>
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>
