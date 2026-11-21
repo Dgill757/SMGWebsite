@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 import { Building2, Home, Scale, Car, Calculator, Scissors, Headphones, Wrench, ChevronDown, ArrowRight, DollarSign, Users, Clock, BarChart } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -1865,9 +1866,9 @@ const IndustryPage = () => {
                 </p>
                 
                 <div className="pt-4 flex flex-wrap gap-4">
-                  <a href="https://calendly.com/aivoice/call" target="_blank" rel="noreferrer noopener" className="btn-primary" style={{ textDecoration: 'none' }}>
+                  <LeadCtaLink form={`industry-${industrySlug}`} className="btn-primary" style={{ textDecoration: 'none' }}>
                     Get Started
-                  </a>
+                  </LeadCtaLink>
                   <button onClick={scrollToCalculator} className="btn-secondary">
                     Calculate ROI
                   </button>

@@ -6,6 +6,7 @@ import { getArticleBySlug } from '@/data/articles';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import RawHtmlBlock from '@/components/RawHtmlBlock';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 import {
   Breadcrumb,
   BreadcrumbList,
@@ -486,15 +487,14 @@ const ArticleDetail: React.FC = () => {
                 variant="secondary"
                 className="text-lg px-10 py-4 font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300"
               >
-                <a
-                  href={article.cta_calendly_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <LeadCtaLink
+                  form="article-book-demo"
+                  bookingKind="demo"
                   className="inline-flex items-center"
                 >
                   Book Your Free Demo
                   <ExternalLink className="w-5 h-5 ml-2" />
-                </a>
+                </LeadCtaLink>
               </Button>
             </div>
           </div>
@@ -711,14 +711,13 @@ const ArticleDetail: React.FC = () => {
                 >
                   Calculate ROI
                 </button>
-                <a 
-                  href={article.cta_calendly_url} 
-                  target="_blank" 
-                  rel="noopener"
+                <LeadCtaLink 
+                  form="article-roi-review"
+                  bookingKind="demo"
                   className="w-full sm:w-auto inline-flex justify-center items-center px-6 py-3 rounded-lg font-semibold border border-border text-foreground hover:border-foreground"
                 >
                   Book a 15-Minute ROI Review
-                </a>
+                </LeadCtaLink>
               </div>
 
               {/* Chart + Summary */}

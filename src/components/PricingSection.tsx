@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 
 interface PricingSectionProps { onOpenCalendar: () => void; }
 
@@ -160,10 +161,8 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
                 </p>
 
                 {/* CTA */}
-                <a
-                  href="https://calendly.com/aivoice/call"
-                  target="_blank"
-                  rel="noreferrer noopener"
+                <LeadCtaLink
+                  form={`pricing-${tier.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
                   style={{
                     display: 'block', width: '100%', padding: '0.85rem', borderRadius: 12, cursor: 'pointer',
                     fontSize: '0.9rem', fontWeight: 700, transition: 'all 0.3s ease', marginBottom: '2rem',
@@ -177,7 +176,7 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
                   }}
                 >
                   {tier.cta}
-                </a>
+                </LeadCtaLink>
 
                 {/* Divider */}
                 <div style={{ height: 1, background: 'rgba(255,255,255,0.07)', marginBottom: '1.5rem' }} />
@@ -209,9 +208,9 @@ const PricingSection: React.FC<PricingSectionProps> = ({ onOpenCalendar }) => {
           <p style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)', marginBottom: '1rem' }}>
             Questions? We'll build you a custom ROI projection before you commit to anything.
           </p>
-          <a href="https://calendly.com/aivoice/call" target="_blank" rel="noreferrer noopener" className="btn-outline" style={{ padding: '0.75rem 2rem', fontSize: '0.875rem', textDecoration: 'none', display: 'inline-flex' }}>
+          <LeadCtaLink form="pricing-talk-to-team" className="btn-outline" style={{ padding: '0.75rem 2rem', fontSize: '0.875rem', textDecoration: 'none', display: 'inline-flex' }}>
             Talk to Our Team
-          </a>
+          </LeadCtaLink>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { FinalCTAShader } from '@/components/FinalCTAShader';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 
 function FadeUp({ children, delay = 0, className = '' }: {
   children: React.ReactNode; delay?: number; className?: string;
@@ -89,10 +90,8 @@ export function FinalCTA() {
           >
             🎙️ Talk to Ava — It&apos;s Free
           </button>
-          <a
-            href="https://calendly.com/aivoice/call"
-            target="_blank"
-            rel="noopener noreferrer"
+          <LeadCtaLink
+            form="final-cta-strategy-call"
             style={{
               padding: '17px 30px',
               background: 'transparent',
@@ -116,7 +115,7 @@ export function FinalCTA() {
             }}
           >
             Book a Strategy Call →
-          </a>
+          </LeadCtaLink>
         </div>
 
         <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', flexWrap: 'wrap' }}>

@@ -1,8 +1,8 @@
 
 import React from 'react';
 import { Calendar, PhoneCall, Calculator } from 'lucide-react';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 
-const CALENDLY = 'https://calendly.com/aivoice/call';
 
 interface CtaSectionProps {
   setCalendarOpen?: (open: boolean) => void;
@@ -34,15 +34,13 @@ const CtaSection = ({
               </div>
               <h3 className="font-semibold text-lg mb-2 text-white">Schedule Consultation</h3>
               <p className="text-sm text-white/70 mb-6">Book a 30-minute call with our solutions team</p>
-              <a
-                href={CALENDLY}
-                target="_blank"
-                rel="noreferrer noopener"
+              <LeadCtaLink
+                form="industry-cta-consultation"
                 className="mt-auto btn-primary w-full text-center"
                 style={{ textDecoration: 'none' }}
               >
                 Book Now
-              </a>
+              </LeadCtaLink>
             </div>
 
             <div className="glass card-hover-lift rounded-xl p-6 flex flex-col">
@@ -51,15 +49,14 @@ const CtaSection = ({
               </div>
               <h3 className="font-semibold text-lg mb-2 text-white">Request Demo</h3>
               <p className="text-sm text-white/70 mb-6">See our AI in action with a personalized demo</p>
-              <a
-                href={CALENDLY}
-                target="_blank"
-                rel="noreferrer noopener"
+              <LeadCtaLink
+                form="industry-cta-demo"
+                bookingKind="demo"
                 className="mt-auto btn-primary w-full text-center"
                 style={{ textDecoration: 'none' }}
               >
                 {buttonText || 'Get Demo'}
-              </a>
+              </LeadCtaLink>
             </div>
 
             <div className="glass card-hover-lift rounded-xl p-6 flex flex-col">

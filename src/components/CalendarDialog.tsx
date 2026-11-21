@@ -31,7 +31,7 @@ const CalendarDialog: React.FC<CalendarDialogProps> = ({ open, setOpen, trigger 
         <div className="w-full">
           <div>
             <iframe
-              src="https://link.dlgsolution.com/widget/booking/RttNV383xfqjPa87pdZU"
+              src="https://link.dlgsolution.com/widget/bookings/sv-discovery"
               style={{ width: "100%", border: "none", overflow: "visible" }}
               scrolling="yes"
               id="8QRwv6sOWLlYQYaPKPUv_1745349963878"

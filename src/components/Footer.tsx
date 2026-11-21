@@ -1,28 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-
-const WEBHOOK_URL = 'https://hook.us1.make.com/z4gfd71t668ji99fhqbiwazr82986xb7';
+import LeadForm from '@/components/leads/LeadForm';
 
 const Footer: React.FC = () => {
-  const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('loading');
-    try {
-      await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, source: 'footer-contact', timestamp: new Date().toISOString() }),
-      });
-      setStatus('success');
-      setForm({ name: '', email: '', phone: '', message: '' });
-    } catch {
-      setStatus('error');
-    }
-  };
-
   const socialLinks = [
     {
       label: 'LinkedIn',
@@ -77,6 +57,7 @@ const Footer: React.FC = () => {
     { label: 'Terms of Service', href: '/terms-of-service' },
     { label: 'Cookie Policy', href: '/cookie-policy' },
     { label: 'GDPR Compliance', href: '/gdpr-compliance' },
+    { label: 'SMS Terms', href: '/sms-terms' },
   ];
 
   return (
@@ -223,83 +204,15 @@ const Footer: React.FC = () => {
           <div>
             <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: '1.25rem' }}>Get in Touch</div>
 
-            {status === 'success' ? (
-              <div style={{ background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 14, padding: '1.5rem', textAlign: 'center' }}>
-                <div style={{ fontSize: '1.5rem', marginBottom: '0.5rem' }}>✓</div>
-                <div style={{ fontSize: '0.9rem', fontWeight: 600, color: '#22C55E', marginBottom: '0.3rem' }}>Message Sent!</div>
-                <div style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>We'll reach out within 24 hours.</div>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem' }} className="footer-name-email-grid">
-                  {[
-                    { key: 'name', placeholder: 'Your name', type: 'text' },
-                    { key: 'email', placeholder: 'Email address', type: 'email' },
-                  ].map(({ key, placeholder, type }) => (
-                    <input
-                      key={key}
-                      type={type}
-                      placeholder={placeholder}
-                      required={key === 'email'}
-                      value={form[key as keyof typeof form]}
-                      onChange={e => setForm(f => ({ ...f, [key]: e.target.value }))}
-                      style={{
-                        background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                        borderRadius: 10, padding: '0.65rem 0.9rem', fontSize: '0.82rem',
-                        color: '#fff', outline: 'none', width: '100%', boxSizing: 'border-box',
-                        transition: 'border-color 0.2s',
-                      }}
-                      onFocus={e => (e.target.style.borderColor = 'rgba(124,58,237,0.5)')}
-                      onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
-                    />
-                  ))}
-                </div>
-                <input
-                  type="tel"
-                  placeholder="Phone (optional)"
-                  value={form.phone}
-                  onChange={e => setForm(f => ({ ...f, phone: e.target.value }))}
-                  style={{
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 10, padding: '0.65rem 0.9rem', fontSize: '0.82rem',
-                    color: '#fff', outline: 'none', width: '100%', boxSizing: 'border-box',
-                    transition: 'border-color 0.2s',
-                  }}
-                  onFocus={e => (e.target.style.borderColor = 'rgba(124,58,237,0.5)')}
-                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
-                />
-                <textarea
-                  placeholder="How can we help?"
-                  rows={3}
-                  value={form.message}
-                  onChange={e => setForm(f => ({ ...f, message: e.target.value }))}
-                  style={{
-                    background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)',
-                    borderRadius: 10, padding: '0.65rem 0.9rem', fontSize: '0.82rem',
-                    color: '#fff', outline: 'none', width: '100%', boxSizing: 'border-box',
-                    resize: 'none', transition: 'border-color 0.2s', fontFamily: 'inherit',
-                  }}
-                  onFocus={e => (e.target.style.borderColor = 'rgba(124,58,237,0.5)')}
-                  onBlur={e => (e.target.style.borderColor = 'rgba(255,255,255,0.08)')}
-                />
-                <button
-                  type="submit"
-                  disabled={status === 'loading'}
-                  style={{
-                    padding: '0.75rem 1.5rem', borderRadius: 10, border: 'none', cursor: 'pointer',
-                    background: 'linear-gradient(135deg,#7C3AED,#3B82F6)',
-                    color: '#fff', fontSize: '0.85rem', fontWeight: 700, transition: 'all 0.25s ease',
-                    opacity: status === 'loading' ? 0.7 : 1,
-                  }}
-                  onMouseEnter={e => { if (status !== 'loading') (e.currentTarget.style.transform = 'translateY(-1px)'); }}
-                  onMouseLeave={e => (e.currentTarget.style.transform = 'none')}>
-                  {status === 'loading' ? 'Sending…' : status === 'error' ? 'Retry' : 'Send Message'}
-                </button>
-                {status === 'error' && (
-                  <p style={{ fontSize: '0.78rem', color: '#F472B6', margin: 0 }}>Something went wrong. Please try again.</p>
-                )}
-              </form>
-            )}
+            <LeadForm
+              form="footer-contact"
+              variant="compact"
+              fields={{ message: true }}
+              submitLabel="Send Message"
+              messageLabel="How can we help?"
+              bookingKind="discovery"
+              thankYouBody="Message received. We'll reach out within 24 hours. Want to skip the wait? Pick a time that works for you."
+            />
           </div>
         </div>
 
@@ -309,8 +222,8 @@ const Footer: React.FC = () => {
             © {new Date().getFullYear()} SummitVoiceAI. All rights reserved. Built for businesses that refuse to miss a call.
           </p>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
-            {['Privacy', 'Terms', 'Cookies'].map((t, i) => {
-              const hrefs = ['/privacy-policy', '/terms-of-service', '/cookie-policy'];
+            {['Privacy', 'Terms', 'Cookies', 'SMS'].map((t, i) => {
+              const hrefs = ['/privacy-policy', '/terms-of-service', '/cookie-policy', '/sms-terms'];
               return (
                 <Link key={t} to={hrefs[i]}
                   style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: 'color 0.2s' }}

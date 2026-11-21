@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 
 const Navbar: React.FC = () => {
   const [scrolled, setScrolled] = useState(false);
@@ -94,15 +95,13 @@ const Navbar: React.FC = () => {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <a
-            href="https://calendly.com/aivoice/call"
-            target="_blank"
-            rel="noreferrer noopener"
+          <LeadCtaLink
+            form="navbar-get-started"
             className="btn-primary"
             style={{ padding: '0.65rem 1.5rem', fontSize: '0.875rem', textDecoration: 'none' }}
           >
             <span>Get Started</span>
-          </a>
+          </LeadCtaLink>
         </div>
 
         {/* Mobile Toggle */}
@@ -149,16 +148,14 @@ const Navbar: React.FC = () => {
             <Link to="/articles" className="nav-link" onClick={() => setMenuOpen(false)}
               style={{ padding: '0.75rem 1rem', display: 'block', textDecoration: 'none' }}>Articles</Link>
             <div style={{ paddingTop: '0.75rem' }}>
-              <a
-                href="https://calendly.com/aivoice/call"
-                target="_blank"
-                rel="noreferrer noopener"
+              <LeadCtaLink
+                form="navbar-get-started-mobile"
                 className="btn-primary"
                 style={{ width: '100%', justifyContent: 'center', textDecoration: 'none', display: 'flex' }}
                 onClick={() => setMenuOpen(false)}
               >
                 <span>Get Started</span>
-              </a>
+              </LeadCtaLink>
             </div>
           </div>
         </div>

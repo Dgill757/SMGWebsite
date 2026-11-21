@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 import { Link } from 'react-router-dom';
 import { Calendar, Tag, ExternalLink } from 'lucide-react';
 import { SEO } from '@/lib/seo';
@@ -133,15 +134,14 @@ const Articles: React.FC = () => {
               variant="secondary"
               className="text-lg px-8 py-3"
             >
-              <a
-                href="https://calendly.com/aivoice/call"
-                target="_blank"
-                rel="noopener noreferrer"
+              <LeadCtaLink
+                form="articles-book-demo"
+                bookingKind="demo"
                 className="inline-flex items-center"
               >
                 Book a Demo
                 <ExternalLink className="w-5 h-5 ml-2" />
-              </a>
+              </LeadCtaLink>
             </Button>
           </div>
         </div>

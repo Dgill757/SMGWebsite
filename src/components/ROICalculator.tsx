@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import LeadCtaLink from '@/components/leads/LeadCtaLink';
 
 function useInView(ref: React.RefObject<Element>, threshold = 0.1) {
   const [inView, setInView] = useState(false);
@@ -278,9 +279,9 @@ const MissedCallCalculator: React.FC = () => {
             opacity: inView ? 1 : 0, transform: inView ? 'none' : 'translateY(20px)',
             transition: 'all 0.5s ease 0.65s',
           }}>
-            <a href="https://calendly.com/aivoice/call" target="_blank" rel="noreferrer noopener" className="btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', textDecoration: 'none', fontSize: '0.9rem' }}>
+            <LeadCtaLink form="roi-calculator" bookingKind="demo" className="btn-primary" style={{ display: 'inline-flex', padding: '0.85rem 2rem', textDecoration: 'none', fontSize: '0.9rem' }}>
               <span>Unlock This ROI — Book a Demo</span>
-            </a>
+            </LeadCtaLink>
           </div>
           <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.2)', lineHeight: 1.6, textAlign: 'center' }}>
             * Estimates based on average client performance data. Actual results vary by industry and implementation.

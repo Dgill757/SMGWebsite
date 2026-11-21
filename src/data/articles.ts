@@ -18,7 +18,7 @@ export const articles: Article[] = [
     thumbnail: "/lovable-uploads/c99219ee-c2be-4e58-a89a-ddb88e9a7695.png",
     tags: ["voice ai", "roofing", "home services", "automation", "lead gen"],
     published_at: "2024-01-15",
-    cta_calendly_url: "https://calendly.com/aivoice/call",
+    cta_calendly_url: "https://link.dlgsolution.com/widget/bookings/sv-live-demo",
     show_in_listing: true,
     content_html: `
       <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
@@ -197,7 +197,7 @@ export const articles: Article[] = [
         <footer class="text-center my-12 md:my-20">
             <h2 class="text-3xl md:text-4xl font-bold text-[#003f5c]">Ready to Revolutionize Your Business?</h2>
             <p class="mt-4 max-w-2xl mx-auto text-lg">Don't let another lead slip away. The future is here, and early adopters are winning big. It's time to take the AI leap and secure your competitive edge.</p>
-            <a href="https://calendly.com/aivoice/call" target="_blank" class="inline-block bg-gradient-to-r from-[#d45087] to-[#ff7c43] text-white font-bold text-xl py-4 px-10 rounded-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mt-8">Book a Demo Now</a>
+            <a href="https://link.dlgsolution.com/widget/bookings/sv-live-demo" target="_blank" class="inline-block bg-gradient-to-r from-[#d45087] to-[#ff7c43] text-white font-bold text-xl py-4 px-10 rounded-lg shadow-lg hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 mt-8">Book a Demo Now</a>
         </footer>
 
       </div>
