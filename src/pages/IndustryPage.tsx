@@ -1813,6 +1813,11 @@ const IndustryPage = () => {
       <Helmet>
         <title>{industry.metaTitle}</title>
         <meta name="description" content={industry.metaDescription} />
+        <link rel="canonical" href={`https://www.summitvoiceai.com/industries/${industrySlug}`} />
+        <meta property="og:title" content={industry.metaTitle} />
+        <meta property="og:description" content={industry.metaDescription} />
+        <meta property="og:url" content={`https://www.summitvoiceai.com/industries/${industrySlug}`} />
+        <meta property="og:image" content="https://www.summitvoiceai.com/lovable-uploads/c99219ee-c2be-4e58-a89a-ddb88e9a7695.png" />
         <script type="application/ld+json">
           {`
             {

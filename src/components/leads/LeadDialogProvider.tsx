@@ -1,9 +1,9 @@
-import React, { Suspense, lazy, useCallback, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { BOOKING_LINKS } from '@/data/company';
 import { LeadDialogContext, type OpenLeadOptions } from './leadDialogContext';
+import LeadForm from './LeadForm';
 
-const LeadForm = lazy(() => import('./LeadForm'));
 
 const LeadDialogProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [options, setOptions] = useState<OpenLeadOptions | null>(null);
@@ -32,8 +32,7 @@ const LeadDialogProvider: React.FC<{ children: React.ReactNode }> = ({ children 
             </DialogDescription>
           </DialogHeader>
           {options && (
-            <Suspense fallback={<div style={{ minHeight: 280 }} />}>
-              <LeadForm
+                          <LeadForm
                 form={options.form}
                 bookingKind={kind}
                 vertical={options.vertical}
@@ -43,7 +42,6 @@ const LeadDialogProvider: React.FC<{ children: React.ReactNode }> = ({ children 
                 messageLabel="Anything we should know? (optional)"
                 variant="compact"
               />
-            </Suspense>
           )}
           <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.55)', margin: 0 }}>
             Just want to pick a time?{' '}

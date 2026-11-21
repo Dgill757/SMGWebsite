@@ -69,7 +69,10 @@ export function IntegrationMarquee() {
           }}>
             <img
               src={item.logo}
-              alt={item.name}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              decoding="async"
               style={{
                 width: '20px',
                 height: '20px',

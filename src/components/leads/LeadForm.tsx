@@ -36,7 +36,6 @@ const inputStyle: React.CSSProperties = {
   padding: '0.7rem 0.9rem',
   fontSize: '0.9rem',
   color: '#fff',
-  outline: 'none',
   width: '100%',
   boxSizing: 'border-box',
   fontFamily: 'inherit',
@@ -210,6 +209,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
   const bad = (n: string) => errorFields.includes(n);
   const fieldProps = (n: string) => ({
     id: id(n),
+    className: 'lead-field',
     'aria-invalid': bad(n) || undefined,
     'aria-describedby': bad(n) ? id('error') : undefined,
     style: { ...inputStyle, ...(bad(n) ? { borderColor: '#F87171' } : {}) },
@@ -354,6 +354,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
             placeholder={compact ? messageLabel : ''}
             value={values.message}
             onChange={set('message')}
+            className="lead-field"
             style={{ ...inputStyle, ...(bad('message') ? { borderColor: '#F87171' } : {}), resize: 'vertical' }}
           />
         </div>
@@ -378,6 +379,7 @@ const LeadForm: React.FC<LeadFormProps> = ({
         <input
           id={id('sms')}
           type="checkbox"
+          className="lead-field"
           checked={smsConsent}
           onChange={(e) => setSmsConsent(e.target.checked)}
           style={{ marginTop: 3, width: 18, height: 18, flexShrink: 0, accentColor: '#00D9FF' }}

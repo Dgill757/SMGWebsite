@@ -95,23 +95,23 @@ const Footer: React.FC = () => {
               </span>
             </div>
 
-            <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.42)', lineHeight: 1.75, marginBottom: '1.75rem', maxWidth: 260 }}>
+            <p style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.75, marginBottom: '1.75rem', maxWidth: 260 }}>
               The AI Voice Agent that answers every call, qualifies every lead, and books every appointment — 24/7, without a single human receptionist.
             </p>
 
             {/* Contact Info */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.75rem' }}>
-              <a href="mailto:support@summitvoiceai.com" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.82rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 0.2s' }}
+              <a href="mailto:support@summitvoiceai.com" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#7C3AED')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
                 </svg>
                 support@summitvoiceai.com
               </a>
-              <a href="tel:+17573295913" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.82rem', color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'color 0.2s' }}
+              <a href="tel:+17573295913" style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.color = '#3B82F6')}
-                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.4)')}>
+                onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.58 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/>
                 </svg>
@@ -127,7 +127,7 @@ const Footer: React.FC = () => {
                     width: 36, height: 36, borderRadius: 10,
                     background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    color: 'rgba(255,255,255,0.4)', textDecoration: 'none', transition: 'all 0.25s ease',
+                    color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'all 0.25s ease',
                   }}
                   onMouseEnter={e => {
                     const el = e.currentTarget as HTMLAnchorElement;
@@ -151,21 +151,21 @@ const Footer: React.FC = () => {
 
           {/* Product Links */}
           <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: '1.25rem' }}>Product</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '1.25rem' }}>Product</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
               {productLinks.map((link) => (
                 link.href.startsWith('/') && !link.href.includes('#') ? (
                   <Link key={link.label} to={link.href}
-                    style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.2s' }}
+                    style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
                     onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
                     {link.label}
                   </Link>
                 ) : (
                   <a key={link.label} href={link.href}
-                    style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.2s' }}
+                    style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
                     onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                    onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
                     {link.label}
                   </a>
                 )
@@ -175,13 +175,13 @@ const Footer: React.FC = () => {
 
           {/* Legal Links */}
           <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: '1.25rem' }}>Legal</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '1.25rem' }}>Legal</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
               {legalLinks.map((link) => (
                 <Link key={link.label} to={link.href}
-                  style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.45)', textDecoration: 'none', transition: 'color 0.2s' }}
+                  style={{ fontSize: '0.875rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
                   onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.45)')}>
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
                   {link.label}
                 </Link>
               ))}
@@ -190,7 +190,7 @@ const Footer: React.FC = () => {
             {/* Trust Badges */}
             <div style={{ marginTop: '2rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {['SOC 2 Type II', 'HIPAA Compliant', 'GDPR Ready'].map((badge) => (
-                <div key={badge} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)' }}>
+                <div key={badge} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.75rem', color: 'rgba(255,255,255,0.6)' }}>
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="rgba(34,197,94,0.6)" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="20 6 9 17 4 12"/>
                   </svg>
@@ -202,7 +202,7 @@ const Footer: React.FC = () => {
 
           {/* Contact Form */}
           <div>
-            <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.25)', marginBottom: '1.25rem' }}>Get in Touch</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.6)', marginBottom: '1.25rem' }}>Get in Touch</div>
 
             <LeadForm
               form="footer-contact"
@@ -218,7 +218,7 @@ const Footer: React.FC = () => {
 
         {/* Bottom bar */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: '1.75rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.25)', margin: 0 }}>
+          <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', margin: 0 }}>
             © {new Date().getFullYear()} SummitVoiceAI. All rights reserved. Built for businesses that refuse to miss a call.
           </p>
           <div style={{ display: 'flex', gap: '1.5rem' }}>
@@ -226,9 +226,9 @@ const Footer: React.FC = () => {
               const hrefs = ['/privacy-policy', '/terms-of-service', '/cookie-policy', '/sms-terms'];
               return (
                 <Link key={t} to={hrefs[i]}
-                  style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.25)', textDecoration: 'none', transition: 'color 0.2s' }}
+                  style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.6)', textDecoration: 'none', transition: 'color 0.2s' }}
                   onMouseEnter={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}
-                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.25)')}>
+                  onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.6)')}>
                   {t}
                 </Link>
               );
@@ -244,7 +244,7 @@ const Footer: React.FC = () => {
         @media (max-width: 600px) {
           .footer-grid { grid-template-columns: 1fr !important; }
         }
-        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.28); }
+        input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.55); }
       `}</style>
     </footer>
   );

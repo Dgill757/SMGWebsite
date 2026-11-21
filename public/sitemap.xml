@@ -96,4 +96,52 @@
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
   </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/for/roofing</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/for/hvac</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/for/plumbing</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/for/landscaping</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/for/pool</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/free-website-preview</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/revenue-leak-audit</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.summitvoiceai.com/sms-terms</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
 </urlset>

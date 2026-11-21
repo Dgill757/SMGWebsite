@@ -1,5 +1,6 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import { SEO } from "@/lib/seo";
 
 const NotFound = () => {
   const location = useLocation();
@@ -12,6 +13,8 @@ const NotFound = () => {
   }, [location.pathname]);
 
   return (
+    <>
+    <SEO title="Page not found | Summit Voice AI" description="This page does not exist." noIndex />
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="text-center">
         <h1 className="text-4xl font-bold mb-4">404</h1>
@@ -21,6 +24,7 @@ const NotFound = () => {
         </a>
       </div>
     </div>
+    </>
   );
 };
 

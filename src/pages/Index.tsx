@@ -12,7 +12,8 @@ import FAQSection from '@/components/FAQSection';
 import CalendarDialog from '@/components/CalendarDialog';
 import Widget from '@/components/Widget';
 import SectionErrorBoundary from '@/components/SectionErrorBoundary';
-import { SEO, getOrganizationSchema, getFAQSchema } from '@/lib/seo';
+import { SEO, getOrganizationSchema, getLocalBusinessSchema } from '@/lib/seo';
+import { ROUTE_META } from '@/data/seoRoutes';
 import { IntegrationMarquee } from '@/components/IntegrationMarquee';
 import { AvaComparison } from '@/components/AvaComparison';
 
@@ -42,30 +43,12 @@ const Index = () => {
     }
   }, [location.pathname, location.hash]);
 
-  const faqs = [
-    {
-      question: 'What is SummitVoiceAI?',
-      answer: 'SummitVoiceAI is an advanced AI voice assistant solution specifically designed for service businesses that helps capture every call, qualify leads, and book appointments 24/7 without human intervention.',
-    },
-    {
-      question: 'How much can my business save with SummitVoiceAI?',
-      answer: 'Most businesses save 60-80% compared to traditional receptionist costs. Our clients typically see ROI within the first month and savings of $30,000-$50,000 annually.',
-    },
-    {
-      question: 'Does SummitVoiceAI integrate with my existing systems?',
-      answer: 'Yes, SummitVoiceAI seamlessly integrates with most popular CRM systems, scheduling software, and business management tools including Salesforce, Google Calendar, Microsoft Outlook, and industry-specific platforms.',
-    },
-    {
-      question: 'How accurate is the voice recognition?',
-      answer: 'Our AI voice technology achieves over 95% accuracy in understanding caller requests, questions, and information across various accents and background noise conditions.',
-    },
-  ];
-
   return (
     <>
       <SEO
-        title="Summit Voice AI — AI Voice Receptionist for Roofing Companies"
-        description="Ava answers every call 24/7, books roofing appointments automatically, and syncs your CRM. Trusted by 42+ roofing companies. $84M+ in client revenue recovered annually. Try Ava free — no credit card required."
+        title={ROUTE_META['/'].title}
+        description={ROUTE_META['/'].description}
+        canonical="/"
         keywords={[
           'ai receptionist for roofing companies', 'voice ai roofing', 'missed call recovery roofing',
           'ai call answering roofing', 'roofing lead follow up automation', 'summit voice ai',
@@ -77,7 +60,7 @@ const Index = () => {
           'estimate follow up automation', 'database reactivation roofing',
           'google review automation roofing', 'voice AI', 'AI receptionist', 'virtual receptionist',
         ]}
-        schema={[getOrganizationSchema(), getFAQSchema(faqs)]}
+        schema={[getOrganizationSchema(), getLocalBusinessSchema()]}
       />
 
       <div style={{ background: '#000000', minHeight: '100vh', overflowX: 'hidden', paddingTop: 'var(--page-top)' }}>
